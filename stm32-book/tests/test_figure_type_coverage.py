@@ -34,7 +34,7 @@ class FigureTypeCoverageTests(unittest.TestCase):
                               doc.read_text(encoding="utf-8")))
 
     def test_every_referenced_figure_is_registered(self) -> None:
-        for n in range(29):
+        for n in range(33):
             chapter = f"{n:02d}"
             refs = self.referenced(chapter)
             unregistered = [r for r in refs if r not in self.registry]
@@ -45,7 +45,7 @@ class FigureTypeCoverageTests(unittest.TestCase):
             self.assertIn(entry["type"], VALID_TYPES, name)
 
     def test_every_chapter_covers_three_figure_kinds(self) -> None:
-        for n in range(29):
+        for n in range(33):
             chapter = f"{n:02d}"
             refs = self.referenced(chapter)
             types = {self.registry[r]["type"] for r in refs}

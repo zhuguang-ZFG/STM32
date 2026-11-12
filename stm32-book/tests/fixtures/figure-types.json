@@ -2826,6 +2826,81 @@
   "chapter": "28",
   "type": "technical"
  },
+ "illustrations/handraw/ch29-current-tiers.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。连续 1.0 A 才是预算依据，1.2 A 绝对最大与 3.2 A 脉冲档不得当连续；堵转 ≤0.8 A 留 20% 余量；不是实拍。",
+  "chapter": "29",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch29-fault-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。排查序固定：VM→STBY→AIN 逻辑→PWM 示波器，从外到内不回溯；电流越界先降负载；不是实拍。",
+  "chapter": "29",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch29-five-states.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PWM/AIN1/AIN2/STBY 组合出待机/滑行/短接制动/正转/反转五态（TB6612 p.4 逐行核验）；不是实拍。",
+  "chapter": "29",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch29-two-supplies.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。逻辑 Vcc 2.7–5.5 V（冻结 3.3 V）与电机 VM 4.5–12 V（冻结 6–12 V）分两路、共地；不是实拍。",
+  "chapter": "29",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch30-no-spin-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。不转排查：状态机→斜坡→CCR 表→电流档；遥测帧先看状态位与 rpm 原始计数；不是实拍。",
+  "chapter": "30",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch30-pwm-math.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。72 MHz/PSC=0/ARR=3599→20 kHz；100% 须 CCR>ARR（=ARR 差一格 99.97%）；不是实拍。",
+  "chapter": "30",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch30-signed-duty.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。符号=方向、绝对值=幅值，映射只有 motor_bridge.c 一处；±50‰/10 ms 斜坡；不是实拍。",
+  "chapter": "30",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch30-stop-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PWM=0 两映射（滑行/短接制动）+待机；换向必须走 REVERSING；断流 500 ms（F01）锁存停机；不是实拍。",
+  "chapter": "30",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch31-quadrature.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。TIM2 编码器模式 3 两路上下沿计数 → 4×PPR（110×4=440 CPR）；A 领先 B 加计数；不是实拍。",
+  "chapter": "31",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch31-rpm-formula.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。rpm=60×Δ/(CPR×Δt)；Δ=11→150 rpm 回验一致；量化下限 ≈13.6 rpm；不是实拍。",
+  "chapter": "31",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch31-wrap-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。65530 与 100 的有符号增量=+6；判据 |Δ|<32768/2；零计数不能单独证明断线；不是实拍。",
+  "chapter": "31",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch32-loop-fault-triage.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。闭环异常先分流：振荡降 Kp、不响应查 FAULT/限幅、超调降 Ki/ramp；换装置从调参第 1 步重做；不是实拍。",
+  "chapter": "32",
+  "type": "triage"
+ },
+ "illustrations/handraw/ch32-pi-step.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。PI 五步离散式；e=−10 rpm→u_try=−20.05‰；Kp=2.0/Ki=0.5/i_limit=500‰/duty_limit=900‰；不是实拍。",
+  "chapter": "32",
+  "type": "technical"
+ },
+ "illustrations/handraw/ch32-state-machine.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。DISABLED→ARMED→RUN/REVERSING→FAULT；故障>STOP>换向；故障锁存；10 ms 节拍与串口分离；不是实拍。",
+  "chapter": "32",
+  "type": "concept"
+ },
+ "illustrations/handraw/ch32-tuning-ladder.png": {
+  "caption": "▲ 知识轨（Handraw · 原理示意/非实拍）。六步调参阶梯，每步带通过判据与回退条件；换装置从第 1 步重做；不是实拍。",
+  "chapter": "32",
+  "type": "triage"
+ },
  "photos/bluepill-stm32f103c8t6-popolon.jpg": {
   "caption": "",
   "chapter": "03",

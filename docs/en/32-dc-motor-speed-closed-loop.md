@@ -39,6 +39,11 @@ Open loop (chapter 30) commands a voltage; the moment load torque rises, the spe
 
 ### The discrete PI and its units
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch32-pi-step.png" width="760" alt="Handraw: discrete PI and one hand-computed tick (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Five steps: e / I_try / u_try / clamp / conditional integration; hand-computed e=−10 rpm → u_try=−20.05‰ (negative output = reverse drive); Kp=2.0, Ki=0.5, i_limit=500‰, duty_limit=900‰; not a photo.</sub>
+</p>
 Frozen default parameters (`src/main.c`, to be revised after P2 measurements):
 
 ```text
@@ -68,6 +73,11 @@ This project's conditional-integration rule: accept the integral when u_try is n
 
 ### State machine and event priority
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch32-state-machine.png" width="760" alt="Handraw: state machine and event priority (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). DISABLED→ARMED→RUN/REVERSING→FAULT; faults (F01–F06) outrank STOP, which outranks reversal; faults latch until manual CLEAR; the 10 ms control tick is isolated from the serial task; not a photo.</sub>
+</p>
 ```text
         ARM        SET_*        fault(F01~F06)
 DISABLED ──→ ARMED ───→ RUN_OPEN / RUN_SPEED
@@ -85,6 +95,11 @@ The control tick at 10 ms (TIM4 hardware timebase) is strictly separated from th
 
 ### Tuning procedure (with a rollback condition per step)
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch32-tuning-ladder.png" width="760" alt="Handraw: tuning ladder with rollback conditions (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Six-step ladder — polarity/CPR, open-loop sweep, raise Kp, add Ki, saturation recovery, redo step/disturbance/reversal — each with a pass criterion and a rollback; change the rig and redo from step 1; not a photo.</sub>
+</p>
 | Step | Action | Pass criterion | Rollback |
 | --- | --- | --- | --- |
 | 1 | Polarity and CPR check (M31-A) | Hand-turn direction matches the sign | Back to chapter 31; check wiring / mode |
@@ -98,6 +113,11 @@ Parameters are valid only for the recorded rig: change the motor, supply, gear r
 
 ## Failure branches and shortest diagnosis
 
+
+<p align="center">
+  <img src="../../assets/illustrations/handraw/ch32-loop-fault-triage.png" width="760" alt="Handraw: closed-loop fault split (原理示意)">
+  <br><sub>▲ Knowledge track (Handraw · 原理示意 / not a photo). Split first: oscillation → cut Kp, no response → FAULT/limits, overshoot → Ki/ramp; retune from step 1 on any rig change; not a photo.</sub>
+</p>
 | Symptom | Distinguishing evidence | Next action |
 | --- | --- | --- |
 | Positive feedback (runs away) | Output deepens in the wrong direction as the error grows | STOP immediately; polarity is reversed — back to step 1 |
@@ -132,7 +152,7 @@ Where it breaks: a real scale has no "target ramp" and no "reverse-to-standstill
 | M32-E | Communication / feedback fault injection | F01–F03 latching and recovery protocol | Pending |
 | M32-F | 10-minute continuous run | Thermal stability (depends on BLK-P0-4 thermal budget) | Pending |
 
-Metric definitions and data requirements follow the [acceptance protocol](../plans/2026-11-11-motor-control/acceptance.md) (overshoot, rise time, steady-state error, settling time; all raw frames kept).
+Metric definitions and data requirements follow the [acceptance protocol](../../plans/2026-11-11-motor-control/acceptance.md) (overshoot, rise time, steady-state error, settling time; all raw frames kept).
 
 ## Exit check
 
@@ -144,4 +164,4 @@ Metric definitions and data requirements follow the [acceptance protocol](../pla
 
 - Control law and state machine implementation: `examples/motor-dc-speed/src/pi_controller.c`, `src/control_tick.c` (covered by host tests H01–H10, including end-to-end regressions for negative-direction starting and the reversal contract)
 - Frozen parameters: the default-value table in `src/main.c` (revised after P2 measurements)
-- Metrics and acceptance criteria: [acceptance protocol](../plans/2026-11-11-motor-control/acceptance.md)
+- Metrics and acceptance criteria: [acceptance protocol](../../plans/2026-11-11-motor-control/acceptance.md)

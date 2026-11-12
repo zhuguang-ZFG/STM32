@@ -32,8 +32,8 @@ class BookAuditTests(unittest.TestCase):
         cls.by_id = {item["id"]: item for item in cls.payload["chapters"]}
 
     def test_audit_covers_both_editions(self) -> None:
-        self.assertEqual(29, self.payload["chapter_count"])
-        self.assertEqual({f"{number:02d}" for number in range(29)}, set(self.by_id))
+        self.assertEqual(33, self.payload["chapter_count"])
+        self.assertEqual({f"{number:02d}" for number in range(33)}, set(self.by_id))
         for item in self.payload["chapters"]:
             self.assertTrue(item["zh"]["file"].startswith("docs/"))
             self.assertTrue(item["en"]["file"].startswith("docs/en/"))
@@ -557,7 +557,7 @@ class BookAuditTests(unittest.TestCase):
             result = audit_book.main(["--format", "json", "--write", str(output)])
             self.assertEqual(0, result)
             loaded = json.loads(output.read_text(encoding="utf-8"))
-            self.assertEqual(29, loaded["chapter_count"])
+            self.assertEqual(33, loaded["chapter_count"])
 
 
 if __name__ == "__main__":

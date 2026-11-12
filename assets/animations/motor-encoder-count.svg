@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="正交编码器：四倍频怎么数、回绕怎么判">
+<title>正交编码器：四倍频怎么数、回绕怎么判</title>
+<style>
+@keyframes tk0{0%,0.00%,1.12%,100%{opacity:0.25}0.01%,1.11%{opacity:1.0}}.tk0{animation:tk0 6.4s infinite}
+@keyframes tk1{0%,12.50%,13.63%,100%{opacity:0.25}12.51%,13.62%{opacity:1.0}}.tk1{animation:tk1 6.4s infinite}
+@keyframes tk2{0%,25.00%,26.12%,100%{opacity:0.25}25.01%,26.11%{opacity:1.0}}.tk2{animation:tk2 6.4s infinite}
+@keyframes tk3{0%,37.50%,38.62%,100%{opacity:0.25}37.51%,38.62%{opacity:1.0}}.tk3{animation:tk3 6.4s infinite}
+@keyframes tk4{0%,50.00%,51.12%,100%{opacity:0.25}50.01%,51.12%{opacity:1.0}}.tk4{animation:tk4 6.4s infinite}
+@keyframes tk5{0%,62.50%,63.62%,100%{opacity:0.25}62.51%,63.62%{opacity:1.0}}.tk5{animation:tk5 6.4s infinite}
+@keyframes tk6{0%,75.00%,76.12%,100%{opacity:0.25}75.01%,76.11%{opacity:1.0}}.tk6{animation:tk6 6.4s infinite}
+@keyframes tk7{0%,87.50%,88.62%,100%{opacity:0.25}87.51%,88.61%{opacity:1.0}}.tk7{animation:tk7 6.4s infinite}
+@keyframes tt0{0%,0.00%,1.12%,100%{opacity:0.35}0.01%,1.11%{opacity:1.0}}.tt0{animation:tt0 6.4s infinite}
+@keyframes tt1{0%,12.50%,13.63%,100%{opacity:0.35}12.51%,13.62%{opacity:1.0}}.tt1{animation:tt1 6.4s infinite}
+@keyframes tt2{0%,25.00%,26.12%,100%{opacity:0.35}25.01%,26.11%{opacity:1.0}}.tt2{animation:tt2 6.4s infinite}
+@keyframes tt3{0%,37.50%,38.62%,100%{opacity:0.35}37.51%,38.62%{opacity:1.0}}.tt3{animation:tt3 6.4s infinite}
+@keyframes tt4{0%,50.00%,51.12%,100%{opacity:0.35}50.01%,51.12%{opacity:1.0}}.tt4{animation:tt4 6.4s infinite}
+@keyframes tt5{0%,62.50%,63.62%,100%{opacity:0.35}62.51%,63.62%{opacity:1.0}}.tt5{animation:tt5 6.4s infinite}
+@keyframes tt6{0%,75.00%,76.12%,100%{opacity:0.35}75.01%,76.11%{opacity:1.0}}.tt6{animation:tt6 6.4s infinite}
+@keyframes tt7{0%,87.50%,88.62%,100%{opacity:0.35}87.51%,88.61%{opacity:1.0}}.tt7{animation:tt7 6.4s infinite}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">正交编码器：四倍频怎么数、回绕怎么判</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TIM2 编码器模式 3：TI1/TI2 上下沿都计数；A 领先 B 加计数；有符号增量 |Δ|&lt;32768</text>
+<rect x="738" y="15" width="140" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="808" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">31 编码器 · VIS04</text>
+<text x="56" y="126" font-size="11.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">A 相（PA0 / TIM2_CH1）</text>
+<path d="M 56 148.96 L 56.00 148.96 L 121.00 148.96 L 121.00 148.96 L 186.00 148.96 L 186.00 187.04 L 251.00 187.04 L 251.00 187.04 L 316.00 187.04 L 316.00 148.96 L 381.00 148.96 L 381.00 148.96 L 446.00 148.96 L 446.00 187.04 L 511.00 187.04 L 511.00 187.04 L 576.00 187.04" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2"/>
+<text x="56" y="216" font-size="11.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">B 相（PA1 / TIM2_CH2）</text>
+<path d="M 56 277.04 L 56.00 277.04 L 121.00 277.04 L 121.00 238.96 L 186.00 238.96 L 186.00 238.96 L 251.00 238.96 L 251.00 277.04 L 316.00 277.04 L 316.00 277.04 L 381.00 277.04 L 381.00 238.96 L 446.00 238.96 L 446.00 238.96 L 511.00 238.96 L 511.00 277.04 L 576.00 277.04" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#7a4e00" stroke-width="2"/>
+<line x1="88.5" y1="136" x2="88.5" y2="290" stroke="#1b5c45" stroke-width="1.5" stroke-linecap="round" opacity="1" stroke-dasharray="3 4" class="t0"/>
+<circle cx="88.5" cy="300" r="5" fill="#1b5c45" opacity="1" class="tk0"/>
+<text x="88.5" y="326" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700" class="tt0">+1</text>
+<line x1="153.5" y1="136" x2="153.5" y2="290" stroke="#1b5c45" stroke-width="1.5" stroke-linecap="round" opacity="1" stroke-dasharray="3 4" class="t1"/>
+<circle cx="153.5" cy="300" r="5" fill="#1b5c45" opacity="1" class="tk1"/>
+<text x="153.5" y="326" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700" class="tt1">+1</text>
+<line x1="218.5" y1="136" x2="218.5" y2="290" stroke="#1b5c45" stroke-width="1.5" stroke-linecap="round" opacity="1" stroke-dasharray="3 4" class="t2"/>
+<circle cx="218.5" cy="300" r="5" fill="#1b5c45" opacity="1" class="tk2"/>
+<text x="218.5" y="326" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700" class="tt2">+1</text>
+<line x1="283.5" y1="136" x2="283.5" y2="290" stroke="#1b5c45" stroke-width="1.5" stroke-linecap="round" opacity="1" stroke-dasharray="3 4" class="t3"/>
+<circle cx="283.5" cy="300" r="5" fill="#1b5c45" opacity="1" class="tk3"/>
+<text x="283.5" y="326" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700" class="tt3">+1</text>
+<line x1="348.5" y1="136" x2="348.5" y2="290" stroke="#1b5c45" stroke-width="1.5" stroke-linecap="round" opacity="1" stroke-dasharray="3 4" class="t4"/>
+<circle cx="348.5" cy="300" r="5" fill="#1b5c45" opacity="1" class="tk4"/>
+<text x="348.5" y="326" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700" class="tt4">+1</text>
+<line x1="413.5" y1="136" x2="413.5" y2="290" stroke="#1b5c45" stroke-width="1.5" stroke-linecap="round" opacity="1" stroke-dasharray="3 4" class="t5"/>
+<circle cx="413.5" cy="300" r="5" fill="#1b5c45" opacity="1" class="tk5"/>
+<text x="413.5" y="326" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700" class="tt5">+1</text>
+<line x1="478.5" y1="136" x2="478.5" y2="290" stroke="#1b5c45" stroke-width="1.5" stroke-linecap="round" opacity="1" stroke-dasharray="3 4" class="t6"/>
+<circle cx="478.5" cy="300" r="5" fill="#1b5c45" opacity="1" class="tk6"/>
+<text x="478.5" y="326" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700" class="tt6">+1</text>
+<line x1="543.5" y1="136" x2="543.5" y2="290" stroke="#1b5c45" stroke-width="1.5" stroke-linecap="round" opacity="1" stroke-dasharray="3 4" class="t7"/>
+<circle cx="543.5" cy="300" r="5" fill="#1b5c45" opacity="1" class="tk7"/>
+<text x="543.5" y="326" font-size="10" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700" class="tt7">+1</text>
+<text x="320" y="360" font-size="12" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">一个 A/B 周期 = 4 个计数沿（四倍频）</text>
+<rect x="620" y="110" width="240" height="240" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="740" y="140" font-size="12" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">计数与方向</text>
+<text x="740" y="172" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">CPR = 440</text>
+<text x="740" y="194" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">110 PPR × 4 倍频</text>
+<text x="740" y="226" font-size="10.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">A 领先 B → 加计数</text>
+<text x="740" y="250" font-size="10.5" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">B 领先 A → 减计数</text>
+<text x="740" y="282" font-size="11" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">rpm = 60×Δ / (CPR×Δt)</text>
+<text x="740" y="306" font-size="9.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Δt = 10 ms · 量化下限 ≈13.6 rpm</text>
+<rect x="40" y="420" width="820" height="120" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="450" y="450" font-size="11.5" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">回绕：16 位计数 65535 → 0 不断翻转。65530 与 100 的有符号增量 = +6，不是 −65430。</text>
+<text x="450" y="478" font-size="10.5" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">判据 |Δ| &lt; 32768/2 = 16384：一次 10 ms 内 Δ 超过它就说明判据被违反，而不是电机超速。</text>
+<text x="450" y="504" font-size="10.5" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">零计数不能单独证明断线：换向过零同样清零——结合无反馈 500 ms 计时（第 32 章 FAULT）一起判。</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">视觉规范：FA-002 概念连续线 · IG-011 相位对比 · C-03 / C-10 / C-27 / C-31</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
+</svg>

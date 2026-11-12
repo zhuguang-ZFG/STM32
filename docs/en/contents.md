@@ -51,6 +51,10 @@
 | 26 | [STM32F10x Standard Peripheral Library](26-spl.md) | V3.5.0 project skeleton, build macros, API boundaries, and one-peripheral migration |
 | 27 | [STM32 networking and protocol stacks](27-network.md) | Ethernet/RMII hardware, H7 DMA/cache, lwIP threading, TCP/UDP, MQTT/TLS, and PCAP diagnosis |
 | 28 | [Embedded systems and the RTOS ecosystem](28-system-rtos.md) | Ownership, deadlines, resource budgets, FreeRTOS/RT-Thread/Zephyr boundaries, startup, and watchdog health |
+| 29 | [Motor drive and power](29-motor-drive-and-power.md) | TB6612 five-state truth table, logic/motor supplies, and the three current tiers |
+| 30 | [DC motor open-loop speed](30-dc-motor-open-loop-speed.md) | Recomputable 20 kHz PWM setup, signed duty, ramp, and stop semantics (coast/short-brake/standby) |
+| 31 | [Encoder and RPM measurement](31-encoder-and-rpm-measurement.md) | TIM2 encoder mode 3, 4× decoding to 440 CPR, the rpm formula, and wrap-around criteria |
+| 32 | [DC motor speed closed loop](32-dc-motor-speed-closed-loop.md) | Five-step discrete PI, state machine with fault latch, anti-windup, and the six-step tuning ladder |
 
 ## Related directories
 

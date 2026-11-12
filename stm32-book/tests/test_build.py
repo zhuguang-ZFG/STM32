@@ -223,11 +223,11 @@ class BookBuildContractTests(unittest.TestCase):
         english_titles = {item["id"]: item["title"] for item in english["back_matter"]}
         self.assertEqual("Subject index", english_titles["subject-index"])
 
-    def test_manifest_covers_exactly_the_29_source_chapters(self) -> None:
+    def test_manifest_covers_exactly_the_33_source_chapters(self) -> None:
         self.builder.validate_manifest(self.manifest)
         files = [name for part in self.manifest["parts"] for name in part["files"]]
-        expected = [path.name for path in sorted((BOOK_DIR.parent / "docs").glob("[0-2][0-9]-*.md"))]
-        self.assertEqual(29, len(expected))
+        expected = [path.name for path in sorted((BOOK_DIR.parent / "docs").glob("[0-9][0-9]-*.md"))]
+        self.assertEqual(33, len(expected))
         self.assertEqual(expected, files)
         self.assertEqual(set(expected), set(self.manifest["chapter_guides"]))
         for name, guide in self.manifest["chapter_guides"].items():
@@ -237,12 +237,12 @@ class BookBuildContractTests(unittest.TestCase):
                 self.assertTrue(guide["boundary"].strip())
                 self.assertGreaterEqual(len(guide["sources"]), 1)
 
-    def test_english_edition_covers_all_29_source_chapters(self) -> None:
+    def test_english_edition_covers_all_33_source_chapters(self) -> None:
         docs = BOOK_DIR.parent / "docs"
-        chinese_numbers = [path.name[:2] for path in sorted(docs.glob("[0-2][0-9]-*.md"))]
-        english_numbers = [path.name[:2] for path in sorted((docs / "en").glob("[0-2][0-9]-*.md"))]
+        chinese_numbers = [path.name[:2] for path in sorted(docs.glob("[0-9][0-9]-*.md"))]
+        english_numbers = [path.name[:2] for path in sorted((docs / "en").glob("[0-9][0-9]-*.md"))]
 
-        self.assertEqual([f"{index:02d}" for index in range(29)], chinese_numbers)
+        self.assertEqual([f"{index:02d}" for index in range(33)], chinese_numbers)
         self.assertEqual(chinese_numbers, english_numbers)
 
     def test_raw_pdf_intermediate_is_named_per_language(self) -> None:
@@ -278,8 +278,8 @@ class BookBuildContractTests(unittest.TestCase):
 
         parsed = BookHTMLParser()
         parsed.feed(html)
-        self.assertEqual([f"{index:02d}" for index in range(29)], parsed.chapter_numbers)
-        self.assertEqual(29, parsed.compasses)
+        self.assertEqual([f"{index:02d}" for index in range(33)], parsed.chapter_numbers)
+        self.assertEqual(33, parsed.compasses)
         self.assertEqual(
             {
                 "appendix-engineering",
@@ -311,8 +311,8 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "zh")
         self.assertIn('<p class="part-label">第 1 部</p>', html)
-        self.assertEqual(7, html.count('class="part-art"'))
-        self.assertEqual(29, html.count('class="ch-emblem"'))
+        self.assertEqual(8, html.count('class="part-art"'))
+        self.assertEqual(33, html.count('class="ch-emblem"'))
         self.assertIn('id="chapter-00" data-chapter="00"', html)
         self.assertIn('id="chapter-28" data-chapter="28"', html)
         self.assertIn('<span class="chapter-number">第 1 章</span><h1>如何学习 STM32</h1>', html)
@@ -388,12 +388,12 @@ class BookBuildContractTests(unittest.TestCase):
             self.assertEqual(1, markup.count("<svg"))
             self.assertIn('viewBox="0 0 200 140"', markup)
 
-        emblems = [f"ch{index:02d}.svg" for index in range(29)]
+        emblems = [f"ch{index:02d}.svg" for index in range(33)]
         actual_emblems = sorted(
             path.name for path in self.builder.ILLUSTRATIONS_DIR.glob("ch*.svg")
         )
         self.assertEqual(emblems, actual_emblems)
-        for index in range(29):
+        for index in range(33):
             markup = self.builder.chapter_emblem(f"{index:02d}-x.md")
             self.assertIn('class="ch-emblem"', markup)
             self.assertIn('viewBox="0 0 64 64"', markup)
@@ -530,15 +530,15 @@ class BookBuildContractTests(unittest.TestCase):
 
         parsed = BookHTMLParser()
         parsed.feed(html)
-        self.assertEqual([f"{index:02d}" for index in range(29)], parsed.chapter_numbers)
-        self.assertEqual(29, parsed.compasses)
+        self.assertEqual([f"{index:02d}" for index in range(33)], parsed.chapter_numbers)
+        self.assertEqual(33, parsed.compasses)
         self.assertIn('<html lang="en">', html)
         self.assertIn("<strong>v1.3.1</strong>", html)
         self.assertNotIn("<strong>v1.0.0-rc", html)
         self.assert_version_history_and_index(html, "en")
         self.assertIn('<p class="part-label">Part 1</p>', html)
-        self.assertEqual(7, html.count('class="part-art"'))
-        self.assertEqual(29, html.count('class="ch-emblem"'))
+        self.assertEqual(8, html.count('class="part-art"'))
+        self.assertEqual(33, html.count('class="ch-emblem"'))
         self.assertIn('id="chapter-00" data-chapter="00"', html)
         self.assertIn('id="chapter-28" data-chapter="28"', html)
         self.assertIn('<span class="chapter-number">Chapter 1</span><h1>How to Learn STM32</h1>', html)
@@ -710,13 +710,16 @@ class BookBuildContractTests(unittest.TestCase):
             self.assertIn(term, text)
 
     def test_part_seven_closing_stays_out_of_the_docs_tree(self) -> None:
-        closing = self.manifest["parts"][-1]["closing"]
+        p6 = next(part for part in self.manifest["parts"] if part["id"] == "p6")
+        closing = p6["closing"]
         self.assertEqual("part-closing-p6", closing["id"])
         self.assertEqual("F-学习路线收束.md", closing["file"])
         self.assertTrue((BOOK_DIR / "book" / closing["file"]).is_file())
         self.assertFalse((BOOK_DIR.parent / "docs" / closing["file"]).exists())
         broken = copy.deepcopy(self.manifest)
-        broken["parts"][-1]["closing"] = {"id": "part-closing-p6", "file": "missing.md"}
+        next(part for part in broken["parts"] if part["id"] == "p6")["closing"] = {
+            "id": "part-closing-p6", "file": "missing.md",
+        }
         with self.assertRaisesRegex(self.builder.BuildError, "missing part closing manuscript"):
             self.builder.validate_manifest(broken)
 
@@ -2191,9 +2194,13 @@ class BookBuildContractTests(unittest.TestCase):
         self.assertIn('class="quick-title">Close the book: three questions</p>', english_questions)
         self.assertEqual("", self.builder.quick_check_html([], self.manifest))
 
-        closing = self.builder.part_closing_html(self.manifest["parts"][-1], self.manifest, {})
+        closing = self.builder.part_closing_html(
+            next(part for part in self.manifest["parts"] if part["id"] == "p6"),
+            self.manifest, {})
         self.assertIn('class="closing-banner">本部分到此结束</p>', closing)
-        english_closing = self.builder.part_closing_html(en_manifest["parts"][-1], en_manifest, {})
+        english_closing = self.builder.part_closing_html(
+            next(part for part in en_manifest["parts"] if part["id"] == "p6"),
+            en_manifest, {})
         self.assertIn('class="closing-banner">End of this part</p>', english_closing)
 
         card = self.builder.source_registry_html(self.manifest)

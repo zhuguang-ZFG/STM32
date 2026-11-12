@@ -1305,6 +1305,11 @@ NAMES = {
     "h7_pinmux_conflicts": "h7-pinmux-conflicts",
 }
 
+# motor 专题机制图（VIS01/02/05/06，tools/diagram_motor.py 维护）。
+import diagram_motor as _dm  # noqa: E402
+ALL += _dm.ALL
+NAMES.update(_dm.NAMES)
+
 
 def main(argv):
     import os

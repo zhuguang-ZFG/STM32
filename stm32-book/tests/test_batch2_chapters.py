@@ -447,6 +447,8 @@ class Batch2UartChapterTests(unittest.TestCase):
                 "ds5319-pwr", "rm0008-pwr", "pm0056-dwt", "ds5319-nrst", "ds5319-lse",
                 "commons-blue-pill",
                 "stlink-tools",
+                "tb6612-truth-table", "tb6612-electrical", "tb6612-current",
+                "rm0008-encoder", "rm0008-pwm", "ds5319-af",
             },
         )
         self.assertEqual(
@@ -463,6 +465,8 @@ class Batch2UartChapterTests(unittest.TestCase):
                 "ds5319-pwr", "rm0008-pwr", "pm0056-dwt", "ds5319-nrst", "ds5319-lse",
                 "commons-blue-pill",
                 "stlink-tools",
+                "tb6612-truth-table", "tb6612-electrical", "tb6612-current",
+                "rm0008-encoder", "rm0008-pwm", "ds5319-af",
             },
         )
         for source_id in ("majerle-uart", "st-uart-idle", "stm32cube-f4", "pm0056", "rm0090"):
