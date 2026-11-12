@@ -170,13 +170,13 @@ F103 没有 `DBM`，只能用“半区所有权”模拟乒乓：DMA 填前半�
 
 `CHSEL`、`CIRC`、`MINC`、`DIR`、`PSIZE`、`MSIZE` 这些流属性只在 `EN=0` 时可写；`EN=1` 时写入不生效，硬件也不会替你停流。要改配置，先清 `EN`，再轮询读回 0，等当前这一拍真正结束；然后落位，最后把 `EN` 置 1。这个“EN 可改窗口”是 DMA 初始化顺序的硬约束，和 USART 先关 `UE` 再改 `BRR` 是同一类规矩。
 
-HAL 把同一组动作拆成两段。`HAL_DMA_Init()` 管流属性：先 `__HAL_DMA_DISABLE()` 并轮询 `CR.EN`，等不到就按 `HAL_GetTick` 超时返回；再把 `CHSEL` 到 `DBM` 的一整段位清掉，按 `Init` 各字段拼成一笔写回 `CR`，FIFO 的 `DMDIS/FTH` 另写 `FCR`。`HAL_DMA_Start()` 管本次传输参数：调用 `DMA_SetConfig()` 写 `NDTR`，再按方向写 `PAR` 与 `M0AR`（双缓冲时还有 `M1AR`），最后开 `EN`。中断版 `HAL_DMA_Start_IT()` 额外打开 `TCIE/HTIE/TEIE`。行号来自 S8 对 ST 官方 `stm32f4xx_hal_driver` master@1f6451c 的记录，本章没有重跑那个仓库：
+HAL 把同一组动作拆成两段。`HAL_DMA_Init()` 管流属性：先 `__HAL_DMA_DISABLE()` 并轮询 `CR.EN`，等不到就按 `HAL_GetTick` 超时返回；再把 `CHSEL`、优先级、宽度、增量、循环、方向、`CT`、`DBM` 等配置位清掉，按 `Init` 各字段拼成一笔写回 `CR`，FIFO 的 `DMDIS/FTH` 另写 `FCR`。`HAL_DMA_Start()` 管本次传输参数：调用 `DMA_SetConfig()` 先清 `DBM`，再写 `NDTR`，按方向写 `PAR` 与 `M0AR`，最后开 `EN`；双缓冲不走这条路径，要用 `stm32f4xx_hal_dma_ex.c` 里的 `HAL_DMAEx_MultiBufferStart()`（或手写 `M1AR` 与 `DBM`）。中断版 `HAL_DMA_Start_IT()` 打开 TC/TE/DME，有半传输回调时再加 HT，不打开 FE。行号来自 S8 对 ST 官方 `stm32f4xx_hal_driver` master@1f6451c 的记录；`DMA_SetConfig()` 与 `HAL_DMA_Start_IT()` 的行为已按 1f6451c 原文核对，行号未逐条复核：
 
 | 手写落位（`03-uart-dma/main.c`） | HAL 对应（`stm32f4xx_hal_dma.c` @ 1f6451c） | 对照结论 |
 | --- | --- | --- |
 | 配置前先 `CR=0`、等 EN 落下 | `HAL_DMA_Init()`（L170）先禁用再轮询，超时返回 `HAL_TIMEOUT`（L208-227） | 同一个窗口：EN=1 时改 CHSEL/CIRC 无效 |
-| CHSEL/CIRC/MINC/PSIZE 逐位拼 CR | 同函数把 CHSEL 到 DBM 一整段位清掉（L231-237），再一笔写回（L250）；FIFO 另写 FCR（L285） | 手写掩码等于 HAL 的读-改-写 |
-| 自己写 NDTR/PAR/M0AR | 留到 `HAL_DMA_Start()` 的 `DMA_SetConfig()`：NDTR（L1157）、PAR/M0AR 按方向（L1163-1175） | HAL 把流属性与本次传输分两步 |
+| CHSEL/CIRC/MINC/PSIZE 逐位拼 CR | 同函数把 CHSEL、优先级、宽度、增量、循环、方向、CT、DBM 等配置位清掉（L231-237），再一笔写回（L250）；FIFO 另写 FCR（L285） | 手写掩码等于 HAL 的读-改-写 |
+| 自己写 NDTR/PAR/M0AR | 留到 `HAL_DMA_Start()` 的 `DMA_SetConfig()`：先清 DBM，再写 NDTR（L1157）、PAR/M0AR 按方向（L1163-1175） | HAL 把流属性与本次传输分两步；DBM 不能经 Start 保持 |
 | `DMA2_Stream5_IRQHandler()` 管 HT/TC、写 HIFCR 清标志 | `HAL_DMA_IRQHandler()` 按 HISR 分发回调，清标志回写 IFCR（L708） | 清标志只写 IFCR 系列，不碰只读状态 |
 
 对应的 HAL 序列（F407 的 USART1_RX，通道与流取工程值，待复核）：
@@ -261,7 +261,7 @@ F407 有一块 DMA 够不着的地方：CCM 在 `0x1000_0000`，64KB，只挂 CP
 | DMA 时钟门 | RM0090/RM0008、仓库速查表 | F4：`RCC_AHB1ENR` bit21/22；F1：`RCC_AHBENR` bit0/1 | 手册规则 |
 | DMA 基址与流偏移 | [第 8 章](./08-architecture-memory-clock.md)、RM0090 | F4：DMA1 `0x4002_6000`、DMA2 `0x4002_6400`，流 5 基址 +0x88；F1：DMA1 `0x4002_0000` | 手册规则（源码互证） |
 | F4 的 FIFO 与直接模式 | RM0090/AN4031 | 每流 4×32 位；直接模式下 PSIZE 必须等于 MSIZE | 手册规则 |
-| HAL 行号 | S8 对 1f6451c 的记录 | L170/L208-227/L231-237/L250/L285/L1157/L1163-1175/L708 | 来源记录，未复核 |
+| HAL 行号与行为 | S8 对 1f6451c 的行号记录；`DMA_SetConfig`/`Start_IT` 行为按 1f6451c 原文核对 | 行号同上；`DMA_SetConfig` 先清 DBM，再写 NDTR/PAR/M0AR；`Start_IT` 开 TC/TE/DME，有半传输回调时加 HT | 行号来源记录，未逐条复核；行为已核原文 |
 | “清标志已在坑里验证过” | S8 正文与 `s08-dma` 题库 | 没有波形、日志或截图 | 来源说法，待复核 |
 | `dma_consume()` 的丢弃判据 | `mcu/code/common/behavior/circular.h` 静态阅读 | 错误、HT+TC 同时积压、位置不动却报 TC 时丢弃并计 `lost` | 源码静态，未复跑 |
 | 上板读数 | S8、根书第 10 章 | 两边都没有记录；实验待做 | 待做实验 |
@@ -322,7 +322,7 @@ GD32 与 ESP32 不在本章平台列表。GD32 的 DMA 控制器命名、通道�
 4. F4 的 `DIR` 是 bit7:6 两位：00 外设到内存、01 内存到外设、10 内存到内存、11 保留。把它当一位，遇到内存到外设（01）就会读错寄存器。F4 的内存到内存只有 DMA2 支持，DMA1 上写 10 不会搬；F1 则用单独的 `CCR.MEM2MEM`（bit14）。
 5. 循环模式下 NDTR 归零后回装成初值，内部地址回卷，传输不停；HT/TC 每圈照常置位。`长度 − NDTR` 只是本圈内已经写了一部分的位置，下一圈从头开始时它会从最大值跳回 0，所以不是累计进度；累计要在每次服务时加增量或在软件里单独计数。
 6. HT 在半数搬完时置位，TC 在全部搬完（或双缓冲的一块搬完）时置位。处理期限 = 半区字节数 × 每字节位数 / 波特率，例如 64 字节环在 115200 8N1 下半满约 2.78ms。双缓冲只是把读块与写块分开，不延长一块的填充时间；CPU 超期，整块照样被覆盖。
-7. 这些流属性只在 `EN=0` 时可写；`EN=1` 时写入无效，硬件也不会自动停流，必须先清 EN 并等它读回 0。HAL 的 `HAL_DMA_Init` 落 `CR/FCR` 的流属性（含 CHSEL/CIRC/MINC/PSIZE/MSIZE），`HAL_DMA_Start` 落 `NDTR/PAR/M0AR` 并最后开 EN；中断版再开 TCIE/HTIE/TEIE。
+7. 这些流属性只在 `EN=0` 时可写；`EN=1` 时写入无效，硬件也不会自动停流，必须先清 EN 并等它读回 0。HAL 的 `HAL_DMA_Init` 落 `CR/FCR` 的流属性（含 CHSEL/CIRC/MINC/PSIZE/MSIZE），`HAL_DMA_Start` 先清 DBM，再落 `NDTR/PAR/M0AR` 并最后开 EN；中断版再开 TC/TE/DME，有半传输回调时再加 HT。
 8. DMA 的 TC 只说明最后一个字节已写进 USART 的 `DR`，移位寄存器可能还在发；USART 的 TC 才说明停止位已发完，RS-485 切向要等它。IDLE 只说明线空了一个帧时间，不说明对方协议的一包结束。ADC 结果是半字，NDTR 按采样个数计，`NDTR=3` 是还剩 3 个采样（6 字节），不是 3 字节。
 
 </details>
