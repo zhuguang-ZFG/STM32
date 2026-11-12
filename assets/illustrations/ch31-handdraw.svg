@@ -21,8 +21,8 @@
 <text x="862" y="48" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">FA-002 · continuous-line</text>
 <path d="M38 66 C190 60 335 73 470 65 S735 59 862 66" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
 <path d="M52 455 C180 443 292 468 420 451 S690 440 848 454" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1.5"/>
-<path d="M110 205 L180 205 L180 255 L250 255 L250 205 L320 205 L320 255 L390 255 L390 205 L460 205" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2.5"/>
-<path d="M110 315 L145 315 L145 365 L250 365 L250 315 L355 315 L355 365 L460 365" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="2.5"/>
+<path d="M110 205 L180 205 L180 255 L250 255 L250 205 L320 205 L320 255 L390 255 L390 205 L460 205" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2"/>
+<path d="M110 315 L145 315 L145 365 L250 365 L250 315 L355 315 L355 365 L460 365" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="2"/>
 <text x="85" y="232" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">A</text>
 <text x="85" y="342" font-size="12" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">B</text>
 <line x1="181.8" y1="393.2" x2="181.8" y2="413.2" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.22"/>

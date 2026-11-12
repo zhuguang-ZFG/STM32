@@ -22,9 +22,9 @@
 <path d="M38 66 C190 60 335 73 470 65 S735 59 862 66" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
 <path d="M52 455 C180 443 292 468 420 451 S690 440 848 454" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1.5"/>
 <line x1="451.8" y1="171.2" x2="451.8" y2="381.2" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
-<line x1="450" y1="170" x2="450" y2="380" stroke="#5e6872" stroke-width="3" stroke-linecap="round" opacity="1"/>
+<line x1="450" y1="170" x2="450" y2="380" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
 <line x1="216.8" y1="226.2" x2="686.8" y2="226.2" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
-<line x1="215" y1="225" x2="685" y2="225" stroke="#7a4e00" stroke-width="3" stroke-linecap="round" opacity="1"/>
+<line x1="215" y1="225" x2="685" y2="225" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
 <path d="M170 250 L290 250 L278 330 L182 330 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="2" class="hd-float"/>
 <text x="230" y="298" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">目标</text>
 <path d="M610 250 L730 250 L718 330 L622 330 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="2" class="hd-float"/>

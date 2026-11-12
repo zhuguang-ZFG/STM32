@@ -37,7 +37,7 @@
 <path d="M240 330 L330 330" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="1.5"/>
 <path d="M330 265 L470 265 L482 395 L318 395 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#5b3a8c" stroke-width="2" class="hd-float"/>
 <text x="400" y="322" font-size="14" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">桥</text>
-<path d="M482 330 C560 330 590 330 655 330" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#8f2d2d" stroke-width="5"/>
+<path d="M482 330 C560 330 590 330 655 330" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#8f2d2d" stroke-width="2"/>
 <circle cx="727" cy="331" r="55" fill="none" opacity="0.2" stroke="#8f2d2d" stroke-width="1"/>
 <circle cx="725" cy="330" r="55" fill="#f1f5f7" opacity="1" stroke="#8f2d2d" stroke-width="2" class="hd-pulse"/>
 <text x="725" y="336" font-size="20" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">M</text>

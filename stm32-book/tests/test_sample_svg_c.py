@@ -337,6 +337,14 @@ illustrations/ch27-handdraw.svg 900x560 4568 0a399c245214680b5e7889debf36323e309
 illustrations/ch27-mid-handdraw.svg 900x560 5930 a0ce44118ef9d0195eb6a6ea56d142367ac275eb42dbc4c8e9fe1b94271955a9
 illustrations/ch28-handdraw.svg 900x560 4855 6ae7ea34a727496b4d95b4defcf0286d5a2bf87f0556045dcda5205f21e4b823
 illustrations/ch28-mid-handdraw.svg 900x560 8108 95a26df098b5e9e958acb1dfbeb3bcc9cc6a10e69a68d119a5e3b53009d1d3be
+illustrations/ch29-handdraw.svg 900x560 6693 661f3e7553e58e622ce82115dcc8b75ce7bcba3b0f170f3a3785ab6881723b6c
+illustrations/ch29-mid-handdraw.svg 900x560 4826 95d0092ccbdcd868e2defec14608b3ded473292504193c7b52acc35db14807bc
+illustrations/ch30-handdraw.svg 900x560 5018 7f02dd6bafd44829e506ccf310772b38a21a4a224fef2e74f2ca33b415b4898b
+illustrations/ch30-mid-handdraw.svg 900x560 3548 55e9c579bf36d07d0a0722bc3b57c8591661b56f79d8821eb3401c3c5cc393f8
+illustrations/ch31-handdraw.svg 900x560 5507 3b319c7adcb6984ce7c73c9a3e7602c3b98424871e3003aeb25b6828d3bcda49
+illustrations/ch31-mid-handdraw.svg 900x560 5186 9534d539cab58cb89b0ba85a6e1f0a8aff09bc8a496226d60a0dd21564c31527
+illustrations/ch32-handdraw.svg 900x560 4610 5ad61411b125a3c92afd72377340ac91701cea270c420ab7cfee5626b0a3ca6d
+illustrations/ch32-mid-handdraw.svg 900x560 4480 116b4f1a1283dd4af29f7b2086d86de372bd65fd267c0bbfec298995554dacc7
 illustrations/part-p0-handdraw.svg 900x560 8677 c589bab8908afd3e15d104fd1abb84457394ceafe1da000194f76b229b65b958
 illustrations/part-p1-handdraw.svg 900x560 8064 51e467a314f6037c8b1a828a56e3362945fc3a031282db0f2202383af9935d0e
 illustrations/part-p2-handdraw.svg 900x560 7702 03f742ad87a760b8240140ea38272614e9e0f13faf6ddc2faeec58492cb9a12c
@@ -344,6 +352,7 @@ illustrations/part-p3-handdraw.svg 900x560 9290 ffb9016500aacdf13e2c3d5d376b670f
 illustrations/part-p4-handdraw.svg 900x560 5796 7e428592a06ec8cd42ee855642bd90945388668ab941b5f81979978f7b1dcf66
 illustrations/part-p5-handdraw.svg 900x560 12963 429746577ff286fd268a8656a145ccc1562a5dcc40bc6c796923707c3899dcdb
 illustrations/part-p6-handdraw.svg 900x560 4707 7b6fb10a35064337331a86fe19f6536b0bd69792e9027b649de9e95e34c7384d
+illustrations/part-p7-handdraw.svg 900x560 5901 9cd896feb0e70751fd66944e3b21a723996780f137b6fbc64188debcb2eab802
 """.strip().splitlines()
 
 STATIC_ADVANCED = {
@@ -572,7 +581,7 @@ class SampleSvgCTests(unittest.TestCase):
             else:
                 self.assertIn("自绘矢量动画", text, rel)
         self.assertEqual(expected, found)
-        self.assertEqual(327, len(found))
+        self.assertEqual(336, len(found))
 
         i2c = (REPO / "assets" / "animations" / "i2c-transaction.svg").read_text(encoding="utf-8")
         self.assertNotIn("<style", i2c)
