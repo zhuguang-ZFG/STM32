@@ -1,0 +1,78 @@
+# Motor Control CI：固件构建 + 主机测试（P1/MC-106）。
+# 独立工作流，不改动既有 Book CI / MCU Book CI / SPL job。
+name: Motor Control
+
+on:
+  push:
+    branches: [main]
+    paths: ['examples/motor-dc-speed/**', '.github/workflows/motor-control.yml']
+  pull_request:
+    paths: ['examples/motor-dc-speed/**', '.github/workflows/motor-control.yml']
+  workflow_dispatch:
+
+env:
+  CUBEF1_VERSION: v1.8.6
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ARM toolchain (bounded retry)
+        run: |
+          for i in 1 2 3; do
+            sudo apt-get update -o Acquire::Retries=8 && \
+            sudo apt-get install -y --no-install-recommends \
+              gcc-arm-none-eabi libnewlib-arm-none-eabi && break
+            echo "apt attempt $i failed; sleeping 30s"; sleep 30
+          done
+          arm-none-eabi-gcc --version | head -1
+
+      - name: Fetch STM32CubeF1 (fixed ref + submodule SHAs)
+        run: |
+          git clone --depth 1 --branch $CUBEF1_VERSION \
+            https://github.com/STMicroelectronics/STM32CubeF1.git "$HOME/STM32CubeF1"
+          cd "$HOME/STM32CubeF1"
+          git submodule update --init \
+            Drivers/STM32F1xx_HAL_Driver Drivers/CMSIS/Device/ST/STM32F1xx
+          echo "CubeF1 commit: $(git rev-parse HEAD)"
+          echo "HAL driver:    $(git -C Drivers/STM32F1xx_HAL_Driver rev-parse HEAD)"
+          echo "CMSIS device:  $(git -C Drivers/CMSIS/Device/ST/STM32F1xx rev-parse HEAD)"
+
+      - name: Host tests (native)
+        working-directory: examples/motor-dc-speed
+        run: |
+          cmake --preset host-tests
+          cmake --build --preset host-tests
+          ctest --preset host-tests --output-on-failure
+
+      - name: ARM preset dc-openloop
+        working-directory: examples/motor-dc-speed
+        run: |
+          cmake --preset dc-openloop -DCUBEF1_PATH="$HOME/STM32CubeF1"
+          cmake --build --preset dc-openloop
+          arm-none-eabi-size build/dc-openloop/motor-dc-speed.elf
+
+      - name: ARM preset dc-encoder
+        working-directory: examples/motor-dc-speed
+        run: |
+          cmake --preset dc-encoder -DCUBEF1_PATH="$HOME/STM32CubeF1"
+          cmake --build --preset dc-encoder
+          arm-none-eabi-size build/dc-encoder/motor-dc-speed.elf
+
+      - name: ARM preset dc-speed
+        working-directory: examples/motor-dc-speed
+        run: |
+          cmake --preset dc-speed -DCUBEF1_PATH="$HOME/STM32CubeF1"
+          cmake --build --preset dc-speed
+          arm-none-eabi-size build/dc-speed/motor-dc-speed.elf
+
+      - name: Upload artifacts (map + elf)
+        uses: actions/upload-artifact@v4
+        with:
+          name: motor-dc-speed-build
+          path: |
+            examples/motor-dc-speed/build/*/motor-dc-speed.elf
+            examples/motor-dc-speed/build/*/motor-dc-speed.map
+          retention-days: 14

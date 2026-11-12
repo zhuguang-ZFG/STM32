@@ -22,19 +22,19 @@ P0 缺实物时，P1 的接口/主机测试、资料整理和正文草稿可以�
 - [x] MC-001：读取 HEAD、分支、status 与当前计划，保存本任务开始时的修改归属。保留已有 `mcu/.trellis`、CITATION、`.qoder` 和合并计划。（DONE 2026-11-12：基线 92fc917c@feat/mcu-subtree-merge；18 项 WIP 为用户 MCU 历史任务工作，未动；证据 hardware-freeze.md §6）
 - [x] MC-002：重新读取根内容/整书规范；仅在实际涉及 `mcu/` 时读取其 Trellis 工作流和对应层规范。两套规则不相互覆盖。（DONE 2026-11-12：经 findings.md 摘要读取 STRUCTURE/CONTRIBUTING/CONTENT_GUIDE；P4 深入叠加规范）
 - [x] MC-003：取得官方 RM0008、DS5319、选定驱动与电机/编码器资料，记录文档号、revision、页/节/表、下载日期与文件哈希。核实候选引脚、时钟、计数宽度和驱动真值表。（部分 DONE 2026-11-12：RM0008 Rev21 + DS5319 Rev20 已取得并核版本/页号/哈希；TB6612FNG 官方站 403 阻塞=BLK-P0-2；电机资料待 MC-004=BLK-P0-1。详见 research/hardware-freeze.md §1/§5）
-- [x] MC-004：盘点现有硬件，锁定电机具体型号与电源/驱动余量；形成硬件档案、照片及电平/回流/断能设计。（DONE 2026-11-12：盘点结论=无实物，转为采购规格冻结 v1.0；硬件档案=research/hardware-freeze.md §2；照片/电平回流待到货后补）
+- [x] MC-004：盘点现有硬件，锁定电机具体型号与电源/驱动余量；形成硬件档案、照片及电平/回流/断能设计。（部分 DONE 2026-11-12：盘点结论=无实物→采购规格冻结 v1.2；硬件档案=research/hardware-freeze.md §2。**驱动余量项重新打开（BLK-P0-4）**：官方 Operating Range 保证值仅 ≤1.0 A（VM≥4.5 V），1.2 A 为绝对最大额定；模块热预算未做前不得关闭 MC-004。照片/电平回流待到货后补）
 - [x] MC-005：冻结资源映射、参数 schema、控制接口和首版验收门槛。将未知关键项单独列为阻塞，给出解除证据。（DONE 2026-11-12：资源映射冻结（§3，DS5319 p.29 已核实）、参数 schema 冻结（§4）、验收门槛留 P2 测量后修订（plan §6 允许）；BLK-P0-2 降为 P2 前置、BLK-P0-3 部分解除（§5））
 
 输出：工程板级配置草案、`research/hardware-freeze.md`（实施时新增）、官方来源记录。MC-003/004 是 AC02 的必要输入。
 
 ### P1：可复现工程
 
-- [ ] MC-101：固定 STM32CubeF1、CMSIS/HAL、编译器、CMake 及获取流程，审查第三方许可；记录版本而不是写“最新版”。
-- [ ] MC-102：建立完整工程、启动/向量表/链接脚本与三个 ARM preset、一个主机 preset；生成 ELF/HEX/BIN/map。
-- [ ] MC-103：先写 bridge、encoder、PI、state、command 的接口和输入约束，划分 ISR 与主循环的所有权。
-- [ ] MC-104：冻结命令语法、遥测逐字段布局、校验方式、会话/seq 规则、带宽和 golden vectors；实现有界解析、邮箱、队列与主机解码。
-- [ ] MC-105：搭建 H01–H10 与分析器 fixture 测试；初期尚未实现的行为标红或未实现，不伪造通过。
-- [ ] MC-106：加入独立 motor CI，执行固定依赖获取、全部 ARM 构建和主机测试；保留旧 SPL 与双语书籍 job。
+- [x] MC-101：固定 STM32CubeF1、CMSIS/HAL、编译器、CMake 及获取流程，审查第三方许可；记录版本而不是写“最新版”。（DONE 2026-11-12：CubeF1 v1.8.6 + 子模块 SHA 实测回填（HAL 77fbb30b / CMSIS device 8a76309e）；本地 arm-none-eabi-gcc 10.3.1、cmake 4.4.0、ninja 1.12.1 实测；许可 BSD-3 记录于 dependencies.lock.json）
+- [x] MC-102：建立完整工程、启动/向量表/链接脚本与三个 ARM preset、一个主机 preset；生成 ELF/HEX/BIN/map。（DONE 2026-11-12：三 ARM preset + host preset 本地全绿；产物齐；尺寸 text 24,668 + data 172 B（预算 56 KiB 内 43%）、bss 2,660 B（预算 12 KiB 内 22%）；CI 复现待 PR 首跑）
+- [x] MC-103：先写 bridge、encoder、PI、state、command 的接口和输入约束，划分 ISR 与主循环的所有权。（DONE 2026-11-12：include/ 接口 + design §4 所有权——ISR 只写桥，主循环只收发）
+- [x] MC-104：冻结命令语法、遥测逐字段布局、校验方式、会话/seq 规则、带宽和 golden vectors；实现有界解析、邮箱、队列与主机解码。（DONE 2026-11-12：协议 v1 冻结于 README + command.c/telemetry.c；43 B/帧 ≤6.4 kB/s 预算内；golden vectors 属 MC-304 待 P3；主机解码器 MC-304）
+- [x] MC-105：搭建 H01–H10 与分析器 fixture 测试；初期尚未实现的行为标红或未实现，不伪造通过。（DONE 2026-11-12：H01–H10 + 桥真值表 + E2E 薄切片共 62 断言全绿（ctest）；分析器 fixture=MC-304 未做，未伪造）
+- [x] MC-106：加入独立 motor CI，执行固定依赖获取、全部 ARM 构建和主机测试；保留旧 SPL 与双语书籍 job。（DONE 2026-11-12：.github/workflows/motor-control.yml 独立工作流（paths 过滤，不动旧 job）；首跑证据待 PR CI；真板 B01/B02 无动力部分 BLOCKED 待采购）
 - [ ] MC-107：验证默认 STBY、输出初始化顺序、复位与调试下载过程，先不接动力负载。
 
 退出：AC03 通过、B01/B02 无动力部分通过，所有依赖和命令能在干净环境复现。

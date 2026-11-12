@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0",
+  "board_id": "f103c8-tb6612",
+  "status": "candidate_v1.2_not_hardware_verified",
+  "freeze_doc": "plans/2026-11-11-motor-control/research/hardware-freeze.md",
+  "mcu": {
+    "model": "STM32F103C8T6",
+    "package": "LQFP48",
+    "flash_bytes": 65536,
+    "ram_bytes": 20480,
+    "source": "DS5319 Rev 20（st.com 直取，哈希前20=1e54ce18e6c34c5b4a78，2026-11-12）"
+  },
+  "driver": {
+    "chip": "TB6612FNG",
+    "module": "UNSPECIFIED-待采购",
+    "vm_range_v": [4.5, 12.0],
+    "vcc_v": 3.3,
+    "io_operating_max_a": 1.0,
+    "note": "1.0 A=官方 Operating Range 上限(VM>=4.5V)；1.2 A 为绝对最大额定、3.2 A 为 10ms 单脉冲，不得作连续依据（BLK-P0-4 热预算未做）",
+    "truth_table_source": "Toshiba TB6612FNG datasheet 2026-05-13, p.4 H-SW Control Function"
+  },
+  "motor": {
+    "model": "UNSPECIFIED-待采购",
+    "required": {
+      "voltage_v": [6, 12],
+      "speed_rpm": [100, 400],
+      "ppr_at_motor_shaft_min": 11,
+      "stall_current_a_max": 0.8
+    },
+    "note": "stall 0.8 A 为目标值，待 BLK-P0-4 热预算后冻结"
+  },
+  "encoder": {
+    "counts_per_output_rev": 0,
+    "note": "0=未标定；标定前禁止闭环使能（F06）"
+  },
+  "pins": {
+    "pwm": "PA6/TIM3_CH1",
+    "encoder_a": "PA0/TIM2_CH1",
+    "encoder_b": "PA1/TIM2_CH2",
+    "ain1": "PB0",
+    "ain2": "PB1",
+    "stby": "PB10",
+    "uart_tx": "PA9",
+    "uart_rx": "PA10",
+    "control_tick": "TIM4 update IRQ",
+    "measure_gpio": "PB12",
+    "debug": "PA13/PA14 SWD"
+  },
+  "candidates": {
+    "pwm_hz": 20000,
+    "control_period_ms": 10,
+    "uart_baud": 115200,
+    "command_lease_ms": 500,
+    "iwdg_timeout_ms": 500
+  }
+}
