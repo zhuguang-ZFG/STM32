@@ -85,7 +85,7 @@
         "ch16"
       ],
       "purpose": "根书原章",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -95,7 +95,7 @@
         "ch16"
       ],
       "purpose": "根书原章",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -658,7 +658,7 @@
         "ch16"
       ],
       "purpose": "外设深潜",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -668,7 +668,7 @@
         "ch16"
       ],
       "purpose": "外设深潜",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -1204,7 +1204,7 @@
         "ch40"
       ],
       "purpose": "实验方法与证据",
-      "status": "planned",
+      "status": "partial",
       "note": ""
     },
     {
@@ -1226,7 +1226,7 @@
         "ch40"
       ],
       "purpose": "实验方法与证据",
-      "status": "planned",
+      "status": "partial",
       "note": ""
     },
     {

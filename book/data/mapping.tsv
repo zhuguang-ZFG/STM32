@@ -5,8 +5,8 @@ root	docs/03-GPIO与LED.md	ch09	根书原章	migrated
 root	docs/04-中断与NVIC.md	ch04;ch10	根书原章	migrated	驱动基本功→ch04，NVIC→ch10
 root	docs/05-定时器与PWM.md	ch11;ch12	根书原章	migrated	时基→ch11，PWM→ch12
 root	docs/06-串口UART.md	ch13	根书原章	migrated	
-root	docs/07-I2C总线.md	ch16	根书原章	planned	
-root	docs/08-SPI总线.md	ch16	根书原章	planned	
+root	docs/07-I2C总线.md	ch16	根书原章	migrated	
+root	docs/08-SPI总线.md	ch16	根书原章	migrated	
 root	docs/09-ADC与DAC.md	ch15	根书原章	migrated	
 root	docs/10-DMA.md	ch14	根书原章	migrated	
 root	docs/11-RTC与看门狗.md	ch11;ch19	根书原章	partial	RTC→ch11，看门狗→ch19
@@ -62,8 +62,8 @@ mcu	mcu/docs/stm32/07-usart.md	ch13	外设深潜	migrated
 mcu	mcu/docs/stm32/08-dma.md	ch14	外设深潜	migrated	
 mcu	mcu/docs/stm32/09-adc.md	ch15	外设深潜	migrated	
 mcu	mcu/docs/stm32/10-dac.md	ch15	外设深潜	migrated	
-mcu	mcu/docs/stm32/11-i2c.md	ch16	外设深潜	planned	
-mcu	mcu/docs/stm32/12-spi.md	ch16	外设深潜	planned	
+mcu	mcu/docs/stm32/11-i2c.md	ch16	外设深潜	migrated	
+mcu	mcu/docs/stm32/12-spi.md	ch16	外设深潜	migrated	
 mcu	mcu/docs/stm32/13-flash-iap.md	ch17	外设深潜	planned	
 mcu	mcu/docs/stm32/14-pwr.md	ch18	外设深潜	planned	
 mcu	mcu/docs/stm32/15-spl-anatomy.md	ch07	外设深潜	migrated	
@@ -116,9 +116,9 @@ mcu	mcu/docs/lab/e01-blink.md	ch09;ch40	实验方法与证据	partial	实验拆�
 mcu	mcu/docs/lab/e02-logic-uart.md	ch13;ch40	实验方法与证据	partial	
 mcu	mcu/docs/lab/e03-scope-pwm.md	ch12;ch40	实验方法与证据	partial	
 mcu	mcu/docs/lab/e04-priority-inversion.md	ch24;ch40	实验方法与证据	planned	
-mcu	mcu/docs/lab/e05-i2c-eeprom.md	ch16;ch40	实验方法与证据	planned	
+mcu	mcu/docs/lab/e05-i2c-eeprom.md	ch16;ch40	实验方法与证据	partial	
 mcu	mcu/docs/lab/e06-lowpower-current.md	ch18;ch40	实验方法与证据	planned	
-mcu	mcu/docs/lab/e07-qmi8658.md	ch16;ch40	实验方法与证据	planned	
+mcu	mcu/docs/lab/e07-qmi8658.md	ch16;ch40	实验方法与证据	partial	
 mcu	mcu/docs/lab/e08-audio-play.md	ch31;ch40	实验方法与证据	planned	
 mcu	mcu/docs/projects/01-f407-logger.md	ch41	项目案例	planned	
 mcu	mcu/docs/projects/02-s3-logger.md	ch41	项目案例	planned	
