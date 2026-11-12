@@ -24,7 +24,7 @@ root	docs/22-仿真实验Wokwi与Renode.md	ch40	根书原章	planned
 root	docs/23-STM32G0引脚.md	ch28	根书原章	planned	
 root	docs/24-STM32L4引脚.md	ch28	根书原章	planned	
 root	docs/25-STM32H7引脚.md	ch28;ch34	根书原章	planned	Cache→ch34
-root	docs/26-STM32F10x标准外设库SPL.md	ch07	根书原章	planned	
+root	docs/26-STM32F10x标准外设库SPL.md	ch07	根书原章	migrated	
 root	docs/27-网络与协议栈.md	ch33	根书原章	planned	
 root	docs/28-嵌入式系统与RTOS生态.md	ch27	根书原章	planned	
 root	stm32-book/book/A-工程深读.md	apA	根书附录素材	planned	
@@ -50,7 +50,7 @@ mcu	mcu/docs/build/03-linker-script.md	ch06	构建链深潜	migrated
 mcu	mcu/docs/build/04-startup.md	ch06	构建链深潜	migrated	
 mcu	mcu/docs/build/05-map-size.md	ch06	构建链深潜	migrated	
 mcu	mcu/docs/build/06-flash-debug.md	ch20	构建链深潜	planned	
-mcu	mcu/docs/build/07-build-system.md	ch07	构建链深潜	planned	
+mcu	mcu/docs/build/07-build-system.md	ch07	构建链深潜	migrated	
 mcu	mcu/docs/stm32/00-env.md	ch05	外设深潜	migrated	
 mcu	mcu/docs/stm32/01-arch.md	ch08	外设深潜	planned	
 mcu	mcu/docs/stm32/02-rcc-clock.md	ch08	外设深潜	planned	
@@ -66,7 +66,7 @@ mcu	mcu/docs/stm32/11-i2c.md	ch16	外设深潜	planned
 mcu	mcu/docs/stm32/12-spi.md	ch16	外设深潜	planned	
 mcu	mcu/docs/stm32/13-flash-iap.md	ch17	外设深潜	planned	
 mcu	mcu/docs/stm32/14-pwr.md	ch18	外设深潜	planned	
-mcu	mcu/docs/stm32/15-spl-anatomy.md	ch07	外设深潜	planned	
+mcu	mcu/docs/stm32/15-spl-anatomy.md	ch07	外设深潜	migrated	
 mcu	mcu/docs/stm32/16-debug-hardfault.md	ch19	外设深潜	planned	
 mcu	mcu/docs/stm32/17-watchdog-reset.md	ch19	外设深潜	planned	
 mcu	mcu/docs/rtos/freertos/00-why-rtos.md	ch21	RTOS 深潜	planned	
