@@ -38,7 +38,7 @@ mcu	mcu/docs/c/00-c-in-mcu.md	ch01	语言深潜	migrated
 mcu	mcu/docs/c/01-memory-model.md	ch01	语言深潜	migrated	
 mcu	mcu/docs/c/02-pointer.md	ch01	语言深潜	migrated	
 mcu	mcu/docs/c/03-volatile.md	ch02	语言深潜	migrated	
-mcu	mcu/docs/c/04-struct-abi.md	ch03	语言深潜	planned	
+mcu	mcu/docs/c/04-struct-abi.md	ch03	语言深潜	migrated	
 mcu	mcu/docs/c/05-func-pointer.md	ch04	语言深潜	planned	
 mcu	mcu/docs/c/06-abi-stack.md	ch04	语言深潜	planned	
 mcu	mcu/docs/c/07-ub-misra.md	ch02	语言深潜	migrated	
