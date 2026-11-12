@@ -381,7 +381,7 @@ CRC 的边界要说清：它能检出随机损坏，比如单比特错与突发�
 
 ## 跨平台边界
 
-F407 一侧：USART1 在 APB2，168MHz 主频、APB2=/2 时 PCLK2=84MHz，115200 用 BRR=729；PA9=TX、PA10=RX，AF7。寄存器偏移按 RM0090 的 USART 布局：SR `0x00`、DR `0x04`、BRR `0x08`、CR1 `0x0C`、CR2 `0x10`、CR3 `0x14`。CR1 的 bit15 是 OVER8，复位值 0；本章的公式只在 OVER8=0 时成立。USART2/3 与 UART4/5 挂在 APB1，USART1/6 挂在 APB2（USART6 基址 `0x4001_1400`）；F103 只有 USART1 在 APB2、USART2/3 在 APB1，且没有 UART4/5。换串口先换总线再换 PCLK。HAL 行号与 MspInit 行为绑定 F4 HAL 的 1f6451c 版本，换库先核对。
+F407 一侧：USART1 在 APB2，168MHz 主频、APB2=/2 时 PCLK2=84MHz，115200 用 BRR=729；PA9=TX、PA10=RX，AF7。寄存器偏移按 RM0090 的 USART 布局：SR `0x00`、DR `0x04`、BRR `0x08`、CR1 `0x0C`、CR2 `0x10`、CR3 `0x14`。CR1 的 bit15 是 OVER8，复位值 0；本章的公式只在 OVER8=0 时成立。USART2/3 与 UART4/5 挂在 APB1，USART1/6 挂在 APB2（USART6 基址 `0x4001_1400`）；F103 只有 USART1 在 APB2、USART2/3 在 APB1；本章的 F103C8 没有 UART4/5（高密度 F103xC/D/E 才有）。换串口先换总线再换 PCLK。HAL 行号与 MspInit 行为绑定 F4 HAL 的 1f6451c 版本，换库先核对。
 
 F103 一侧：USART1 同样在 APB2，72MHz 主频时 PCLK2=72MHz，115200 用 `0x271`；PA9 是 LQFP48 第 30 脚、PA10 第 31 脚，要换到 PB6/PB7 得先开 AFIO 时钟再配重映射。F103 的 CR1 没有 OVER8 位，只有 16 倍过采样，别把 F4 的 8 倍写法搬过去。USART1 的时钟门是 `RCC_APB2ENR` bit14；USART2/3 在 `RCC_APB1ENR` 的 bit17/18，PCLK1=36MHz 时同样 115200 要 `0x138`，误差 +0.16%。接收 DMA 用 DMA1 Channel5，发送用 DMA1 Channel4；SPL 的 `USART_Init()` 与 HAL 落位相同，但一手源码仍缺。
 

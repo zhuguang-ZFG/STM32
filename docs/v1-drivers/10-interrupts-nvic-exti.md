@@ -146,7 +146,7 @@ F407 的优先级寄存器每中断一个字节，但只实现了高 4 位：
 
 抢占优先级决定能不能打断正在执行的 ISR，数值越小越横；子优先级只在两份请求**同时挂起**时决定谁先上，它没有打断能力。上表第一列的 PRIGROUP 0~3 在 4 位实现下效果相同（4 抢占 + 0 子）。FreeRTOS 要 4 位全给抢占，落在 PRIGROUP 0~3 这一档；SPL/HAL 老代码常见的“组 2”是另一套编号：SPL/HAL 组 2 = 2 抢占 + 2 子（`0x05FA0500`），而 PRIGROUP=2 才是 4+0（`0x05FA0200`）。根书按 HAL 的 `NVIC_PRIORITYGROUP_x` 编号，那张表里的 `GROUP_4` 指“4 位抢占”，与这里的 PRIGROUP 值不是同一套编号；移植时先看位宽，再对名字。
 
-AIRCR 是带锁寄存器：写入时高 16 位必须是 VECTKEY = `0x5FA`，否则写操作被无视。上表第三列每个值都是 `0x05FA0g00` 的形状，出处是 `core_cm4.h:1661` 的 `0x5FAUL << SCB_AIRCR_VECTKEY_Pos`。`NVIC_SetPriorityGrouping()` 内部就是“读 AIRCR、改 [10:8]、带钥匙写回”。
+AIRCR 是带锁寄存器：写入时高 16 位必须是 VECTKEY = `0x5FA`，否则写操作被无视。上表第四列的每个值都是钥匙 `0x05FA0000` 再加 PRIGROUP 值左移 8 位拼出来的形状（PRIGROUP=5 即 `0x05FA0500`），出处是 `core_cm4.h:1661` 的 `0x5FAUL << SCB_AIRCR_VECTKEY_Pos`。`NVIC_SetPriorityGrouping()` 内部就是“读 AIRCR、改 [10:8]、带钥匙写回”。
 
 还有一条不能设的优先级：HardFault。打开 `stm32f407xx.h:68-69` 的 `IRQn_Type` 枚举，`NonMaskableInt_IRQn = -14` 之后直接跳到 `MemoryManagement_IRQn = -12`，**-13 被故意跳过**。Reset、NMI、HardFault 的优先级硬件固定：Reset 最高（-3）、NMI 次之（-2）、HardFault 最低（-1），数值从 -3 到 -1 递增、优先级正好递减，与“数值越小越横”一致。这三个不在 SHP 里、不可编程。能设的只有 `IRQn` -12 到 -1 的内核异常（走 SHP）和全部 `IRQn ≥ 0` 的外设中断（走 IPR）。
 
@@ -321,7 +321,7 @@ Cache 关闭窗口的完整机制与多核 Cache 一致性属于[第 34 章][ch3
 | 七中断映射表 | S4 `probe.c` 的 `print_irq_table` | EXTI0：槽 22/偏移 `0x0058`/ISER[0] bit6/`0xE000E406`；USART1：槽 53/`0x00D4`/ISER[1] bit5/`0xE000E425` |
 | 优先级编码 | S4 `probe.c` 的 `print_prio_encoding` | 0→`0x00`、1→`0x10`、5→`0x50`、10→`0xA0`、15→`0xF0` |
 | 越界优先级 | 同上 | 16→`0x00`、17→`0x10`、20→`0x40`、255→`0xF0`、256→`0x00` |
-| PRIGROUP 分组 | S4 `probe.c` 的 `print_prigroup_table` | 0~3→4+0、4→3+1、5→2+2、6→1+3、7→0+4；写法 `0x05FA0g00` |
+| PRIGROUP 分组 | S4 `probe.c` 的 `print_prigroup_table` | 0~3→4+0、4→3+1、5→2+2、6→1+3、7→0+4；写法 `0x05FA0000` 加 PRIGROUP 左移 8 位 |
 | VECTKEY | `core_cm4.h:1661` | `0x5FAUL << SCB_AIRCR_VECTKEY_Pos` |
 | 向量表项数 | S4 probe 第 2 段 | 98 项（16 内核 + 82 外设）；-1→15、6→22、23→39、40→56 全对 |
 | weak 顶替 | S4 probe 第 3 段 objdump | `.isr_vector` 在 `0x08000000`，大小 `0x188` = 98 × 4；`EXTI0_IRQHandler` 在 `0x08000188`；槽 22 内容 `0x08000189` = 地址 \| 1 |
