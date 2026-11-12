@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="Small signals govern heavy current: from the drive bridge to the speed loop">
+<title>Small signals govern heavy current: from the drive bridge to the speed loop</title>
+<style>
+
+@keyframes hd-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes hd-sway{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes hd-pulse{0%,100%{opacity:.58}50%{opacity:1}}
+@keyframes hd-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-24px}}
+.hd-float{animation:hd-float 3.8s ease-in-out infinite;transform-origin:center}
+.hd-sway{animation:hd-sway 4.6s ease-in-out infinite;transform-origin:center}
+.hd-pulse{animation:hd-pulse 2.4s ease-in-out infinite}
+.hd-flow{stroke-dasharray:12 12;animation:hd-flow 1.8s linear infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="560" fill="#fbfaf7" opacity="1"/>
+<text x="38" y="48" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800" letter-spacing="1.4">PART 08</text>
+<text x="862" y="48" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">FA-002 · continuous-line</text>
+<path d="M38 66 C190 60 335 73 470 65 S735 59 862 66" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<path d="M52 455 C180 443 292 468 420 451 S690 440 848 454" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1.5"/>
+<circle cx="122" cy="372.2" r="8" fill="none" opacity="0.2" stroke="#5e6872" stroke-width="1"/>
+<circle cx="120" cy="371.2" r="8" fill="#fbfaf7" opacity="1" stroke="#5e6872" stroke-width="2" class="hd-float"/>
+<path d="M120 380.0 C116.8 395.2 123.2 406.4 120 422.4" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#5e6872" stroke-width="2" class="hd-float"/>
+<line x1="121.8" y1="394.8" x2="105.8" y2="398" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="120" y1="393.6" x2="104" y2="396.8" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="121.8" y1="394.8" x2="137.8" y2="398" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="120" y1="393.6" x2="136" y2="396.8" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="121.8" y1="423.6" x2="112.2" y2="441.2" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="120" y1="422.4" x2="110.4" y2="440" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="121.8" y1="423.6" x2="131.4" y2="441.2" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="0.22"/>
+<line x1="120" y1="422.4" x2="129.6" y2="440" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<circle cx="227" cy="331" r="15" fill="none" opacity="0.2" stroke="#075e84" stroke-width="1"/>
+<circle cx="225" cy="330" r="15" fill="#f1f5f7" opacity="1" stroke="#075e84" stroke-width="2" class="hd-pulse"/>
+<path d="M240 330 L330 330" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#075e84" stroke-width="1.5"/>
+<path d="M330 265 L470 265 L482 395 L318 395 Z" fill="#e5f3f8" opacity="0.92" stroke-linecap="round" stroke-linejoin="round" stroke="#5b3a8c" stroke-width="2" class="hd-float"/>
+<text x="400" y="322" font-size="14" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">桥</text>
+<path d="M482 330 C560 330 590 330 655 330" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#8f2d2d" stroke-width="5"/>
+<circle cx="727" cy="331" r="55" fill="none" opacity="0.2" stroke="#8f2d2d" stroke-width="1"/>
+<circle cx="725" cy="330" r="55" fill="#f1f5f7" opacity="1" stroke="#8f2d2d" stroke-width="2" class="hd-pulse"/>
+<text x="725" y="336" font-size="20" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">M</text>
+<path d="M725 275 C720 160 430 150 265 250" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#1b5c45" stroke-width="2" class="hd-flow"/>
+<circle cx="242" cy="269" r="24" fill="none" opacity="0.2" stroke="#1b5c45" stroke-width="1"/>
+<circle cx="240" cy="268" r="24" fill="#f1f5f7" opacity="1" stroke="#1b5c45" stroke-width="2"/>
+<text x="240" y="273" font-size="8" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">RPM</text>
+<path d="M38 510 C230 503 420 517 610 509 S790 504 862 510" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#d7dce1" stroke-width="1"/>
+<text x="38" y="538" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Conceptual Continuous-Line Editorial · Prussian Blue / Sage / Naples Yellow</text>
+<text x="862" y="538" font-size="10.5" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · CC BY 4.0</text>
+</svg>

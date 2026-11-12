@@ -181,6 +181,30 @@
       "file": "ch28-handdraw.svg",
       "zh": "中断、任务、驱动、网络与应用组成一套系统",
       "en": "Interrupts, tasks, drivers, networks, and apps form one system"
+    },
+    {
+      "chapter": "29",
+      "file": "ch29-handdraw.svg",
+      "zh": "小信号按按钮，大电流过桥",
+      "en": "Small signals press switches while heavy current crosses the bridge"
+    },
+    {
+      "chapter": "30",
+      "file": "ch30-handdraw.svg",
+      "zh": "油门深度不等于速度",
+      "en": "Pedal depth is not speed"
+    },
+    {
+      "chapter": "31",
+      "file": "ch31-handdraw.svg",
+      "zh": "先数格子，再除以时间",
+      "en": "Count the ticks first, then divide by the time window"
+    },
+    {
+      "chapter": "32",
+      "file": "ch32-handdraw.svg",
+      "zh": "每一拍把秤重新校平",
+      "en": "The scale rebalances itself on every tick"
     }
   ],
   "parts": [
@@ -225,6 +249,12 @@
       "file": "part-p6-handdraw.svg",
       "zh": "硬件、内核、服务和应用叠成一套系统",
       "en": "Hardware, kernel, services, and applications stack into one system"
+    },
+    {
+      "id": "p7",
+      "file": "part-p7-handdraw.svg",
+      "zh": "小信号按住大电流：从驱动桥到速度闭环",
+      "en": "Small signals govern heavy current: from the drive bridge to the speed loop"
     }
   ],
   "mid": [
@@ -459,6 +489,38 @@
       "en": "Every job must fit inside its own time-budget box",
       "anchor_zh": "⏱️ 实时性来自预算，不来自 RTOS 名字",
       "anchor_en": "⏱️ Real time comes from budgets, not an RTOS name"
+    },
+    {
+      "chapter": "29",
+      "file": "ch29-mid-handdraw.svg",
+      "zh": "五种状态，上电落在待机",
+      "en": "Five states, and power-on lands on standby",
+      "anchor_zh": "核心机制：驱动桥在五个状态之间切换",
+      "anchor_en": "How the drive bridge switches among five states"
+    },
+    {
+      "chapter": "30",
+      "file": "ch30-mid-handdraw.svg",
+      "zh": "占空比一拍一拍逼近目标",
+      "en": "The duty ratio walks toward its target one tick at a time",
+      "anchor_zh": "核心机制",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "31",
+      "file": "ch31-mid-handdraw.svg",
+      "zh": "四倍频与回绕消歧",
+      "en": "Quadrature counting and wrap-around disambiguation",
+      "anchor_zh": "核心机制",
+      "anchor_en": "Core ideas"
+    },
+    {
+      "chapter": "32",
+      "file": "ch32-mid-handdraw.svg",
+      "zh": "限幅管住当下，抗饱和管住历史",
+      "en": "Clamps bound the present; anti-windup guards the history",
+      "anchor_zh": "核心机制",
+      "anchor_en": "Core ideas"
     }
   ],
   "appendices": [

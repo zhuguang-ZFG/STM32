@@ -379,6 +379,61 @@ def chapter_scene(ch: int, title: str, aria: str, scene: str) -> Svg:
         for i,(x,t,c) in enumerate([(300,"ARP",T.AMBER),(440,"TCP",T.CYAN),(570,"TLS",T.RED)]):
             k.circle(x,250+(i%2)*65,30,c,T.BG2,cls="hd-float"); k.label(x,255+(i%2)*65,t,c,9)
         k.path("M220 290 C350 420 520 110 680 290", T.GREEN, cls="hd-flow")
+    elif scene == "motor-power":
+        k.blob("M75 175 Q140 143 205 175 L195 335 Q140 362 85 335 Z", T.PANEL2, T.CYAN)
+        k.label(140, 262, "MCU", T.CYAN, 12)
+        for i, lab in enumerate(("PWM", "IN1", "IN2", "STBY")):
+            y = 200 + i * 32
+            k.line(205, y, 320, y, T.CYAN, sw=1.2)
+            k.label(262, y - 8, lab, T.CYAN, 7)
+        k.blob("M320 165 L455 165 L467 335 L308 335 Z", T.PANEL2, T.VIOLET, "hd-float")
+        k.label(388, 240, "H 桥", T.VIOLET, 13)
+        k.label(388, 268, "驱动", T.VIOLET, 9)
+        k.path("M388 165 L388 118", T.AMBER, sw=4)
+        k.label(388, 108, "VM", T.AMBER, 9)
+        k.path("M467 225 C545 225 575 225 645 225", T.RED, sw=5)
+        k.path("M467 290 C545 290 575 290 645 290", T.RED, sw=5)
+        k.circle(715, 258, 54, T.RED, T.PANEL, cls="hd-pulse")
+        k.label(715, 264, "M", T.RED, 22)
+        k.label(715, 340, "电机", T.RED, 10)
+    elif scene == "motor-openloop":
+        k.label(300, 118, "深度", T.AMBER, 10)
+        for i, h in enumerate((70, 130, 200)):
+            x = 130 + i * 130
+            k.path(f"M{x} 400 L{x} {400 - h} L{x + 130} {400 - h}", T.AMBER, sw=3)
+        for x, lab in zip((195, 325, 455), ("20%", "40%", "70%")):
+            k.label(x, 425, lab, T.AMBER, 8)
+        k.path("M130 388 C270 372 330 300 430 262 S640 205 790 150", T.CYAN, cls="hd-flow")
+        k.circle(700, 310, 66, T.GREEN, T.PANEL)
+        k.line(700, 310, 748, 270, T.RED)
+        k.circle(700, 310, 7, T.RED, T.RED)
+        k.label(700, 410, "速度", T.GREEN, 10)
+        k.path("M470 150 C520 130 560 185 610 165", T.RED, cls="hd-pulse")
+    elif scene == "motor-encoder":
+        k.path("M110 205 L180 205 L180 255 L250 255 L250 205 L320 205 L320 255 L390 255 L390 205 L460 205",
+               T.CYAN, sw=2.5)
+        k.path("M110 315 L145 315 L145 365 L250 365 L250 315 L355 315 L355 365 L460 365",
+               T.GREEN, sw=2.5)
+        k.label(85, 232, "A", T.CYAN, 12)
+        k.label(85, 342, "B", T.GREEN, 12)
+        for x in (180, 250, 320, 390):
+            k.line(x, 392, x, 412, T.AMBER, cls="hd-pulse")
+        k.label(285, 432, "四倍频", T.AMBER, 10)
+        k.arrow(500, 285, 600, 285, T.VIOLET)
+        k.blob("M600 225 Q665 195 730 225 L718 350 Q665 378 612 350 Z", T.PANEL2, T.VIOLET, "hd-float")
+        k.label(665, 278, "Δ 计数", T.VIOLET, 11)
+        k.label(665, 312, "÷ Δt", T.VIOLET, 13)
+    elif scene == "motor-loop":
+        k.line(450, 170, 450, 380, T.STROKE, sw=3)
+        k.line(215, 225, 685, 225, T.AMBER, sw=3)
+        k.blob("M170 250 L290 250 L278 330 L182 330 Z", T.PANEL2, T.CYAN, "hd-float")
+        k.label(230, 298, "目标", T.CYAN, 12)
+        k.blob("M610 250 L730 250 L718 330 L622 330 Z", T.PANEL2, T.GREEN, "hd-float")
+        k.label(670, 298, "测量", T.GREEN, 12)
+        k.circle(450, 425, 34, T.VIOLET, T.PANEL, cls="hd-pulse")
+        k.label(450, 431, "PI", T.VIOLET, 13)
+        k.path("M670 330 C770 430 560 475 490 445", T.RED, cls="hd-flow")
+        k.path("M410 425 C300 400 235 360 230 332", T.CYAN, cls="hd-flow")
     else:  # system
         k.path("M80 410 C180 330 250 390 330 300 S450 160 550 245 S690 350 820 170", T.CYAN, cls="hd-flow")
         for i,(x,y,c) in enumerate([(150,340,T.AMBER),(330,300,T.GREEN),(520,230,T.VIOLET),(700,300,T.RED),(820,170,T.CYAN)]):
@@ -447,6 +502,14 @@ CHAPTERS = [
      "Packets cross ARP, TCP, TLS, and application boundaries", "network"),
     (28, "System", "中断、任务、驱动、网络与应用组成一套系统",
      "Interrupts, tasks, drivers, networks, and apps form one system", "system"),
+    (29, "Motor drive", "小信号按按钮，大电流过桥",
+     "Small signals press switches while heavy current crosses the bridge", "motor-power"),
+    (30, "Open-loop speed", "油门深度不等于速度",
+     "Pedal depth is not speed", "motor-openloop"),
+    (31, "Encoder", "先数格子，再除以时间",
+     "Count the ticks first, then divide by the time window", "motor-encoder"),
+    (32, "Speed loop", "每一拍把秤重新校平",
+     "The scale rebalances itself on every tick", "motor-loop"),
 ]
 
 PARTS = (
@@ -464,6 +527,8 @@ PARTS = (
      "Three chips trade manuals and a legacy library on the migration road", "migration"),
     (7, "硬件、内核、服务和应用叠成一套系统",
      "Hardware, kernel, services, and applications stack into one system", "stack"),
+    (8, "小信号按住大电流：从驱动桥到速度闭环",
+     "Small signals govern heavy current: from the drive bridge to the speed loop", "motor"),
 )
 
 
@@ -559,6 +624,19 @@ MID = [
      "Every job must fit inside its own time-budget box",
      "⏱️ 实时性来自预算，不来自 RTOS 名字",
      "⏱️ Real time comes from budgets, not an RTOS name", "budget"),
+    (29, "五种状态，上电落在待机",
+     "Five states, and power-on lands on standby",
+     "核心机制：驱动桥在五个状态之间切换",
+     "How the drive bridge switches among five states", "motor-truth"),
+    (30, "占空比一拍一拍逼近目标",
+     "The duty ratio walks toward its target one tick at a time",
+     "核心机制", "Core ideas", "motor-ramp"),
+    (31, "四倍频与回绕消歧",
+     "Quadrature counting and wrap-around disambiguation",
+     "核心机制", "Core ideas", "motor-quad"),
+    (32, "限幅管住当下，抗饱和管住历史",
+     "Clamps bound the present; anti-windup guards the history",
+     "核心机制", "Core ideas", "motor-antisat"),
 ]
 
 
@@ -694,6 +772,18 @@ def part_scene(index: int, zh: str, aria: str, scene: str) -> Svg:
         k.circle(430, 160, 20, T.AMBER, T.PANEL)
         k.blob("M300 110 L400 110 L400 160 L300 160 Z", T.PANEL, T.CYAN)
         k.label(350, 140, "PRODUCT", T.CYAN, size=8)
+    elif scene == "motor":
+        person(k, 120, 400, .8, T.STROKE, pose="stand", cls="hd-float")
+        k.circle(225, 330, 15, T.CYAN, T.PANEL, cls="hd-pulse")
+        k.path("M240 330 L330 330", T.CYAN, sw=1.5)
+        k.blob("M330 265 L470 265 L482 395 L318 395 Z", T.PANEL2, T.VIOLET, "hd-float")
+        k.label(400, 322, "桥", T.VIOLET, 14)
+        k.path("M482 330 C560 330 590 330 655 330", T.RED, sw=5)
+        k.circle(725, 330, 55, T.RED, T.PANEL, cls="hd-pulse")
+        k.label(725, 336, "M", T.RED, 20)
+        k.path("M725 275 C720 160 430 150 265 250", T.GREEN, cls="hd-flow")
+        k.circle(240, 268, 24, T.GREEN, T.BG2)
+        k.label(240, 273, "RPM", T.GREEN, 8)
     return k.footer()
 
 
@@ -1086,7 +1176,7 @@ def mid_scene(ch: int, zh: str, aria: str, scene: str) -> Svg:
             k.label(x, 354, tag, c, 9)
             k.path(f"M{x-55} 374 L{x+55} 374", c)
         k.label(450, 448, "FRAMED", T.GREEN, 10)
-    else:  # budget
+    elif scene == "budget":
         k.line(90, 350, 810, 350, T.STROKE, sw=2)
         for x in range(150, 811, 60):
             k.line(x, 342, x, 358, T.GRID)
@@ -1103,6 +1193,51 @@ def mid_scene(ch: int, zh: str, aria: str, scene: str) -> Svg:
         k.label(445, 224, "PERIOD", T.VIOLET, 10)
         k.path("M732 262 L798 238", T.RED)
         k.label(820, 236, "OVER", T.RED, 9)
+    elif scene == "motor-truth":
+        for i, (lab, c, lit) in enumerate([
+            ("待机", T.GRID, True), ("滑行", T.CYAN, False), ("制动", T.AMBER, False),
+            ("正转", T.GREEN, False), ("反转", T.RED, False),
+        ]):
+            x = 105 + i * 145
+            k.s.rect(x, 210, 120, 120, fill=T.PANEL2 if lit else T.BG2, stroke=c, rx=6, sw=2)
+            k.label(x + 60, 265, lab, T.MUTED if lit else c, 13)
+            if lit:
+                k.path(f"M{x + 28} 300 L{x + 92} 300", T.MUTED)
+                k.label(x + 60, 322, "默认", T.MUTED, 9)
+        k.label(450, 400, "五种状态，上电落在待机", T.STROKE, 12)
+    elif scene == "motor-ramp":
+        k.path("M110 400 L790 400", T.GRID)
+        k.path("M140 400 L140 340 L240 340 L240 280 L340 280 L340 220 L440 220 L440 165 L560 165",
+               T.AMBER, sw=3, cls="hd-flow")
+        k.path("M560 150 L790 150", T.RED, sw=2)
+        k.label(675, 138, "目标", T.RED, 9)
+        k.label(300, 432, "每拍 ±50‰", T.AMBER, 10)
+    elif scene == "motor-quad":
+        k.circle(260, 290, 105, T.VIOLET, T.BG2)
+        k.label(260, 250, "0…65535", T.VIOLET, 10)
+        k.label(260, 292, "回绕", T.VIOLET, 12)
+        k.label(260, 330, "±32767", T.VIOLET, 10)
+        k.path("M410 240 L470 240 L470 300 L530 300 L530 240 L590 240", T.CYAN, sw=2.5)
+        k.path("M410 350 L440 350 L440 410 L530 410 L530 350 L620 350", T.GREEN, sw=2.5)
+        k.label(390, 265, "A", T.CYAN, 11)
+        k.label(390, 375, "B", T.GREEN, 11)
+        for x in (470, 530, 590):
+            k.line(x, 200, x, 180, T.AMBER, cls="hd-pulse")
+        k.label(530, 172, "逐沿计数", T.AMBER, 9)
+    elif scene == "motor-antisat":
+        k.s.rect(110, 210, 240, 190, fill=T.BG2, stroke=T.AMBER, rx=6, sw=2)
+        k.label(230, 250, "限幅", T.AMBER, 12)
+        k.path("M140 330 L320 330", T.STROKE, sw=4)
+        k.path("M170 330 L230 260 L290 330", T.RED, sw=3)
+        k.label(230, 370, "钳住当下", T.AMBER, 10)
+        k.s.rect(550, 210, 240, 190, fill=T.BG2, stroke=T.VIOLET, rx=6, sw=2)
+        k.label(670, 250, "抗饱和", T.VIOLET, 12)
+        k.blob("M610 320 Q670 300 730 320 L722 380 Q670 396 618 380 Z", T.PANEL2, T.CYAN, "hd-float")
+        k.path("M670 300 L670 322", T.CYAN, sw=3)
+        k.path("M662 310 L670 320 L678 310", T.RED, sw=2.5)
+        k.label(670, 370, "停住历史", T.VIOLET, 10)
+    else:
+        raise ValueError(f"unknown mid scene: {scene}")
 
     return k.footer()
 

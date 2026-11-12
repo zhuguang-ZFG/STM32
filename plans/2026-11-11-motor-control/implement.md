@@ -64,7 +64,7 @@ P0 缺实物时，P1 的接口/主机测试、资料整理和正文草稿可以�
 ### P4：章节与整书
 
 - [ ] MC-401：按 curriculum 编写 29–32 中文章并登记八项教学合同；参数与示例均引用冻结配置。（草稿 DONE 2026-11-12：29–32 四章中文正文按 CONTENT_GUIDE §2 结构成文（暂存 `plans/2026-11-11-motor-control/chapters-draft/`，MC-406 落位 `docs/`），参数全部引用冻结配置（PWM 72M/ARR 3599/20kHz、TIM4 10ms、CPR 440 示例、PI 默认值、协议 v1、TB6612 官方三档电流），实验结果一律标「待执行（实物未到）」无虚构数据，出处链接登记 6 条新 source id 进两份 manifest；八项教学合同+manifest 四字段登记于 `plans/2026-11-11-motor-control/chapter-guides-29-32.json`（含 6 条待登记出处定义）。**草稿暂存于 `plans/2026-11-11-motor-control/chapters-draft/`**——放 `docs/` 会触发 books 集合契约（test_build 29 章 glob、batch fixture 的 source-list 吸收清单），故章节落位与 manifest 挂接（分部 p7 + chapter_guides + sources + fixture 同步）整体属 MC-406，前置依赖 MC-402 手绘版（VIS08）与 MC-407 集合契约调整；当前 stm32-book 零改动、门禁零触碰。slop_lint 对四章干净、`build_html.py --check` zh/en 均 PASS（29 章基线）。英文正文=MC-403，未做。2026-11-12 校对修正（合后 advisory）：ch30 PWM 100% 端点改「恒有效须 CCR>ARR（CCR=ARR 差一格 3599/3600）」、串口带宽改「43 kbit/s ≈ 115200 的 37.3%（原误 4%）」；新增 `stm32-book/tests/test_motor_draft_numbers.py` 两条数值断言钉死（旧文案必红）。）
-- [ ] MC-402：生成并登记 VIS01–VIS08，检查 SVG/静态帧、PDF 可读性、测量来源和替代文本。
+- [ ] MC-402：生成并登记 VIS01–VIS08，检查 SVG/静态帧、PDF 可读性、测量来源和替代文本。（部分 DONE 2026-11-12：VIS08 的 ch29–32 章首/章中 plate 与 part-p7 分部 plate 经 `gen_handdraw_illustrations.py` 生成登记（33/33/8/6，29 张旧 plate 重生成字节不变）；build_html 与 test_handdraw_layer 的 plate 计数契约 29/29/7→33/33/8（MC-407 子集，旧章渲染断言保持 29）。残留：VIS01–VIS06 机制图/动画（gen_diagrams/gen_animations 轨道，正文挂接随 MC-406）；VIS07 真实曲线 BLOCKED 待 P2/P3 实测数据。）
 - [ ] MC-403：完成英文对应正文，核对数字、单位、公式、接线、故障行为和出处。
 - [ ] MC-404：修订第 05 章 PWM/速度简化表述；第 19 章补控制专题入口与整车边界；第 21 章补资源冲突说明。英文对应章节同步。
 - [ ] MC-405：新增中文/英文电机控制速查表，覆盖单位/公式、停止模式、PI 调参步骤、故障定位与引脚冲突。

@@ -30,7 +30,8 @@ class HanddrawLayerTests(unittest.TestCase):
         cls.entries = cls.builder.load_handdraw_manifest()
 
     def test_manifest_covers_every_chapter_in_order(self) -> None:
-        self.assertEqual([f"{index:02d}" for index in range(29)], list(self.entries))
+        # 33 = 29 原有章 + motor 专题 29–32（正文待 MC-406 落位，plate 先行登记）。
+        self.assertEqual([f"{index:02d}" for index in range(33)], list(self.entries))
         for chapter, entry in self.entries.items():
             self.assertEqual(f"ch{chapter}-handdraw.svg", entry["file"])
             for key in ("zh", "en"):
@@ -67,8 +68,8 @@ class HanddrawLayerTests(unittest.TestCase):
                 self.assertNotIn(banned, text, (chapter, banned))
             titles.add(entry["en"])
             drawings.add(text)
-        self.assertEqual(29, len(titles))
-        self.assertEqual(29, len(drawings))
+        self.assertEqual(33, len(titles))
+        self.assertEqual(33, len(drawings))
 
     def test_screen_css_keeps_plates_out_of_the_figure_card(self) -> None:
         screen = self.builder.CSS.split("@media", 1)[0]
@@ -178,7 +179,8 @@ class PartHanddrawTests(unittest.TestCase):
         cls.parts = cls.builder.load_handdraw_parts()
 
     def test_manifest_covers_every_part_in_order(self) -> None:
-        self.assertEqual([f"p{index}" for index in range(7)], list(self.parts))
+        # 8 = p0–p7，p7 为 motor 专题分部（正文待 MC-406 挂接）。
+        self.assertEqual([f"p{index}" for index in range(8)], list(self.parts))
         for part_id, entry in self.parts.items():
             self.assertEqual(f"part-{part_id}-handdraw.svg", entry["file"])
             for key in ("zh", "en"):
@@ -204,7 +206,7 @@ class PartHanddrawTests(unittest.TestCase):
                            "url(", "href="):
                 self.assertNotIn(banned, text, (part_id, banned))
             drawings.add(text)
-        self.assertEqual(7, len(drawings))
+        self.assertEqual(8, len(drawings))
 
     def test_build_inlines_one_localized_plate_per_part(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -257,7 +259,8 @@ class MidHanddrawTests(unittest.TestCase):
         cls.entries = cls.builder.load_handdraw_mid()
 
     def test_manifest_covers_every_chapter_in_order(self) -> None:
-        self.assertEqual([f"{index:02d}" for index in range(29)], list(self.entries))
+        # 33 = 29 原有章 + motor 专题 29–32。
+        self.assertEqual([f"{index:02d}" for index in range(33)], list(self.entries))
         for chapter, entry in self.entries.items():
             self.assertEqual(f"ch{chapter}-mid-handdraw.svg", entry["file"])
             for key in ("zh", "en", "anchor_zh", "anchor_en"):
@@ -285,8 +288,8 @@ class MidHanddrawTests(unittest.TestCase):
                 self.assertNotIn(banned, text, (chapter, banned))
             titles.add(entry["en"])
             drawings.add(text)
-        self.assertEqual(29, len(titles))
-        self.assertEqual(29, len(drawings))
+        self.assertEqual(33, len(titles))
+        self.assertEqual(33, len(drawings))
 
     def test_build_inlines_one_plate_after_each_anchor(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -302,7 +305,22 @@ class MidHanddrawTests(unittest.TestCase):
         )
         self.assertEqual(29, html.count('alt="本节概念图：'))
         self.assertEqual(29, html.count("▲ 本节概念图："))
+        # plate 登记 33 章，但正文 29–32 尚在 plans/ 暂存（MC-406 落位），
+        # 渲染内嵌断言只对书籍 manifest 实际收录的章节生效。
+        book = json.loads(
+            (BOOK_DIR / "manifest.json").read_text(encoding="utf-8")
+        )
+        present = {
+            f"{int(m.group(1)):02d}"
+            for part in book["parts"]
+            for name in part["files"]
+            for m in [re.match(r"(\d+)-", name)]
+            if m
+        }
+        self.assertEqual({"29", "30", "31", "32"}, set(self.entries) - present)
         for chapter, entry in self.entries.items():
+            if chapter not in present:
+                continue
             start = html.index(f'id="chapter-{chapter}"')
             end = html.find('id="chapter-', start + 10)
             if end < 0:
@@ -323,7 +341,21 @@ class MidHanddrawTests(unittest.TestCase):
         self.assertEqual(29, html.count('class="mid-plate"'))
         self.assertEqual(29, html.count('alt="Section concept:'))
         self.assertNotIn('alt="本节概念图：', html)
+        # 同中文版：只对书籍 manifest 实际收录的章节做落点断言。
+        book = json.loads(
+            (BOOK_DIR / "manifest-en.json").read_text(encoding="utf-8")
+        )
+        present = {
+            f"{int(m.group(1)):02d}"
+            for part in book["parts"]
+            for name in part["files"]
+            for m in [re.match(r"(\d+)-", name)]
+            if m
+        }
+        self.assertEqual({"29", "30", "31", "32"}, set(self.entries) - present)
         for chapter, entry in self.entries.items():
+            if chapter not in present:
+                continue
             start = html.index(f'id="chapter-{chapter}"')
             end = html.find('id="chapter-', start + 10)
             if end < 0:

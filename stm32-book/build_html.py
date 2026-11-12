@@ -496,15 +496,18 @@ def _check_handdraw_file(filename: str) -> None:
 
 
 def load_handdraw_manifest() -> dict[str, dict]:
-    """Load the required 29-chapter hand-drawn plate manifest.
+    """Load the required 33-chapter hand-drawn plate manifest.
 
     The generator writes this file, and every chapter must have exactly one
-    entry. A missing file is a build error rather than a silent gap.
+    entry. Chapters 29–32 (motor topic) are registered with the plates while
+    their text stays staged under plans/; the renderer only inlines plates
+    for chapters that are actually in the book manifest. A missing file is a
+    build error rather than a silent gap.
     """
     data = _read_handdraw_data()
     files = data.get("files")
-    if not isinstance(files, list) or len(files) != 29:
-        raise BuildError("hand-drawn manifest must list exactly 29 chapter plates")
+    if not isinstance(files, list) or len(files) != 33:
+        raise BuildError("hand-drawn manifest must list exactly 33 chapter plates")
     entries: dict[str, dict] = {}
     for index, item in enumerate(files):
         chapter = f"{index:02d}"
@@ -523,11 +526,11 @@ def load_handdraw_manifest() -> dict[str, dict]:
 
 
 def load_handdraw_parts() -> dict[str, dict]:
-    """Load the required 7 part-divider plates from the same manifest."""
+    """Load the required 8 part-divider plates from the same manifest."""
     data = _read_handdraw_data()
     parts = data.get("parts")
-    if not isinstance(parts, list) or len(parts) != 7:
-        raise BuildError("hand-drawn manifest must list exactly 7 part plates")
+    if not isinstance(parts, list) or len(parts) != 8:
+        raise BuildError("hand-drawn manifest must list exactly 8 part plates")
     entries: dict[str, dict] = {}
     for index, item in enumerate(parts):
         part_id = f"p{index}"
@@ -549,8 +552,8 @@ def load_handdraw_mid() -> dict[str, dict]:
     """Load the required 29 mid-chapter concept plates from the same manifest."""
     data = _read_handdraw_data()
     mid = data.get("mid")
-    if not isinstance(mid, list) or len(mid) != 29:
-        raise BuildError("hand-drawn manifest must list exactly 29 mid-chapter plates")
+    if not isinstance(mid, list) or len(mid) != 33:
+        raise BuildError("hand-drawn manifest must list exactly 33 mid-chapter plates")
     entries: dict[str, dict] = {}
     for index, item in enumerate(mid):
         chapter = f"{index:02d}"
