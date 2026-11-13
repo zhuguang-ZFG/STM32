@@ -64,3 +64,8 @@
 - `.github/workflows/merge-check.yml` slop 行扩到六个 glob。
 
 未验证：CI 远程运行结果；未执行任何远程推送或 Pages 切换；VitePress 站点切换仍归 B5。
+
+## 批次收口验证
+
+- commit：`628007e9a341089087837376f7cd77dee7087569`（Task 17 收口提交 HEAD）
+- 上表 7 条命令在该 HEAD 重跑，退出码全部为 0：`checks passed`、`built 39 pages, 13 planned chapters missing`、slop 六 glob 无机械命中、31 tests OK、redirects pass 2 / fail 0、旧书套件（删旧 motor 测试后）OK。
