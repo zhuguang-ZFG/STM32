@@ -268,7 +268,7 @@
         "ch34"
       ],
       "purpose": "根书原章",
-      "status": "partial",
+      "status": "migrated",
       "note": "Cache→ch34"
     },
     {
@@ -959,7 +959,7 @@
         "ch34"
       ],
       "purpose": "平台对照（ESP32）",
-      "status": "partial",
+      "status": "migrated",
       "note": "双核→ch10，Cache→ch34"
     },
     {
