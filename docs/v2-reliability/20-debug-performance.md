@@ -20,7 +20,7 @@ platforms: [f407, f103]
 
 先不接板子，把四笔账算在纸上。它们决定你上板后看到的"没反应"到底是工具坏了，还是前提少了一个。
 
-1. **断点预算账**：F407 的 M4 有 6 个 FPB 指令比较器，F103 的 M3 也是 6 个；M7 是 8 个，M0 是 4 个，M0+ 只有 2 个。条件断点 `hbreak if ...` 仍然占一个比较器，因为条件是在命中之后由调试器求值的。一个工程里同时留 3 个普通断点、2 个条件断点和 1 个数据观察点，在 M0+ 上必然有人打不上；先数预算，再怀疑代码。
+1. **断点预算账**：分两栏记。第一栏是 FPB 代码断点：F407 的 M4 有 6 个 FPB 指令比较器，F103 的 M3 也是 6 个；M7 是 8 个，M0 是 4 个，M0+ 只有 2 个。Flash 上的 `break` 与 `hbreak`、条件 `hbreak` 都从这一栏出；条件断点仍占一个比较器，因为条件是在命中之后由调试器求值的。第二栏是 DWT 数据观察点，它用 DWT 的比较器，是另一本账，不占 FPB 名额。一个工程里同时留 3 个普通断点、2 个条件断点（都落在 Flash/硬件断点这一栏）与 1 个数据观察点，在 M0+ 的 2 个 FPB 下，前两笔共 5 个代码断点必然有人打不上；观察点不占 FPB，但也要单独数 DWT 比较器。先数预算，再怀疑代码。
 2. **周期换算账**：`cycles = µs × f_cpu`。100 µs 在 72 MHz 下是 7200 cycles，在 168 MHz 下是 16800 cycles；反过来，1000 cycles 在 72 MHz 下是 13.89 µs，在 168 MHz 下是 5.95 µs。同一个 1000 cycles 的读数，换一颗芯片就换了一个时间；不写主频的"1000 cycles"不是时间。
 3. **SWO 前提账**：引脚复用、`DBGMCU_CR` 的 `TRACE_IOEN`/`TRACE_MODE`、TRACECLK 有源、调试器支持并接上 SWO。四项是与门关系，缺一项就静默；SWO 不会因为时钟没配好而打印一条错误。
 4. **仪器分工账**：问"这一帧 SPI 的 CPOL/CPHA 对不对"用逻辑分析仪；问"这个边沿有没有过冲、振铃、地弹"用示波器；问"这块板平均耗多少毫安"用万用表。拿逻辑分析仪看边沿形状，得到的是一条被阈值切平的数字线；拿万用表看 μs 级峰值，得到的是平均值。
@@ -43,11 +43,11 @@ GDB 不直接碰硬件，它通过 GDB Remote Serial Protocol 把"读这个地�
 
 关键性质是：**AP 访问总线不经过 CPU**。CPU 在跑代码、停在断点、甚至睡死，AP 都能读写目标地址。烧录与调试在物理上是同一件事：读写 Flash 控制器寄存器就是烧录，读写 RAM 与外设寄存器就是调试，读写 PC/MSP 就是控制 CPU。`halt` 只是往调试寄存器里写一个"请求停"的位，内核在下一个指令边界停下来；它不是把总线闸住，也不是把外设时钟停掉。
 
-![SWD 调试链：IDE、GDB、OpenOCD、ST-Link、DP/AP 与目标总线](/anim/swd-debug-chain.svg)
+![SWD 调试链：从 GDB 到芯片内存，经 OpenOCD、ST-Link、DP/AP 到目标总线](/anim/swd-debug-chain.svg)
 
 图中每一层都可能断开：GDB 连不上 OpenOCD 是 RSP 层，OpenOCD 连不上目标跑的是 SWD 层，SWD 连上但读写失败是 AP/总线层。分层排障，比在 IDE 里反复点"重新连接"有效。
 
-SWD 的最小集是三根线：SWDIO（双向数据）、SWCLK（时钟）、GND。实际接线还要 VTref：它是目标板给调试器的电压参考，不是第二路电源；ST-Link 用 VTref 判断目标电平，缺了它，某些探头会拒绝连接或把 3.3 V 当成 5 V。NRST 是可选项，接上才能做"connect under reset"：调试器先把复位按住，再在复位释放前抢进调试口，专门对付一上电就睡死、把 SWD 引脚复用掉或看门狗立即复位的板子。JTAG 则多出 TCK/TMS/TDI/TDO，支持菊花链，但引脚更多；SWD 是 JTAG 的子集，两根信号线换来的代价是不能菊花链。
+SWD 的最小集是三根线：SWDIO（双向数据）、SWCLK（时钟）、GND。实际接线还要 VTref：它是目标板给调试器的电压参考，不是第二路电源；ST-Link 用 VTref 判断目标电平，缺了它，某些探头会拒绝连接或把 3.3 V 当成 5 V。NRST 是可选项，接上才能做"connect under reset"：调试器先把复位按住，再在复位释放前抢进调试口，专门对付一上电就睡死、把 SWD 引脚复用掉或看门狗立即复位的板子。JTAG 用 TCK 做时钟、TMS 推状态机、TDI/TDO 收发数据（TRST 可选），支持菊花链，但引脚更多；SWD 复用 JTAG 的 TMS/TCK 两根引脚（SWDIO 对 TMS、SWCLK 对 TCK），是 JTAG 引脚子集而不是协议子集，两根信号线换来的代价是不能菊花链。
 
 调试时钟 4 MHz、10 MHz 之类的数字是探头与线长的折中，属于厂商标称，不是"设得越高越好"：线越长、地回流越差，能稳定的时钟越低。先用低时钟连上，再逐步抬高；连不上时先降时钟、缩短地线，而不是先怀疑芯片坏了。
 
@@ -61,7 +61,7 @@ SWD 的最小集是三根线：SWDIO（双向数据）、SWCLK（时钟）、GND
 
 断点打不上，先查三种原因：
 
-1. **比较器用完了**：普通断点、`hbreak`、条件 `hbreak` 都在抢同一组 FPB 槽位。条件断点并不会因为"条件在软件里判断"就免费；命中之前它仍然占一个硬件比较器。先把 `info break` 里的断点删到预算以内，再谈其他。
+1. **比较器用完了**：Flash 上的 `break`、`hbreak` 与条件 `hbreak` 都在抢同一组 FPB 槽位；RAM 里的软件 `BKPT` 断点不占 FPB，但只在代码可写时成立。条件断点并不会因为"条件在软件里判断"就免费；命中之前它仍然占一个硬件比较器。先把 `info break` 里的断点删到预算以内，再谈其他。
 2. **地址不可写**：软件断点在 Flash/ROM 上没有落脚点。换 `hbreak`，或者把函数放进 RAM（链接脚本给一个 RAM 执行段），再下软件断点。调试器报告 "Cannot insert breakpoint" 时，先看它用的是软还是硬。
 3. **那一行没有代码**：优化把语句删了、合并了、内联了，或者 ELF 与板上固件不是同一次构建。`info line file:line` 会直接说 "contains no code"；`break file:line` 却仍然可能给你一个地址，这个地址往往是附近的函数入口，界面上的行号还是你写的那个行号。第三种原因最容易被误判成"断点坏了"。
 
@@ -76,7 +76,7 @@ SWO 是目标到主机的一条单向跟踪通道，ITM 是它上面的"软件 p
 
 缺任何一项，表现都是"没有输出"，没有错误码。排查顺序就按这四项走：先看引脚，再看 `DBGMCU_CR`，再看时钟与 TPIU 分频，最后看探头与接线。ITM 端口 0 常被 `ITM_SendChar` 占用；如果 FIFO 满了，阻塞式发送会让目标停在 `ITM_SendChar` 里，这时断点看起来像"程序卡死"，其实是跟踪通道没有消费者。
 
-半主机（semihosting）不是 SWO。它用 `BKPT 0xAB` 主动触发调试器，调试器在主机上代打开文件、读写标准输出，再回到目标；一次 `printf` 要经过"停住—请求—主机服务—恢复"的往返。`docs/17` 说它比串口慢一个数量级、每次调用数十微秒，但没有给出计时记录，本章按"来源说法(未复核)"处理。生产固件必须去掉 `--specs=rdimon.specs` 或提供自己的 `_write`：没有调试器时，`BKPT 0xAB` 没有人服务，多数配置下会升级成 HardFault。
+半主机（semihosting）不是 SWO。它用 `BKPT 0xAB` 主动触发调试器，调试器在主机上代打开文件、读写标准输出，再回到目标；一次 `printf` 要经过"停住—请求—主机服务—恢复"的往返。`mcu/docs/build/06-flash-debug.md:116–120,153–154` 与 newlib/OpenOCD 文档说它比串口慢一个数量级、每次调用数十微秒，但没有给出计时记录，本章按"来源说法(未复核)"处理。生产固件必须去掉 `--specs=rdimon.specs` 或提供自己的 `_write`：没有调试器时，`BKPT 0xAB` 没有人服务，多数配置下会升级成 HardFault。
 
 ### 四、DWT：先开 TRCENA，再清 CYCCNT
 
@@ -104,11 +104,11 @@ cycles = µs × f_cpu
 | 72 MHz（F103） | 72 cycles | 13.89 µs | 7200 cycles | 59.65 s |
 | 168 MHz（F407） | 168 cycles | 5.95 µs | 16800 cycles | 25.57 s |
 
-![DWT 计时窗口：CYCCNT 从 0 起算，区间的 cycles 要按当前主频换算成微秒](/images/ch17-dwt-window.png)
+![DWT 计时窗口：Δcycles = 固定开销 + 被测代码 + 窗口内中断，空窗口基线用来扣固定开销](/images/ch17-dwt-window.png)
 
-图中窗口的宽度是 cycles，不是微秒；同一个窗口在 72 MHz 与 168 MHz 下对应的时间不同，换算系数必须跟着主频走。
+图中 t0、t1 两次读 `CYCCNT` 之间发生的一切都计入 Δcycles：固定开销、被测代码与窗口内中断；先测一次空窗口做基线，再解释差值，并确认被测循环还在窗口里、主频与优化等级固定。窗口的宽度是 cycles，不是微秒；同一个 Δ 在 72 MHz 与 168 MHz 下对应的时间不同，换算系数必须跟着主频走。
 
-"72 cycles = 1 µs"只对 72 MHz 成立，不能当通例。F407 跑 168 MHz 时，同样的 72 cycles 只有 0.43 µs；把 F103 的换算搬到 F407，读数会差 2.33 倍。时钟树改了、APB 分频改了、低功耗降频了，换算系数都要跟着改。DWT 数的是内核周期，不是墙上时间；中断、Flash 等待周期、调试 halt 都会影响它与外部时间戳的对应关系。
+"72 cycles = 1 µs"只对 72 MHz 成立，不能当通例。F407 跑 168 MHz 时，同样的 72 cycles 只有 0.43 µs；把 F103 的换算搬到 F407，读数会差 2.33 倍。`CYCCNT` 数的是内核/HCLK 周期；只有 HCLK/系统主频变了（时钟树改了、低功耗降频了），`cycles = µs × f_cpu` 的换算系数才要跟着改。APB 分频只改挂在这条总线上的外设时钟，不改变 `CYCCNT` 的计数单位。中断、Flash 等待周期、调试 halt 还会影响它与外部时间戳的对应关系。
 
 回绕用无符号减法处理：`end - start` 在一次 2^32 回绕内仍然给出正确的差值，前提是被测区间短于 59.65 s（72 MHz）或 25.57 s（168 MHz）。超过这个长度，要么改用定时器，要么在中间记一次快照。不要用有符号数比较 `end > start`，回绕后它会把正常区间判成负值。
 
@@ -125,9 +125,9 @@ HardFault 的寄存器地图、CFSR 的 19 个位、栈帧怎样压、`naked` ha
 1. **先看 CFSR/HFSR，确认这是不是一条能落到地址上的故障**。`MMARVALID`/`BFARVALID` 为 0 时，`MMFAR`/`BFAR` 里的值不可信；`IMPRECISERR` 下 PC 也可能已经跑远。VALID 位不亮的地址，不要拿去做 `addr2line`。
 2. **按 `EXC_RETURN` 选栈**。bit2=0 用 MSP，bit2=1 用 PSP；bit4=0 表示 FPU 扩展帧（`0xFFFFFFE1/E9/ED`），bit4=1 是基本帧（`0xFFFFFFF1/F9/FD`）。取 PC 前要先按扩展帧布局定位基本帧。基本帧里 PC 在 `sp[6]`，也就是 `((uint32_t *)sp)[6]`。拿错栈，读出来的 8 个字全是垃圾。
 
-![异常栈帧：基本帧 8 个字，PC 在偏移 24；FPU 扩展帧要先定位基本帧](/images/ch17-stack-frame.png)
+![异常栈帧：基本帧 8 个字，PC 在帧首 +0x18；下方按 PRECISERR、IMPRECISERR、STKERR/MSTKERR 三栏分支](/images/ch17-stack-frame.png)
 
-图中基本帧的 8 个字按 r0、r1、r2、r3、r12、LR、PC、xPSR 排列；扩展帧在前面多了 S0–S15、FPSCR 与一个保留字，取 PC 前先按 `EXC_RETURN` 把指针移到基本帧。
+图中基本帧的 8 个字按 r0、r1、r2、r3、r12、LR、PC、xPSR 排列，PC 在帧首 +0x18，也就是 `sp[6]`；图下方的 PRECISERR/IMPRECISERR/STKERR/MSTKERR 提醒：读到这 8 个字，不等于每一格都能安全解引用。FPU 扩展帧在基本帧前面多出 S0–S15、FPSCR 与一个保留字（按 ARM 文档推导，图中未画），取 PC 前先按 `EXC_RETURN` 把指针移到基本帧。
 3. **把 PC 交给 GDB 或 `addr2line`**。GDB 连上时可以直接：
 
 ```text
@@ -136,6 +136,8 @@ HardFault 的寄存器地图、CFSR 的 19 个位、栈帧怎样压、`naked` ha
 (gdb) info line *0x08001234
 (gdb) disassemble /m 0x08001234
 ```
+
+`x/8wx $sp` 只在 handler 入口、编译器还没动 SP 时成立：handler 压过寄存器、调过函数或改过 SP 之后，`$sp` 已不是异常帧起点。要看故障帧，用 naked handler，或先把 MSP/PSP 保存到全局变量，做法见[第 19 章](./19-watchdog-reset-hardfault.md)。
 
 离线时用：
 
@@ -164,7 +166,7 @@ GDB 里的 `bt` 在 HardFault handler 里不是故障现场的调用栈。它展
 
 `-g3` 只增加调试信息的种类（宏定义等），不改变代码生成；它不能阻止内联，也不能阻止指令重排。把 `-O2 -g3` 当成"既能优化又能单步"，是把优化与可调试性混为一谈。要判断某个函数有没有被内联，看符号表与反汇编，不看编译命令行里有没有 `-g3`。
 
-下面这段宿主实验可以复跑。它只用 `arm-none-eabi-gcc`、`arm-none-eabi-nm` 与 GDB，不需要开发板；本节的数据是本章唯一的"实测记录"，测的是编译器与 GDB 的行为，不是板上的 FPB 或 DWT。
+下面这段宿主实验可以复跑。它只用 `arm-none-eabi-gcc`、`arm-none-eabi-nm` 与 GDB，不需要开发板；本节的数据是本章唯一的一组宿主实验（两项观测：符号表与断点落点），测的是编译器与 GDB 的行为，不是板上的 FPB 或 DWT。
 
 ```c
 #include <stdint.h>
@@ -355,15 +357,15 @@ raw output file:
 | 取证项 | 来路 | 读数或结论 | 性质 |
 | --- | --- | --- | --- |
 | FPB 指令比较器数量 | `06-flash-debug.md` 与 ARMv6-M/ARMv7-M/ARMv7E-M 架构定义，经来源勘误转引；未核 ARM 原件 | M0=4、M0+=2、M3=6、M4=6、M7=8；`06-flash:112` 的"M0/M0+ 2 个"错 | 来源说法(未复核) |
-| SWD 最小集与调试链 | `06-flash-debug.md` 第 1–2 节与 OpenOCD/GDB 文档转引；未上板 | SWDIO/SWCLK/GND；VTref 是参考电压、NRST 可选；AP 访问不经过 CPU | 来源说法(未复核) |
+| SWD 最小集与调试链 | `06-flash-debug.md` 第 1–2 节给 SWDIO/SWCLK/GND 与 DP/AP；VTref/NRST 见 `docs/17` 第 144、160 行；ST-Link/OpenOCD 文档转引；未上板 | SWDIO/SWCLK/GND；VTref 是参考电压、NRST 可选；AP 访问不经过 CPU | 来源说法(未复核) |
 | SWO 四前提 | `docs/17` 的 SWO/ITM 段与 RM 转引；未上板 | 引脚复用、`TRACE_IOEN`/`TRACE_MODE`、TRACECLK、调试器；缺一静默 | 来源说法(未复核) |
 | DWT 寄存器地址与位号 | ARMv7-M PPB 地图与 `docs/17` 转引；本工作树无 CMSIS 参考 | `DEMCR` 0xE000EDFC bit24；`CYCCNT` 0xE0001004；`CTRL` 0xE0001000 bit0 | 来源说法(未复核) |
 | DWT 换算 | 本章按 f=72/168 MHz 复算 | 1 µs=72/168 cycles；1000 cycles=13.89/5.95 µs；100 µs=7200/16800；回绕 59.65/25.57 s | 文档推导 |
 | Cortex-M7 的 DWT 解锁 | Cortex-M7 TRM 转引；两个来源未提 | `DWT->LAR` 0xE0001FB0 写 0xC5ACCE55 | 来源说法(未复核) |
 | 两档优化下的符号 | 宿主 `arm-none-eabi-gcc` 10.3.1，`-Og -g3` 与 `-O2 -g3`，`nm -n -S` | `scale` 在 `-Og` 为 0xa 字节，`-O2` 无符号；`sum_bytes` 0x16→0x18 字节 | 实测记录 |
 | 两档优化下的断点落点 | 同一对对象文件，GDB 10.2.90 的 `info line` 与 `break` | 第 7 行两档都 "contains no code"；断点 `-Og` 落 0xc，`-O2` 落 0x0（函数入口） | 实测记录 |
-| 半主机耗时 | `docs/17` 称慢一个数量级、每次数十 µs；无计时记录 | 来源称每次数十 µs，未记录 | 来源说法(未复核) |
-| 半主机与 BKPT | `docs/17` 与 newlib 文档转引 | `BKPT 0xAB` 触发服务；`--specs=rdimon.specs`；无调试器可能 HardFault | 来源说法(未复核) |
+| 半主机耗时 | `06-flash-debug.md:116–120,153–154` 称慢一个数量级、每次数十 µs；无计时记录 | 来源称每次数十 µs，未记录 | 来源说法(未复核) |
+| 半主机与 BKPT | `06-flash-debug.md:114–120` 与 newlib/OpenOCD 文档转引 | `BKPT 0xAB` 触发服务；`--specs=rdimon.specs`；无调试器可能 HardFault | 来源说法(未复核) |
 | 测量三件套分工 | `docs/17` 与仪器手册转引 | 逻辑分析仪=协议/时序；示波器=信号质量；万用表=平均 | 来源说法(未复核) |
 | DS1054Z 标称 | 厂商页面/说明书转引，未核原件 | 50 MHz、4 通道、单通道最大 1 GSa/s | 来源说法(未复核) |
 | 8 通道分析仪标称 | 厂商页面/说明书转引，未核原件 | 8 通道、24 MHz 采样 | 来源说法(未复核) |
@@ -403,7 +405,7 @@ raw output file:
 | 现象 | 原因 | 区分证据 | 下一动作 |
 | --- | --- | --- | --- |
 | 断点打不上，GDB 报 Cannot insert breakpoint | FPB 比较器用完，或软件断点写不进 Flash | `info break` 里的类型与数量；目标地址在 Flash 还是 RAM | 删旧断点；Flash 用 `hbreak`；或把函数搬进 RAM |
-| 条件 `hbreak` 一加就超预算 | 条件断点仍占一个 FPB 比较器 | 数一数普通断点 + 条件断点 + 观察点 | 减少同时存在的断点，条件改在代码里判断 |
+| 条件 `hbreak` 一加就超预算 | 条件断点仍占一个 FPB 比较器 | 数 `info break` 里 Flash/硬件断点与条件断点的数量（观察点走 DWT，不算 FPB） | 减少同时存在的断点，条件改在代码里判断 |
 | `break file:line` 停在函数入口 | 该行被优化掉/内联，行表把断点挪到附近 | `info line` 报 "contains no code"；`info break` 的地址 | 用 `-Og`/`-O0` 重建；改断在稳定行或具体指令 |
 | 断点地址与源码对不上 | ELF 与板上固件不是同一次构建，或链接地址有偏移 | ELF 的 SHA256/build ID；`info files`；反汇编地址 | 重烧同一份 ELF；用 `break *addr` 并核对 map |
 | 软件断点在 Flash 上时好时坏 | 调试器在 Flash 补丁与 FPB 之间切换 | 换 `hbreak` 是否稳定；OpenOCD 的 flash breakpoint 设置 | Flash 代码统一用 `hbreak` |
