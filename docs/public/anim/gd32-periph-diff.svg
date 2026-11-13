@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>GD32 vs STM32 外设差异对照：编号差 1，数量同</title>
+  <desc>四阶段对照动画：SPI/I2C/USART 外设编号差异、寄存器命名差异、时序差异，展示 GD32 与 STM32 的对照关系</desc>
+
+  <rect width="720" height="440" fill="#f6f8fa"/>
+
+  <!-- Title -->
+  <text x="360" y="22" font-size="14" font-weight="bold" fill="#3451b2" text-anchor="middle">GD32 vs STM32 外设对照</text>
+
+  <!-- Comparison table -->
+  <rect x="20" y="35" width="680" height="140" rx="6" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+
+  <!-- Table header -->
+  <rect x="20" y="35" width="680" height="25" fill="#3451b2"/>
+  <text x="100" y="52" font-size="11" fill="#ffffff" font-weight="bold" text-anchor="middle">外设</text>
+  <text x="280" y="52" font-size="11" fill="#ffffff" font-weight="bold" text-anchor="middle">STM32F407</text>
+  <text x="460" y="52" font-size="11" fill="#ffffff" font-weight="bold" text-anchor="middle">GD32F407</text>
+  <text x="620" y="52" font-size="11" fill="#ffffff" font-weight="bold" text-anchor="middle">差异</text>
+
+  <!-- Row 1: SPI -->
+  <text x="100" y="78" font-size="11" fill="#333" text-anchor="middle" font-weight="bold">SPI</text>
+  <text x="280" y="78" font-size="11" fill="#333" text-anchor="middle">3 个（SPI1/2/3）</text>
+  <text x="460" y="78" font-size="11" fill="#333" text-anchor="middle">3 个（SPI0/1/2）</text>
+  <text x="620" y="78" font-size="10" fill="#d97706" text-anchor="middle">编号差 1</text>
+
+  <!-- Row 2: I2C -->
+  <text x="100" y="103" font-size="11" fill="#333" text-anchor="middle" font-weight="bold">I2C</text>
+  <text x="280" y="103" font-size="11" fill="#333" text-anchor="middle">3 个（I2C1/2/3）</text>
+  <text x="460" y="103" font-size="11" fill="#333" text-anchor="middle">3 个（I2C0/1/2）</text>
+  <text x="620" y="103" font-size="10" fill="#d97706" text-anchor="middle">编号差 1</text>
+
+  <!-- Row 3: USART -->
+  <text x="100" y="128" font-size="11" fill="#333" text-anchor="middle" font-weight="bold">USART</text>
+  <text x="280" y="128" font-size="11" fill="#333" text-anchor="middle">6 个（USART1-3, UART4-5）</text>
+  <text x="460" y="128" font-size="11" fill="#333" text-anchor="middle">6 个（USART0-2, UART3-4）</text>
+  <text x="620" y="128" font-size="10" fill="#d97706" text-anchor="middle">编号差 1</text>
+
+  <!-- Row 4: TIM -->
+  <text x="100" y="153" font-size="11" fill="#333" text-anchor="middle" font-weight="bold">TIM</text>
+  <text x="280" y="153" font-size="11" fill="#333" text-anchor="middle">14 个（TIM1-14）</text>
+  <text x="460" y="153" font-size="11" fill="#333" text-anchor="middle">14 个（TIM0-13）</text>
+  <text x="620" y="153" font-size="10" fill="#d97706" text-anchor="middle">编号差 1</text>
+
+  <!-- Key insight: naming difference -->
+  <rect x="20" y="190" width="340" height="100" rx="6" fill="#ffffff" stroke="#3eaf7c" stroke-width="2"/>
+  <text x="30" y="210" font-size="12" font-weight="bold" fill="#3eaf7c">命名规律</text>
+  <text x="30" y="230" font-size="11" fill="#333">
+    <tspan x="30" dy="0">STM32 从 1 开始编号</tspan>
+    <tspan x="30" dy="16">GD32 从 0 开始编号</tspan>
+    <tspan x="30" dy="16" fill="#d97706" font-weight="bold">数量相同，编号差 1</tspan>
+  </text>
+
+  <!-- Register difference -->
+  <rect x="380" y="190" width="320" height="100" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+  <text x="390" y="210" font-size="12" font-weight="bold" fill="#d97706">寄存器差异</text>
+  <text x="390" y="230" font-size="11" fill="#333">
+    <tspan x="390" dy="0">大部分寄存器同名同义</tspan>
+    <tspan x="390" dy="16">少数位域命名不同</tspan>
+    <tspan x="390" dy="16" fill="#666" font-size="10">详见芯片参考手册</tspan>
+  </text>
+
+  <!-- Timing difference -->
+  <rect x="20" y="305" width="680" height="70" rx="6" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+  <text x="30" y="325" font-size="12" font-weight="bold" fill="#dc2626">时序差异（关键）</text>
+  <text x="30" y="345" font-size="11" fill="#333">
+    <tspan x="30" dy="0">SPI/I2C 时序参数略有不同（建立/保持时间、时钟极性）——</tspan>
+    <tspan fill="#dc2626" font-weight="bold">代码移植时必须核对时序</tspan>
+    <tspan x="30" dy="16" fill="#666" font-size="10">详见 [S11 I2C 时序](../stm32/11-i2c.md) 与 [S12 SPI 时序](../stm32/12-spi.md)</tspan>
+  </text>
+
+  <!-- Migration tip -->
+  <rect x="20" y="390" width="680" height="35" rx="6" fill="#ffffff" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="360" y="412" font-size="11" fill="#333" text-anchor="middle">移植口诀：<tspan font-weight="bold" fill="#3451b2">编号减一，时序核对，寄存器查表</tspan>——三步完成 STM32 → GD32 迁移</text>
+
+  <!-- Continuous animation: highlight row -->
+  <rect x="25" y="63" width="670" height="20" fill="#d97706" opacity="0.1">
+    <animate attributeName="y" values="63;88;113;138;63" dur="4s" repeatCount="indefinite"/>
+  </rect>
+</svg>

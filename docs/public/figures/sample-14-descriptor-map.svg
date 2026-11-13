@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="设备描述符 18 字节，配置集合 67 字节 = 9+9+5+5+4+5+7+9+7+7，VID/PID 0x1209/0x0001，批量端点 64 字节、通知端点 8 字节">
+
+
+<rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">描述符树：18 字节设备，67 字节配置集合</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · chapter 14 · RM0008 Rev 21 ch.23 USB device</text>
+<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">14</text>
+<text x="40" y="86" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">设备描述符 18 字节 → 配置集合 67 字节（0x0043）→ 2 个接口 → 4 个端点</text>
+<text x="40" y="112" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">one device, one configuration set, two interfaces, four endpoints; every bLength must add up</text>
+<text x="40" y="138" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">18 = device    67 = 9 config + 9 interface + 19 CDC class + 7 EP + 9 interface + 7 EP + 7 EP</text>
+<text x="40" y="176" font-size="16" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">层级  设备 → 配置 → 接口 → 端点</text>
+<line x1="56" y1="248" x2="56" y2="674" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="40" y="190" width="520" height="58" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="300" y="218.25" font-size="15" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">设备描述符 Device  18 B</text>
+<text x="300" y="234" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bMaxPacketSize0 = 64 · 1 个配置 · class 0x02</text>
+<text x="72" y="270" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VID 0x1209 · PID 0x0001 · bcdUSB 0x0200</text>
+<line x1="56" y1="311" x2="72" y2="311" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="72" y="282" width="488" height="58" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="316" y="310.25" font-size="15" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">配置描述符 Config  9 B</text>
+<text x="316" y="326" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">wTotalLength = 0x0043 = 67 · bMaxPower 0x32 = 100 mA</text>
+<line x1="56" y1="403" x2="104" y2="403" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="104" y="374" width="456" height="58" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="332" y="402.25" font-size="15" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">接口 0 Interface  9 B</text>
+<text x="332" y="418" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CDC 控制 · class 0x02 / subclass 0x02 / protocol 0x01</text>
+<line x1="56" y1="482" x2="136" y2="482" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="136" y="456" width="424" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="348" y="480.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">CDC 功能描述符  19 B</text>
+<text x="348" y="497" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">header 5 + call mgmt 5 + ACM 4 + union 5</text>
+<line x1="56" y1="546" x2="136" y2="546" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="136" y="520" width="424" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="348" y="544.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">端点 0x81 IN  7 B</text>
+<text x="348" y="561" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">中断 · wMaxPacketSize 8 · bInterval 0x10 = 16 ms</text>
+<line x1="56" y1="610" x2="104" y2="610" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="104" y="584" width="456" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="332" y="608.9" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">接口 1 Interface  9 B</text>
+<text x="332" y="625" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">数据类 · class 0x0A · 2 个端点</text>
+<line x1="56" y1="674" x2="136" y2="674" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<line x1="136" y1="674" x2="460" y2="674" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="136" y="648" width="200" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="236" y="672.55" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">端点 0x02 OUT  7 B</text>
+<text x="236" y="689" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">批量 · 64 B</text>
+<rect x="360" y="648" width="200" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="460" y="672.55" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">端点 0x82 IN  7 B</text>
+<text x="460" y="689" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">批量 · 64 B</text>
+<text x="580" y="176" font-size="15" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">67 字节怎么分</text>
+<rect x="580" y="190" width="45.6716" height="34" fill="#075e84" opacity="1" rx="2"/>
+<text x="602.836" y="212" font-size="11" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">9</text>
+<rect x="625.672" y="190" width="45.6716" height="34" fill="#1b5c45" opacity="1" rx="2"/>
+<text x="648.507" y="212" font-size="11" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">9</text>
+<rect x="671.343" y="190" width="96.4179" height="34" fill="#5b3a8c" opacity="1" rx="2"/>
+<text x="719.552" y="212" font-size="11" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">19</text>
+<rect x="767.761" y="190" width="35.5224" height="34" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="785.522" y="212" font-size="11" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">7</text>
+<rect x="803.284" y="190" width="45.6716" height="34" fill="#1b5c45" opacity="1" rx="2"/>
+<text x="826.119" y="212" font-size="11" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">9</text>
+<rect x="848.955" y="190" width="35.5224" height="34" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="866.716" y="212" font-size="11" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">7</text>
+<rect x="884.478" y="190" width="35.5224" height="34" fill="#7a4e00" opacity="1" rx="2"/>
+<text x="902.239" y="212" font-size="11" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">7</text>
+<text x="580" y="248" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">9 config · 9 interface 0 · 19 CDC class</text>
+<text x="580" y="270" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">7 EP 0x81 · 9 interface 1 · 7 EP 0x02 · 7 EP 0x82</text>
+<text x="580" y="306" font-size="14" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">对不上就停在这里</text>
+<text x="580" y="332" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">18 counts the device only</text>
+<text x="580" y="356" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">67 counts the whole config set</text>
+<text x="580" y="380" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bLength: 9 config/interface, 7 EP</text>
+<text x="580" y="404" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">step 3: 8 bytes, bMaxPacketSize0 = 64</text>
+<text x="580" y="428" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">step 5: 18; step 6: 9 then 67</text>
+<text x="580" y="452" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">EP0 is the only two-way pipe</text>
+<text x="580" y="476" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0x81, 0x02, 0x82 are one-way</text>
+<text x="580" y="500" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">all buffers share 512 B of PMA</text>
+<text x="580" y="546" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">主机一次读多少</text>
+<text x="580" y="572" font-size="12" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="600">8 B</text>
+<text x="632" y="572" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bMaxPacketSize0</text>
+<text x="580" y="598" font-size="12" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="600">18 B</text>
+<text x="632" y="598" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">VID / PID</text>
+<text x="580" y="624" font-size="12" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="600">9 B</text>
+<text x="632" y="624" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">wTotalLength = 67</text>
+<text x="580" y="650" font-size="12" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="600">67 B</text>
+<text x="632" y="650" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">接口与端点</text>
+<text x="580" y="676" font-size="12" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="600">Set</text>
+<text x="632" y="676" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">配置选中，功能可用</text>
+<rect x="40" y="714" width="880" height="96" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="56" y="744" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0x81 是通知管道 8 字节，0x02 / 0x82 是批量 64 字节；三者的缓冲区都在同一块 512 字节 PMA 里。</text>
+<text x="56" y="770" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">class 0x0A 的数据接口后面直接跟端点，没有类描述符；那 19 字节只挂在接口 0 上。</text>
+<text x="56" y="796" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">wTotalLength 写成 18 是最常见的错：它数的是整套配置，不是设备描述符。</text>
+<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。18 与 67 字节、VID/PID 与端点包长来自本仓库 examples/usb-cdc；层级与 PMA 来自 RM0008 Rev 21 第 23 章。</text>
+<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+</svg>

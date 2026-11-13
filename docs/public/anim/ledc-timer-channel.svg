@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>LEDC：timer 定调，channel 发声</title>
+  <desc>四阶段动画：LEDC 两级分工——timer 定频率与分辨率（多快多细），channel 定 GPIO 与占空比（从哪出多高），fade 引擎按步进改比较值。S3 只有低速模式、8 通道、14 位位宽；ledc_get_freq 回读实际频率。绑线是 channel 自己爬到 timer 上的，斜坡则是 fade_start 之后逐点画出来，比较值沿斜坡上下往返——CPU 全程旁观。</desc>
+  <rect width="720" height="440" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">LEDC：timer 定调，channel 发声，fade 接管渐变</text>
+  <text x="24" y="50" font-size="12" fill="#666">S3：仅低速模式 · 8 通道 · 14 位位宽 · f = 时钟 / 2^位数 · 改 duty 要 update（双缓冲）</text>
+
+  <!-- ===== timer ===== -->
+  <rect x="40" y="90" width="300" height="120" fill="#ffffff" stroke="#3451b2" stroke-width="2" rx="8"/>
+  <text x="56" y="112" font-size="13" font-weight="bold" fill="#3451b2">timer（定频率与分辨率）</text>
+  <text x="56" y="134" font-size="12" fill="#666">speed_mode = LOW_SPEED（S3 唯一）</text>
+  <text x="56" y="154" font-size="12" fill="#666">duty_resolution = 10 位 → 0..1023</text>
+  <text x="56" y="174" font-size="12" fill="#666">freq_hz = 5000</text>
+  <text x="56" y="194" font-size="12" font-family="Consolas,monospace" fill="#d97706">ledc_get_freq → 实际值（舍入后）</text>
+
+  <!-- ===== channel ===== -->
+  <rect x="380" y="90" width="300" height="120" fill="#ffffff" stroke="#3eaf7c" stroke-width="2" rx="8"/>
+  <text x="396" y="112" font-size="13" font-weight="bold" fill="#3eaf7c">channel（定 GPIO 与占空比）</text>
+  <text x="396" y="134" font-size="12" fill="#666">gpio_num = GPIO10（扩展口）</text>
+  <text x="396" y="154" font-size="12" fill="#666">duty = 0..1023</text>
+  <text x="396" y="174" font-size="12" fill="#666">timer_sel = TIMER_0（绑到左边）</text>
+  <text x="396" y="194" font-size="12" fill="#666">hpoint = 0</text>
+
+  <!-- 连线：timer 定好频率后，channel 把绑线爬过来接上 -->
+  <line x1="340" y1="150" x2="340" y2="150" stroke="#3451b2" stroke-width="3" marker-end="url(#arrL)">
+    <animate attributeName="x2" values="340;340;380;380" keyTimes="0;0.01;0.07;1" dur="12s" repeatCount="indefinite"/>
+  </line>
+  <defs>
+    <marker id="arrL" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#3451b2"/>
+    </marker>
+  </defs>
+
+  <!-- ===== fade ===== -->
+  <rect x="40" y="230" width="640" height="110" fill="#ffffff" stroke="#d97706" stroke-width="2" rx="8"/>
+  <text x="56" y="252" font-size="13" font-weight="bold" fill="#d97706">fade（硬件渐变）：set_fade_with_time → fade_start</text>
+  <!-- 渐变斜坡：淡灰是轨道，琥珀色那条在 fade_start 之后被逐点画出，比较值沿斜坡上下往返（CPU 不插手） -->
+  <path d="M70,310 L240,270 L410,310 L580,270" stroke="#e2e8f0" stroke-width="3" fill="none"/>
+  <path d="M70,310 L240,270 L410,310 L580,270" stroke="#d97706" stroke-width="3" fill="none"
+        pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000">
+    <animate attributeName="stroke-dashoffset" values="1000;1000;0;0" keyTimes="0;0.50;0.66;1" dur="12s" repeatCount="indefinite"/>
+  </path>
+  <circle r="4.5" fill="#d97706" opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;1" keyTimes="0;0.66;1" dur="12s" repeatCount="indefinite"/>
+    <animateMotion calcMode="linear" path="M70,310 L240,270 L410,310 L580,270"
+      keyPoints="0;1;0" keyTimes="0;0.5;1" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  <text x="70" y="332" font-size="11" fill="#666">duty=0</text>
+  <text x="560" y="262" font-size="11" fill="#666">duty=1023</text>
+  <text x="240" y="332" font-size="11" fill="#666">2 秒渐变完，CPU 全程旁观</text>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="362">① timer 先配：频率 5kHz、分辨率 10 位——f 和位数是跷跷板</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="362">② channel 再配：绑到 timer、绑到 GPIO10、初始占空比 0</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="362">③ fade：告诉引擎"2 秒到满占空比"，硬件按步进改比较值——CPU 不逐点干预</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="362">④ 对照 STM32 TIM：PSC/ARR 定频率 ↔ LEDC timer；CCR 定占空比 ↔ LEDC channel</text></g>
+  </g>
+
+  <!-- 底部注释 -->
+  <text x="36" y="394" font-size="12" fill="#666">S3 边界：别套经典 ESP32 的 16 通道/高速模式——soc_caps.h 说 8 通道、14 位、仅低速</text>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,404)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>
