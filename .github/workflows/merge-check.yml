@@ -58,7 +58,7 @@ jobs:
           python -m book.mapping --check
           python -m unittest discover book/tests -v
           python -m book.checks --check
-          python tools/slop_lint.py docs/v0-foundations/*.md docs/v1-drivers/*.md
+          python tools/slop_lint.py docs/v0-foundations/*.md docs/v1-drivers/*.md docs/v2-reliability/*.md docs/v3-rtos/*.md
           python -m book.build_html --check
       - name: Set up Node
         uses: actions/setup-node@v7
