@@ -126,7 +126,7 @@
         "ch19"
       ],
       "purpose": "根书原章",
-      "status": "partial",
+      "status": "migrated",
       "note": "RTC→ch11，看门狗→ch19"
     },
     {
@@ -708,7 +708,7 @@
         "ch19"
       ],
       "purpose": "外设深潜",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -718,7 +718,7 @@
         "ch19"
       ],
       "purpose": "外设深潜",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -1049,7 +1049,7 @@
         "ch19"
       ],
       "purpose": "平台对照（ESP32）",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
