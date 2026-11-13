@@ -88,10 +88,10 @@ mcu	mcu/docs/rtos/rtthread/06-env-menuconfig.md	ch26	RTOS 深潜	migrated
 mcu	mcu/docs/rtos/rtthread/07-port-f407.md	ch23	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/compare/00-side-by-side.md	ch27	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/compare/01-choose.md	ch27	RTOS 深潜	migrated	
-mcu	mcu/docs/esp32/00-env.md	ch30	平台对照（ESP32）	planned	
-mcu	mcu/docs/esp32/01-arch-boot.md	ch30	平台对照（ESP32）	planned	
+mcu	mcu/docs/esp32/00-env.md	ch30	平台对照（ESP32）	migrated	
+mcu	mcu/docs/esp32/01-arch-boot.md	ch30	平台对照（ESP32）	migrated	
 mcu	mcu/docs/esp32/02-gpio-matrix.md	ch31	平台对照（ESP32）	planned	
-mcu	mcu/docs/esp32/03-idf-anatomy.md	ch30	平台对照（ESP32）	planned	
+mcu	mcu/docs/esp32/03-idf-anatomy.md	ch30	平台对照（ESP32）	migrated	
 mcu	mcu/docs/esp32/04-irq-dualcore.md	ch10;ch34	平台对照（ESP32）	partial	双核→ch10，Cache→ch34
 mcu	mcu/docs/esp32/05-uart-driver.md	ch31	平台对照（ESP32）	planned	
 mcu	mcu/docs/esp32/06-spi-i2c-driver.md	ch31	平台对照（ESP32）	planned	
