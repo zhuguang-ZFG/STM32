@@ -653,7 +653,7 @@ F407 一侧：1 MB 主 Flash 从 `0x08000000` 起，12 个扇区按 16/64/128 KB
 
 F103 一侧：C8 是 64 KB、中容量、1 KB 一页、64 页，页 63 在 `0x0800FC00`；高密度型号是 2 KB 一页，地址按 `n×0x800` 重算。Flash 控制器基址 `0x40022000`，CR 的 PG/PER/STRT/LOCK 与 SR 的 BSY/PGERR/WRPRTERR/EOP 位号和 F4 不同；编程粒度是半字，没有 PSIZE 与按字节编程。本书布局是 Bootloader 16 KB、参数区 2 KB、App 46 KB；双槽把 App 区切成 22 KB+22 KB+2 KB。IAP 的 App 起点是 `0x08004800`，VTOR 同样要在 App 里写。读保护 `0xA5` 是不保护，其他值启用保护，没有 Level 2；解除保护会整片擦除主 Flash。F103C8 只有 20 KB SRAM，向量表第 0 字的 MSP 检查要用 `0x20000000`–`0x20005000`，不要照抄 F407 的 `0x20020000`。GD32 的 Flash 控制器是另一套寄存器，本章不展开。
 
-ESP32 只划边界。ESP32-S3 没有 STM32 的 FLASH_KEYR/CR/SR，也没有扇区 11 或页 63 这套地址；它的版图由 CSV 分区表管，参数由 NVS 管，升级由 `esp_ota_*` 管。P10 的 16 MB 示例表里，`0x8000` 放分区表，`0x9000` 起放 nvs，`0xE000` 放 otadata，两个 3 MB 的 ota_0/ota_1 轮流坐庄；NVS 按 4096 字节页追加写；OTA 的 NEW/PENDING_VERIFY/VALID/ABORTED 状态机只在 `CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 打开后存在，默认不开时 NEW 与 PENDING_VERIFY 不被使用。这些是 P10 的来源说法，本章没有核 IDF 原文，也没有在 ESP32 上复跑；P10 声称 OTA 回滚做过实物实验并日志存档，但本仓库未见原始日志文件。ESP32 的启动、外设与驱动框架在[第 31 章][ch31]；低功耗与看门狗分别在[第 18 章](../v2-reliability/18-low-power.md)与[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。
+ESP32 只划边界。ESP32-S3 没有 STM32 的 FLASH_KEYR/CR/SR，也没有扇区 11 或页 63 这套地址；它的版图由 CSV 分区表管，参数由 NVS 管，升级由 `esp_ota_*` 管。P10 的 16 MB 示例表里，`0x8000` 放分区表，`0x9000` 起放 nvs，`0xE000` 放 otadata，两个 3 MB 的 ota_0/ota_1 轮流坐庄；NVS 按 4096 字节页追加写；OTA 的 NEW/PENDING_VERIFY/VALID/ABORTED 状态机只在 `CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 打开后存在，默认不开时 NEW 与 PENDING_VERIFY 不被使用。这些是 P10 的来源说法，本章没有核 IDF 原文，也没有在 ESP32 上复跑；P10 声称 OTA 回滚做过实物实验并日志存档，但本仓库未见原始日志文件。ESP32 的启动、外设与驱动框架在[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)；低功耗与看门狗分别在[第 18 章](../v2-reliability/18-low-power.md)与[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。
 
 其它分工：W25Q 外部 Flash 的 SPI 读写在[第 16 章](./16-i2c-spi.md)；存储器地图与时钟树在[第 8 章](./08-architecture-memory-clock.md)；链接脚本、VMA/LMA 与启动序列在[第 6 章](../v0-foundations/06-linker-startup-map.md)；长擦除期间的看门狗与复位原因在[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)；低功耗下的 Flash 掉电与唤醒在[第 18 章](../v2-reliability/18-low-power.md)。
 
@@ -682,4 +682,3 @@ ESP32 只划边界。ESP32-S3 没有 STM32 的 FLASH_KEYR/CR/SR，也没有扇�
 
 </details>
 
-[ch31]: ../v4-platforms/31-esp32-drivers-audio.md

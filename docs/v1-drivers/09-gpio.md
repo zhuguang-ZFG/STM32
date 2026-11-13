@@ -265,9 +265,9 @@ F407 这一侧，本章的偏移、位段与 PF6 演算都来自 RM0090 §8.4 �
 
 F103 这一侧，共用的是“配置 + 数据 + 复用”三分法，不共用寄存器名与编码：配置走 `CRL/CRH`，复位有独立的 `BRR`，换脚走 AFIO 的 `MAPR` 整组重映射，速度档只有 2/10/50MHz，GPIO 时钟在 APB2。电气界限也要按数据手册重查：PC13–PC15 的 3mA/2MHz/30pF 与封装脚位绑定，换封装后第 2 脚、第 10 脚都可能变。
 
-GD32 只划边界。来源 S3 的延伸把对照指向 G2（`mcu/docs/gd32/02-gpio-af.md`）；G2 的记录是“改名不改岗”：GD32F4xx 的同一组偏移上换成了 `CTL`/`OMODE`/`OSPD`/`PUD`/`ISTAT`/`OCTL`/`BOP`，基址与编码不变，另有两个 STM32F4 没有的寄存器 `BC` 与 `TG`。这些差异的来源是 G2 对 `gd32f4xx_gpio.h` 的读数，本章不复述细节；GD32 系列的完整对照与 ARM/RISC-V 两条线见[第 29 章][ch29]。
+GD32 只划边界。来源 S3 的延伸把对照指向 G2（`mcu/docs/gd32/02-gpio-af.md`）；G2 的记录是“改名不改岗”：GD32F4xx 的同一组偏移上换成了 `CTL`/`OMODE`/`OSPD`/`PUD`/`ISTAT`/`OCTL`/`BOP`，基址与编码不变，另有两个 STM32F4 没有的寄存器 `BC` 与 `TG`。这些差异的来源是 G2 对 `gd32f4xx_gpio.h` 的读数，本章不复述细节；GD32 系列的完整对照与 ARM/RISC-V 两条线见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。
 
-ESP32 这一侧，本章没有取证来源，不写寄存器差异。ESP32-S3 的架构与启动见[第 30 章][ch30]，外设与驱动框架见[第 31 章][ch31]；不要把这边的 `MODER`、`BSRR`、`AFR` 名字带过去，也不要假设引脚复用是同一套模型。芯片迁移的通用检查表（引脚、时钟、外设能力）在[第 28 章][ch28]。
+ESP32 这一侧，本章没有取证来源，不写寄存器差异。ESP32-S3 的架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)，外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)；不要把这边的 `MODER`、`BSRR`、`AFR` 名字带过去，也不要假设引脚复用是同一套模型。芯片迁移的通用检查表（引脚、时钟、外设能力）在[第 28 章](../v4-platforms/28-chip-migration-differences.md)。
 
 ## 离开检查
 
@@ -294,8 +294,4 @@ ESP32 这一侧，本章没有取证来源，不写寄存器差异。ESP32-S3 �
 
 </details>
 
-[ch28]: ../v4-platforms/28-chip-migration-differences.md
-[ch29]: ../v4-platforms/29-gd32-arm-riscv.md
-[ch30]: ../v4-platforms/30-esp32s3-architecture-boot.md
-[ch31]: ../v4-platforms/31-esp32-drivers-audio.md
 [ch40]: ../v6-labs-projects/40-lab-method-instruments.md

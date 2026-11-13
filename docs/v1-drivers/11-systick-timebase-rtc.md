@@ -323,7 +323,7 @@ F103 一侧，内核计数器同名同址，分母换成 72MHz：1ms 是 71999�
 
 RTC 一侧，F1 是 32 位秒计数器加 10 个 16 位备份寄存器；F4 是 BCD 日历 `TR`/`DR`、20 个 32 位备份寄存器，还多了周期唤醒与硬件时间戳。LSE 的引脚、VBAT 的脚位、备份寄存器的个数与宽度都随封装与系列变，换芯片先查数据手册的引脚表与备份域章节。LSE 占用的 PC14/PC15 不能再当 GPIO，PC13 的灌电流限制见[第 9 章](./09-gpio.md)。
 
-GD32 的 ARM 型号沿用 Cortex-M 的 SysTick，RISC-V 型号改用 MTIME 一类机器定时器，名字与编程模型都换了；对照见[第 29 章][ch29]。ESP32 不在本章平台范围，其架构与启动见[第 30 章][ch30]。定时器 TIM 与 PWM 见[第 12 章](./12-timers-pwm.md)，看门狗见[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，低功耗唤醒见[第 18 章](../v2-reliability/18-low-power.md)。
+GD32 的 ARM 型号沿用 Cortex-M 的 SysTick，RISC-V 型号改用 MTIME 一类机器定时器，名字与编程模型都换了；对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。ESP32 不在本章平台范围，其架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)。定时器 TIM 与 PWM 见[第 12 章](./12-timers-pwm.md)，看门狗见[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，低功耗唤醒见[第 18 章](../v2-reliability/18-low-power.md)。
 
 ## 离开检查
 
@@ -350,5 +350,3 @@ GD32 的 ARM 型号沿用 Cortex-M 的 SysTick，RISC-V 型号改用 MTIME 一�
 
 </details>
 
-[ch29]: ../v4-platforms/29-gd32-arm-riscv.md
-[ch30]: ../v4-platforms/30-esp32s3-architecture-boot.md

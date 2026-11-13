@@ -11,7 +11,7 @@ platforms: [f407, f103]
 
 - **问题**：`GPIOF->BSRR` 展开后为什么正好落在 `0x40021418`？一个只有 `a`、`b`、`c` 三个成员、数据宽度合计 6 字节的结构体，为什么 `sizeof` 是 12？为什么硬件寄存器映射不能用位域，也不能随手加 `#pragma pack(1)`？三个问题分别指向成员顺序、对齐填充与编译器自由裁量的边界。
 - **交付**：能拿到一张寄存器地图就写出对应的 `TypeDef`，用 `offsetof`、`sizeof`、`_Static_assert` 三件工具逐成员对账；能手算含填充结构体的每个偏移，并在内存画布上指出洞的位置；能说清结构体映射担保什么、不担保什么，以及为什么位域与 pack 不属于寄存器。
-- **边界**：本章逐成员核对的是 F407 的 `stm32f407xx.h`；F103 的寄存器组不是同一张地图，来源 C4 没有给出它的成员表与偏移，本章不补，寄存器级差异指向卷 4 的[第 28 章][ch28]与[第 29 章][ch29]。结构体按值传参、返回时的寄存器与栈约定属于调用约定，留给[第 4 章](./04-function-pointer-state-machine.md)。来源记录里板上 GDB 对照仍标为待回填，本章不把它写成已完成。位域布局的可移植性只有编译器文档与来源结论，没有跨工具链对照实验。
+- **边界**：本章逐成员核对的是 F407 的 `stm32f407xx.h`；F103 的寄存器组不是同一张地图，来源 C4 没有给出它的成员表与偏移，本章不补，寄存器级差异指向卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。结构体按值传参、返回时的寄存器与栈约定属于调用约定，留给[第 4 章](./04-function-pointer-state-machine.md)。来源记录里板上 GDB 对照仍标为待回填，本章不把它写成已完成。位域布局的可移植性只有编译器文档与来源结论，没有跨工具链对照实验。
 - **依据锚点**：C4《结构体与 ABI：一个结构体罩住整组寄存器》（`mcu/docs/c/04-struct-abi.md`）及其取证工程 `mcu/code/c/04-struct-abi/probe.c`、`broken.c`；`stm32f407xx.h` 第 526–537 行的 `GPIO_TypeDef` 定义、RM0090 §8.4 的寄存器地图与 ARM AAPCS 的布局规则均转引自 C4；变量段归属与指针宽度在[第 1 章](./01-c-memory-model.md)，volatile 的访存合同在[第 2 章](./02-c-volatile-ub.md)。
 
 ## 先做出来
@@ -284,14 +284,14 @@ assert-fail.c:6:1: error: static assertion failed: "GPIO_TypeDef size must be 0x
 
 本章的布局规则不是 F407 专属。声明顺序、成员对齐、结构体对齐与数组 stride 来自 ARM AAPCS，属于架构级约定；两平台的 C 编译器都受它约束，所以“成员按声明顺序排、地址按对齐递增、成员不许重排”这套算法可以带着走。`offsetof`、`sizeof`、`_Static_assert` 三件工具也是标准 C，不依赖某一颗芯片。
 
-但寄存器块的具体形状是芯片专属。本章逐成员核对的是 F407 的 `stm32f407xx.h`，由此得到的 `BSRR = 0x18`、`sizeof(GPIO_TypeDef) = 0x28`、`GPIOF_BASE = 0x40021400` 都只属于这张地图。来源 C4 没有给出 F103 的 GPIO 成员表、偏移或基址，本章不替它补；把 F407 的寄存器名、偏移、时钟或引脚直接套到 F103 上，是本章明确划出的红线。两平台的寄存器级差异、移植检查表与型号对照，放在卷 4 的[第 28 章][ch28]与[第 29 章][ch29]。
+但寄存器块的具体形状是芯片专属。本章逐成员核对的是 F407 的 `stm32f407xx.h`，由此得到的 `BSRR = 0x18`、`sizeof(GPIO_TypeDef) = 0x28`、`GPIOF_BASE = 0x40021400` 都只属于这张地图。来源 C4 没有给出 F103 的 GPIO 成员表、偏移或基址，本章不替它补；把 F407 的寄存器名、偏移、时钟或引脚直接套到 F103 上，是本章明确划出的红线。两平台的寄存器级差异、移植检查表与型号对照，放在卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。
 
 其余几条边界同样按来源收口：
 
 | 事项 | 本章的证据范围 | 跨平台时的处理 |
 | --- | --- | --- |
 | 布局规则 | AAPCS 三规则，来源 C4 | 规则可复用，具体偏移必须逐芯片对账 |
-| GPIO 寄存器地图 | 仅 F407 头文件 | F103 不照搬，指向[第 28 章][ch28]、[第 29 章][ch29] |
+| GPIO 寄存器地图 | 仅 F407 头文件 | F103 不照搬，指向[第 28 章](../v4-platforms/28-chip-migration-differences.md)、[第 29 章](../v4-platforms/29-gd32-arm-riscv.md) |
 | 端序 | 宿主实测小端；来源写明 M4 默认小端 | F103 未测，不在两平台间泛化 |
 | pack 的对齐风险 | Cortex-M4 上可能触发 `UsageFault` | 具体异常行为按目标平台手册复核 |
 | 结构体传参/返回 | 本章未展开 | 第 4 章的调用约定 |
@@ -319,5 +319,3 @@ assert-fail.c:6:1: error: static assertion failed: "GPIO_TypeDef size must be 0x
 
 动作验收：找一张你手上芯片的 GPIO 寄存器地图，写出 `TypeDef`，为地图上的第一个、最后一个与任意一个中间寄存器各写一条偏移断言，再写一条总大小断言；编译通过后，故意把两个同宽成员对调，确认断言能抓住你。
 
-[ch28]: ../v4-platforms/28-chip-migration-differences.md
-[ch29]: ../v4-platforms/29-gd32-arm-riscv.md

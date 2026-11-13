@@ -277,7 +277,7 @@ F407 一侧：ADC1/2/3 在 APB2，基址 `0x40012000/2100/2200`，每个 16 个�
 
 F103 一侧：C8 只有 ADC1/2，没有 ADC3、没有 DAC；ADC1 基址 `0x40012400`，ADC2 `0x40012800`，时钟门在 `RCC_APB2ENR` 的 bit9/10。ADCCLK 上限 14 MHz，72 MHz 主频下 ÷6=12 MHz 合法、÷4=18 MHz 越限；一次转换是采样加 12.5 个 ADCCLK，8 档采样 1.5…239.5 周期，同一个编码与 F4 的含义不同。内部通道在 ADC1：IN16 温度、IN17 Vrefint，ADC2 的 16/17 接 VSS；上电要做 RSTCAL/CAL 校准。ADC1 的 DMA 请求在 DMA1 Channel1。大容量 F103 有 DAC，C8 没有；在 C8 上要模拟电压，用 PWM+RC 或外接 DAC 芯片。
 
-GD32 与 ESP32 不在本章平台列表。GD32 的 ADC/DAC 命名、通道数与校准流程和 STM32 不是一套，完整对照见[第 29 章][ch29]；ESP32-S3 的 ADC 由 oneshot/continuous 驱动管理，DAC 与 PWM 的 API 也另成一套，外设与驱动框架见[第 31 章][ch31]。采样数据的存储与掉电保护见[第 17 章](./17-flash-iap-ota.md)，低功耗下的 ADC 关断见[第 18 章](../v2-reliability/18-low-power.md)，仪器与证据方法见[第 40 章][ch40]。
+GD32 与 ESP32 不在本章平台列表。GD32 的 ADC/DAC 命名、通道数与校准流程和 STM32 不是一套，完整对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)；ESP32-S3 的 ADC 由 oneshot/continuous 驱动管理，DAC 与 PWM 的 API 也另成一套，外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。采样数据的存储与掉电保护见[第 17 章](./17-flash-iap-ota.md)，低功耗下的 ADC 关断见[第 18 章](../v2-reliability/18-low-power.md)，仪器与证据方法见[第 40 章][ch40]。
 
 ## 离开检查
 
@@ -304,8 +304,6 @@ GD32 与 ESP32 不在本章平台列表。GD32 的 ADC/DAC 命名、通道数与
 
 </details>
 
-[ch29]: ../v4-platforms/29-gd32-arm-riscv.md
-[ch31]: ../v4-platforms/31-esp32-drivers-audio.md
 [ch40]: ../v6-labs-projects/40-lab-method-instruments.md
 
 

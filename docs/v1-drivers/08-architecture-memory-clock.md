@@ -304,7 +304,7 @@ F407 与 F405 共享本章的 RCC 位定义与 VOS 天花板，但 F405/407 没�
 
 F103 一侧，4GB 地图与统一编址同样成立，但时钟树是“HSE 或 HSI/2 再乘 N”的结构：没有 PLLM/PLLN/PLLP，PLLMUL 只有 ×2~×16，SYSCLK 上限 72MHz；APB1 上限 36MHz、APB2 上限 72MHz；Flash 等待按 0/1/2 三档；MCO 可用 PLL÷2 送出 36MHz；CSS 走 NMI，要写 CSSC。F103 的外设基址也与 F407 不同（例如 GPIOA 在 `0x4001_0800`、RCC 在 `0x4002_1000`），地址不能跨系列照抄。F1 的 `RCC_CFGR` 还要认准中密度第 7.3.2 节，互联型第 8.3.2 节的编码不适用。
 
-GD32 只划边界。来源在延伸里留的指针是“GD32 的 RCU 与 RCC 对照”，本章不展开它的时钟源、PLL 字段与寄存器布局，也不把 F407 的位段名当成 GD32 的名字。芯片迁移的方法论与引脚/外设差异见[第 28 章][ch28]，GD32 系列（ARM 与 RISC-V）的对照见[第 29 章][ch29]。ESP32 不在本章平台范围内，其架构与启动见[第 30 章][ch30]。
+GD32 只划边界。来源在延伸里留的指针是“GD32 的 RCU 与 RCC 对照”，本章不展开它的时钟源、PLL 字段与寄存器布局，也不把 F407 的位段名当成 GD32 的名字。芯片迁移的方法论与引脚/外设差异见[第 28 章](../v4-platforms/28-chip-migration-differences.md)，GD32 系列（ARM 与 RISC-V）的对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。ESP32 不在本章平台范围内，其架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)。
 
 ## 离开检查
 
@@ -331,6 +331,3 @@ GD32 只划边界。来源在延伸里留的指针是“GD32 的 RCU 与 RCC 对
 
 </details>
 
-[ch28]: ../v4-platforms/28-chip-migration-differences.md
-[ch29]: ../v4-platforms/29-gd32-arm-riscv.md
-[ch30]: ../v4-platforms/30-esp32s3-architecture-boot.md

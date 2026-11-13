@@ -11,7 +11,7 @@ platforms: [f407, f103]
 
 - **问题**：`void (*table[8])(void)` 到底怎么读，`typedef` 改了什么？为什么说向量表就是 Flash 里的函数指针数组？`fsm_feed` 里一行查表调用，编译出来是什么？环形缓冲的读写指针相等时，到底是空还是满？函数指针跳过去之后，前四个参数凭什么正好在 r0–r3、第 5 个凭什么在栈上、局部变量凭什么随 sp 自动回收？中断服务函数为什么必须写成 `void f(void)`？
 - **交付**：能读、能写函数指针声明与 `typedef`；能把“串口命令解析”落成状态×事件的动作表；能为环形缓冲选定满/空规则并说清容量代价；能拿 `-O2` 汇编指出参数落位、栈帧大小与返回地址位置；能按向量表槽位写出签名正确的 ISR，并说清它为什么只做记账。
-- **边界**：本章的逐条汇编取证来自 Cortex-M4（F407 目标）与宿主 x86-64 两套产物；F103 侧只取根书第 04 章的 ISR 签名与“只置标志”写法，没有对应的逐条汇编对照。AAPCS 规则可跨 ARM Cortex-M 复用，但具体指令形状、向量表大小与硬浮点寄存器不搬运。NVIC 优先级、EXTI 通道与寄存器细节留给[第 10 章][ch10]；寄存器、时钟与引脚差异指向卷 4 的[第 28 章][ch28]与[第 29 章][ch29]。共享变量的 `volatile` 合同见[第 2 章](./02-c-volatile-ub.md)，结构体布局与寄存器映射见[第 3 章](./03-struct-abi-registers.md)。
+- **边界**：本章的逐条汇编取证来自 Cortex-M4（F407 目标）与宿主 x86-64 两套产物；F103 侧只取根书第 04 章的 ISR 签名与“只置标志”写法，没有对应的逐条汇编对照。AAPCS 规则可跨 ARM Cortex-M 复用，但具体指令形状、向量表大小与硬浮点寄存器不搬运。NVIC 优先级、EXTI 通道与寄存器细节留给[第 10 章][ch10]；寄存器、时钟与引脚差异指向卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。共享变量的 `volatile` 合同见[第 2 章](./02-c-volatile-ub.md)，结构体布局与寄存器映射见[第 3 章](./03-struct-abi-registers.md)。
 - **依据锚点**：C5《函数指针、状态机与环形缓冲》（`mcu/docs/c/05-func-pointer.md`）；C6《调用约定与栈帧》（`mcu/docs/c/06-abi-stack.md`）；根书第 04 章《中断与 NVIC》（`docs/04-中断与NVIC.md`）的驱动基本功与中断服务函数签名部分；AAPCS 条款与 PM0056 的 NVIC 章节均转引自上述来源。
 
 ## 先做出来
@@ -329,7 +329,7 @@ void EXTI0_IRQHandler(void)
 
 本章可带走的结论是语言与架构级的：函数指针与 `typedef` 是标准 C；向量表是“Flash 里的函数指针数组”这一机制来自 Cortex-M 启动文件；AAPCS 的参数落位、被调方保存、8 字节栈对齐是 ARM 公布的调用约定，gcc / clang / IAR / Keil 都遵守。两平台的 C 编译器都受它约束，所以“前 4 个参数进 r0–r3、第 5 个起走栈、64 位占偶奇对、sp 移动即栈帧生灭”这套算法可以带着走。
 
-不能带走的是取证形状与芯片细节。本章逐条汇编来自 Cortex-M4（F407 目标）与宿主 x86-64：`.isr_vector` 的 392 字节、`FSM` 的 48 字节、`non_leaf` 的 24 字节、`d0/d1` 的硬浮点路径，都是这套工具链与这颗内核的读数。F103 侧只取根书第 04 章的 ISR 签名与“只置标志”写法，来源没有给出 F103 的逐条汇编对照，本章不把 M4 的指令形状、向量表大小或硬浮点寄存器当成 F103 的实测。`EXTI0_IRQHandler` 这样的槽位名与 IRQ 编号属于芯片家族的启动文件，NVIC/EXTI 的完整流程在[第 10 章][ch10]；寄存器名、时钟与引脚差异指向卷 4 的[第 28 章][ch28]与[第 29 章][ch29]，本章不泛化。
+不能带走的是取证形状与芯片细节。本章逐条汇编来自 Cortex-M4（F407 目标）与宿主 x86-64：`.isr_vector` 的 392 字节、`FSM` 的 48 字节、`non_leaf` 的 24 字节、`d0/d1` 的硬浮点路径，都是这套工具链与这颗内核的读数。F103 侧只取根书第 04 章的 ISR 签名与“只置标志”写法，来源没有给出 F103 的逐条汇编对照，本章不把 M4 的指令形状、向量表大小或硬浮点寄存器当成 F103 的实测。`EXTI0_IRQHandler` 这样的槽位名与 IRQ 编号属于芯片家族的启动文件，NVIC/EXTI 的完整流程在[第 10 章][ch10]；寄存器名、时钟与引脚差异指向卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)，本章不泛化。
 
 | 事项 | 本章的证据范围 | 跨平台时的处理 |
 | --- | --- | --- |
@@ -339,7 +339,7 @@ void EXTI0_IRQHandler(void)
 | 硬浮点 d0/d1 | C6 的 `-mfloat-abi=hard` M4 证据 | F103 未取证，按目标芯片编译选项核对 |
 | ISR 签名 | 根书第 04 章的 F103 例子 `void EXTI0_IRQHandler(void)` | 槽位名与 IRQ 编号按芯片启动文件 |
 | NVIC/EXTI 细节 | 本章不展开 | [第 10 章][ch10] |
-| 寄存器、时钟、引脚 | 本章未展开 | [第 28 章][ch28]、[第 29 章][ch29] |
+| 寄存器、时钟、引脚 | 本章未展开 | [第 28 章](../v4-platforms/28-chip-migration-differences.md)、[第 29 章](../v4-platforms/29-gd32-arm-riscv.md) |
 
 ## 离开检查
 
@@ -367,5 +367,3 @@ void EXTI0_IRQHandler(void)
 动作验收：在自己的工程里找一个回调注册表，把裸声明改成 `typedef` 并补一条类型等价的编译期检查；再写一个三状态的小状态机，用 `const` 动作表实现，喂一条完整命令与一条带垃圾的命令；最后对一个非叶子函数生成 `-O2` 汇编，指出 prologue、epilogue 与返回地址所在的那个字。
 
 [ch10]: ../v1-drivers/10-interrupts-nvic-exti.md
-[ch28]: ../v4-platforms/28-chip-migration-differences.md
-[ch29]: ../v4-platforms/29-gd32-arm-riscv.md

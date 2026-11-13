@@ -385,11 +385,11 @@ F407 一侧：USART1 在 APB2，168MHz 主频、APB2=/2 时 PCLK2=84MHz，115200
 
 F103 一侧：USART1 同样在 APB2，72MHz 主频时 PCLK2=72MHz，115200 用 `0x271`；PA9 是 LQFP48 第 30 脚、PA10 第 31 脚，要换到 PB6/PB7 得先开 AFIO 时钟再配重映射。F103 的 CR1 没有 OVER8 位，只有 16 倍过采样，别把 F4 的 8 倍写法搬过去。USART1 的时钟门是 `RCC_APB2ENR` bit14；USART2/3 在 `RCC_APB1ENR` 的 bit17/18，PCLK1=36MHz 时同样 115200 要 `0x138`，误差 +0.16%。接收 DMA 用 DMA1 Channel5，发送用 DMA1 Channel4；SPL 的 `USART_Init()` 与 HAL 落位相同，但一手源码仍缺。
 
-GD32 只划边界。G3《USART 增强点》记录了两条可用的差异：GD32F4xx 的串口从 0 起编号，寄存器名从 CR1/CR2/CR3、BRR、SR、DR 换成 CTL0/CTL1/CTL2、BAUD、STAT、DATA，动作位加 EN 后缀（UEN/REN/TEN），状态位用 B 替代 X（RBNE/TBE）。G3 还给过一张偏移表，把 CR1 写成 `0x00`、SR 写成 `0x14`，这和 RM0090 与仓库速查表的 USART 布局（SR `0x00`、DR `0x04`、BRR `0x08`、CR1 `0x0C`）对不上；本章不复述那张表，偏移一项标为待复核，完整对照与 ARM/RISC-V 两条线见[第 29 章][ch29]。在 GD32 上照抄 STM32 的 CR1 名字编不过，这是确定的；按偏移迁移之前先对一遍手册。
+GD32 只划边界。G3《USART 增强点》记录了两条可用的差异：GD32F4xx 的串口从 0 起编号，寄存器名从 CR1/CR2/CR3、BRR、SR、DR 换成 CTL0/CTL1/CTL2、BAUD、STAT、DATA，动作位加 EN 后缀（UEN/REN/TEN），状态位用 B 替代 X（RBNE/TBE）。G3 还给过一张偏移表，把 CR1 写成 `0x00`、SR 写成 `0x14`，这和 RM0090 与仓库速查表的 USART 布局（SR `0x00`、DR `0x04`、BRR `0x08`、CR1 `0x0C`）对不上；本章不复述那张表，偏移一项标为待复核，完整对照与 ARM/RISC-V 两条线见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。在 GD32 上照抄 STM32 的 CR1 名字编不过，这是确定的；按偏移迁移之前先对一遍手册。
 
-ESP32 只划边界。ESP32-S3 没有 STM32 的 USART 寄存器，串口走 ESP-IDF 的 UART 驱动，环形缓冲、事件队列与超时语义都由驱动定义；本章的 BRR、TXE/TC、IDLE 名字一个都不要带过去。C8 在 S3 上用的是 UART1、GPIO10=TX、GPIO11=RX、驱动 RX 环形区 1024 字节、每轮最多取 512 字节、事件最多等 5ms，这些是那一份工程的具体配置，不是系列通用常数。外设与驱动框架见[第 31 章][ch31]，架构与启动见[第 30 章][ch30]。
+ESP32 只划边界。ESP32-S3 没有 STM32 的 USART 寄存器，串口走 ESP-IDF 的 UART 驱动，环形缓冲、事件队列与超时语义都由驱动定义；本章的 BRR、TXE/TC、IDLE 名字一个都不要带过去。C8 在 S3 上用的是 UART1、GPIO10=TX、GPIO11=RX、驱动 RX 环形区 1024 字节、每轮最多取 512 字节、事件最多等 5ms，这些是那一份工程的具体配置，不是系列通用常数。外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)，架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)。
 
-其它分工：DMA 引擎在[第 14 章](./14-dma.md)；仪器与证据方法在[第 40 章][ch40]；双板记录器项目用的是同一份 codec，见[第 41 章][ch41]。CAN 与 USB 的现场总线对照在[第 35 章][ch35]。
+其它分工：DMA 引擎在[第 14 章](./14-dma.md)；仪器与证据方法在[第 40 章][ch40]；双板记录器项目用的是同一份 codec，见[第 41 章][ch41]。CAN 与 USB 的现场总线对照在[第 35 章](../v4-platforms/35-can-usb-fieldbus.md)。
 
 ## 离开检查
 
@@ -416,9 +416,5 @@ ESP32 只划边界。ESP32-S3 没有 STM32 的 USART 寄存器，串口走 ESP-I
 
 </details>
 
-[ch29]: ../v4-platforms/29-gd32-arm-riscv.md
-[ch30]: ../v4-platforms/30-esp32s3-architecture-boot.md
-[ch31]: ../v4-platforms/31-esp32-drivers-audio.md
-[ch35]: ../v4-platforms/35-can-usb-fieldbus.md
 [ch40]: ../v6-labs-projects/40-lab-method-instruments.md
 [ch41]: ../v6-labs-projects/41-dual-board-logger-project.md

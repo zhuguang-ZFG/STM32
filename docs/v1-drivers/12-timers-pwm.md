@@ -5,13 +5,13 @@ platforms: [f407, f103, esp32]
 
 # 定时器与 PWM
 
-> 定时器的全部零件只有一个计数器：时钟推着 CNT 往上走，PSC 决定走多快，ARR 决定走到哪里回头，CCR 决定一圈里在哪一拍翻电平。这三个数拧对，1kHz 的方波就从 PA6 出来；把同一个计数器反过来用，边沿一到，硬件把 CNT 拍进 CCR，就成了输入捕获。这一章把 F407 的 84MHz 与 F103 的 72MHz 两套账并排算，把 PWM、定时中断、捕获与编码器接到同一张时基图上，再用 HAL 的三段初始化与手写落位对账。ESP32 只划边界：它的 timer group 与 LEDC 不是这套寄存器，完整内容在[第 31 章][ch31]。
+> 定时器的全部零件只有一个计数器：时钟推着 CNT 往上走，PSC 决定走多快，ARR 决定走到哪里回头，CCR 决定一圈里在哪一拍翻电平。这三个数拧对，1kHz 的方波就从 PA6 出来；把同一个计数器反过来用，边沿一到，硬件把 CNT 拍进 CCR，就成了输入捕获。这一章把 F407 的 84MHz 与 F103 的 72MHz 两套账并排算，把 PWM、定时中断、捕获与编码器接到同一张时基图上，再用 HAL 的三段初始化与手写落位对账。ESP32 只划边界：它的 timer group 与 LEDC 不是这套寄存器，完整内容在[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。
 
 ## 本章罗盘
 
 - **问题**：F407 的 TIM3 挂在 APB1，PCLK1=42MHz，为什么定时器时钟是 84MHz，1kHz 要写 PSC=83、ARR=999？两个“+1”各来自哪一段计数？改 CCR 为什么只动占空比、不动频率？TIM 中断和 SysTick 都数数，什么时候该用哪一个？PWM 的 TIM3 为什么不能拿同一个定时器测自己的周期，输入捕获的 `uint32_t` 差值在什么前提下才跨得过回绕？HAL 的 `HAL_TIM_PWM_Init`、`ConfigChannel`、`Start` 与手写寄存器落位怎么一一对上，TIM1 为什么还多一个 MOE？e03 的示波器探头该接哪里、记录什么，来源又到底留下了哪些读数？
 - **交付**：能从真实的 TIMclk 算出任意目标频率的 PSC/ARR，并先检查它装不装得进 16 位或 32 位；能配出 PWM 模式 1 的 OC1M、OC1PE、CC1E 三位并算占空比；能按“内核心跳还是外设事件”给 TIM 与 SysTick 分工；能设计输入捕获的回绕判据，读懂 `capture.h` 的接受范围与过捕获处理；能配编码器模式 3 的 4 倍频并算出每计数多少度；能把 HAL 三段初始化对回手写寄存器；能按 e03 接线、读波形并留下可复现的记录。
-- **边界**：三平台章。F407 的 84MHz、PA6/AF2、TIM2 的 32 位与 HAL 行号来自 S6《定时器 TIM》及 RM0090、DS8626；F103 的 72MHz、16 位定时器、PA6 默认复用与 TIM1 的 MOE 来自根书第 05 章及 RM0008、DS5319；ESP32 只写 timer group 与 LEDC 的边界，细节指向[第 31 章][ch31]。SysTick 的 24 位上限与 RTC 留给[第 11 章](./11-systick-timebase-rtc.md)，DMA 留给[第 14 章](./14-dma.md)，ADC 触发留给[第 15 章](./15-adc-dac-sampling.md)，电机编码器测速留给[第 38 章][ch38]，仪器证据方法留给[第 40 章][ch40]。三个来源都没有留下本章的上板读数：S6 把捕获测频标成待实测，e03 的记录表是空的；S6 又说 APB ×2 由 `02-tim-pwm` 实测得出，同一工程的 README 与 `main.c` 却标着待上板实测，两处说法不一致。本章不把预期现象写成已经量到的结果。
+- **边界**：三平台章。F407 的 84MHz、PA6/AF2、TIM2 的 32 位与 HAL 行号来自 S6《定时器 TIM》及 RM0090、DS8626；F103 的 72MHz、16 位定时器、PA6 默认复用与 TIM1 的 MOE 来自根书第 05 章及 RM0008、DS5319；ESP32 只写 timer group 与 LEDC 的边界，细节指向[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。SysTick 的 24 位上限与 RTC 留给[第 11 章](./11-systick-timebase-rtc.md)，DMA 留给[第 14 章](./14-dma.md)，ADC 触发留给[第 15 章](./15-adc-dac-sampling.md)，电机编码器测速留给[第 38 章](../v5-motion/38-encoder-speed-measurement.md)，仪器证据方法留给[第 40 章][ch40]。三个来源都没有留下本章的上板读数：S6 把捕获测频标成待实测，e03 的记录表是空的；S6 又说 APB ×2 由 `02-tim-pwm` 实测得出，同一工程的 README 与 `main.c` 却标着待上板实测，两处说法不一致。本章不把预期现象写成已经量到的结果。
 - **依据锚点**：S6《S6 定时器 TIM：一器多用的瑞士军刀》（`mcu/docs/stm32/06-tim.md`）、根书第 05 章《定时器与 PWM》（`docs/05-定时器与PWM.md`）的时基与 PWM 部分、E03《实验 E03 示波器看 PWM》（`mcu/docs/lab/e03-scope-pwm.md`）；[第 8 章](./08-architecture-memory-clock.md)的 APB 分频与定时器时钟、[第 9 章](./09-gpio.md)的复用配置与 PC13 灌电流、[第 10 章](./10-interrupts-nvic-exti.md)的 NVIC 使能、[第 11 章](./11-systick-timebase-rtc.md)的 SysTick 24 位上限、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体。RM0090、RM0008、DS8626、DS5319 与 HAL 源码行号均转引自上述来源。
 
 ## 先做出来
@@ -138,7 +138,7 @@ int32_t position = (int32_t)TIM2->CNT;  /* 有符号，正反转自动区分 */
 
 滤波用 `CCMR1.IC1F`：0000 无滤波；0010 是 fCK_INT、N=4 的轻滤波；0110 是 fDTS/4、N=6 的推荐起点；1000 是 fDTS/8、N=6 的强滤波，延迟更大。编码按 RM0090/RM0008 的 IC1F[3:0] 表：0001–0011 都按 fCK_INT 采样，0100 起才切到 fDTS 分频；fDTS/4、N=6 对应 0110，不要与 0010 混用。滤波本质是连续 N 次采样一致才认可边沿，和消抖开关的原理一样。
 
-F103 的 TIM2–TIM5 是 16 位，ARR 最多 65535，模式 3 下超过 65535 的计数要靠软件溢出；读 CNT 用 `int16_t` 才有正负。F407 的 TIM2/TIM5 是 32 位，才能直接 `int32_t` 读满量程。电机测速与闭环在[第 38 章][ch38]。
+F103 的 TIM2–TIM5 是 16 位，ARR 最多 65535，模式 3 下超过 65535 的计数要靠软件溢出；读 CNT 用 `int16_t` 才有正负。F407 的 TIM2/TIM5 是 32 位，才能直接 `int32_t` 读满量程。电机测速与闭环在[第 38 章](../v5-motion/38-encoder-speed-measurement.md)。
 
 ![正交编码器：A/B 边沿顺序定方向，模式 3 双沿计数得 4 倍频](/figures/stm32-06-encoder.svg)
 
@@ -272,9 +272,9 @@ F407 一侧：TIM3 在 APB1，168MHz 主频、APB1=/4 时 TIM3=84MHz；1kHz 用 
 
 F103 一侧：TIM3 同样在 APB1，72MHz 主频、PCLK1=36MHz 时 TIM3=72MHz；1kHz 用 PSC=71、ARR=999。C8 的 TIM2–TIM5 都是 16 位，ARR 最大 65535，1 秒要 PSC=7199、ARR=9999；32 位定时器是 F4 等系列的事。PA6 是 LQFP48 第 16 脚的默认 TIM3_CH1，同一脚还列着 SPI1_MISO，同一时间只能用一个功能；保持 TIM3_REMAP=00 才留在 PA6，重映射到 PB4/PC6 要经 AFIO。F1 没有逐脚 AF 号，别把 F4 的 AF2 写法搬过去。PC13 当翻灯脚时只能灌电流，规则见[第 9 章](./09-gpio.md)。SPL 的 `TIM_TimeBaseInit()`/`TIM_OC1Init()` 与 HAL 落位相同，但一手源码仍缺。
 
-ESP32 一侧只划边界：ESP32-S3 的定时器是 timer group，PWM 是 LEDC；LEDC 的占空比按 `duty/2^bits` 算，和 STM32 的 `CCR/(ARR+1)` 不是同一套参数，PSC/ARR/CCR 的名字与位定义都不要带过去。e03 的 S3 分支用 GPIO10、LEDC 低速通道 0、5kHz fade，只作为实验对照。ESP32 外设、驱动框架与音频链路见[第 31 章][ch31]，架构与启动见[第 30 章][ch30]，多核与 Cache 见[第 34 章][ch34]。
+ESP32 一侧只划边界：ESP32-S3 的定时器是 timer group，PWM 是 LEDC；LEDC 的占空比按 `duty/2^bits` 算，和 STM32 的 `CCR/(ARR+1)` 不是同一套参数，PSC/ARR/CCR 的名字与位定义都不要带过去。e03 的 S3 分支用 GPIO10、LEDC 低速通道 0、5kHz fade，只作为实验对照。ESP32 外设、驱动框架与音频链路见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)，架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)，多核与 Cache 见[第 34 章](../v4-platforms/34-multicore-cache.md)。
 
-其它分工：SysTick 的 24 位上限与 RTC 在[第 11 章](./11-systick-timebase-rtc.md)；DMA 搬运捕获数据在[第 14 章](./14-dma.md)；TIM TRGO 触发 ADC 在[第 15 章](./15-adc-dac-sampling.md)；编码器测速与闭环在[第 38 章][ch38]；仪器与证据方法在[第 40 章][ch40]。
+其它分工：SysTick 的 24 位上限与 RTC 在[第 11 章](./11-systick-timebase-rtc.md)；DMA 搬运捕获数据在[第 14 章](./14-dma.md)；TIM TRGO 触发 ADC 在[第 15 章](./15-adc-dac-sampling.md)；编码器测速与闭环在[第 38 章](../v5-motion/38-encoder-speed-measurement.md)；仪器与证据方法在[第 40 章][ch40]。
 
 ## 离开检查
 
@@ -301,8 +301,4 @@ ESP32 一侧只划边界：ESP32-S3 的定时器是 timer group，PWM 是 LEDC�
 
 </details>
 
-[ch30]: ../v4-platforms/30-esp32s3-architecture-boot.md
-[ch31]: ../v4-platforms/31-esp32-drivers-audio.md
-[ch34]: ../v4-platforms/34-multicore-cache.md
-[ch38]: ../v5-motion/38-encoder-speed-measurement.md
 [ch40]: ../v6-labs-projects/40-lab-method-instruments.md
