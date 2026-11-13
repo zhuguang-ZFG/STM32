@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 380" font-family="'Segoe UI','Microsoft YaHei',sans-serif" role="img" aria-label="E04 理论时间线：信号量版 M 的突发插在 L 与 H 之间，H 等约 6000ms；互斥量版 L 继承优先级，H 等约 2500ms">
+  <rect width="720" height="380" fill="#f6f8fa"/>
+  <text x="24" y="28" font-size="16" font-weight="bold" fill="#3451b2">E04 理论时间线（按剧本参数推导，非实测）</text>
+  <text x="24" y="46" font-size="12" fill="#666">L 拿锁后要做 3000ms CPU 工作；M 在 500ms 醒来连续跑到 4500ms；H 在 1000ms 要锁</text>
+
+  <!-- 关键时刻竖线 -->
+  <g stroke="#cfd6e4" stroke-width="1" stroke-dasharray="3 3">
+    <line x1="130" y1="58" x2="130" y2="256"/><line x1="170" y1="58" x2="170" y2="256"/>
+    <line x1="370" y1="58" x2="370" y2="256"/><line x1="450" y1="58" x2="450" y2="256"/>
+    <line x1="650" y1="58" x2="650" y2="256"/>
+  </g>
+
+  <!-- 信号量版 -->
+  <text x="24" y="72" font-size="13" font-weight="bold" fill="#c0392b">信号量版（无继承）</text>
+  <g font-size="12" fill="#333" text-anchor="end">
+    <text x="82" y="98">H 高 3</text><text x="82" y="120">M 中 2</text><text x="82" y="142">L 低 1</text>
+  </g>
+  <rect x="170" y="86" width="480" height="16" fill="none" stroke="#999" stroke-dasharray="4 3"/>
+  <text x="410" y="98" font-size="12" fill="#666" text-anchor="middle">H 阻塞等锁 ≈ 6000 ms</text>
+  <rect x="650" y="86" width="12" height="16" fill="#3eaf7c"/>
+  <rect x="130" y="108" width="320" height="16" fill="#3451b2"/>
+  <text x="290" y="120" font-size="12" fill="#fff" text-anchor="middle">M 突发 4000 ms，与锁无关</text>
+  <rect x="90" y="130" width="40" height="16" fill="#d97706"/>
+  <rect x="130" y="130" width="320" height="16" fill="none" stroke="#d97706" stroke-dasharray="4 3"/>
+  <text x="290" y="142" font-size="12" fill="#a16207" text-anchor="middle">持锁却轮不到 CPU</text>
+  <rect x="450" y="130" width="200" height="16" fill="#d97706"/>
+  <text x="550" y="142" font-size="12" fill="#fff" text-anchor="middle">剩余 2500 ms</text>
+
+  <!-- 互斥量版 -->
+  <text x="24" y="176" font-size="13" font-weight="bold" fill="#1a7f56">互斥量版（优先级继承）</text>
+  <g font-size="12" fill="#333" text-anchor="end">
+    <text x="82" y="202">H 高 3</text><text x="82" y="224">M 中 2</text><text x="82" y="246">L 低 1</text>
+  </g>
+  <rect x="170" y="190" width="200" height="16" fill="none" stroke="#999" stroke-dasharray="4 3"/>
+  <text x="270" y="202" font-size="12" fill="#666" text-anchor="middle">H 等 ≈ 2500 ms</text>
+  <rect x="370" y="190" width="12" height="16" fill="#3eaf7c"/>
+  <rect x="130" y="212" width="40" height="16" fill="#3451b2"/>
+  <rect x="170" y="212" width="212" height="16" fill="none" stroke="#3451b2" stroke-dasharray="4 3"/>
+  <text x="276" y="224" font-size="12" fill="#3451b2" text-anchor="middle">就绪，但被抬级的 L 压住</text>
+  <rect x="382" y="212" width="68" height="16" fill="#3451b2"/>
+  <rect x="90" y="234" width="40" height="16" fill="#d97706"/>
+  <rect x="130" y="234" width="40" height="16" fill="none" stroke="#d97706" stroke-dasharray="4 3"/>
+  <rect x="170" y="234" width="200" height="16" fill="#d97706"/>
+  <text x="270" y="246" font-size="12" fill="#fff" text-anchor="middle">继承到 3，做完剩余</text>
+
+  <!-- 时间轴 -->
+  <line x1="90" y1="262" x2="690" y2="262" stroke="#666" stroke-width="1"/>
+  <g font-size="12" fill="#666" text-anchor="middle">
+    <text x="90" y="278">0</text><text x="170" y="278">1000</text><text x="250" y="278">2000</text>
+    <text x="330" y="278">3000</text><text x="410" y="278">4000</text><text x="490" y="278">5000</text>
+    <text x="570" y="278">6000</text><text x="650" y="278">7000 ms</text>
+  </g>
+
+  <!-- 图例 -->
+  <g font-size="12" fill="#333">
+    <rect x="90" y="290" width="14" height="12" fill="#d97706"/><text x="110" y="301">L 运行（持锁）</text>
+    <rect x="230" y="290" width="14" height="12" fill="#3451b2"/><text x="250" y="301">M 运行</text>
+    <rect x="330" y="290" width="14" height="12" fill="#3eaf7c"/><text x="350" y="301">H 拿到锁</text>
+    <rect x="440" y="290" width="14" height="12" fill="none" stroke="#999" stroke-dasharray="3 2"/><text x="460" y="301">就绪/阻塞，没在跑</text>
+  </g>
+
+  <rect x="40" y="318" width="640" height="50" fill="#fdf0d5" stroke="#d97706" rx="6"/>
+  <text x="360" y="338" font-size="12" fill="#a16207" text-anchor="middle">继承不让 H 免等，只把等待封顶在"L 做完临界区"（2500 ms）</text>
+  <text x="360" y="356" font-size="12" fill="#a16207" text-anchor="middle">信号量版多出的 3500 ms 全是 M 的执行时间：M 越长，H 等得越久，这就是无界反转</text>
+</svg>
