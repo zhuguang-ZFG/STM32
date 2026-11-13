@@ -62,3 +62,8 @@ B2 新增 3 组：`s14-pwr`（含勘误）、`f4-queue`（Q5 阻断性勘误）�
 - `.github/workflows/merge-check.yml` 的 slop 行扩到四个 glob（随本批 CI 提交）。
 
 未验证：CI 远程运行结果；未执行任何远程推送或 Pages 切换；VitePress 站点切换仍归 B5。
+
+## 批次收口验证
+
+- commit：`09b9d2c66cf78157ce7e85b4f3b6d56af3c5a649`（Task 13 收口提交 HEAD）
+- 上表 7 条命令在该 HEAD 重跑，退出码全部为 0：`checks passed`、`built 27 pages, 25 planned chapters missing`、slop 四 glob 无机械命中、30 tests OK、redirects pass 2 / fail 0。
