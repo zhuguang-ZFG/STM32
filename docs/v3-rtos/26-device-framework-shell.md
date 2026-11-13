@@ -28,7 +28,7 @@ FreeRTOS 把内核之外的一切留给你；RT-Thread 在内核之上叠了三�
 
 ### 2. 引脚号压平算一遍
 
-`GET_PIN(C,12)` 的值：C 是第 3 组（A=0），12 是组内脚号，得 2×16+12=44。展开宏你会发现它不是按「组号×16」写的，而是按 GPIO 基地址差算的——两者在普通 GPIO 上等价，为什么写法要绕这一道，见 PIN 一节。
+`GET_PIN(C,12)` 的值：组号按 A=0、B=1 数下来 C 是 2，组内脚号 12，得 2×16+12=44。展开宏你会发现它不是按「组号×16」写的，而是按 GPIO 基地址差算的——两者在普通 GPIO 上等价，为什么写法要绕这一道，见 PIN 一节。
 
 ## 设备框架：对象、ops 表与名字契约
 
@@ -94,7 +94,7 @@ PIN 设备把全部引脚压平成一个 `rt_base_t` 编号。真实宏在 BSP �
 | --- | --- | --- | --- |
 | V1 中断接收 | `RT_DEVICE_FLAG_INT_RX`（0x100） | ISR 搬字节进驱动 ring → `rx_indicate` 通知 | ISR |
 | V1 DMA 接收 | `RT_DEVICE_FLAG_DMA_RX`（0x200） | DMA 填环形缓冲 → 回调 | ISR（或下半部，随驱动） |
-| V2 非阻塞 | `RT_DEVICE_FLAG_RX_NON_BLOCKING`（0x2000） | 仅 V2 serial 定义，V1 没有这个宏 | 线程 |
+| V2 非阻塞 | `RT_DEVICE_FLAG_RX_NON_BLOCKING`（0x2000） | 仅 V2 serial 定义，V1 没有这个宏 | 随 V2 框架实现核对 |
 
 `RT_DEVICE_FLAG_RX_NON_BLOCKING` 只在 `dev_serial_v2.h:172-175` 定义；默认 F407 BSP 用 V1，代码里用 0x2000 编译不过。
 
@@ -197,9 +197,7 @@ struct finsh_syscall
 {
     const char *name;               /* 命令名：查找的 key */
     const char *desc;               /* 描述：help 显示 */
-#ifdef FINSH_USING_OPTION_COMPLETION
-    syscall_option_t *opt;          /* 可选：参数补全 */
-#endif
+    /* 打开参数补全的裁剪项时，name/desc 之间还有一个 opt 指针 */
     syscall_func_t func;            /* 函数指针 */
 };
 ```
@@ -223,7 +221,7 @@ __fsymtab_end = .;
 
 切词只按空白分段（`msh_split`），**argv 全是字符串**；数字转整型是命令自己的事（`atoi`/`strtol`），解析器不做类型转换。「finsh 自动把参数转 int」与「命令里自己 atoi」在旧章里前后矛盾，真相是后者。
 
-`list_thread` 的真实原型是 `long list_thread(void)`（`cmd.c:215`），不是 `int list_thread(int, char**)`——它没有参数，按 msh 命令导出时宏替它适配。`list_device` 在 `cmd.c:927`，`list` 别名在 `:1188`。旧章的 `msh_cmd.c` 文件在 5.3.0 不存在，落点在 `components/finsh/cmd.c` 与 `msh.c`。
+`list_thread` 的真实原型是 `long list_thread(void)`（`cmd.c:215`），旧章写成 `int list_thread(int, char**)` 与源码不符——写命令前先对一眼真实签名。`list_device` 在 `cmd.c:927`，msh 的 `list` 别名命令在 `:1188`。旧章的 `msh_cmd.c` 文件在 5.3.0 不存在，落点在 `components/finsh/cmd.c` 与 `msh.c`。
 
 ### 自定义命令
 
@@ -370,4 +368,4 @@ bsp/stm32/stm32f407-atk-explorer/
 <details><summary>参考答案</summary>不能。`mcu/code/rtos/02-rt-thread-lab/rtconfig.h:2-5` 是 Nano 式裁剪：无 `RT_USING_DEVICE`、无 `RT_USING_FINSH`，只够验证调度与 IPC。设备框架与 shell 要切标准 BSP 或显式打开这两个组件，判据是 `msh />` 与 `list_device` 有输出。</details>
 
 18. 本章哪些说法是来源说法、哪些是未实测？
-<details><summary>参考答案</summary>来源说法（未复核）：「168 MHz 上纳秒级的调用开销」「整套 msh 约 10–20 KB Flash」「每条命令 16–24 B」。未实测：全部实验（msh 出现、led 命令、软件包点单、GDB 下钻）。文档推导：ops 两套接口、open 顺序、GET_PIN 公式与变体、FSymTab/KEEP 机制、Kconfig→.config→rtconfig.h 分工、BSP 三区。</details>
+<details><summary>参考答案</summary>来源说法（未复核）：「168 MHz 上纳秒级的调用开销」「整套 msh 约 10–20 KB Flash」「每条命令 16–24 B」。未实测：全部实验（msh 出现、led 命令、软件包点单）。文档推导：ops 两套接口、open 顺序、GET_PIN 公式与变体、FSymTab/KEEP 机制、Kconfig→.config→rtconfig.h 分工、BSP 三区。</details>
