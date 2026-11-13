@@ -102,16 +102,16 @@ mcu	mcu/docs/esp32/10-flash-nvs-ota.md	ch17	平台对照（ESP32）	migrated
 mcu	mcu/docs/esp32/11-lowpower.md	ch18	平台对照（ESP32）	migrated	
 mcu	mcu/docs/esp32/12-audio-path.md	ch31	平台对照（ESP32）	planned	
 mcu	mcu/docs/esp32/13-watchdog-health.md	ch19	平台对照（ESP32）	migrated	
-mcu	mcu/docs/gd32/00-env.md	ch29	平台对照（GD32）	planned	
-mcu	mcu/docs/gd32/01-rcu-clock.md	ch29	平台对照（GD32）	planned	
-mcu	mcu/docs/gd32/02-gpio-af.md	ch29	平台对照（GD32）	planned	
-mcu	mcu/docs/gd32/03-usart.md	ch29	平台对照（GD32）	planned	
+mcu	mcu/docs/gd32/00-env.md	ch29	平台对照（GD32）	migrated	
+mcu	mcu/docs/gd32/01-rcu-clock.md	ch29	平台对照（GD32）	migrated	
+mcu	mcu/docs/gd32/02-gpio-af.md	ch29	平台对照（GD32）	migrated	
+mcu	mcu/docs/gd32/03-usart.md	ch29	平台对照（GD32）	migrated	
 mcu	mcu/docs/gd32/04-periph-diff.md	ch28	平台对照（GD32）	migrated	
-mcu	mcu/docs/gd32/05-riscv-toolchain.md	ch29	平台对照（GD32）	planned	
-mcu	mcu/docs/gd32/06-clic-irq.md	ch29	平台对照（GD32）	planned	
-mcu	mcu/docs/gd32/07-rcu-108m.md	ch29	平台对照（GD32）	planned	
-mcu	mcu/docs/gd32/08-mtime-delay.md	ch29	平台对照（GD32）	planned	
-mcu	mcu/docs/gd32/09-gpio-minimal.md	ch29	平台对照（GD32）	planned	
+mcu	mcu/docs/gd32/05-riscv-toolchain.md	ch29	平台对照（GD32）	migrated	
+mcu	mcu/docs/gd32/06-clic-irq.md	ch29	平台对照（GD32）	migrated	
+mcu	mcu/docs/gd32/07-rcu-108m.md	ch29	平台对照（GD32）	migrated	
+mcu	mcu/docs/gd32/08-mtime-delay.md	ch29	平台对照（GD32）	migrated	
+mcu	mcu/docs/gd32/09-gpio-minimal.md	ch29	平台对照（GD32）	migrated	
 mcu	mcu/docs/lab/e01-blink.md	ch09;ch40	实验方法与证据	partial	实验拆入ch09，方法→ch40
 mcu	mcu/docs/lab/e02-logic-uart.md	ch13;ch40	实验方法与证据	partial	
 mcu	mcu/docs/lab/e03-scope-pwm.md	ch12;ch40	实验方法与证据	partial	
