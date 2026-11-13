@@ -96,8 +96,8 @@ mcu	mcu/docs/esp32/04-irq-dualcore.md	ch10;ch34	平台对照（ESP32）	partial	
 mcu	mcu/docs/esp32/05-uart-driver.md	ch31	平台对照（ESP32）	migrated	
 mcu	mcu/docs/esp32/06-spi-i2c-driver.md	ch31	平台对照（ESP32）	migrated	
 mcu	mcu/docs/esp32/07-timer-ledc.md	ch31	平台对照（ESP32）	migrated	
-mcu	mcu/docs/esp32/08-wifi.md	ch32	平台对照（ESP32）	planned	
-mcu	mcu/docs/esp32/09-bt-espnow.md	ch32	平台对照（ESP32）	planned	
+mcu	mcu/docs/esp32/08-wifi.md	ch32	平台对照（ESP32）	migrated	
+mcu	mcu/docs/esp32/09-bt-espnow.md	ch32	平台对照（ESP32）	migrated	
 mcu	mcu/docs/esp32/10-flash-nvs-ota.md	ch17	平台对照（ESP32）	migrated	
 mcu	mcu/docs/esp32/11-lowpower.md	ch18	平台对照（ESP32）	migrated	
 mcu	mcu/docs/esp32/12-audio-path.md	ch31	平台对照（ESP32）	migrated	

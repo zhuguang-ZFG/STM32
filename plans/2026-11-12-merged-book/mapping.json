@@ -999,7 +999,7 @@
         "ch32"
       ],
       "purpose": "平台对照（ESP32）",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -1009,7 +1009,7 @@
         "ch32"
       ],
       "purpose": "平台对照（ESP32）",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
