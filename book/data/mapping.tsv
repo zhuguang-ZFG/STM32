@@ -73,14 +73,14 @@ mcu	mcu/docs/rtos/freertos/00-why-rtos.md	ch21	RTOS 深潜	migrated
 mcu	mcu/docs/rtos/freertos/01-task-tcb.md	ch22	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/freertos/02-context-switch.md	ch23	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/freertos/03-scheduler.md	ch22	RTOS 深潜	migrated	
-mcu	mcu/docs/rtos/freertos/04-queue.md	ch24	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/freertos/05-sem-mutex.md	ch24	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/freertos/06-notify-event-timer.md	ch24	RTOS 深潜	planned	
+mcu	mcu/docs/rtos/freertos/04-queue.md	ch24	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/freertos/05-sem-mutex.md	ch24	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/freertos/06-notify-event-timer.md	ch24	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/freertos/07-heap.md	ch25	RTOS 深潜	planned	
 mcu	mcu/docs/rtos/freertos/08-port-f407.md	ch23	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/rtthread/00-arch.md	ch23	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/rtthread/01-thread-sched.md	ch22	RTOS 深潜	migrated	
-mcu	mcu/docs/rtos/rtthread/02-ipc.md	ch24	RTOS 深潜	planned	
+mcu	mcu/docs/rtos/rtthread/02-ipc.md	ch24	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/rtthread/03-mem.md	ch25	RTOS 深潜	planned	
 mcu	mcu/docs/rtos/rtthread/04-device.md	ch26	RTOS 深潜	planned	
 mcu	mcu/docs/rtos/rtthread/05-finsh.md	ch26	RTOS 深潜	planned	
@@ -115,7 +115,7 @@ mcu	mcu/docs/gd32/09-gpio-minimal.md	ch29	平台对照（GD32）	planned
 mcu	mcu/docs/lab/e01-blink.md	ch09;ch40	实验方法与证据	partial	实验拆入ch09，方法→ch40
 mcu	mcu/docs/lab/e02-logic-uart.md	ch13;ch40	实验方法与证据	partial	
 mcu	mcu/docs/lab/e03-scope-pwm.md	ch12;ch40	实验方法与证据	partial	
-mcu	mcu/docs/lab/e04-priority-inversion.md	ch24;ch40	实验方法与证据	planned	
+mcu	mcu/docs/lab/e04-priority-inversion.md	ch24;ch40	实验方法与证据	partial	
 mcu	mcu/docs/lab/e05-i2c-eeprom.md	ch16;ch40	实验方法与证据	partial	
 mcu	mcu/docs/lab/e06-lowpower-current.md	ch18;ch40	实验方法与证据	partial	
 mcu	mcu/docs/lab/e07-qmi8658.md	ch16;ch40	实验方法与证据	partial	
