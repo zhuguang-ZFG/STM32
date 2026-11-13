@@ -293,7 +293,7 @@ FreeRTOS 让你「编译期选一个 heap_x」；RT-Thread 的 `src/` 里同时�
 
 `rt_mp` 值得多说一句：固定块池把一块连续内存切成 N 个等大块，空闲块串成单链表，`rt_mp_alloc` 摘表头、`rt_mp_free` 挂回表头——没有搜索、没有分裂、没有合并，O(1) 是从**等大**这个前提里长出来的。代价是块大小一刀切：按最大成员加对齐定，宁大勿小。`rt_mp_alloc` 的 timeout 参数让块用尽时可以挂起等待，把内存池变成了能排队的资源——这是 FreeRTOS 没有的内置形态。
 
-`RT_USING_HEAP` 关掉后，`*_create` 系列编译不进来，`*_init` 系列照常可用：对象全静态、栈全静态，固件变成「零堆」形态。与 FreeRTOS 的 `configSUPPORT_DYNAMIC_ALLOCATION=0` 是同一条路：动态分配的便利与静态分配的确定性是产品形态的二选一，不是谁永远更好。
+`RT_USING_HEAP` 关掉后，`*_create` 系列编译不进来，`*_init` 系列照常可用：对象全静态、栈全静态，固件变成「零堆」形态。与 FreeRTOS 的 `configSUPPORT_DYNAMIC_ALLOCATION=0` 是同一条路：动态分配的便利与静态分配的确定性是产品形态的二选一，不是谁永远更好。设备对象、finsh 线程与软件包各自的内存账落在哪一层，见 [第 26 章](./26-device-framework-shell.md)。
 
 ## 短自测
 
