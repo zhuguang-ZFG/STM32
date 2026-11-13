@@ -13,7 +13,7 @@ platforms: [f407, f103, esp32]
 
 - **问题**：三档睡眠到底由哪两个位定档，为什么 `LPDS`、`FPDS`、`VOS` 不是档位开关？Stop 醒来为什么必须重配 PLL，F103 的 8 MHz 与 F407 的 16 MHz 各自要恢复什么？RTC 闹钟、RTC 唤醒定时器、USB 唤醒在 F407 上分别是哪条 EXTI 线，为什么把线 18 当 RTC 唤醒会睡死？备份域为什么必须按 `DBP → BDRST → 写 → 清 DBP` 的顺序，F103 与 F407 的备份存储差在哪？DS5319 的 14 µA、2 µA 与 1.4 µA 各是什么条件，F407 为什么只能写量级？0.11 mA 与 90 天为什么不自洽，DT830D 的 200 µA 档又为什么测不到 µs 级唤醒电流？
 - **交付**：能按 `SLEEPDEEP` 与 `PDDS` 写出三档进入序列；能按 `VOS[15:14]=0b11` 配置 168 MHz，并说清只置 bit14 的写法为什么只到 120 MHz；能列出 F103/F407 的 Stop 恢复步骤并重算 BRR、SysTick、TIM；能画出 WKUP、PVD、RTC 闹钟与 RTC 唤醒定时器的线号；能按备份域顺序写 BKP 或 BKPSRAM；能读 DS5319 的电流表并标出条件；能用 DT830D 的 200 µA 档做静态电流测量，并说明它测不了什么；能用正向与反向两种算法检查续航。
-- **边界**：三平台章。F103 的数字来自 DS5319 表 16/26（来源转引）与根书第 16 章；F407 的寄存器映射来自 S14 与 RM0090；ESP32 的睡眠模型来自 P11 与 IDF 文档。三个来源都没有上板电流记录，E06 仍是 `code_status: planned`、`hardware_status: pending`。本章不把 F407 的 VOS、FPDS、BKPSRAM 写成 STM32 通用，也不把 ESP32 的 Light/Deep 硬对齐成 STM32 三档。看门狗与复位证据留给[第 19 章][ch19]，调试与测量工具的分工留给[第 20 章][ch20]。
+- **边界**：三平台章。F103 的数字来自 DS5319 表 16/26（来源转引）与根书第 16 章；F407 的寄存器映射来自 S14 与 RM0090；ESP32 的睡眠模型来自 P11 与 IDF 文档。三个来源都没有上板电流记录，E06 仍是 `code_status: planned`、`hardware_status: pending`。本章不把 F407 的 VOS、FPDS、BKPSRAM 写成 STM32 通用，也不把 ESP32 的 Light/Deep 硬对齐成 STM32 三档。看门狗与复位证据留给第 19 章，调试与测量工具的分工留给第 20 章。
 - **依据锚点**：根书第 16 章《低功耗设计》（`docs/16-低功耗设计.md`）、S14《低功耗：三种睡眠的唤醒与代价》（`mcu/docs/stm32/14-pwr.md`）、P11《低功耗：睡眠矩阵与 ULP》（`mcu/docs/esp32/11-lowpower.md`）、E06《低功耗电流实测》（`mcu/docs/lab/e06-lowpower-current.md`）；DS5319 表 16/26、RM0008 的 PWR/RCC/EXTI 章、RM0090 的 PWR/RTC/EXTI 章均转引自上述来源。[第 11 章](../v1-drivers/11-systick-timebase-rtc.md)的 RTC 与备份域、[第 13 章](../v1-drivers/13-uart-framed-protocol.md)的 BRR、[第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)的 EXTI/NVIC 是本章的回链。
 
 ## 先做出来
@@ -21,10 +21,10 @@ platforms: [f407, f103, esp32]
 先不接电流表，把三笔账在纸上对完。
 
 1. **定档账**：读 `SCB->SCR` 的 bit2 与 `PWR_CR` 的 bit1。Sleep 是 0/0，Stop 是 1/0，Standby 是 1/1。三个组合之外没有第四种“省电模式”。
-2. **时钟账**：Stop 醒来停在 HSI。F103 是 8 MHz，`BRR=0x271` 此时对应 12800；F407 是 16 MHz，`BRR=729` 此时对应 10973。先恢复 PLL，再谈串口。
+2. **时钟账**：Stop 醒来停在 HSI。F103 是 8 MHz，`BRR=0x271` 此时对应 12800；F407 的 HSI 是 16 MHz，经 APB2 二分频后 PCLK2=8 MHz，`BRR=729` 此时对应 10973（若按 16 MHz 直算会得到 21948）。先恢复 PLL，再谈串口。
 3. **唤醒账**：WKUP 是线 0，PVD 是线 16，RTC 闹钟是线 17，RTC 唤醒定时器在 F407 上是线 22，USB OTG FS 唤醒是线 18。把 18 当 RTC 唤醒，睡下去就等不到闹钟。
 
-来源工程 `mcu/code/stm32/14-pwr` 的 `probe.sh` 在宿主机上把固件函数接到假寄存器，报告 274/274 条断言通过，并用 CMSIS 头文件逐条对位号与地址。这是实测记录，但测的是代码写出的位和头文件常数，不是硅片电流；本章引用它时标“宿主假寄存器”，不把它当板上证据。
+来源工程 `mcu/code/stm32/14-pwr` 的 `probe.c` 在宿主机上把固件函数接到假寄存器，宿主断言全绿（实际执行 62 条）。`probe.sh` 第 2 步要用 CMSIS 头文件逐条对位号与地址，本工作树缺 `mcu/.trellis/ref/cmsis`，这一项未复核。这是实测记录，但测的是代码写出的位和代码里的常数，不是硅片电流；本章引用它时标“宿主假寄存器”，不把它当板上证据。
 
 ## 机制
 
@@ -82,7 +82,7 @@ F103 没有 VOS，最高 72 MHz；F407 的 `PWR_CR` 多了 `VOS[15:14]`，它决
 PWR->CR = (PWR->CR & ~(3U << 14)) | (3U << 14);  /* VOS[15:14] = 0b11 */
 ```
 
-只置 bit14（bit15=0、bit14=1）的写法是 `0b01`，对应 Scale3，最高 120 MHz；把它当 168 MHz 的配置，PLL 一升到 168 MHz 就超出了该档允许的上限。资料里“VOS 写 0 对应 144 MHz”的说法也不对：144 MHz 是 `0b10`，不是 0。
+只置 bit14（bit15=0、bit14=1）的写法是 `0b01`，对应 Scale3，最高 120 MHz；把它当 168 MHz 的配置，PLL 一升到 168 MHz 就超出了该档允许的上限。资料里“VOS 写 0 对应 144 MHz”的说法也不对：144 MHz 是 `0b10`，不是 0。来源说法有误，已按 RM/DS 更正。
 
 改 VOS 后等 `PWR_CSR.VOSRDY` 就绪，再提高 PLL 频率；升频与降频的先后按 RM0090 的稳压器规则来。VOS 只影响运行与 Stop 下的稳压器档位，不参与三档定档。Stop 下还可以用 `LPDS` 把稳压器切到低功耗档，用 `FPDS` 让 Flash 掉电；两者是省电选项，不是第四种睡眠模式。
 
@@ -100,9 +100,9 @@ F407 的 `PWR_CR`/`PWR_CSR` 位图与三档落点；VOS 是 `[15:14]` 两位，�
 | PVD | EXTI16 | EXTI16 | `EXTI_IMR` + NVIC |
 | RTC 闹钟 | EXTI17 | EXTI17 | `EXTI_IMR` + NVIC |
 | RTC 唤醒定时器 | 无 | EXTI22 | `EXTI_IMR` + NVIC |
-| USB OTG FS 唤醒 | EXTI18 | EXTI18 | `EXTI_IMR` + NVIC |
+| USB 唤醒 | USB FS，EXTI18 | USB OTG FS，EXTI18 | `EXTI_IMR` + NVIC |
 
-`EWUP` 只管 PA0/线 0；把它当“深度睡眠唤醒总开关”，RTC 闹钟不会醒。RTC 闹钟是线 17；F407 的 RTC 唤醒定时器是线 22。线 18 是 USB OTG FS 唤醒，不是 RTC 唤醒。S14 的正文与 `mcu/code/stm32/14-pwr/main.c:119` 里把 RTC 唤醒写成线 18，这是错的，本章不沿用；按线 18 去配，RTC 到点也不会叫醒芯片。
+`EWUP` 只管 PA0/线 0；把它当“深度睡眠唤醒总开关”，RTC 闹钟不会醒。RTC 闹钟是线 17；F407 的 RTC 唤醒定时器是线 22。线 18 是 USB OTG FS 唤醒，不是 RTC 唤醒。S14 的正文与 `mcu/code/stm32/14-pwr/main.c:119` 里把 RTC 唤醒写成线 18；来源说法有误，已按 RM/DS 更正，本章不沿用。按线 18 去配，RTC 到点也不会叫醒芯片。
 
 Stop 的 EXTI 唤醒可以走中断，也可以走事件：`WFI` 要求 NVIC 通道使能，`WFE` 可以用 `EXTI_EMR` 的事件配置。无论哪条路，睡前都要清 `EXTI->PR` 的旧挂起位，否则刚睡下就被上一次的边沿叫醒。PVD 的阈值与 EXTI16 配置见根书第 16 章；NVIC 的优先级与分组见[第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)。
 
@@ -298,26 +298,26 @@ STM32 的 RTC 备份域与闹钟见[第 11 章](../v1-drivers/11-systick-timebas
 
 ## 测量与证据
 
-本章的读数按来路分四类：宿主实跑的断言、手册或头文件的文档条目、按公式推出来的账、来源自述但没有记录的实验。下面的表逐项标出来路；没有一条是本章的上板电流读数。
+本章的读数按来路分四类：实测记录、来源说法(未复核)、文档推导、未实测。下面的表逐项标出来路；没有一条是本章的上板电流读数。
 
 ### 读数来路表
 
 | 取证项 | 来路 | 读数或结论 | 性质 |
 | --- | --- | --- | --- |
-| 三档定档 | `SCB->SCR.SLEEPDEEP` + `PWR_CR.PDDS`；S14 probe 第 1 节 | Sleep 0/0、Stop 1/0、Standby 1/1 | 手册规则 + 实测记录（宿主假寄存器） |
-| F407 VOS | RM0090 的 PWR 章；S14 正文写法有误 | `0b11`=168、`0b10`=144、`0b01`=120 | 手册规则（来源错误已修正） |
-| EXTI 线号 | RM0090 的 EXTI 章；S14 与 `main.c:119` 写 RTC 唤醒=18 | 闹钟 17、唤醒定时器 22、USB 18 | 手册规则（来源错误已修正） |
-| F103 电流与唤醒 | DS5319 表 16/26，经根书第 16 章转引 | 14.4/5.5 mA、14/24 µA、2/3.2/3.4 µA、1.4 µA、1.8–5.4 µs、PLL≤200 µs | 手册值（来源转引） |
-| F407 Stop 电流 | S14 正文 | 百 µA 量级 | 来源说法（未复核） |
-| 备份域容量 | F103C8 10×16 bit；F407 20×32 bit + 4 KB | 20 B；80 B + 1024 words | 手册规则 |
-| 0.1211 mA / 76 天 | 本章按 P11 同段模型复算 | 435.98 mA·s / 3600 s；220/0.1211 | 公式推导 |
-| 0.11 mA / 90 天 | P11 续航段 | 与同段模型不自洽；0.11 mA 只够 83 天，90 天要 0.102 mA | 来源说法（未复核） |
-| E06 读数 | frontmatter `code_status: planned`、`hardware_status: pending` | 记录表为空 | 待实测 |
-| S14 probe | `sh probe.sh` 的宿主断言 | 274/274；位号 29 条、地址 10 个 | 实测记录（宿主假寄存器） |
-| ESP32 Light sleep 电流 | P11 | 几 mA | 来源说法（待核） |
-| ESP32 RTC 内存容量 | P11 | 8 KB 量级 | 来源说法（按型号 TRM 待核） |
-| 板级与芯片边界 | 根书第 16 章、E06 | 整板 ⊃ MCU 支路 ⊃ 芯片 VDD | 文档条目/设计边界 |
-| 万用表压降 | DT830D 200 µA 档，按 1 kΩ 估算 | 满量程约 0.2 V | 文档推导（具体以表手册为准） |
+| 三档定档 | `SCB->SCR.SLEEPDEEP` + `PWR_CR.PDDS`（手册规则）；S14 probe 第 1 节（宿主假寄存器） | Sleep 0/0、Stop 1/0、Standby 1/1 | 实测记录 |
+| F407 VOS | RM0090 的 PWR 章（手册规则）；S14 正文来源说法有误，已按 RM/DS 更正 | `0b11`=168、`0b10`=144、`0b01`=120 | 文档推导 |
+| EXTI 线号 | RM0090 的 EXTI 章（手册规则）；S14 与 `main.c:119` 来源说法有误，已按 RM/DS 更正 | 闹钟 17、唤醒定时器 22、USB 18 | 文档推导 |
+| F103 电流与唤醒 | DS5319 表 16/26 手册值（来源转引） | 14.4/5.5 mA、14/24 µA、2/3.2/3.4 µA、1.4 µA、1.8–5.4 µs、PLL≤200 µs | 来源说法(未复核) |
+| F407 Stop 电流 | S14 正文（来源说法） | 百 µA 量级 | 来源说法(未复核) |
+| 备份域容量 | F103C8 10×16 bit；F407 20×32 bit + 4 KB（手册规则） | 20 B；80 B + 1024 words | 文档推导 |
+| 0.1211 mA / 76 天 | 本章按 P11 同段模型复算（公式推导） | 435.98 mA·s / 3600 s；220/0.1211 | 文档推导 |
+| 0.11 mA / 90 天 | P11 续航段（来源说法） | 与同段模型不自洽；0.11 mA 只够 83 天，90 天要 0.102 mA | 来源说法(未复核) |
+| E06 读数 | frontmatter `code_status: planned`、`hardware_status: pending` | 记录表为空，待实测 | 未实测 |
+| S14 probe | `sh probe.sh` 第 1 步宿主断言（宿主假寄存器）；CMSIS 逐位对账未复核 | 实际执行 62 条断言，全绿；位号 29 条、地址 10 个 | 实测记录 |
+| ESP32 Light sleep 电流 | P11（来源说法，待核） | 几 mA | 来源说法(未复核) |
+| ESP32 RTC 内存容量 | P11（来源说法，按型号 TRM 待核） | 8 KB 量级 | 来源说法(未复核) |
+| 板级与芯片边界 | 根书第 16 章、E06（文档条目/设计边界） | 整板 ⊃ MCU 支路 ⊃ 芯片 VDD | 文档推导 |
+| 万用表压降 | DT830D 200 µA 档，按 1 kΩ 估算（以表手册为准） | 满量程约 0.2 V | 文档推导 |
 
 能互相对上的只有手册位、算术与静态代码：`0x271` 在 8 MHz 下算出 12800，729 在 8 MHz 下算出 10973，435.98/3600 算出 0.1211，220/0.1211 算出 76 天。它们都不能证明某块板上的 Stop 电流真的是 14 µA，也不能证明某次唤醒的 5.4 µs。要补上后者，得按下面的台架留下电流波形、电压与温度。
 
@@ -337,7 +337,7 @@ STM32 的 RTC 备份域与闹钟见[第 11 章](../v1-drivers/11-systick-timebas
 | 进不了 Stop，电流仍是 mA | `SLEEPDEEP`/`PDDS` 写错，或 WFI 前中断被屏蔽 | 读回 SCR bit2、CR bit1；看 `PRIMASK` | 按两位组合重写；确认 NVIC 使能 |
 | 刚睡下就醒 | EXTI 旧挂起位没清，或唤醒源一直在抖 | 读 `EXTI->PR`；屏蔽该线后不再醒 | 睡前写 1 清 PR；加消抖 |
 | 醒来串口乱码 | 时钟停在 HSI，BRR 未重算 | 位宽 78.125 µs（12800）而不是 8.68 µs（115200） | 先恢复 PLL，再重算 BRR |
-| SysTick 慢 8 倍或 10.5 倍 | LOAD 仍是 72/168 MHz 的值 | 读回 LOAD；量 1 ms 实际 8/10.5 ms | 按新 HCLK 重算 LOAD |
+| SysTick 慢 9 倍或 10.5 倍 | LOAD 仍是 72/168 MHz 的值 | 读回 LOAD；量 1 ms 实际 9/10.5 ms | 按新 HCLK 重算 LOAD |
 | 定时器周期全错 | PSC/ARR 按旧 PCLK 算 | 示波器量周期；读回 PSC/ARR | 重算 PSC/ARR，注意 APB 分频 |
 | 备份寄存器写不进 | 没置 DBP，或 F407 没开 BRE、没等 BRR | 读回 BKP 值；看 DBP/BRE/BRR 位 | 按 DBP→BDRST→BRE/BRR→写→清 DBP 顺序 |
 | 每次醒来 RTC 被清 | 每次初始化都拉 BDRST | 读 RTC 时间；看 BDRST 位 | BDRST 只在首次初始化用 |
@@ -365,7 +365,7 @@ STM32 的 RTC 备份域与闹钟见[第 11 章](../v1-drivers/11-systick-timebas
 | 醒来 | Stop 继续；Standby 复位 | 同左 | Deep 复位 |
 | 测量 | 万用表加示波器 | 同左 | 同左，注意射频 |
 
-F103 与 F407 的 HSI、Flash latency、APB 分频、VOS、备份容量都不同；F407 的 VOS、FPDS、BKPSRAM 不能写成“STM32 通用”。ESP32 的 Light/Deep 只是最接近 Stop/Standby，Deep 是复位，Light 也没有 STM32 Sleep 那种“只停 CPU、外设全活”的对应档。换芯片先查对应 RM/DS 的 PWR、RCC、EXTI 章，不要按另一颗芯片的位图改。
+F103 与 F407 的 HSI、Flash latency、APB 分频、备份容量都不同；F103 没有 VOS，F407 有 VOS/FPDS/BKPSRAM，不能把 F407 的 VOS、FPDS、BKPSRAM 写成“STM32 通用”。ESP32 的 Light/Deep 只是最接近 Stop/Standby，Deep 是复位，Light 也没有 STM32 Sleep 那种“只停 CPU、外设全活”的对应档。换芯片先查对应 RM/DS 的 PWR、RCC、EXTI 章，不要按另一颗芯片的位图改。
 
 时钟树与 Flash 等待的细节见[第 8 章](../v1-drivers/08-architecture-memory-clock.md)；DMA 在 Stop 前也要关时钟，见[第 14 章](../v1-drivers/14-dma.md)；GPIO 睡眠电平与模拟输入见[第 9 章](../v1-drivers/09-gpio.md)。
 
@@ -397,6 +397,3 @@ F103 与 F407 的 HSI、Flash latency、APB 分频、VOS、备份容量都不同
 </details>
 
 <QuizBank chapter="s14-pwr" />
-
-[ch19]: ./19-watchdog-reset-hardfault.md
-[ch20]: ./20-debug-performance.md
