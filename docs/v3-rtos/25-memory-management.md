@@ -15,7 +15,7 @@ platforms: [f407]
 
 - **问题**：heap_1 为什么敢把 `vPortFree` 留在文件里却让它只能断言失败？heap_2 的空闲表按什么排序、为什么不合并？heap_3 为什么连 `xPortGetFreeHeapSize` 都没有？heap_4 释放一块内存时靠什么找到前邻块——「边界标记法」这个说法错在哪？分配为什么要按 8 B 对齐、每次分配暗收多少 overhead？总空闲与历史最低水位是两个什么问题、`vPortGetHeapStats` 又多给了什么？`xTaskCreateStatic` 的「不会失败」边界在哪，Idle/Timer 钩子真实签名是几个参数？`configCHECK_FOR_STACK_OVERFLOW=2` 检查什么、在哪一刻检查？heap_5 的区域表有什么调用顺序约束，CCM 能不能放 DMA 缓冲？16 KiB 池怎么算预算，TCB 到底按 88 B 还是 400 B？RT-Thread 的 `src/` 里到底有哪几件堆实现，`tlsf.c` 存不存在，slab 的「碎片免疫」过头在哪，`rt_mp` 的 O(1) 怎么来的，`RT_USING_HEAP` 关掉后固件长什么样，finsh 的堆监控命令真实名字是什么？
 - **交付**：能按「能否释放、合并、多区」给五个 heap 各一句话定位；能走读 `prvInsertBlockIntoFreeList` 的三步合并，纠正「边界标记法」的说法，算出块头 8 B 的对齐账；能分清当前空闲与历史最低水位，知道 heap_4 能直读最大连续块而 heap_5 不能；能复述场景 5 的六步操作与每步预期，指出「总空闲够、最大连续块不够」的判定时刻；能写出三参数的 Idle/Timer 静态钩子，说清静态创建的真实失败条件；能写出 heap_5 的区域表并把 CCM 的 DMA 禁区说对；能用 88 B TCB 加 8 B 头算一笔 16 KiB 预算；能按真实源码讲 RT-Thread 的四件堆实现、TLSF 的选档方向、内存池的 O(1) 与零堆固件。
-- **边界**：单平台 F407（Cortex-M4F、`ARM_CM4F`、heap 16 KiB、`configSUPPORT_DYNAMIC_ALLOCATION=1`、`configSUPPORT_STATIC_ALLOCATION=0`）。FreeRTOS 结论按 V11.1.0；引用行号时区分「FreeHeapSize」「MinimumEver」「HeapStats」三个函数的落点，不混排。RT-Thread 只按 v5.3.0 的 `src/` 文件清单与 finsh 命令名讲，TLSF 只作论文与软件包对照，不写成内核自带。本章不展开 Mallock/伙伴系统/Slab 的论文细节，不重教队列与任务创建的 RAM 账（[ch24](./24-queue-semaphore-notification.md) 已算过 248 B 与 269），不写 Flash/IAP（那是 [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md) 的领地）。参数区与掉电保存只回链不展开。
+- **边界**：单平台 F407（Cortex-M4F、`ARM_CM4F`、heap 16 KiB、`configSUPPORT_DYNAMIC_ALLOCATION=1`、`configSUPPORT_STATIC_ALLOCATION=0`）。FreeRTOS 结论按 V11.1.0；引用行号时区分「FreeHeapSize」「MinimumEver」「HeapStats」三个函数的落点，不混排。RT-Thread 只按 v5.3.0 的 `src/` 文件清单与 finsh 命令名讲，TLSF 只作论文与软件包对照，不写成内核自带。本章不展开伙伴系统、Slab 论文的分配器设计细节，不重教队列与任务创建的 RAM 账（[ch24](./24-queue-semaphore-notification.md) 已算过 248 B 与 269），不写 Flash/IAP（那是 [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md) 的领地）。参数区与掉电保存只回链不展开。
 - **依据锚点**：F7《heap_1 到 heap_5》（`mcu/docs/rtos/freertos/07-heap.md`）、R3《RT-Thread 内存管理》（`mcu/docs/rtos/rtthread/03-mem.md`）、测验 `f7-heap`。配置见 `mcu/code/rtos/01-freertos-lab/FreeRTOSConfig.h`（`:31`、`:36`），场景 5 见 `mcu/code/rtos/01-freertos-lab/main.c:249-264`，内存地图见 `mcu/code/rtos/01-freertos-lab/stm32f407xx.ld:5-7` 与 [v1 第 8 章](../v1-drivers/08-architecture-memory-clock.md)。上游对账：FreeRTOS-Kernel V11.1.0 的 [heap_1.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/portable/MemMang/heap_1.c)、[heap_2.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/portable/MemMang/heap_2.c)、[heap_3.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/portable/MemMang/heap_3.c)、[heap_4.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/portable/MemMang/heap_4.c)、[heap_5.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/portable/MemMang/heap_5.c)、[tasks.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/tasks.c)；RT-Thread v5.3.0 的 [mem.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/src/mem.c)、[memheap.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/src/memheap.c)、[slab.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/src/slab.c)、[mempool.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/src/mempool.c)。任务栈水位与 TCB 结构见 [第 22 章](./22-tasks-tcb-scheduler.md)；队列的 RAM 账见 [第 24 章](./24-queue-semaphore-notification.md)。
 
 ## 先做出来
@@ -129,11 +129,11 @@ if ( ( uint8_t * ) pxPrevBlock == ( uint8_t * ) pxBlockToInsert ) {
 
 1. **合并只有「地址相邻」这一种判据**。前邻块的尾地址正好等于我的起始地址，或我的尾地址正好等于后邻块的起始地址，才并。隔着一块已用内存的两个洞，永远各留各的——这就是碎片的物理来源。
 2. **链表按地址升序**，所以插入点是按地址遍历找到的，合并判断只需要两次指针比较。
-3. **heap_4 不是「边界标记法」**。边界标记法要求每块带 footer，靠「前块地址 + 前块大小」从当前块反推前邻块，前后两个方向 O(1) 探邻居。heap_4 只有 8 B 头、没有 footer，前邻块是靠**地址序空闲表遍历**找出来的——`pxIterator` 停在插入位置，它就是地址上最大的那个前空闲块。merge 是 O(n) 的，不是 O(1)。旧的 F7 章把这条写成「边界标记法」，术语用错，机制也对不上，别照搬。
+3. **heap_4 不是「边界标记法」**。边界标记法要求每块带 footer，靠「前块地址 + 前块大小」从当前块反推前邻块，前后两个方向 O(1) 探邻居。heap_4 只有 8 B 头、没有 footer，前邻块是靠**地址序空闲表遍历**找出来的——`pxIterator` 停在插入位置，它就是地址上最大的那个前空闲块。合并是 O(n) 的，不是 O(1)。旧的 F7 章把这条写成「边界标记法」，术语用错，机制也对不上，别照搬。
 
 对几 KB 到几十 KB 的嵌入式小堆，O(n) 遍历的绝对开销微不足道，换来的是 8 B 头的极简实现。这是工程取舍，不是理论缺陷。
 
-![heap_4 空闲链表手绘图：按地址排序，释放时只有相邻空闲块才合并，不相邻的洞保留](/figures/rtos-freertos-07-heap.svg)
+![heap_4 空闲链表示意：按地址排序，释放时只有相邻空闲块才合并，不相邻的洞保留](/figures/rtos-freertos-07-heap.svg)
 
 ## 两个指标与一个被漏掉的读数
 
@@ -170,7 +170,7 @@ if ( ( uint8_t * ) pxPrevBlock == ( uint8_t * ) pxBlockToInsert ) {
 
 证据口径：代码存在、可复跑；仓库没有落盘串口日志，`big ok?=0/1` 的读数是实验设计里的预期值，不是已复核的板级记录。上板跑一遍把日志抄进实验记录，这一章的「两个数」才算亲手见过。
 
-换用 heap_2 重跑是很好的对照实验：把构建里的 `heap_4.c` 换成 `heap_2.c`，`xPortGetMinimumEverFreeHeapSize` 直接编译失败——heap_2 没有这个符号（`heap_2.c` 全文只有 `xPortGetFreeHeapSize`，在 `:334`）。指标 API 要逐文件核对，这就是现场教学。
+换用 heap_2 重跑是个干净的对照实验：把构建里的 `heap_4.c` 换成 `heap_2.c`，`xPortGetMinimumEverFreeHeapSize` 直接编译失败——heap_2 没有这个符号（`heap_2.c` 全文只有 `xPortGetFreeHeapSize`，在 `:334`）。指标 API 要逐文件核对，这就是现场教学。
 
 ## 静态分配：把失败搬到编译期
 
@@ -254,9 +254,9 @@ vPortDefineHeapRegions( xHeapRegions );
 
 算完和 SRAM 对账：F407 全部 RAM 是 128 KiB SRAM 加 64 KiB CCM，共 192 KiB。heap_4 的池子本体 `ucHeap` 是一个 16 KiB 的静态数组，落在 `.bss`——堆和你的全局变量抢同一块 SRAM，和 Flash 容量无关。「Flash 还有 1 MB，堆开 64 KB 都行」是把两种存储混为一谈的反模式：Flash 再大，SRAM 里挤不下 `.bss` 加栈，链接器照样报错。链接脚本的 MEMORY 布局见 [v1 第 8 章](../v1-drivers/08-architecture-memory-clock.md) 与 lab 的 `stm32f407xx.ld`。
 
-RAM 的四类住客——线程栈、内核对象池（RTOS 堆）、C 库堆、以及它们各自的验证手段——收在一张手绘图里：
+RAM 的四类住客——线程栈、内核对象池（RTOS 堆）、C 库堆、DMA 缓冲——各自的住客、风险与验证手段，收在一张手绘图里：
 
-![手绘板：F407 RAM 的三类住客与验证手段——线程栈（水位与溢出钩子）、内核对象池/堆（启动前预算、最小空闲记录）、C 库堆（唯一分配器与锁策略）](/images/ch28-memory-regions.png)
+![手绘板：F407 RAM 的四类住客与验证手段——线程栈（水位与溢出钩子）、内核对象池/堆（启动前预算、最小空闲记录）、C 库堆（唯一分配器与锁策略）、DMA 缓冲（链接 map、地址断言）](/images/ch28-memory-regions.png)
 
 ## RT-Thread 对照：四件套与一个不在内核里的 TLSF
 
@@ -286,7 +286,7 @@ FreeRTOS 让你「编译期选一个 heap_x」；RT-Thread 的 `src/` 里同时�
 | 分配器形态 | 编译期选一个 heap_x | 四件并存，按对象选 |
 | 释放 | heap_4 起支持 | mem/memheap/slab 都支持 |
 | 合并 | heap_4 相邻合并 | mem/memheap 相邻合并；池与 slab 定长，类内无外部碎片 |
-| 最大连续块 | heap_4 `vPortGetHeapStats` 直读；heap_5 无 | `memcheck`/`memheapcheck` 看 stats，无直读 API 的版本自己估 |
+| 最大连续块 | heap_4 `vPortGetHeapStats` 直读；heap_5 无 | `memcheck`/`memheapcheck` 打印堆统计；没有 FreeRTOS 那样的直读 API |
 | 固定块池 | 无内置，自己拼 | `rt_mp` 一等公民 |
 | 关堆 | `configSUPPORT_DYNAMIC_ALLOCATION=0` | `RT_USING_HEAP` 关闭 |
 | 静态创建 | `xTaskCreateStatic` 等 | `*_init` 系列（调用方自备内存） |
