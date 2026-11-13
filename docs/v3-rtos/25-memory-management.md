@@ -34,9 +34,9 @@ lab 的堆是 `configTOTAL_HEAP_SIZE = 16 * 1024`（`FreeRTOSConfig.h:36`）。�
 
 | 步骤 | 池子布局 | 总空闲 | 最大连续块 | 要 2 KB |
 | --- | --- | --- | --- | --- |
-| 分 A/B/C | `AAA BBB CCC | 空` | ≈13 KB | ≈13 KB | 能 |
-| 释放 B | `AAA ... CCC | 空` | ≈14 KB | ≈13 KB | **不能** |
-| 释放 A | `...... CCC | 空` | ≈15 KB | ≈14 KB（A+B 已并） | 能 |
+| 分 A/B/C | `AAA BBB CCC` 后接空闲 | ≈13 KB | ≈13 KB | 能 |
+| 释放 B | `AAA ··· CCC` 后接空闲 | ≈14 KB | ≈13 KB | **不能** |
+| 释放 A | `······ CCC` 后接空闲 | ≈15 KB | ≈14 KB（A+B 已并） | 能 |
 
 释放 B 之后总空闲涨到 14 KB，但那 1 KB 洞被 A、C 夹在中间，最大连续块还是 13 KB——2 KB 请求失败。释放 A 后，A 的洞和 B 的洞在地址上相邻，heap_4 把它们并成 2 KB，请求成功。这两个数什么时候分道扬镳，场景 5 给的是最干净的例子。
 
@@ -49,7 +49,7 @@ FreeRTOS 的内存分配不是五个开关，是一条能力阶梯——你放�
 | 版本 | 分配 | 释放 | 合并 | 统计 API | 适合 |
 | --- | --- | --- | --- | --- | --- |
 | heap_1 | 有 | 无（断言失败） | — | 当前空闲 | 只在初始化时分配的固件 |
-| heap_2 | 有 | 有 | 无（best fit 不合并） | 当前空闲 | 短期演示，长期产品禁用 |
+| heap_2 | 有 | 有 | 无（空闲表按大小排序） | 当前空闲 | 短期演示，长期产品禁用 |
 | heap_3 | 包 libc | 有 | 看 libc | 无 | 快速原型、与现有 malloc 生态对接 |
 | heap_4 | 有 | 有 | 相邻合并 | 当前空闲 + 水位 + 堆统计 | **嵌入式默认答案** |
 | heap_5 | 有 | 有 | 相邻合并（多区） | 当前空闲 + 水位 | SRAM+CCM 多区域 |
@@ -235,7 +235,7 @@ vPortDefineHeapRegions( xHeapRegions );
 2. 区域数组**按起始地址从低到高**排，CCM 的 `0x10000000` 排在 SRAM 的 `0x20000000` 前面，最后以 `{ NULL, 0 }` 结尾。
 3. 区域可以混搭：普通 SRAM 与 CCM 都能进表。但 **CCM 不能放 DMA 缓冲**——DMA 控制器够不着 CCM，外设收发会静默丢数据。这句话的主语是 CCM，不是 heap_5；heap_5 完全可以包含 DMA 可达的普通 SRAM 区域，「前提是区域 DMA 够不着」是把 CCM 的属性错记成 heap_5 的前提。
 
-分区怎么用：UART/DMA 缓冲、IP 帧缓冲放 SRAM 区；只被 CPU 访问的表、日志缓冲放 CCM 区。heap_5 的分配/合并算法与 heap_4 同源，差异只在区域表；CCM 区满了分配会自动落到下一个区域（或者失败，取决于请求尺寸），碎片问题在两个区里各自独立存在，heap_5 又没有 `vPortGetHeapStats`，监控靠两个区的 `xPortGetFreeHeapSize` 与水位 API。
+分区怎么用：UART/DMA 缓冲、IP 帧缓冲放 SRAM 区；只被 CPU 访问的表、日志缓冲放 CCM 区。heap_5 的分配/合并算法与 heap_4 同源，差异只在区域表：分配是跨区首次适配，空闲链表串起所有区域，CCM 地址更低、排在链表前段——不指定就默认先吃 CCM，这正是 DMA 缓冲必须显式挑对位置的原因。两个区地址不连续，碎片各自独立存在；heap_5 没有 `vPortGetHeapStats`，监控靠 `xPortGetFreeHeapSize` 与水位 API 分区读。
 
 ## 堆预算：从拍脑袋到工程账
 
@@ -285,7 +285,7 @@ FreeRTOS 让你「编译期选一个 heap_x」；RT-Thread 的 `src/` 里同时�
 | --- | --- | --- |
 | 分配器形态 | 编译期选一个 heap_x | 四件并存，按对象选 |
 | 释放 | heap_4 起支持 | mem/memheap/slab 都支持 |
-| 合并 | heap_4 相邻合并 | mem/memheap 相邻合并；池与 slab 定长无碎片 |
+| 合并 | heap_4 相邻合并 | mem/memheap 相邻合并；池与 slab 定长，类内无外部碎片 |
 | 最大连续块 | heap_4 `vPortGetHeapStats` 直读；heap_5 无 | `memcheck`/`memheapcheck` 看 stats，无直读 API 的版本自己估 |
 | 固定块池 | 无内置，自己拼 | `rt_mp` 一等公民 |
 | 关堆 | `configSUPPORT_DYNAMIC_ALLOCATION=0` | `RT_USING_HEAP` 关闭 |
