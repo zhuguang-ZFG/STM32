@@ -60,6 +60,7 @@ B2 新增 3 组：`s14-pwr`（含勘误）、`f4-queue`（Q5 阻断性勘误）�
 
 - Task 12：B1 前向引用清扫完成——20 条 `[chNN]` 定义删除、35 处引用改为 inline（401bf3dd）；`ch10/ch28–31/ch34/ch40` 等 B3/B4 目标的残留定义按计划保留。
 - `.github/workflows/merge-check.yml` 的 slop 行扩到四个 glob（随本批 CI 提交）。
+- 插图手绘回访（8eae93e3）：ch18 加 `ch16-battery-budget`、ch19 加 `ch18-hardfault-ladder`、ch24 加 `ch15-prio-inherit` 三块手绘知识板（PNG 入 `docs/public/images/`）；加上 ch25/26/27 各自的手绘板，B2 十章每章至少一块手绘图，已在 `book/dist/site` 抽查渲染。
 
 未验证：CI 远程运行结果；未执行任何远程推送或 Pages 切换；VitePress 站点切换仍归 B5。
 
