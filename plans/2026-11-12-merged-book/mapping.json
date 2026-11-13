@@ -938,7 +938,7 @@
         "ch31"
       ],
       "purpose": "平台对照（ESP32）",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -969,7 +969,7 @@
         "ch31"
       ],
       "purpose": "平台对照（ESP32）",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -979,7 +979,7 @@
         "ch31"
       ],
       "purpose": "平台对照（ESP32）",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -989,7 +989,7 @@
         "ch31"
       ],
       "purpose": "平台对照（ESP32）",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -1039,7 +1039,7 @@
         "ch31"
       ],
       "purpose": "平台对照（ESP32）",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -1237,7 +1237,7 @@
         "ch40"
       ],
       "purpose": "实验方法与证据",
-      "status": "planned",
+      "status": "partial",
       "note": ""
     },
     {
