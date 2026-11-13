@@ -26,7 +26,7 @@ root	docs/24-STM32L4引脚.md	ch28	根书原章	planned
 root	docs/25-STM32H7引脚.md	ch28;ch34	根书原章	planned	Cache→ch34
 root	docs/26-STM32F10x标准外设库SPL.md	ch07	根书原章	migrated	
 root	docs/27-网络与协议栈.md	ch33	根书原章	planned	
-root	docs/28-嵌入式系统与RTOS生态.md	ch27	根书原章	planned	
+root	docs/28-嵌入式系统与RTOS生态.md	ch27	根书原章	migrated	
 root	stm32-book/book/A-工程深读.md	apA	根书附录素材	planned	
 root	stm32-book/book/B-例程索引.md	apB	根书附录素材	planned	
 root	stm32-book/book/C-习题答案.md	apC	根书附录素材	planned	
@@ -86,8 +86,8 @@ mcu	mcu/docs/rtos/rtthread/04-device.md	ch26	RTOS 深潜	migrated
 mcu	mcu/docs/rtos/rtthread/05-finsh.md	ch26	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/rtthread/06-env-menuconfig.md	ch26	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/rtthread/07-port-f407.md	ch23	RTOS 深潜	migrated	
-mcu	mcu/docs/rtos/compare/00-side-by-side.md	ch27	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/compare/01-choose.md	ch27	RTOS 深潜	planned	
+mcu	mcu/docs/rtos/compare/00-side-by-side.md	ch27	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/compare/01-choose.md	ch27	RTOS 深潜	migrated	
 mcu	mcu/docs/esp32/00-env.md	ch30	平台对照（ESP32）	planned	
 mcu	mcu/docs/esp32/01-arch-boot.md	ch30	平台对照（ESP32）	planned	
 mcu	mcu/docs/esp32/02-gpio-matrix.md	ch31	平台对照（ESP32）	planned	

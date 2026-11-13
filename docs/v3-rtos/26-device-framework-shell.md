@@ -303,7 +303,7 @@ bsp/stm32/stm32f407-atk-explorer/
 
 三区纪律：板级知识（时钟、堆、引脚、链接脚本）进 `board/`；HAL 包装进 `libraries/`；应用只进 `applications/`。在 `applications/` 里改驱动，换 BSP 时改动全丢——板级与应用解耦靠设备框架做接合层，这是 RT-Thread 工程化的核心纪律。
 
-`pkgs --update` 按 `.config` 拉选中的软件包源码进 `packages/`，版本可在 menuconfig 里钉死（生产固件建议钉版本防上游漂移）。
+`pkgs --update` 按 `.config` 拉选中的软件包源码进 `packages/`，版本可在 menuconfig 里钉死（生产固件建议钉版本防上游漂移）。设备框架与 shell 在「选 FreeRTOS 还是 RT-Thread」里占什么分量，见 [第 27 章](./27-rtos-comparison-selection.md) 的对照与选型。
 
 ## lab 实况：这份固件没有设备框架
 
