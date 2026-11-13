@@ -13,9 +13,9 @@ platforms: [f407]
 
 ## 本章罗盘
 
-- **问题**：一个 `QueueDefinition` 怎么同时当队列、二值信号量、计数信号量、互斥锁与递归互斥锁？`uxQueueType` 是字段还是宏？`prvCopyDataToQueue` 在 `uxItemSize=0` 时做什么，数据项写到 `pcTail` 会不会拆两段？`xQueueGenericSend` 的三条分支各做什么，`queueOVERWRITE` 为什么要求 `uxLength==1`？等待名单按什么叫号，同优先级谁先醒？唤醒更高优先级任务后，为什么不是立刻切？FromISR 为什么只能延迟让出，`pxHigherPriorityTaskWoken` 与 `portYIELD_FROM_ISR` 怎么配合，ISR 优先级阈值是多少？`xSemaphoreGive`/`xSemaphoreTake`/`xSemaphoreCreateMutex` 展开成什么，互斥锁为什么出生就 give 一次？优先级继承的三步是什么，还锁怎么回落，二值信号量为什么没有，ISR 里 take 互斥锁为什么是禁区？任务通知写 TCB 哪两个字段？事件组在 lab 为什么只有 24 位？软件定时器为什么只有一个守护任务？通知比队列快多少，45% 和「一个数量级」能不能引用？深度 10、项 16 B 的队列占多少 RAM？1312/56/616/269 各是什么身份？RT-Thread 的 `suspend_thread`、`rt_mutex` 字段、邮箱与消息队列的真实口径是什么？E04 的 6000/2500 怎么算，F5 的「跑满 3000ms」为什么错，继承数值为什么是 22→20 而不是 1→3？
+- **问题**：一个 `QueueDefinition` 怎么同时当队列、二值信号量、计数信号量、互斥锁与递归互斥锁？`uxQueueType` 是字段还是宏？`prvCopyDataToQueue` 在 `uxItemSize=0` 时做什么，数据项写到 `pcTail` 会不会拆两段？`xQueueGenericSend` 的三条分支各做什么，`queueOVERWRITE` 为什么要求 `uxLength==1`？等待名单按什么叫号，同优先级谁先醒？唤醒更高优先级任务后，为什么不是立刻切？FromISR 为什么只能延迟让出，`pxHigherPriorityTaskWoken` 与 `portYIELD_FROM_ISR` 怎么配合，ISR 优先级阈值是多少？`xSemaphoreGive`/`xSemaphoreTake`/`xSemaphoreCreateMutex` 展开成什么，互斥锁为什么出生就 give 一次？优先级继承的三步是什么，还锁怎么回落，二值信号量为什么没有，ISR 里 take 互斥锁为什么是禁区？任务通知写 TCB 哪两个字段？事件组在 lab 为什么只有 24 位？软件定时器为什么只有一个守护任务？通知比队列快多少，为什么只写定性结论、要同板基准？深度 10、项 16 B 的队列占多少 RAM？1312/56/616/269 各是什么身份？RT-Thread 的 `suspend_thread`、`rt_mutex` 字段、邮箱与消息队列的真实口径是什么？E04 的 6000/2500 怎么算，F5 的「跑满 3000ms」为什么错，继承数值为什么是 22→20 而不是 1→3？
 - **交付**：能在纸上画出 `QueueDefinition` 的字段分区，说出三种人生靠哪几个字段区分；能逐行读 `prvCopyDataToQueue`，指出单次 memcpy 与指针回绕，纠正「两段拷贝」；能写出 `xQueueGenericSend` 的三分支与 overwrite 断言；能写 FromISR 的标准中断骨架与优先级约束；能写出互斥锁继承三步与回落，说明 ISR 禁区；能算 248 B 与 1312/56/616/269；能按 E04 时间线算出 6000/2500，指出 6500 与 1→3 的错；能按 v5.3.0 说出 RT-Thread 的真实字段与函数名。
-- **边界**：单平台 F407（Cortex-M4F、`ARM_CM4F`、lab 跑 HSI 16 MHz、`configMAX_PRIORITIES=5`、heap 16 KiB）。FreeRTOS 结论按 V11.1.0；根书 F103 例程按 V11.3.2，行号不混排。不展开队列集（queue set）、多通知槽与 8/56 位事件组的具体行为，只在位宽表里点名条件。E04 只写理论、模型与待实测，完整仪器实验归第 40 章。RT-Thread 只按 v5.3.0 的 IPC 字段与函数名，不把标准版 BSP 的配置与优先级级数当 lab 事实。通知速度只写定性结论，不引用 45% 或 10×。
+- **边界**：单平台 F407（Cortex-M4F、`ARM_CM4F`、lab 跑 HSI 16 MHz、`configMAX_PRIORITIES=5`、heap 16 KiB）。FreeRTOS 结论按 V11.1.0；根书 F103 例程按 V11.3.2，行号不混排。不展开队列集（queue set）、多通知槽与 8/56 位事件组的具体行为，只在位宽表里点名条件。E04 只写理论、模型与待实测，完整仪器实验归第 40 章。RT-Thread 只按 v5.3.0 的 IPC 字段与函数名，不把标准版 BSP 的配置与优先级级数当 lab 事实。通知速度只写定性结论：更快，幅度依配置，需同板基准；来源中的具体百分比/倍数没有版本、配置与引用，本章不采用。
 - **依据锚点**：F4《队列》（`mcu/docs/rtos/freertos/04-queue.md`）、F5《信号量与互斥量》（`mcu/docs/rtos/freertos/05-sem-mutex.md`）、F6《任务通知、事件组与软件定时器》（`mcu/docs/rtos/freertos/06-notify-event-timer.md`）、R2《IPC 全家桶》（`mcu/docs/rtos/rtthread/02-ipc.md`）、E04《优先级反转复现》（`mcu/docs/lab/e04-priority-inversion.md`）。配置见 `mcu/code/rtos/01-freertos-lab/FreeRTOSConfig.h`（`:41-47`、`:62`），lab 场景见 `mcu/code/rtos/01-freertos-lab/main.c`（场景 2/3/4/6）。上游对账：FreeRTOS-Kernel V11.1.0 的 [queue.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/queue.c)、[queue.h](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/include/queue.h)、[semphr.h](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/include/semphr.h)、[event_groups.h](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/include/event_groups.h)、[tasks.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/tasks.c)；RT-Thread v5.3.0 的 [ipc.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/src/ipc.c)、[rtdef.h](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/include/rtdef.h)。异常帧与 PendSV 让出见 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) 与 [第 23 章](./23-context-switch-porting.md)；tick 时基见 [v1 第 11 章](../v1-drivers/11-systick-timebase-rtc.md)。
 
 ## 先做出来
@@ -133,10 +133,17 @@ typedef struct QueueDefinition
 发送路径真正搬数据的函数是 `prvCopyDataToQueue`。它只做三件事，按 `uxItemSize` 分成三个分支：
 
 ```c
+/* queue.c V11.1.0；省略 configUSE_MUTEXES 条件编译与 mtCOVERAGE_TEST_MARKER 探针 */
 static BaseType_t prvCopyDataToQueue( Queue_t * const pxQueue,
                                       const void * pvItemToQueue,
                                       const BaseType_t xPosition )
 {
+    BaseType_t xReturn = pdFALSE;
+    UBaseType_t uxMessagesWaiting;
+
+    /* 本函数在临界区内被调用，先把当前计数读进局部变量 */
+    uxMessagesWaiting = pxQueue->uxMessagesWaiting;
+
     if( pxQueue->uxItemSize == 0 )
     {
         if( pxQueue->uxQueueType == queueQUEUE_IS_MUTEX )
@@ -148,7 +155,7 @@ static BaseType_t prvCopyDataToQueue( Queue_t * const pxQueue,
     }
     else if( xPosition == queueSEND_TO_BACK )
     {
-        /* 整项一次 memcpy，不拆两段 */
+        /* 整项一次 memcpy，不拆两段（queue.c:2420-2425） */
         ( void ) memcpy( ( void * ) pxQueue->pcWriteTo,
                          pvItemToQueue,
                          ( size_t ) pxQueue->uxItemSize );
@@ -169,6 +176,15 @@ static BaseType_t prvCopyDataToQueue( Queue_t * const pxQueue,
             pxQueue->u.xQueue.pcReadFrom =
                 ( pxQueue->u.xQueue.pcTail - pxQueue->uxItemSize );
         }
+
+        if( xPosition == queueOVERWRITE )
+        {
+            if( uxMessagesWaiting > ( UBaseType_t ) 0 )
+            {
+                /* 覆盖不是新增：先减一，函数末尾统一加一，计数净不变 */
+                --uxMessagesWaiting;
+            }
+        }
     }
 
     pxQueue->uxMessagesWaiting = ( UBaseType_t ) ( uxMessagesWaiting + 1 );
@@ -180,7 +196,7 @@ static BaseType_t prvCopyDataToQueue( Queue_t * const pxQueue,
 
 第二件：普通入队是**单次 memcpy 整项**。`pcWriteTo` 加上 `uxItemSize` 后，只有越过 `pcTail` 才回到 `pcHead`。`pcTail` 是「最后一项之后」的标记，不指向可写数据，也不参与 memcpy。单条数据永远落在一段连续的 `uxItemSize` 字节里，不存在「先写尾部、再写头部」的分段拷贝。F4 的正文写对了；旧测验里的「分两段 memcpy」是错的。
 
-第三件：`queueSEND_TO_FRONT` 与 `queueOVERWRITE` 走同一个 else 分支，写的是 `pcReadFrom` 指向的位置，然后把读指针向前移。普通队列用 `xQueueSendToFront` 时，这是「插到队头」；`xQueueOverwrite` 只允许长度 1，此时 `pcReadFrom == pcHead`，写进去的就是唯一槽位。
+第三件：`queueSEND_TO_FRONT` 与 `queueOVERWRITE` 走同一个 else 分支，写的是 `pcReadFrom` 指向的位置，然后把读指针向前移。普通队列用 `xQueueSendToFront` 时，这是「插到队头」；`xQueueOverwrite` 只允许长度 1，此时 `pcReadFrom == pcHead`，写进去的就是唯一槽位。覆盖分支还会先把局部变量 `uxMessagesWaiting` 减一，再在函数末尾统一加一，净效果是计数不变——覆盖是替换，不是新增。少了这一步，长度 1 的队列覆盖一次，计数就会从 1 变成 2，和「唯一槽位」的语义直接矛盾。
 
 补一个出队侧的对称细节：`prvCopyDataFromQueue` 先 `pcReadFrom += uxItemSize`，越过 `pcTail` 就回绕到 `pcHead`，然后才 memcpy 到调用者的缓冲区。初始 `pcReadFrom` 在最后一个槽位，所以第一次读先回绕到 0 号槽。读指针的「上一次读出的位置」这个语义，配上「先移后读」，才凑成先进先出。
 
@@ -443,7 +459,7 @@ lab 的 `configTASK_NOTIFICATION_ARRAY_ENTRIES=1`，所以每个任务只有一�
 
 通知快的原因很具体：没有队列对象、没有 memcpy、没有额外的等待链表项，发送就是写目标 TCB 的两个字段。但它只适合一对一：通知的目标必须是一个确定的任务，不能多播，也不能像队列那样缓存任意长度的数据。`configTASK_NOTIFICATION_ARRAY_ENTRIES` 大于 1 只是给同一个任务多加几个槽，不是多生产者队列。
 
-通知到底快多少？F6 提到过「约 45%」，但没有给出处、版本与配置；X0 的「快一个数量级」也没有测量条件。这两个数字都不能当结论。本章只保留定性判断：少了对象、拷贝与链表操作，通常更快；幅度取决于队列深度、发送发生在任务还是 ISR、当时是否触发调度。要写数字，就在同一块板上用同一版内核做基准，把配置与测量方法一起写出来。
+通知到底快多少？来源中的具体百分比/倍数没有版本、配置与引用，本章不采用。只保留定性判断：少了对象、拷贝与链表操作，通常更快；幅度依配置，取决于队列深度、发送发生在任务还是 ISR、当时是否触发调度。要写数字，就在同一块板上用同一版内核做基准，把配置与测量方法一起写出来。
 
 **事件组**是位公告栏。`EventBits_t` 就是 `TickType_t`，但高 8 位被内核的控制位占用，可用位数随 tick 宽度变：
 
@@ -520,14 +536,14 @@ RT-Thread v5.3.0 的 IPC 也是「对象头 + 计数/存储 + 挂起名单」，
 
 R2 里有几处名字与口径要按 v5.3.0 改写：
 
-1. `rt_ipc_object` 的字段是 `suspend_thread`，不是 `suspend_list`。`suspend_list` 是旧版/口头叫法，`rtdef.h:985-990` 的原文是 `rt_list_t suspend_thread;`。
+1. `rt_ipc_object` 的字段是 `suspend_thread`，不是 `suspend_list`。`suspend_list` 不是 v5.3.0 的字段，也不是旧版的正式字段名（v3.1.5 与 v4.0.0 同样用 `suspend_thread`）；`rtdef.h:985-990` 的原文是 `rt_list_t suspend_thread;`。
 2. `rt_ipc_resume` 这个函数不存在。`rt_ipc_list_resume` 也不是 v5.3.0 的定义，只在 `ipc.c:157` 与 `:195` 的注释里作为对比出现。真正执行挂起的是 `rt_thread_suspend_to_list`（内部用 `rt_susp_list_enqueue` 按 PRIO/FIFO 插入），恢复是 `rt_susp_list_dequeue` 与 `rt_susp_list_resume_all`（`ipc.c:105`、`:168`）。`rt_ipc_list_suspend` 同样不是可调用函数。
-3. `rt_mutex` 没有 `original_priority` 字段。`rtdef.h:1023-1035` 的字段是 `owner`、`hold`、`priority`、`ceiling_priority`、`taken_list`。`priority` 是「等待这把锁的线程里数值最小的优先级」，不是持有者的原优先级；原优先级在 TCB 的 `init_priority` 里，还锁时 `_check_and_update_prio` 用 `_thread_get_mutex_priority` 在 `init_priority` 与手上各 mutex 的等待优先级之间取最小，只有一个锁时就回到 `init_priority`。
+3. `rt_mutex` 没有 `original_priority` 字段；它是旧版互斥锁结构里的字段，v5.x 已移除。`rtdef.h:1023-1035` 的字段是 `owner`、`hold`、`priority`、`ceiling_priority`、`taken_list`。`priority` 是「等待这把锁的线程里数值最小的优先级」，不是持有者的原优先级；原优先级在 TCB 的 `init_priority` 里，还锁时 `_check_and_update_prio` 用 `_thread_get_mutex_priority` 在 `init_priority` 与手上各 mutex 的等待优先级之间取最小，只有一个锁时就回到 `init_priority`。
 4. RT-Thread 是 0 最高。E04 的 lab 数是 L=22、M=21、H=20；继承发生时 owner 的当前优先级从 22 抬到 20，还锁后回到 22。`1 变 3` 既把方向写反，也不是 lab 的数值。
 5. 邮箱 4 B 的说法正确：`rt_mb_create` 按 `size * sizeof(rt_ubase_t)` 申请，32 位平台 `rt_ubase_t` 是 4 B。消息队列不是「变长队列」：`msg_size` 在创建时固定，`rt_mq_send` 在 `size > mq->msg_size` 时直接返回 `-RT_ERROR`（`ipc.c:3432`），每条消息还要带 `struct rt_mq_message` 头（至少 `next` 指针 4 B，v5.3.0 还有 `length` 字段）。所以「size × msg_size」低估了消息队列的 RAM，至少要再加每条的头。
 6. FreeRTOS 的队列也是固定 `uxItemSize`，不是「变长队列」。R2 把 FreeRTOS 队列说成变长、把 RT-Thread 消息队列说成变长，两处都要改。要传不同长度的数据，通用做法是固定槽宽 + 长度字段，或者传指针，而不是让内核队列本身变长。
 
-`rt_ipc_object` 的骨架确实统一了信号量、互斥量、事件集、邮箱与消息队列的「等」：挂起都落到 `suspend_thread`，差别只在「等什么、醒来怎么判断」。但名字与字段必须按 v5.3.0 写，不能拿旧版的 `suspend_list`/`original_priority` 讲源码。
+`rt_ipc_object` 的骨架确实统一了信号量、互斥量、事件集、邮箱与消息队列的「等」：接收方的等待挂到 `suspend_thread`；邮箱与消息队列的发送方另用 `suspend_sender_thread`（独立发送者名单）。差别只在「等什么、醒来怎么判断」。但名字与字段必须按 v5.3.0 写：`suspend_list` 不是 v5.3.0 的字段；`original_priority` 是旧版互斥锁结构里的字段、v5.x 已移除，也不能当 v5.3.0 的源码讲。
 
 ## 测量与证据
 
@@ -540,7 +556,7 @@ R2 里有几处名字与口径要按 v5.3.0 改写：
 | 整项 memcpy 与指针回绕 | `queue.c:2420-2425`；F4:85-111 | 单条数据不跨尾拆分；`pcTail` 是尾后标记 | 文档推导 |
 | 发送三分支与 overwrite 断言 | `queue.c:952,967,1170`；F4:119-146 | 长度必须为 1；满且超时 0 返回 `errQUEUE_FULL` | 文档推导 |
 | lab 未定义 `configASSERT` | `FreeRTOSConfig.h`；`FreeRTOS.h:367-372` | 断言在本 lab 展开为空，overwrite 长度约束无运行时检查 | 文档推导 |
-| 优先级叫号与让出 | `tasks.c:5341,5396,5243,7579`；`list.c:192`；F4:148-152 | 名单按优先级；同优先级 FIFO；更高则返回 `pdTRUE` | 文档推导 |
+| 优先级叫号与让出 | `tasks.c:5243,5341,5396,5405,7579`；`list.c:192`；F4:148-152 | 名单按优先级；同优先级 FIFO；更高则返回 `pdTRUE` 并置 `xYieldPendings[0]` | 文档推导 |
 | FromISR 语义与优先级阈值 | F4:154-173；`FreeRTOSConfig.h:62`；ch10 | 不阻塞；`errQUEUE_FULL`；逻辑 ≥5 / 原始 0x50 | 文档推导 |
 | 宏血缘与互斥锁出生 | `semphr.h:298,460,735,868`；`queue.c:614-634`；F5:61-131 | take/give/create 都是队列；出生 give 一次 | 文档推导 |
 | 继承三步与回落 | `queue.c:1788,2405-2411`；`tasks.c:6580,6683`；F5:104-131 | 判→改→搬；最后一把锁才回落 `uxBasePriority`；二值无继承 | 文档推导 |
@@ -554,7 +570,7 @@ R2 里有几处名字与口径要按 v5.3.0 改写：
 | F6 五幕模拟 | F6:136-152,274 | Σ<1 有界、≥1 发散补拍 | 来源说法(未复核) |
 | E04 理论 6000/2500 | E04:78-93；F5:135-145 | L 已做 500 ms，恢复只需剩余 2500 ms | 文档推导 |
 | E04 实测与 lab 场景 | E04:3-9,101-108；`main.c` 场景 2/3/4/6 | 实测表全空，`hardware_status: pending`；串口日志未采集 | 未实测 |
-| 通知速度 45% / 10× | F6:88；X0:63,91 | 无版本、配置、引用；不采用 | 来源说法(未复核) |
+| 通知速度的定性结论 | F6:88 | 只写「更快，幅度依配置，需同板基准」；来源中的具体百分比/倍数没有版本、配置与引用，本章不采用 | 来源说法(未复核) |
 | RT-Thread 名字与字段 | `rtdef.h:985-990,1023-1035`；`ipc.c:105,168,3432` | `suspend_thread`；无 `original_priority`；定长 `msg_size` | 文档推导 |
 
 待做台架：
@@ -640,8 +656,8 @@ R2 里有几处名字与口径要按 v5.3.0 改写：
 15. 软件定时器为什么不能阻塞？固定 RAM 与每定时器 RAM 各多少？269 是什么？
 <details><summary>参考答案</summary>所有回调都在唯一的守护任务里串行执行；回调阻塞就是守护任务阻塞，所有定时器停摆。F6 probe 声称固定 1312 B（一个定时器都没建）、每定时器 56 B；269 是 `(16384-1312)/56` 的上界，不是预算。</details>
 
-16. 通知比队列快在哪？为什么不能写 10×？
-<details><summary>参考答案</summary>快在没有队列对象、没有 memcpy、没有额外等待链表项，发送就是写目标 TCB 的字段。但幅度取决于队列深度、任务/ISR 上下文、是否触发调度；45% 与「一个数量级」都没有版本、配置与引用，不能当结论。要数字就同板同配置做基准。</details>
+16. 通知比队列快在哪？为什么只写定性结论？
+<details><summary>参考答案</summary>快在没有队列对象、没有 memcpy、没有额外等待链表项，发送就是写目标 TCB 的字段。但幅度依配置，取决于队列深度、任务/ISR 上下文、是否触发调度；来源中的具体百分比/倍数没有版本、配置与引用，本章不采用，只写「更快，幅度依配置，需同板基准」。要数字就同板同配置做基准。</details>
 
 17. RT-Thread 的 `rt_ipc_object` 字段、互斥字段、邮箱与消息队列的真实口径？
 <details><summary>参考答案</summary>`rt_ipc_object` 是 `parent` + `suspend_thread`，不是 `suspend_list`。`rt_mutex` 有 `owner/hold/priority/ceiling_priority/taken_list`，没有 `original_priority`；`priority` 是等待者中数值最小的优先级，0xFF 表示无。邮箱每格 4 B（`rt_ubase_t`）；消息队列 `msg_size` 固定，`rt_mq_send` 在 `size > msg_size` 时返回 `-RT_ERROR`，每条另有 `rt_mq_message` 头，不是变长队列。</details>
@@ -650,6 +666,6 @@ R2 里有几处名字与口径要按 v5.3.0 改写：
 <details><summary>参考答案</summary>二值版：H 在 1000 ms 等，L 被 M 压到 4500 ms 才恢复，已做 500 ms，剩余 2500 ms，7000 ms 还锁，H 等 6000 ms。互斥版：L 在 1000 ms 继承到 H 级，做完剩余 2500 ms，3500 ms 还锁，H 等 2500 ms。6500 错在把 L 恢复后的工作当成 3000 ms，忽略了 0–500 ms 已做的 500 ms。RT-Thread 是 0 最高，lab 为 L=22/M=21/H=20，H 等待时 owner 从 22 抬到 20，还锁回 22。</details>
 
 19. 本章哪些读数是来源说法、哪些是未实测？
-<details><summary>参考答案</summary>来源说法(未复核)：F6 的五幕模拟、定时器 1312/56/616/269、`Queue_t=80` 与 heap_4 8 B 头、60 B `.bss`、通知 45%。未实测：E04 全部实测表与 lab 场景 2/3/4/6 的串口日志。文档推导：源码字段、memcpy/回绕、发送分支、叫号、继承、事件组位宽、RT-Thread 字段与 248 B 的算术。</details>
+<details><summary>参考答案</summary>来源说法(未复核)：F6 的五幕模拟、定时器 1312/56/616/269、`Queue_t=80` 与 heap_4 8 B 头、60 B `.bss`、通知速度的具体百分比/倍数（本章不采用）。未实测：E04 全部实测表与 lab 场景 2/3/4/6 的串口日志。文档推导：源码字段、memcpy/回绕、发送分支、叫号、继承、事件组位宽、RT-Thread 字段与 248 B 的算术。</details>
 
 <QuizBank chapter="f4-queue" />
