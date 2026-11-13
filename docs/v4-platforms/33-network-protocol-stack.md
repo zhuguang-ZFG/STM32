@@ -161,7 +161,7 @@ Wireshark 过滤器速查（实验 A–D 用）：`arp`、`icmp`、`bootp`（DHC
 
 - Wi-Fi 连接层与事件循环：归 [第 32 章](./32-esp32-wifi-ble-espnow.md)；本章从 GOT_IP 接手。
 - DMA 机制与 CCM 的完整语义：归 [v1 第 14 章](../v1-drivers/14-dma.md)。
-- H7 双核、cache 细节与 AMP 契约：归 [第 34 章](./34-multicore-cache.md)。
+- H7 双核、cache 细节与 AMP 契约：归第 34 章。
 - RTOS 堆与内存池策略：归 [第 25 章](../v3-rtos/25-memory-management.md)；本章的 RAM_net 账不与 heap_x 选型混排。
 
 ## 离开检查
