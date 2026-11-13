@@ -247,7 +247,7 @@
         "ch28"
       ],
       "purpose": "根书原章",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -257,7 +257,7 @@
         "ch28"
       ],
       "purpose": "根书原章",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -268,7 +268,7 @@
         "ch34"
       ],
       "purpose": "根书原章",
-      "status": "planned",
+      "status": "partial",
       "note": "Cache→ch34"
     },
     {
@@ -1099,7 +1099,7 @@
         "ch28"
       ],
       "purpose": "平台对照（GD32）",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
