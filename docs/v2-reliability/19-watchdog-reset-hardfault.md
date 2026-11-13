@@ -277,6 +277,8 @@ arm-none-eabi-addr2line -e build/firmware.elf 0x0800008E
 
 ![HardFault 取证全流程：CFSR 定性、VALID 取址、栈帧取 PC、addr2line 对行](/anim/hardfault-forensics.svg)
 
+![手绘板：HardFault 判读阶梯——先存 BFAR/MMFAR 再存 CFSR 与有效位，同时保住 EXC_RETURN 与异常栈；BFARVALID=1 才保留 BFAR 地址；STKERR/IMPRECISERR 时帧或 PC 不可信，可信基本帧的 PC 在 frame[6]，同一份 ELF 才能 addr2line（原理示意）](/images/ch18-hardfault-ladder.png)
+
 流水线的每一步都有失效条件：CFSR 可能只说明"升级了"，VALID 位为 0 时地址不可信，栈帧可能不完整，`-O2` 下行号可能漂移。
 
 ### 七、调试器会把故障现场改掉

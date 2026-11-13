@@ -444,6 +444,8 @@ E04 的证据状态：`hardware_status: pending`，实测记录表全空。上�
 
 ![优先级反转与继承动画：三泳道时间线，二值版 H 被 M 间接阻塞，互斥版 L 被抬级后 M 插不进](/anim/priority-inversion.svg)
 
+![手绘板：优先级继承的时刻序列——L 持锁、M 就绪运行、H 请求锁、L 继承 H 的优先级、H 取得锁并运行、H 阻塞等 L 还锁、M 仍就绪（原理示意）](/images/ch15-prio-inherit.png)
+
 ![E04 理论时间线（非实测）：二值版 H 等约 6000 ms，互斥版约 2500 ms，L 在 500 ms 已做 500 ms、剩余 2500 ms](/images/labs/e04-timeline.svg)
 
 ### 九、通知、事件组、软件定时器：三条更轻的路

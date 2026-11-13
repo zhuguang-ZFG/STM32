@@ -264,6 +264,8 @@ P11 给了一个周期上报的例子：活跃 200 mA 持续 2 s，Deep sleep 10
 
 这些是文档推导，不是实测。实际续航还要扣 LDO 静态电流、电池自放电、温度对容量的影响、唤醒峰值与失败重试。把模型写成 `I_avg = Σ(I_k×t_k)/T`，每一项都带持续时间，才不会把底电流当成平均电流。
 
+![手绘板：占空比与平均电流模型——δ = t_active/T，醒着一段把电荷吃掉，Stop 地板再低也决定不了续航，续航 ≈ 容量 ÷ I_avg（概念示意，非实拍）](/images/ch16-battery-budget.png)
+
 ### 九、ESP32：最接近但不等价
 
 ESP32 没有 STM32 的 Sleep、Stop、Standby 三档。它有 Light sleep 与 Deep sleep；Light 最接近 Stop，Deep 最接近 Standby，但都不是等价物。
