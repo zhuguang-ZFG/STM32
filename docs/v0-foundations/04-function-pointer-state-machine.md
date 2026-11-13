@@ -188,7 +188,7 @@ q->w = (uint8_t)(w + 1);                          /* 再发布写指针 */
 
 长跑验证（两派各 600 步、塞取交错）：序号对 256 取模后与读出值逐一比对，`n_put == n_get`（一个不多一个不少）。B 派额外断言 `n_put > 256`：确实跨过了 255→0 回绕，且 `q.w == n_put mod 256`、`q.r == n_get mod 256`。A 派额外断言“满写被拒”路径真的触发过（`n_refused > 0`）。
 
-前提也要说清：单生产单消费成立的前提是“生产者只有一个、消费者只有一个”。一旦中断和主循环都要改同一个索引（双向队列，或多优先级中断都往里塞），就必须上临界区；重入与互斥的展开在[第 10 章][ch10]，RTOS 队列的版本在[第 24 章][ch24]。
+前提也要说清：单生产单消费成立的前提是“生产者只有一个、消费者只有一个”。一旦中断和主循环都要改同一个索引（双向队列，或多优先级中断都往里塞），就必须上临界区；重入与互斥的展开在[第 10 章][ch10]，RTOS 队列的版本在[第 24 章](../v3-rtos/24-queue-semaphore-notification.md)。
 
 ### 中断礼仪：查表一跳，记账不办事
 
@@ -244,7 +244,7 @@ non_leaf:
 
 **返回地址弹进 PC** 是 Thumb-2 的经典收尾：弹栈与跳转合一。这个 Cortex-M4 帧 = push 8 + sub 16 = **24 字节**。对照组 `add2` 是叶子函数，不调用任何人，编译器直接注释 `@ link register save eliminated.`，全身就 `add r0, r0, r1` + `bx lr` 两条指令。计数核对：全文件 `push {r4, lr}` 恰出现 1 次、`pop {r4, pc}` 恰出现 1 次，正是 `non_leaf` 这一对；`strd , [sp]` 也恰 1 次，就是 `sum6` 那次的栈传参。
 
-宿主 gcc 16.1.0 真跑 `non_leaf`，探针读数为：`sp(main)` 到 `sp(non_leaf)` 一帧 **64 字节**，`buf` 距 `sp(non_leaf)` **32 字节**；sp 向下走（`sp_callee < sp_main`），帧差是 8 的倍数，因为 AAPCS 要求公共接口处 sp 8 字节对齐。64 字节与 24 字节的差别只在目标与编译器，机制不变：**sp 一根指针的移动 = 分配与释放的全部成本**。递归无界就是栈溢出；裸机没有 MMU 兜底，症状往往是“变量莫名其妙变了”，HardFault 都不一定报。现场定位见[第 19 章][ch19]，中断切换栈的完整现场见[第 23 章][ch23]。
+宿主 gcc 16.1.0 真跑 `non_leaf`，探针读数为：`sp(main)` 到 `sp(non_leaf)` 一帧 **64 字节**，`buf` 距 `sp(non_leaf)` **32 字节**；sp 向下走（`sp_callee < sp_main`），帧差是 8 的倍数，因为 AAPCS 要求公共接口处 sp 8 字节对齐。64 字节与 24 字节的差别只在目标与编译器，机制不变：**sp 一根指针的移动 = 分配与释放的全部成本**。递归无界就是栈溢出；裸机没有 MMU 兜底，症状往往是“变量莫名其妙变了”，HardFault 都不一定报。现场定位见[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，中断切换栈的完整现场见[第 23 章](../v3-rtos/23-context-switch-porting.md)。
 
 ### 中断服务函数：签名为什么必须符合调用约定
 
@@ -367,8 +367,5 @@ void EXTI0_IRQHandler(void)
 动作验收：在自己的工程里找一个回调注册表，把裸声明改成 `typedef` 并补一条类型等价的编译期检查；再写一个三状态的小状态机，用 `const` 动作表实现，喂一条完整命令与一条带垃圾的命令；最后对一个非叶子函数生成 `-O2` 汇编，指出 prologue、epilogue 与返回地址所在的那个字。
 
 [ch10]: ../v1-drivers/10-interrupts-nvic-exti.md
-[ch19]: ../v2-reliability/19-watchdog-reset-hardfault.md
-[ch23]: ../v3-rtos/23-context-switch-porting.md
-[ch24]: ../v3-rtos/24-queue-semaphore-notification.md
 [ch28]: ../v4-platforms/28-chip-migration-differences.md
 [ch29]: ../v4-platforms/29-gd32-arm-riscv.md

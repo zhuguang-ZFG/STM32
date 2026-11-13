@@ -11,7 +11,7 @@ platforms: [f407]
 
 - **问题**：136 行链接脚本的契约头、MEMORY、SECTIONS 三段各管什么？向量表为什么必须住 Flash 头排，删掉 `KEEP` 后哪三层证据会同时报警？`.data` 的 VMA 与 LMA 分别给谁看，少写 `AT> FLASH` 为什么能让 660 字节的 bin 涨到 128MB？复位后到 `main` 之间硬件和软件各做什么？`size` 三列、map 三板斧、`nm --size-sort` 怎样把体积账对到具体符号？
 - **交付**：能逐段读 136 行图纸，指出三段边界；能用 `nm`、`readelf`、map 三条证据判断向量表是否被回收、`.data` 是否搬得动、自定义段是否成了 orphan；能按五站复述启动流程并说出每站失败的样子；能用 size、map、nm 完成一次“先审账再优化”的体积审计。
-- **边界**：单平台 F407（F407ZGT6：1MB Flash、128KB SRAM、64KB CCM）。数字来自 xPack GNU Arm Embedded GCC 15.2.1、binutils 2.45.1 的 `00-blink` 与 `link_probe` 标本；来源没有记录板上复跑，烧录后的现象在本章标为未跑。构建系统与链接旗标留给[第 7 章](./07-build-systems-legacy.md)，SWD 与 GDB 留给[第 20 章][ch20]，中断号与外设向量留给[第 10 章][ch10]，Flash 分区与 IAP 留给[第 17 章][ch17]。
+- **边界**：单平台 F407（F407ZGT6：1MB Flash、128KB SRAM、64KB CCM）。数字来自 xPack GNU Arm Embedded GCC 15.2.1、binutils 2.45.1 的 `00-blink` 与 `link_probe` 标本；来源没有记录板上复跑，烧录后的现象在本章标为未跑。构建系统与链接旗标留给[第 7 章](./07-build-systems-legacy.md)，SWD 与 GDB 留给[第 20 章](../v2-reliability/20-debug-performance.md)，中断号与外设向量留给[第 10 章][ch10]，Flash 分区与 IAP 留给[第 17 章][ch17]。
 - **依据锚点**：B3《链接脚本：固件的建筑图纸》（`mcu/docs/build/03-linker-script.md`）、B4《启动过程：上电到 main 的每一条指令》（`mcu/docs/build/04-startup.md`）、B5《map 与体积：谁吃了我的 Flash》（`mcu/docs/build/05-map-size.md`）；[第 5 章](./05-toolchain-four-steps.md)的四步构建与 ELF 节表。工具链版本、字节数、地址与 `nm` 输出转引自上述来源。
 
 ## 先做出来
@@ -386,4 +386,3 @@ map 文件由 `ld` 的 `-Map=build/blink.map` 生成（Makefile 里的旗标，[
 [ch10]: ../v1-drivers/10-interrupts-nvic-exti.md
 [ch14]: ../v1-drivers/14-dma.md
 [ch17]: ../v1-drivers/17-flash-iap-ota.md
-[ch20]: ../v2-reliability/20-debug-performance.md
