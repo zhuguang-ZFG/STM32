@@ -76,12 +76,12 @@ mcu	mcu/docs/rtos/freertos/03-scheduler.md	ch22	RTOS 深潜	migrated
 mcu	mcu/docs/rtos/freertos/04-queue.md	ch24	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/freertos/05-sem-mutex.md	ch24	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/freertos/06-notify-event-timer.md	ch24	RTOS 深潜	migrated	
-mcu	mcu/docs/rtos/freertos/07-heap.md	ch25	RTOS 深潜	planned	
+mcu	mcu/docs/rtos/freertos/07-heap.md	ch25	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/freertos/08-port-f407.md	ch23	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/rtthread/00-arch.md	ch23	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/rtthread/01-thread-sched.md	ch22	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/rtthread/02-ipc.md	ch24	RTOS 深潜	migrated	
-mcu	mcu/docs/rtos/rtthread/03-mem.md	ch25	RTOS 深潜	planned	
+mcu	mcu/docs/rtos/rtthread/03-mem.md	ch25	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/rtthread/04-device.md	ch26	RTOS 深潜	planned	
 mcu	mcu/docs/rtos/rtthread/05-finsh.md	ch26	RTOS 深潜	planned	
 mcu	mcu/docs/rtos/rtthread/06-env-menuconfig.md	ch26	RTOS 深潜	planned	
