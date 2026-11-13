@@ -92,7 +92,7 @@ typedef struct tskTaskControlBlock
 
 这个顺序不是排版习惯，是汇编级的硬约束。PendSV 里 `ldr r2, [r3]` 取到当前 TCB 后，`stmdb r0!, {r4-r11, r14}` 把软件帧压进任务栈，最后 `str r0, [r2]` 把新栈顶写回 TCB。这里的 `[r2]` 没有字段名，只有偏移 0；恢复时 `ldr r0, [r1]` 也从偏移 0 取新栈顶（`F2:196`）。只要在 `pxTopOfStack` 前面加一个字段，写回就会落进那个字段，恢复时又把字段值当成栈顶指针——第一次切换就会把 PSP 指向错误的位置。TCB 的布局是内核与 port 层之间的 ABI，不是可以随手调整的普通结构体。
 
-顺带一个同名陷阱：`include/task.h:171` 的 `pxTopOfStack` 属于 `TaskStatus_t`，是 `uxTaskGetSystemInfo()` 给外部看的快照，不是 TCB；移植层说的偏移 0 永远指 `tasks.c` 里的那个。
+顺带一个同名陷阱：`include/task.h:171` 的 `pxTopOfStack` 属于 `TaskStatus_t`，是 `uxTaskGetSystemState()`（填数组）或 `vTaskGetInfo()`（单任务）给外部看的快照（`task.h:158,1139`），不是 TCB；移植层说的偏移 0 永远指 `tasks.c` 里的那个。
 
 ### 二、首帧是「化妆」：18 个字装成「刚被中断」
 
@@ -121,7 +121,7 @@ F1:164-176 的 GDB 记录把 xPSR 放在 `pxTopOfStack` 指向的第一个字；
 
 ![新任务首帧：xPSR、PC、LR、R0 与 EXC_RETURN 被写进任务栈](/anim/task-create-stack.svg)
 
-图中按高地址到低地址摆出 xPSR、PC、LR、跳过的 r12/r3–r1、r0 与 r4–r11；画面省略了 r0 下方的 EXC_RETURN 槽，完整 18 字布局以上一段为准。动画是原理示意，不是 GDB 实拍；首帧的逐字核对属于待做台架。
+图中按高地址到低地址摆出 xPSR、PC、LR、跳过的 r12/r3–r1、r0 与 r4–r11；画面省略了 r0 下方的 EXC_RETURN 槽与对齐空位，完整 18 字布局以上一段为准。弹栈顺序以正文/源码为准（`ldmia r0!, {r4-r11,r14}` 从低地址 r4 开始）；动画是原理示意，不是 GDB 实拍；首帧的逐字核对属于待做台架。
 
 ### 三、xTaskCreate 的六步：第六步有条件
 
@@ -134,9 +134,9 @@ F1:164-176 的 GDB 记录把 xPSR 放在 `pxTopOfStack` 指向的第一个字；
 | 3 | 初始化栈 | `prvInitialiseNewTask` → `pxPortInitialiseStack`，写首帧 |
 | 4 | 初始化 TCB | 名字、优先级、列表项、栈底 |
 | 5 | 挂就绪表 | `prvAddTaskToReadyList`，挂进 `pxReadyTasksLists[prio]` 的队尾 |
-| 6 | 条件触发调度 | `taskYIELD_IF_USING_PREEMPTION()`；只在抢占开启且新任务优先级更高时让出 |
+| 6 | 条件触发调度 | `taskYIELD_ANY_CORE_IF_USING_PREEMPTION( pxNewTCB )`（`tasks.c:87-97,2083-2088`）；只在抢占开启且新任务优先级更高时让出 |
 
-第六步不是无条件立即切换。`taskYIELD_IF_USING_PREEMPTION()` 在抢占关闭时展开为空；抢占开启时也只在 `pxNewTCB->uxPriority > pxCurrentTCB->uxPriority` 的分支里调用。更要注意调用时机：F407 lab 场景 1 的 `scene_start()` 在 `vTaskStartScheduler()` 之前运行（`mcu/code/rtos/01-freertos-lab/main.c:381-382`），这时调度器还没开跑，`xTaskCreate` 不会真正换人。调度器启动时还会创建空闲任务和优先级 4 的定时器任务；定时器任务先跑、随即阻塞在定时器队列上，之后才轮到优先级 2 的 `high`。所以串口第一行是 `high` 的日志，是启动顺序与阻塞关系的结果，不是第六步在创建 `high` 时抢占的功劳。要观察第六步，得在调度器运行后从某个任务里再创建更高优先级的任务。F1:104-111 把这一步写成「high 一建好就抢占」，跳过了「调度器已在跑」这个前提，来源说法(未复核)，不能照搬。
+第六步不是无条件立即切换。`taskYIELD_ANY_CORE_IF_USING_PREEMPTION( pxNewTCB )`（`tasks.c:87-97,2083-2088`）在抢占关闭时展开为空；抢占开启时也只在 `pxNewTCB->uxPriority > pxCurrentTCB->uxPriority` 的分支里调用；调用点还在 `if( xSchedulerRunning != pdFALSE )` 之内，调度器没启动时这一步根本不执行。更要注意调用时机：F407 lab 场景 1 的 `scene_start()` 在 `vTaskStartScheduler()` 之前运行（`mcu/code/rtos/01-freertos-lab/main.c:381-382`），这时调度器还没开跑，`xTaskCreate` 不会真正换人。调度器启动时还会创建空闲任务和优先级 4 的定时器任务；定时器任务先跑、随即阻塞在定时器队列上，之后才轮到优先级 2 的 `high`。所以按启动顺序推导，预期串口第一行是 `high` 的日志，这是启动顺序与阻塞关系的结果，不是第六步在创建 `high` 时抢占的功劳。要观察第六步，得在调度器运行后从某个任务里再创建更高优先级的任务。F1:104-111 把这一步写成「high 一建好就抢占」，跳过了「调度器已在跑」这个前提，来源说法(未复核)，不能照搬。
 
 栈深单位是 `StackType_t`，Cortex-M 上 4 B：128 字 = 512 B，不是 128 B。V11.1.0 ARM_CM4F 的 `typedef portSTACK_TYPE StackType_t` 在 `portmacro.h:58`；F1:106,218 写的是 `:55`，那一行是 `portSTACK_TYPE`。来源说法有误，已按 V11.1.0 源码更正。把 128 字误当 128 B、只分 32 字，栈容量就只剩四分之一。
 
@@ -166,7 +166,7 @@ do { \
 
 第一步更新最高就绪速查器；第二步把任务的 `xStateListItem` 挂到对应优先级的队尾。
 
-`list.c` 里有两个插入函数，分工明确：`vListInsertEnd` 不排序，插到索引位置之前，就绪表用它；`vListInsert` 按 `xItemValue` 升序找位插入，延时表用它。延时项的 `xItemValue` 是唤醒时刻，所以延时表队首永远是最早该醒的任务。选择时 `listGET_OWNER_OF_NEXT_ENTRY` 从上次位置的下一个取；队尾插入 + 循环取头 = 同优先级的任务天然轮转，时间片不需要额外数据结构。`configUSE_TIME_SLICING = 1` 时，tick 也会给同优先级任务一次轮转机会（`F3:100-112`）。
+`list.c` 里有两个插入函数，分工明确：`vListInsertEnd` 不排序，插到索引位置之前，就绪表用它；`vListInsert` 按 `xItemValue` 升序找位插入，延时表用它。延时项的 `xItemValue` 是唤醒时刻，所以延时表队首永远是最早该醒的任务。选择时 `listGET_OWNER_OF_NEXT_ENTRY` 从上次位置的下一个取；队尾插入 + 循环取头 = 同优先级的任务天然轮转，时间片不需要额外数据结构。`configUSE_TIME_SLICING = 1` 时，tick 也会给同优先级任务一次轮转机会（`F3:100-112,140-170`）。
 
 每个优先级一条 `List_t`，这是实打实的 RAM。F3 用 `configMAX_PRIORITIES = 5` 与 `= 33` 两次 `sizeof` 测量反推 `(660 − 100) ÷ (33 − 5) = 20 B`（`F3:210`）；这是文档推导，默认没有开 list integrity 检查。lab 的 5 级就绪表骨架约 100 B，不含任务自己的 `ListItem_t`。F1:118 的「O(1)」要加限定：优化路径选最高是 O(1)；通用路径最坏要扫过所有非空优先级，最多 `configMAX_PRIORITIES` 次。lab 只有 5 级，扫描很短；级数大时这个差别才明显。
 
@@ -190,9 +190,9 @@ do { \
 
 图中速查器有两副面孔，链表有两兄弟：就绪表用队尾插入管轮转，延时表用排序插入管守时。图是原理示意，不是内存转储。
 
-![32 位就绪位图：CLZ 找最高置位，31 减 CLZ 得到最高优先级](/figures/rtos-03-scheduler.svg)
+![8 位简化示意（优先级 7..0）：CLZ 找最高置位，32 位路径同理用 31 减 CLZ](/figures/rtos-03-scheduler.svg)
 
-图中第 N 位为 1 表示优先级 N 有就绪任务；`31 − CLZ` 把最高置位换算成优先级编号。位图路径只支持 32 级，lab 的 5 级只用最低 5 位。
+图是 8 位简化示意（优先级 7..0），图内最高置位画的是 5；32 位路径同理，`31 − CLZ` 把最高置位换算成优先级编号。第 N 位为 1 表示优先级 N 有就绪任务；位图路径只支持 32 级，lab 的 5 级只用最低 5 位。
 
 ### 六、tick 三段与 vTaskDelay 的「搬家」
 
@@ -233,11 +233,13 @@ if( xAlreadyYielded == pdFALSE )
 }
 ```
 
+片段只展示 n ≥ 1 的路径：V11.1.0 `tasks.c:2442` 用 `if( xTicksToDelay > 0U )` 包住挂延时表这一段；`vTaskDelay(0)` 不挂延时表，只强制一次重调度。
+
 此后就绪表里没有这个任务，CPU 去跑别人；tick 到点再把它搬回就绪表。`vTaskDelay(n)` 的等待区间是 (n−1, n] tick：调用落在两拍之间，唤醒对齐到第 n 个拍边界。1 kHz 下 `vTaskDelay(1)` 是 (0,1] ms，不是精确 1 ms。固定周期用 `vTaskDelayUntil`，以上次计划唤醒点为锚；实际入口仍有抖动，`do_work()` 超过周期时下一次会立即返回，周期追不回来，该减 WCET 或加长周期。SysTick 的 LOAD 与寄存器细节见 [v1 第 11 章](../v1-drivers/11-systick-timebase-rtc.md)，本章不重列。
 
 ### 七、RT-Thread 的 rt_thread：对象头、内嵌定时器、两步启动
 
-RT-Thread 的 `struct rt_thread`（RT-Thread 5.x `include/rtdef.h`）与 `tskTCB` 的对应关系（`R1:50-59`）：
+RT-Thread 的 `struct rt_thread`（RT-Thread 5.x `include/rtdef.h`）与 `tskTCB` 的对应关系（`R1:50-61`）：
 
 | `rt_thread` 字段 | 含义 | `tskTCB` 对照 |
 | --- | --- | --- |
@@ -246,11 +248,11 @@ RT-Thread 的 `struct rt_thread`（RT-Thread 5.x `include/rtdef.h`）与 `tskTCB
 | `current_priority` | 当前优先级，数值越小越高 | `uxPriority`，数值越大越高 |
 | `stat` | 线程状态 | `eCurrentState` |
 | `remaining_tick` | 剩余时间片 | 没有同名字段；延时场景由 `xStateListItem.xItemValue` 存唤醒时刻 |
-| `timer`（`rt_timer`） | 线程内嵌定时器 | 无内嵌，延时挂全局延时表 |
+| `thread_timer`（`rt_timer`） | 线程内嵌定时器 | 无内嵌，延时挂全局延时表 |
 | `stack_addr` / `stack_size` | 栈底地址 / 栈大小 | `pxStack` / 栈深 |
 | `entry` / `parameter` | 入口函数 / 参数 | 任务函数 / 参数 |
 
-两处结构差异最值得记：`parent` 是 `rt_object` 对象头，带来名字、类型与对象容器，`list_thread` 能直接打印线程表；`timer` 是线程内嵌的 `rt_timer`，线程延时把定时器挂到系统定时器链，而不是像 FreeRTOS 那样把任务挂进全局延时表。
+两处结构差异最值得记：`parent` 是 `rt_object` 对象头，带来名字、类型与对象容器，`list_thread` 能直接打印线程表；`thread_timer` 是线程内嵌的 `rt_timer`，线程延时把定时器挂到系统定时器链，而不是像 FreeRTOS 那样把任务挂进全局延时表。R1:59 的源表把该字段写成 `timer`，以 RT-Thread 5.x `rtdef.h` 的 `thread_timer` 为准。
 
 `rt_thread_create` 从堆上分配 TCB 与栈，`rt_thread_init` 用调用者提供的静态内存；两者都只把线程建到 INIT 态，不进就绪表，必须再调 `rt_thread_startup`。lab 的 `spawn` 就是 create + startup 两步（`mcu/code/rtos/02-rt-thread-lab/applications/main.c:28-33`）：
 
@@ -296,7 +298,7 @@ tick 侧：`SysTick_Handler` 调 `rt_interrupt_enter()` → `rt_tick_increase()`
 | TCB 偏移 0 | `tasks.c:358,360`；`F1:63-78`；`F2:196` | `pxTopOfStack` 是首成员；PendSV 用 `str r0,[r2]` 按偏移 0 写栈顶 | 文档推导 |
 | 首帧五个值 | `port.c:92-125,202-231`；`F1:82-100` | xPSR `0x01000000`、PC = 入口、LR = `prvTaskExitError`、R0 = 参数、EXC_RETURN = `0xFFFFFFFD` | 文档推导 |
 | 首帧长度 | `port.c:202-231`；`F2:254-255,328` | 18 字 = 72 B = 硬件 8 + 软件 9 + 对齐 1；源码回退 17 次后落脚，共 18 字 | 文档推导 |
-| `xTaskCreate` 第六步 | `F1:104-111`；V11.1.0 `taskYIELD_IF_USING_PREEMPTION()` | 只在抢占开启且新任务优先级更高时让出 | 文档推导 |
+| `xTaskCreate` 第六步 | `F1:104-111`；V11.1.0 `tasks.c:87-97,2083-2088` | `taskYIELD_ANY_CORE_IF_USING_PREEMPTION( pxNewTCB )`；只在抢占开启且新任务优先级更高时让出 | 文档推导 |
 | 栈深单位 | `portmacro.h:58`；`F1:106,218` | `StackType_t` 4 B；128 字 = 512 B；来源写 `:55` 是错的 | 文档推导 |
 | `List_t` 大小 | `F3:210`；`(660 − 100) ÷ (33 − 5)` | 20 B/级 | 文档推导 |
 | `vTaskDelay(1)` 区间 | `F3:162-194,217,230-231` | (0,1] tick；1 kHz 下 (0,1] ms | 文档推导 |
