@@ -13,7 +13,7 @@ root	docs/11-RTC与看门狗.md	ch11;ch19	根书原章	migrated	RTC→ch11，看
 root	docs/12-Flash与IAP升级.md	ch17	根书原章	migrated	
 root	docs/13-CAN总线.md	ch35	根书原章	planned	
 root	docs/14-USB.md	ch35	根书原章	planned	
-root	docs/15-FreeRTOS入门.md	ch21;ch22	根书原章	partial	入门→ch21，任务→ch22
+root	docs/15-FreeRTOS入门.md	ch21;ch22	根书原章	migrated	入门→ch21，任务→ch22
 root	docs/16-低功耗设计.md	ch18	根书原章	migrated	
 root	docs/17-调试与性能优化.md	ch20	根书原章	migrated	
 root	docs/18-常见问题FAQ.md	ch45	根书原章	planned	
@@ -70,16 +70,16 @@ mcu	mcu/docs/stm32/15-spl-anatomy.md	ch07	外设深潜	migrated
 mcu	mcu/docs/stm32/16-debug-hardfault.md	ch19	外设深潜	migrated	
 mcu	mcu/docs/stm32/17-watchdog-reset.md	ch19	外设深潜	migrated	
 mcu	mcu/docs/rtos/freertos/00-why-rtos.md	ch21	RTOS 深潜	migrated	
-mcu	mcu/docs/rtos/freertos/01-task-tcb.md	ch22	RTOS 深潜	planned	
+mcu	mcu/docs/rtos/freertos/01-task-tcb.md	ch22	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/freertos/02-context-switch.md	ch23	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/freertos/03-scheduler.md	ch22	RTOS 深潜	planned	
+mcu	mcu/docs/rtos/freertos/03-scheduler.md	ch22	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/freertos/04-queue.md	ch24	RTOS 深潜	planned	
 mcu	mcu/docs/rtos/freertos/05-sem-mutex.md	ch24	RTOS 深潜	planned	
 mcu	mcu/docs/rtos/freertos/06-notify-event-timer.md	ch24	RTOS 深潜	planned	
 mcu	mcu/docs/rtos/freertos/07-heap.md	ch25	RTOS 深潜	planned	
 mcu	mcu/docs/rtos/freertos/08-port-f407.md	ch23	RTOS 深潜	planned	
 mcu	mcu/docs/rtos/rtthread/00-arch.md	ch23	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/rtthread/01-thread-sched.md	ch22	RTOS 深潜	planned	
+mcu	mcu/docs/rtos/rtthread/01-thread-sched.md	ch22	RTOS 深潜	migrated	
 mcu	mcu/docs/rtos/rtthread/02-ipc.md	ch24	RTOS 深潜	planned	
 mcu	mcu/docs/rtos/rtthread/03-mem.md	ch25	RTOS 深潜	planned	
 mcu	mcu/docs/rtos/rtthread/04-device.md	ch26	RTOS 深潜	planned	

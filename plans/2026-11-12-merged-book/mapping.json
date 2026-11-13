@@ -167,7 +167,7 @@
         "ch22"
       ],
       "purpose": "根书原章",
-      "status": "partial",
+      "status": "migrated",
       "note": "入门→ch21，任务→ch22"
     },
     {
@@ -738,7 +738,7 @@
         "ch22"
       ],
       "purpose": "RTOS 深潜",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -758,7 +758,7 @@
         "ch22"
       ],
       "purpose": "RTOS 深潜",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -828,7 +828,7 @@
         "ch22"
       ],
       "purpose": "RTOS 深潜",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
