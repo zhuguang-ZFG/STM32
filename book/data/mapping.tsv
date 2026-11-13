@@ -15,7 +15,7 @@ root	docs/13-CAN总线.md	ch35	根书原章	planned
 root	docs/14-USB.md	ch35	根书原章	planned	
 root	docs/15-FreeRTOS入门.md	ch21;ch22	根书原章	planned	入门→ch21，任务→ch22
 root	docs/16-低功耗设计.md	ch18	根书原章	migrated	
-root	docs/17-调试与性能优化.md	ch20	根书原章	planned	
+root	docs/17-调试与性能优化.md	ch20	根书原章	migrated	
 root	docs/18-常见问题FAQ.md	ch45	根书原章	planned	
 root	docs/19-项目实战合集.md	ch42	根书原章	planned	
 root	docs/20-学习资源与工具链.md	ch46	根书原章	planned	
@@ -49,7 +49,7 @@ mcu	mcu/docs/build/02-elf.md	ch05	构建链深潜	migrated
 mcu	mcu/docs/build/03-linker-script.md	ch06	构建链深潜	migrated	
 mcu	mcu/docs/build/04-startup.md	ch06	构建链深潜	migrated	
 mcu	mcu/docs/build/05-map-size.md	ch06	构建链深潜	migrated	
-mcu	mcu/docs/build/06-flash-debug.md	ch20	构建链深潜	planned	
+mcu	mcu/docs/build/06-flash-debug.md	ch20	构建链深潜	migrated	
 mcu	mcu/docs/build/07-build-system.md	ch07	构建链深潜	migrated	
 mcu	mcu/docs/stm32/00-env.md	ch05	外设深潜	migrated	
 mcu	mcu/docs/stm32/01-arch.md	ch08	外设深潜	migrated	
