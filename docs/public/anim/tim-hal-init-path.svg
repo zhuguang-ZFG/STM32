@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 430" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>TIM PWM 初始化：手写与 HAL，两条路同一组寄存器</title>
+  <desc>四阶段动画：左列是手写 tim3_pwm_init() 的四步，右列是 hal_tim.c @1f6451c 的三个函数加一个 MspInit 回调，中间是 TIM3 寄存器的最终状态。阶段①定时基——写 ARR/PSC 后用 EGR=UG 把影子值立刻装进来（TIM_Base_SetConfig L6800/6817）；阶段②输出通道——HAL 在 TIM_OC1_SetConfig（L6828）里先把 CCER.CC1E 清掉再改 CCMR，防止中途输出毛刺；阶段③放行——两边同是置 CCER.CC1E 与 CR1.CEN（TIM_CCxChannelCmd L7626），TIM1/8 还要多开 BDTR.MOE；阶段④分层——时钟与引脚这类板级初始化被 HAL 拆进 MspInit 回调，读库就是逐寄存器对账。TIM3 计数器从阶段③开始每秒闪一下：配置完成，硬件真的在跑。</desc>
+  <rect width="720" height="430" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">TIM PWM 初始化：手写 vs HAL，两条路同一组寄存器</text>
+  <text x="24" y="50" font-size="12" fill="#666">左＝手写 tim3_pwm_init() · 右＝hal_tim.c @1f6451c · 中＝TIM3 寄存器最终状态</text>
+
+  <!-- ===== 三列卡片 ===== -->
+  <rect x="40" y="80" width="220" height="250" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
+  <text x="150" y="100" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">手写路径</text>
+  <rect x="54" y="128" width="192" height="36" fill="#f8fafc" stroke="#94a3b8" rx="4"/>
+  <text x="150" y="151" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">RCC APB1EN + GPIO AF2</text>
+  <rect x="54" y="178" width="192" height="36" fill="#f8fafc" stroke="#94a3b8" rx="4"/>
+  <text x="150" y="201" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">ARR/PSC · EGR=UG</text>
+  <rect x="54" y="228" width="192" height="36" fill="#f8fafc" stroke="#94a3b8" rx="4"/>
+  <text x="150" y="251" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">CCMR1 模式 · CCR1 值</text>
+  <rect x="54" y="278" width="192" height="36" fill="#f8fafc" stroke="#94a3b8" rx="4"/>
+  <text x="150" y="301" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">CCER=CC1E · CR1=CEN</text>
+
+  <rect x="280" y="80" width="160" height="250" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
+  <text x="360" y="100" font-size="13" font-weight="bold" fill="#3eaf7c" text-anchor="middle">TIM3 寄存器</text>
+  <rect x="292" y="126" width="136" height="22" fill="#f8fafc" stroke="#94a3b8" rx="3"/>
+  <text x="360" y="141" font-size="11" font-family="Consolas,monospace" fill="#666" text-anchor="middle">ARR · PSC</text>
+  <rect x="292" y="164" width="136" height="22" fill="#f8fafc" stroke="#94a3b8" rx="3"/>
+  <text x="360" y="179" font-size="11" font-family="Consolas,monospace" fill="#666" text-anchor="middle">EGR → UG</text>
+  <rect x="292" y="202" width="136" height="22" fill="#f8fafc" stroke="#94a3b8" rx="3"/>
+  <text x="360" y="217" font-size="11" font-family="Consolas,monospace" fill="#666" text-anchor="middle">CCMR1 · CCR1</text>
+  <rect x="292" y="240" width="136" height="22" fill="#f8fafc" stroke="#94a3b8" rx="3"/>
+  <text x="360" y="255" font-size="11" font-family="Consolas,monospace" fill="#666" text-anchor="middle">CCER.CC1E</text>
+  <rect x="292" y="278" width="136" height="22" fill="#f8fafc" stroke="#94a3b8" rx="3"/>
+  <text x="360" y="293" font-size="11" font-family="Consolas,monospace" fill="#666" text-anchor="middle">CR1.CEN</text>
+
+  <rect x="460" y="80" width="220" height="250" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
+  <text x="570" y="100" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">HAL 路径</text>
+  <rect x="474" y="128" width="192" height="36" fill="#f8fafc" stroke="#94a3b8" rx="4"/>
+  <text x="570" y="151" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">HAL_TIM_PWM_MspInit()</text>
+  <rect x="474" y="178" width="192" height="36" fill="#f8fafc" stroke="#94a3b8" rx="4"/>
+  <text x="570" y="201" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">TIM_Base_SetConfig L6776</text>
+  <rect x="474" y="228" width="192" height="36" fill="#f8fafc" stroke="#94a3b8" rx="4"/>
+  <text x="570" y="251" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">TIM_OC1_SetConfig L6828</text>
+  <rect x="474" y="278" width="192" height="36" fill="#f8fafc" stroke="#94a3b8" rx="4"/>
+  <text x="570" y="301" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">PWM_Start() L1454</text>
+
+  <!-- ===== 生长箭头：两条路都汇进寄存器 ===== -->
+  <path d="M252,240 L252,240" stroke="#3451b2" stroke-width="3" fill="none" marker-end="url(#arrB9)">
+    <animate attributeName="d" values="M252,240 L252,240;M252,240 L252,240;M252,240 L286,240;M252,240 L286,240" keyTimes="0;0.12;0.3;1" dur="12s" repeatCount="indefinite"/>
+  </path>
+  <path d="M468,240 L468,240" stroke="#3451b2" stroke-width="3" fill="none" marker-end="url(#arrB9)">
+    <animate attributeName="d" values="M468,240 L468,240;M468,240 L468,240;M468,240 L434,240;M468,240 L434,240" keyTimes="0;0.12;0.3;1" dur="12s" repeatCount="indefinite"/>
+  </path>
+  <defs>
+    <marker id="arrB9" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#3451b2"/>
+    </marker>
+  </defs>
+
+  <!-- ===== 寄存器点亮（累积） ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="1;1;1;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="292" y="126" width="136" height="22" fill="#dbe7ff" stroke="#3451b2" rx="3"/>
+    <text x="360" y="141" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">ARR · PSC</text>
+    <rect x="292" y="164" width="136" height="22" fill="#dbe7ff" stroke="#3451b2" rx="3"/>
+    <text x="360" y="179" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">EGR → UG</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;1;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="292" y="202" width="136" height="22" fill="#dbe7ff" stroke="#3451b2" rx="3"/>
+    <text x="360" y="217" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">CCMR1 · CCR1</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="292" y="240" width="136" height="22" fill="#dbe7ff" stroke="#3451b2" rx="3"/>
+    <text x="360" y="255" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">CCER.CC1E</text>
+    <rect x="292" y="278" width="136" height="22" fill="#dbe7ff" stroke="#3451b2" rx="3"/>
+    <text x="360" y="293" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">CR1.CEN</text>
+  </g>
+
+  <!-- 毛刺警戒：阶段② HAL 先清 CC1E -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="292" y="240" width="136" height="22" fill="#fdf0d5" stroke="#d97706" stroke-width="2" rx="3"/>
+    <text x="360" y="348" font-size="11" font-weight="bold" fill="#92400e" text-anchor="middle">HAL 改通道前先清 CC1E——不出毛刺</text>
+  </g>
+
+  <!-- ===== 当前步高亮环 ===== -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="54" y="178" width="192" height="36" fill="none" stroke="#3451b2" stroke-width="2.5" rx="4"/>
+    <rect x="474" y="178" width="192" height="36" fill="none" stroke="#3451b2" stroke-width="2.5" rx="4"/>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="54" y="228" width="192" height="36" fill="none" stroke="#3451b2" stroke-width="2.5" rx="4"/>
+    <rect x="474" y="228" width="192" height="36" fill="none" stroke="#3451b2" stroke-width="2.5" rx="4"/>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="54" y="278" width="192" height="36" fill="none" stroke="#3451b2" stroke-width="2.5" rx="4"/>
+    <rect x="474" y="278" width="192" height="36" fill="none" stroke="#3451b2" stroke-width="2.5" rx="4"/>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="48" y="122" width="204" height="198" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4" rx="6"/>
+    <rect x="468" y="122" width="204" height="198" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4" rx="6"/>
+  </g>
+
+  <!-- TIM3 跑起来了：CEN 心跳 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <circle cx="296" cy="316" r="5" fill="#3eaf7c">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="1s" repeatCount="indefinite"/>
+    </circle>
+    <text x="308" y="320" font-size="11" fill="#1a7f56">CNT 已跑起来</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">① 定时基：ARR/PSC 写完 EGR=UG 立刻装载——两边同一招（L6800/6817）</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">② 输出通道：HAL 先清 CC1E 再改 CCMR——中途不出毛刺波形</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">③ 放行：置 CCxE 与 CEN 殊途同归；TIM1/8 还要额外开 MOE</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">④ 分层：时钟引脚归 MspInit，芯片落位归 SetConfig——读库即对账</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,404)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

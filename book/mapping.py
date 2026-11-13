@@ -11,6 +11,8 @@ ROOT = Path(__file__).resolve().parent.parent
 MAPPING_TSV = ROOT / "book" / "data" / "mapping.tsv"
 MAPPING_JSON = ROOT / "plans" / "2026-11-12-merged-book" / "mapping.json"
 
+ALLOWED_STATUSES = {"planned", "partial", "migrated"}
+
 
 def load_rows(path: Path = MAPPING_TSV) -> list[dict]:
     rows = []
@@ -18,14 +20,16 @@ def load_rows(path: Path = MAPPING_TSV) -> list[dict]:
         if not line.strip() or line.lstrip().startswith("#"):
             continue
         columns = line.split("\t")
-        if len(columns) != 4:
-            raise ValueError(f"{path}:{number}: expected 4 columns, got {len(columns)}")
-        book, source, targets, note = columns
+        if len(columns) != 6:
+            raise ValueError(f"{path}:{number}: expected 6 columns, got {len(columns)}")
+        book, source, targets, purpose, status, note = columns
         rows.append(
             {
                 "book": book,
                 "source": source,
                 "targets": [target for target in targets.split(";") if target],
+                "purpose": purpose,
+                "status": status,
                 "note": note,
             }
         )
@@ -64,7 +68,8 @@ def expected_motor_sources() -> list[str]:
     return sorted(path.relative_to(ROOT).as_posix() for path in drafts.glob("*.md"))
 
 
-def validate(rows: list[dict], manifest: dict) -> list[str]:
+def validate(rows: list[dict], manifest: dict, docs_root: Path | None = None) -> list[str]:
+    docs_root = Path(docs_root) if docs_root is not None else ROOT / "docs"
     errors = []
     seen = set()
     for row in rows:
@@ -72,16 +77,34 @@ def validate(rows: list[dict], manifest: dict) -> list[str]:
         if key in seen:
             errors.append(f"duplicate source: {row['book']}:{row['source']}")
         seen.add(key)
-    target_ids = {chapter["id"] for part in manifest["parts"] for chapter in part["chapters"]}
-    target_ids |= {appendix["id"] for appendix in manifest["appendices"]}
+    files: dict[str, str] = {}
+    for part in manifest["parts"]:
+        for chapter in part["chapters"]:
+            files[chapter["id"]] = chapter["file"]
+    for appendix in manifest["appendices"]:
+        files[appendix["id"]] = appendix["file"]
     for row in rows:
         if not row["targets"]:
             errors.append(f"empty targets: {row['source']}")
         for target in row["targets"]:
-            if target not in target_ids:
+            if target not in files:
                 errors.append(f"unknown target {target} for {row['source']}")
         if not (ROOT / row["source"]).exists():
             errors.append(f"missing source file: {row['source']}")
+        if not row["purpose"].strip():
+            errors.append(f"missing purpose: {row['source']}")
+        if row["status"] not in ALLOWED_STATUSES:
+            errors.append(f"unknown status {row['status']}: {row['source']}")
+            continue
+        known = [target for target in row["targets"] if target in files]
+        existing = [target for target in known if (docs_root / files[target]).exists()]
+        if row["status"] == "migrated" and len(existing) != len(known):
+            missing = sorted(set(known) - set(existing))
+            errors.append(f"migrated but missing chapters: {row['source']} -> {missing}")
+        elif row["status"] == "partial" and not (0 < len(existing) < len(known)):
+            errors.append(f"partial status inconsistent: {row['source']}")
+        elif row["status"] == "planned" and existing:
+            errors.append(f"planned but target exists: {row['source']}")
     for book, expected in (
         ("root", expected_root_sources()),
         ("mcu", expected_mcu_sources()),

@@ -11,6 +11,8 @@
       "targets": [
         "ch46"
       ],
+      "purpose": "根书原章",
+      "status": "planned",
       "note": ""
     },
     {
@@ -19,6 +21,8 @@
       "targets": [
         "ch05"
       ],
+      "purpose": "根书原章",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -28,6 +32,8 @@
         "ch01",
         "ch08"
       ],
+      "purpose": "根书原章",
+      "status": "migrated",
       "note": "存储器→ch01，时钟→ch08"
     },
     {
@@ -36,6 +42,8 @@
       "targets": [
         "ch09"
       ],
+      "purpose": "根书原章",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -45,6 +53,8 @@
         "ch04",
         "ch10"
       ],
+      "purpose": "根书原章",
+      "status": "migrated",
       "note": "驱动基本功→ch04，NVIC→ch10"
     },
     {
@@ -54,6 +64,8 @@
         "ch11",
         "ch12"
       ],
+      "purpose": "根书原章",
+      "status": "migrated",
       "note": "时基→ch11，PWM→ch12"
     },
     {
@@ -62,6 +74,8 @@
       "targets": [
         "ch13"
       ],
+      "purpose": "根书原章",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -70,6 +84,8 @@
       "targets": [
         "ch16"
       ],
+      "purpose": "根书原章",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -78,6 +94,8 @@
       "targets": [
         "ch16"
       ],
+      "purpose": "根书原章",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -86,6 +104,8 @@
       "targets": [
         "ch15"
       ],
+      "purpose": "根书原章",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -94,6 +114,8 @@
       "targets": [
         "ch14"
       ],
+      "purpose": "根书原章",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -103,6 +125,8 @@
         "ch11",
         "ch19"
       ],
+      "purpose": "根书原章",
+      "status": "partial",
       "note": "RTC→ch11，看门狗→ch19"
     },
     {
@@ -111,6 +135,8 @@
       "targets": [
         "ch17"
       ],
+      "purpose": "根书原章",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -119,6 +145,8 @@
       "targets": [
         "ch35"
       ],
+      "purpose": "根书原章",
+      "status": "planned",
       "note": ""
     },
     {
@@ -127,6 +155,8 @@
       "targets": [
         "ch35"
       ],
+      "purpose": "根书原章",
+      "status": "planned",
       "note": ""
     },
     {
@@ -136,6 +166,8 @@
         "ch21",
         "ch22"
       ],
+      "purpose": "根书原章",
+      "status": "planned",
       "note": "入门→ch21，任务→ch22"
     },
     {
@@ -144,6 +176,8 @@
       "targets": [
         "ch18"
       ],
+      "purpose": "根书原章",
+      "status": "planned",
       "note": ""
     },
     {
@@ -152,6 +186,8 @@
       "targets": [
         "ch20"
       ],
+      "purpose": "根书原章",
+      "status": "planned",
       "note": ""
     },
     {
@@ -160,6 +196,8 @@
       "targets": [
         "ch45"
       ],
+      "purpose": "根书原章",
+      "status": "planned",
       "note": ""
     },
     {
@@ -168,6 +206,8 @@
       "targets": [
         "ch42"
       ],
+      "purpose": "根书原章",
+      "status": "planned",
       "note": ""
     },
     {
@@ -176,6 +216,8 @@
       "targets": [
         "ch46"
       ],
+      "purpose": "根书原章",
+      "status": "planned",
       "note": ""
     },
     {
@@ -184,6 +226,8 @@
       "targets": [
         "ch40"
       ],
+      "purpose": "根书原章",
+      "status": "planned",
       "note": ""
     },
     {
@@ -192,6 +236,8 @@
       "targets": [
         "ch40"
       ],
+      "purpose": "根书原章",
+      "status": "planned",
       "note": ""
     },
     {
@@ -200,6 +246,8 @@
       "targets": [
         "ch28"
       ],
+      "purpose": "根书原章",
+      "status": "planned",
       "note": ""
     },
     {
@@ -208,6 +256,8 @@
       "targets": [
         "ch28"
       ],
+      "purpose": "根书原章",
+      "status": "planned",
       "note": ""
     },
     {
@@ -217,6 +267,8 @@
         "ch28",
         "ch34"
       ],
+      "purpose": "根书原章",
+      "status": "planned",
       "note": "Cache→ch34"
     },
     {
@@ -225,6 +277,8 @@
       "targets": [
         "ch07"
       ],
+      "purpose": "根书原章",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -233,6 +287,8 @@
       "targets": [
         "ch33"
       ],
+      "purpose": "根书原章",
+      "status": "planned",
       "note": ""
     },
     {
@@ -241,6 +297,8 @@
       "targets": [
         "ch27"
       ],
+      "purpose": "根书原章",
+      "status": "planned",
       "note": ""
     },
     {
@@ -249,6 +307,8 @@
       "targets": [
         "apA"
       ],
+      "purpose": "根书附录素材",
+      "status": "planned",
       "note": ""
     },
     {
@@ -257,6 +317,8 @@
       "targets": [
         "apB"
       ],
+      "purpose": "根书附录素材",
+      "status": "planned",
       "note": ""
     },
     {
@@ -265,6 +327,8 @@
       "targets": [
         "apC"
       ],
+      "purpose": "根书附录素材",
+      "status": "planned",
       "note": ""
     },
     {
@@ -273,6 +337,8 @@
       "targets": [
         "apD"
       ],
+      "purpose": "根书附录素材",
+      "status": "planned",
       "note": ""
     },
     {
@@ -281,6 +347,8 @@
       "targets": [
         "apE"
       ],
+      "purpose": "根书附录素材",
+      "status": "planned",
       "note": ""
     },
     {
@@ -289,6 +357,8 @@
       "targets": [
         "apF"
       ],
+      "purpose": "学习路线收束",
+      "status": "planned",
       "note": "书稿专有收束页"
     },
     {
@@ -297,6 +367,8 @@
       "targets": [
         "apF"
       ],
+      "purpose": "根书附录素材",
+      "status": "planned",
       "note": ""
     },
     {
@@ -305,6 +377,8 @@
       "targets": [
         "ch01"
       ],
+      "purpose": "语言深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -313,6 +387,8 @@
       "targets": [
         "ch01"
       ],
+      "purpose": "语言深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -321,6 +397,8 @@
       "targets": [
         "ch01"
       ],
+      "purpose": "语言深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -329,6 +407,8 @@
       "targets": [
         "ch02"
       ],
+      "purpose": "语言深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -337,6 +417,8 @@
       "targets": [
         "ch03"
       ],
+      "purpose": "语言深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -345,6 +427,8 @@
       "targets": [
         "ch04"
       ],
+      "purpose": "语言深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -353,6 +437,8 @@
       "targets": [
         "ch04"
       ],
+      "purpose": "语言深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -361,6 +447,8 @@
       "targets": [
         "ch02"
       ],
+      "purpose": "语言深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -369,6 +457,8 @@
       "targets": [
         "ch13"
       ],
+      "purpose": "语言深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -377,6 +467,8 @@
       "targets": [
         "ch05"
       ],
+      "purpose": "构建链深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -385,6 +477,8 @@
       "targets": [
         "ch05"
       ],
+      "purpose": "构建链深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -393,6 +487,8 @@
       "targets": [
         "ch05"
       ],
+      "purpose": "构建链深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -401,6 +497,8 @@
       "targets": [
         "ch06"
       ],
+      "purpose": "构建链深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -409,6 +507,8 @@
       "targets": [
         "ch06"
       ],
+      "purpose": "构建链深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -417,6 +517,8 @@
       "targets": [
         "ch06"
       ],
+      "purpose": "构建链深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -425,6 +527,8 @@
       "targets": [
         "ch20"
       ],
+      "purpose": "构建链深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -433,6 +537,8 @@
       "targets": [
         "ch07"
       ],
+      "purpose": "构建链深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -441,6 +547,8 @@
       "targets": [
         "ch05"
       ],
+      "purpose": "外设深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -449,6 +557,8 @@
       "targets": [
         "ch08"
       ],
+      "purpose": "外设深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -457,6 +567,8 @@
       "targets": [
         "ch08"
       ],
+      "purpose": "外设深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -465,6 +577,8 @@
       "targets": [
         "ch09"
       ],
+      "purpose": "外设深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -473,6 +587,8 @@
       "targets": [
         "ch10"
       ],
+      "purpose": "外设深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -481,6 +597,8 @@
       "targets": [
         "ch11"
       ],
+      "purpose": "外设深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -489,6 +607,8 @@
       "targets": [
         "ch12"
       ],
+      "purpose": "外设深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -497,6 +617,8 @@
       "targets": [
         "ch13"
       ],
+      "purpose": "外设深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -505,6 +627,8 @@
       "targets": [
         "ch14"
       ],
+      "purpose": "外设深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -513,6 +637,8 @@
       "targets": [
         "ch15"
       ],
+      "purpose": "外设深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -521,6 +647,8 @@
       "targets": [
         "ch15"
       ],
+      "purpose": "外设深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -529,6 +657,8 @@
       "targets": [
         "ch16"
       ],
+      "purpose": "外设深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -537,6 +667,8 @@
       "targets": [
         "ch16"
       ],
+      "purpose": "外设深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -545,6 +677,8 @@
       "targets": [
         "ch17"
       ],
+      "purpose": "外设深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -553,6 +687,8 @@
       "targets": [
         "ch18"
       ],
+      "purpose": "外设深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -561,6 +697,8 @@
       "targets": [
         "ch07"
       ],
+      "purpose": "外设深潜",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -569,6 +707,8 @@
       "targets": [
         "ch19"
       ],
+      "purpose": "外设深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -577,6 +717,8 @@
       "targets": [
         "ch19"
       ],
+      "purpose": "外设深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -585,6 +727,8 @@
       "targets": [
         "ch21"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -593,6 +737,8 @@
       "targets": [
         "ch22"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -601,6 +747,8 @@
       "targets": [
         "ch23"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -609,6 +757,8 @@
       "targets": [
         "ch22"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -617,6 +767,8 @@
       "targets": [
         "ch24"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -625,6 +777,8 @@
       "targets": [
         "ch24"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -633,6 +787,8 @@
       "targets": [
         "ch24"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -641,6 +797,8 @@
       "targets": [
         "ch25"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -649,6 +807,8 @@
       "targets": [
         "ch23"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -657,6 +817,8 @@
       "targets": [
         "ch23"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -665,6 +827,8 @@
       "targets": [
         "ch22"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -673,6 +837,8 @@
       "targets": [
         "ch24"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -681,6 +847,8 @@
       "targets": [
         "ch25"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -689,6 +857,8 @@
       "targets": [
         "ch26"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -697,6 +867,8 @@
       "targets": [
         "ch26"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -705,6 +877,8 @@
       "targets": [
         "ch26"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -713,6 +887,8 @@
       "targets": [
         "ch23"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -721,6 +897,8 @@
       "targets": [
         "ch27"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -729,6 +907,8 @@
       "targets": [
         "ch27"
       ],
+      "purpose": "RTOS 深潜",
+      "status": "planned",
       "note": ""
     },
     {
@@ -737,6 +917,8 @@
       "targets": [
         "ch30"
       ],
+      "purpose": "平台对照（ESP32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -745,6 +927,8 @@
       "targets": [
         "ch30"
       ],
+      "purpose": "平台对照（ESP32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -753,6 +937,8 @@
       "targets": [
         "ch31"
       ],
+      "purpose": "平台对照（ESP32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -761,6 +947,8 @@
       "targets": [
         "ch30"
       ],
+      "purpose": "平台对照（ESP32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -770,6 +958,8 @@
         "ch10",
         "ch34"
       ],
+      "purpose": "平台对照（ESP32）",
+      "status": "partial",
       "note": "双核→ch10，Cache→ch34"
     },
     {
@@ -778,6 +968,8 @@
       "targets": [
         "ch31"
       ],
+      "purpose": "平台对照（ESP32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -786,6 +978,8 @@
       "targets": [
         "ch31"
       ],
+      "purpose": "平台对照（ESP32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -794,6 +988,8 @@
       "targets": [
         "ch31"
       ],
+      "purpose": "平台对照（ESP32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -802,6 +998,8 @@
       "targets": [
         "ch32"
       ],
+      "purpose": "平台对照（ESP32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -810,6 +1008,8 @@
       "targets": [
         "ch32"
       ],
+      "purpose": "平台对照（ESP32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -818,6 +1018,8 @@
       "targets": [
         "ch17"
       ],
+      "purpose": "平台对照（ESP32）",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -826,6 +1028,8 @@
       "targets": [
         "ch18"
       ],
+      "purpose": "平台对照（ESP32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -834,6 +1038,8 @@
       "targets": [
         "ch31"
       ],
+      "purpose": "平台对照（ESP32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -842,6 +1048,8 @@
       "targets": [
         "ch19"
       ],
+      "purpose": "平台对照（ESP32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -850,6 +1058,8 @@
       "targets": [
         "ch29"
       ],
+      "purpose": "平台对照（GD32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -858,6 +1068,8 @@
       "targets": [
         "ch29"
       ],
+      "purpose": "平台对照（GD32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -866,6 +1078,8 @@
       "targets": [
         "ch29"
       ],
+      "purpose": "平台对照（GD32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -874,6 +1088,8 @@
       "targets": [
         "ch29"
       ],
+      "purpose": "平台对照（GD32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -882,6 +1098,8 @@
       "targets": [
         "ch28"
       ],
+      "purpose": "平台对照（GD32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -890,6 +1108,8 @@
       "targets": [
         "ch29"
       ],
+      "purpose": "平台对照（GD32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -898,6 +1118,8 @@
       "targets": [
         "ch29"
       ],
+      "purpose": "平台对照（GD32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -906,6 +1128,8 @@
       "targets": [
         "ch29"
       ],
+      "purpose": "平台对照（GD32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -914,6 +1138,8 @@
       "targets": [
         "ch29"
       ],
+      "purpose": "平台对照（GD32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -922,6 +1148,8 @@
       "targets": [
         "ch29"
       ],
+      "purpose": "平台对照（GD32）",
+      "status": "planned",
       "note": ""
     },
     {
@@ -931,6 +1159,8 @@
         "ch09",
         "ch40"
       ],
+      "purpose": "实验方法与证据",
+      "status": "partial",
       "note": "实验拆入ch09，方法→ch40"
     },
     {
@@ -940,6 +1170,8 @@
         "ch13",
         "ch40"
       ],
+      "purpose": "实验方法与证据",
+      "status": "partial",
       "note": ""
     },
     {
@@ -949,6 +1181,8 @@
         "ch12",
         "ch40"
       ],
+      "purpose": "实验方法与证据",
+      "status": "partial",
       "note": ""
     },
     {
@@ -958,6 +1192,8 @@
         "ch24",
         "ch40"
       ],
+      "purpose": "实验方法与证据",
+      "status": "planned",
       "note": ""
     },
     {
@@ -967,6 +1203,8 @@
         "ch16",
         "ch40"
       ],
+      "purpose": "实验方法与证据",
+      "status": "partial",
       "note": ""
     },
     {
@@ -976,6 +1214,8 @@
         "ch18",
         "ch40"
       ],
+      "purpose": "实验方法与证据",
+      "status": "planned",
       "note": ""
     },
     {
@@ -985,6 +1225,8 @@
         "ch16",
         "ch40"
       ],
+      "purpose": "实验方法与证据",
+      "status": "partial",
       "note": ""
     },
     {
@@ -994,6 +1236,8 @@
         "ch31",
         "ch40"
       ],
+      "purpose": "实验方法与证据",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1002,6 +1246,8 @@
       "targets": [
         "ch41"
       ],
+      "purpose": "项目案例",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1010,6 +1256,8 @@
       "targets": [
         "ch41"
       ],
+      "purpose": "项目案例",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1018,6 +1266,8 @@
       "targets": [
         "ch43"
       ],
+      "purpose": "AI 工程方法",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1026,6 +1276,8 @@
       "targets": [
         "ch43"
       ],
+      "purpose": "AI 工程方法",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1034,6 +1286,8 @@
       "targets": [
         "ch44"
       ],
+      "purpose": "AI 工程方法",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1042,6 +1296,8 @@
       "targets": [
         "ch43"
       ],
+      "purpose": "AI 工程方法",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1050,6 +1306,8 @@
       "targets": [
         "ch44"
       ],
+      "purpose": "AI 工程方法",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1058,6 +1316,8 @@
       "targets": [
         "ch44"
       ],
+      "purpose": "AI 工程方法",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1066,6 +1326,8 @@
       "targets": [
         "apA"
       ],
+      "purpose": "附录素材",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1074,6 +1336,8 @@
       "targets": [
         "apB"
       ],
+      "purpose": "附录素材",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1082,6 +1346,8 @@
       "targets": [
         "apC"
       ],
+      "purpose": "附录素材",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1090,6 +1356,8 @@
       "targets": [
         "apD"
       ],
+      "purpose": "附录素材",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1098,6 +1366,8 @@
       "targets": [
         "apE"
       ],
+      "purpose": "附录素材",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1106,6 +1376,8 @@
       "targets": [
         "ch45"
       ],
+      "purpose": "附录素材",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1114,6 +1386,8 @@
       "targets": [
         "apF"
       ],
+      "purpose": "附录素材",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1122,6 +1396,8 @@
       "targets": [
         "ch36"
       ],
+      "purpose": "电机控制草稿",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1130,6 +1406,8 @@
       "targets": [
         "ch37"
       ],
+      "purpose": "电机控制草稿",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1138,6 +1416,8 @@
       "targets": [
         "ch38"
       ],
+      "purpose": "电机控制草稿",
+      "status": "planned",
       "note": ""
     },
     {
@@ -1146,6 +1426,8 @@
       "targets": [
         "ch39"
       ],
+      "purpose": "电机控制草稿",
+      "status": "planned",
       "note": ""
     }
   ]

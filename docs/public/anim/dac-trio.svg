@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>DAC 三重奏：TIM 打拍、DMA 递谱、DAC 开嗓</title>
+  <desc>四阶段动画：让芯片唱出 1kHz 正弦需要三个外设协奏，CPU 不用当指挥。① TIM6 打拍：计数器从 0 数到 ARR，更新事件经 TRGO 输出（CR2.MMS=010），每数满一次产生一个触发；② DMA 递谱：DMA1 Stream5 Channel7 在 TRGO 触发的 DAC 请求下，从正弦表（const 数组，住 Flash）取下一个样本搬进 DAC 的 DHR12R1，内存指针自动递增、循环模式传完回卷到表头；③ DAC 开嗓：DAC 在触发沿把 DHR12R1 搬到 DOR1（输出寄存器），电阻网络按 12 位数字输出对应电压（0~VREF 分 4096 级）；④ 波形出来：一串台阶（零阶保持）连成近似正弦，样本率=TIM6 更新率、波形频率=样本率÷表长——表长砍到 8 点正弦退化成阶梯三角。图上有一个真在跑的接力点：样本指针在 64 点正弦表里循环扫过，正是 DMA 替你递乐谱的全部含义。三重奏的精髓：TIM 定节奏、DMA 递数据、DAC 出电压，CPU 只管启动后睡大觉。</desc>
+  <rect width="720" height="460" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">DAC 三重奏：TIM 打拍 · DMA 递谱 · DAC 开嗓</text>
+  <text x="24" y="50" font-size="12" fill="#666">波形频率 = 样本率 ÷ 表长；CPU 启动后只管睡大觉</text>
+
+  <!-- 三个外设卡片（常驻） -->
+  <rect x="40" y="66" width="205" height="80" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="52" y="86" font-size="13" font-weight="bold" fill="#3451b2">TIM6 打拍</text>
+  <text x="52" y="106" font-size="11" fill="#666">计数 0→ARR 产生更新</text>
+  <text x="52" y="124" font-size="11" fill="#333">CR2.MMS=010 → TRGO</text>
+  <text x="52" y="140" font-size="11" fill="#94a3b8">f_更新=f_TIM/((PSC+1)(ARR+1))</text>
+
+  <rect x="258" y="66" width="205" height="80" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="270" y="86" font-size="13" font-weight="bold" fill="#d97706">DMA 递谱</text>
+  <text x="270" y="106" font-size="11" fill="#666">DMA1 Stream5 Ch7</text>
+  <text x="270" y="124" font-size="11" fill="#333">正弦表→DHR12R1，循环</text>
+  <text x="270" y="140" font-size="11" fill="#94a3b8">MINC+CIRC，指针自动回卷</text>
+
+  <rect x="476" y="66" width="205" height="80" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="488" y="86" font-size="13" font-weight="bold" fill="#1a7f56">DAC 开嗓</text>
+  <text x="488" y="106" font-size="11" fill="#666">DHR12R1→DOR1（触发沿）</text>
+  <text x="488" y="124" font-size="11" fill="#333">12 位→4096 级电压</text>
+  <text x="488" y="140" font-size="11" fill="#94a3b8">0~VREF，电阻梯形网络</text>
+
+  <!-- 正弦表 + 样本指针（常驻底层） -->
+  <text x="360" y="166" font-size="11" fill="#94a3b8" text-anchor="middle">64 点正弦表（const，住 Flash）——指针扫过即 DMA 递谱</text>
+  <line x1="60" y1="190" x2="660" y2="190" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- 简化正弦波形（16 个可见采样点连成阶梯） -->
+  <polyline points="60,190 100,178 140,166 180,166 220,178 260,190 300,202 340,214 380,214 420,202 460,190 500,178 540,166 580,166 620,178 660,190" fill="none" stroke="#3451b2" stroke-width="2"/>
+  <!-- 样本刻度 -->
+  <g fill="#cbd5e1">
+    <circle cx="60" cy="190" r="2"/><circle cx="100" cy="178" r="2"/><circle cx="140" cy="166" r="2"/><circle cx="180" cy="166" r="2"/>
+    <circle cx="220" cy="178" r="2"/><circle cx="260" cy="190" r="2"/><circle cx="300" cy="202" r="2"/><circle cx="340" cy="214" r="2"/>
+    <circle cx="380" cy="214" r="2"/><circle cx="420" cy="202" r="2"/><circle cx="460" cy="190" r="2"/><circle cx="500" cy="178" r="2"/>
+    <circle cx="540" cy="166" r="2"/><circle cx="580" cy="166" r="2"/><circle cx="620" cy="178" r="2"/><circle cx="660" cy="190" r="2"/>
+  </g>
+  <!-- 样本指针：在正弦表上循环扫过（一直转，dur=4s 整除 12s） -->
+  <circle cx="60" cy="190" r="6" fill="#d97706">
+    <animate attributeName="cx" values="60;660;660;60" keyTimes="0;0.86;0.93;1" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  <text x="360" y="232" font-size="11" fill="#94a3b8" text-anchor="middle">样本指针：DMA 每次触发取一个点，扫到表头自动回卷</text>
+
+  <!-- 阶段一：TIM6 打拍 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="248" width="640" height="128" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="270" font-size="13" font-weight="bold" fill="#3451b2">① TIM6 打拍：计数满 → 更新事件 → TRGO</text>
+    <!-- 说明句断成两行：单行 13px 混排超过 600px 在 Linux 回退字体下会被裁掉 -->
+    <text x="56" y="292" font-size="13" fill="#333">TIM6 在 APB1（84MHz 定时器时钟），PSC/ARR 决定更新率；</text>
+    <text x="56" y="310" font-size="13" fill="#333">CR2.MMS=010 让更新事件作 TRGO 输出。</text>
+    <text x="56" y="332" font-size="12" font-family="Consolas,monospace" fill="#333">TIM6->CR2 = (TIM6->CR2 &amp; ~TIM_CR2_MMS_Msk) | TIM_CR2_MMS_1_Msk;  // update→TRGO</text>
+    <text x="56" y="354" font-size="12" fill="#d97706">TIM6 没有通道引脚——它专为"打拍触发"存在，不打拍时就是浪费一个定时器。</text>
+  </g>
+
+  <!-- 阶段二：DMA 递谱 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="248" width="640" height="128" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="270" font-size="13" font-weight="bold" fill="#d97706">② DMA 递谱：TRGO → DAC 请求 → 取下一个样本</text>
+    <text x="56" y="292" font-size="13" fill="#333">DAC1 的 DMA 请求在 DMA1 Stream5 Channel7（RM0090 Table 43）。</text>
+    <text x="56" y="310" font-size="13" fill="#333">MINC 让内存指针递增、CIRC 让传完回卷。</text>
+    <text x="56" y="332" font-size="12" font-family="Consolas,monospace" fill="#333">DMA1_Stream5->PAR = &amp;DAC->DHR12R1;  M0AR = sine_table;  NDTR = 64;  CR = CH7|MINC|CIRC|...</text>
+    <text x="56" y="354" font-size="12" fill="#d97706">启动顺序：先 DAC（TEN1+DMAEN1）再使能 DMA 流——反过来第一样本会被覆盖。</text>
+  </g>
+
+  <!-- 阶段三：DAC 开嗓 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="248" width="640" height="128" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="270" font-size="13" font-weight="bold" fill="#1a7f56">③ DAC 开嗓：DHR12R1 → DOR1 → 电压</text>
+    <text x="56" y="292" font-size="13" fill="#333">触发沿把 DHR12R1（数据保持）搬到 DOR1（输出寄存器），</text>
+    <text x="56" y="310" font-size="13" fill="#333">电阻梯形网络按 12 位数字输出对应电压。</text>
+    <text x="56" y="332" font-size="12" font-family="Consolas,monospace" fill="#333">DAC->CR |= DAC_CR_TEN1_Msk | DAC_CR_DMAEN1_Msk;  // 触发使能 + DMA 请求使能</text>
+    <text x="56" y="354" font-size="12" fill="#3eaf7c">写 2048 → 输出 VREF/2；12 位右对齐，写错对齐寄存器幅度只剩 1/16。</text>
+  </g>
+
+  <!-- 阶段四：波形出来 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="248" width="640" height="128" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="270" font-size="13" font-weight="bold" fill="#3451b2">④ 波形出来：样本率、表长、频率的数学</text>
+    <text x="56" y="292" font-size="13" fill="#333">f_波形 = f_样本 / N = f_TIM6更新 / N——1kHz/64 点要 64kHz 样本率。</text>
+    <text x="56" y="312" font-size="13" fill="#333">84MHz / 64kHz = 1312.5 不整除——舍入到 1312，误差 0.1%。</text>
+    <text x="56" y="332" font-size="12" font-family="Consolas,monospace" fill="#333">N=64 → 正弦；N=8 → 阶梯三角（零阶保持 + 点太少）；N=2 → 奈奎斯特极限，方波</text>
+    <text x="56" y="354" font-size="12" fill="#d97706">选表长不光看频率，还要看 84MHz 能不能整除——这是波形数学最值得讲的一刀。</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="402">① TIM6 打拍：计数满产生更新事件，TRGO 输出触发</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="402">② DMA 递谱：取正弦表下一个样本搬进 DHR12R1，循环</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="402">③ DAC 开嗓：触发沿 DHR→DOR，12 位数字变电压</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="402">④ 波形出来：f=样本率÷表长，点太少正弦退化成阶梯三角</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,420)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

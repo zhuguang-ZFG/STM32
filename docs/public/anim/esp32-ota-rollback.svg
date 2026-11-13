@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>OTA 双槽轮流坐庄：下载 → 切槽 → 自检 → 回滚</title>
+  <desc>ESP32 OTA 升级的完整保险机制。① 分区表里 ota_0/ota_1 两个 app 分区轮流坐庄，otadata 记"下次启动谁上岗"——布局写在 CSV，bootloader 每次启动读表。② 下载新固件写入备用槽：esp_ota_begin(ota_1) → 分块 esp_ota_write → esp_ota_end 校验镜像；写的是 ota_1，ota_0 不受影响——升级中途断电，旧固件照常启动，啥也没发生。③ 切槽重启：esp_ota_set_boot_partition(ota_1) 把 otadata 的票改投，重启后 bootloader 读票跑新固件，状态 NEW/PENDING_VERIFY——试用期，还没转正。④ 自检与回滚：新固件跑 esp_ota_mark_app_valid_cancel_rollback() 提交，票固化转正；若 panic 或看门狗复位没等到提交，重启自动回 ota_0——坏固件自动下岗，这就是双槽的保险（回滚需开启 CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE）。</desc>
+  <rect width="720" height="460" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">OTA 双槽轮流坐庄：下载 → 切槽 → 自检 → 回滚</text>
+  <text x="24" y="50" font-size="12" fill="#666">ota_0/ota_1 两个 app 槽 + otadata 记票；升级期间旧固件一直在岗，自检不过自动回滚</text>
+
+  <defs>
+    <marker id="otaArwB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3451b2"/></marker>
+    <marker id="otaArwG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3eaf7c"/></marker>
+    <marker id="otaArwR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#dc2626"/></marker>
+  </defs>
+
+  <!-- 固件源 -->
+  <rect x="48" y="64" width="170" height="44" rx="22" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="133" y="82" font-size="13" font-weight="bold" fill="#24292f" text-anchor="middle">新固件 v2.bin</text>
+  <text x="133" y="100" font-size="11" fill="#666" text-anchor="middle">（服务器 / 本地）</text>
+
+  <!-- otadata 记票 -->
+  <rect x="300" y="64" width="150" height="44" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="375" y="82" font-family="Consolas,monospace" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">otadata</text>
+  <text x="375" y="100" font-size="11" fill="#666" text-anchor="middle">启动票：投给谁</text>
+
+  <!-- 投票箭头：阶段 1-2 指向 ota_0 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <line x1="350" y1="108" x2="215" y2="166" stroke="#3eaf7c" stroke-width="2.5" marker-end="url(#otaArwG)"/>
+    <text x="248" y="132" font-size="11" fill="#1a7f56">投给 ota_0</text>
+  </g>
+  <!-- 投票箭头：阶段 3-4 改投 ota_1 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <line x1="400" y1="108" x2="505" y2="166" stroke="#3451b2" stroke-width="2.5" marker-end="url(#otaArwB)"/>
+    <text x="468" y="132" font-size="11" fill="#3451b2">改投 ota_1</text>
+  </g>
+
+  <!-- 下载流：源 → ota_1（数据包持续流动） -->
+  <path d="M 160 108 C 280 152, 400 132, 496 164" stroke="#3451b2" stroke-width="2" stroke-dasharray="6 4" fill="none" marker-end="url(#otaArwB)"/>
+  <rect x="-5" y="-5" width="10" height="10" fill="#3451b2">
+    <animateMotion dur="3s" repeatCount="indefinite" path="M 160 108 C 280 152, 400 132, 496 164"/>
+  </rect>
+  <text x="250" y="160" font-size="11" fill="#666">esp_ota_write 分块写入</text>
+
+  <!-- ota_0 槽 -->
+  <rect x="80" y="170" width="240" height="100" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="96" y="196" font-family="Consolas,monospace" font-size="15" font-weight="bold" fill="#1a7f56">ota_0</text>
+  <text x="96" y="216" font-size="12" fill="#333">app v1（旧固件）</text>
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <circle cx="296" cy="190" r="6" fill="#3eaf7c">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="1s" repeatCount="indefinite"/>
+    </circle>
+    <text x="296" y="212" font-size="11" fill="#666" text-anchor="middle">运行中</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <text x="96" y="252" font-size="11" fill="#666">升级后转备用（回滚保险）</text>
+  </g>
+
+  <!-- ota_1 槽 -->
+  <rect x="400" y="170" width="240" height="100" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="416" y="196" font-family="Consolas,monospace" font-size="15" font-weight="bold" fill="#3451b2">ota_1</text>
+  <text x="416" y="216" font-size="12" fill="#333">空闲 → 写入新固件</text>
+  <rect x="416" y="228" width="208" height="14" rx="3" fill="#f1f5f9" stroke="#e2e8f0"/>
+  <rect x="416" y="228" width="0" height="14" rx="3" fill="#3451b2">
+    <animate attributeName="width" values="0;208;208" keyTimes="0;0.7;1" dur="4s" repeatCount="indefinite"/>
+  </rect>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <circle cx="616" cy="190" r="6" fill="#3eaf7c">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="1s" repeatCount="indefinite"/>
+    </circle>
+    <text x="616" y="212" font-size="11" fill="#666" text-anchor="middle">运行中</text>
+    <text x="416" y="252" font-size="11" fill="#d97706">状态 NEW / PENDING_VERIFY（试用期）</text>
+  </g>
+
+  <!-- 阶段四：回滚箭头与两个结局 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <path d="M 500 272 C 460 306, 220 306, 180 272" stroke="#dc2626" stroke-width="2" stroke-dasharray="6 4" fill="none" marker-end="url(#otaArwR)"/>
+    <text x="340" y="312" font-size="12" fill="#dc2626" text-anchor="middle">自检失败 / panic → 自动回滚重启 ota_0</text>
+    <text x="560" y="152" font-size="12" fill="#1a7f56" text-anchor="middle">✓ 自检通过 → mark valid：票固化转正</text>
+  </g>
+
+  <!-- 阶段一 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="320" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="342" font-size="13.5" font-weight="bold" fill="#3451b2">① 分区表：双槽 + 记票</text>
+    <text x="56" y="364" font-size="12" fill="#333">ota_0 / ota_1 两个 app 分区轮流坐庄；otadata 记"下次启动谁上岗"</text>
+    <text x="56" y="384" font-size="12" fill="#333">nvs / phy_init 各有户口——布局写在 CSV，bootloader 每次启动读表（本章第一节）</text>
+  </g>
+
+  <!-- 阶段二 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="320" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="342" font-size="13.5" font-weight="bold" fill="#3451b2">② 下载写入备用槽</text>
+    <text x="56" y="364" font-size="12" fill="#333">esp_ota_begin(ota_1) → 分块 esp_ota_write → esp_ota_end 校验镜像</text>
+    <text x="56" y="384" font-size="12" fill="#333">写的是 ota_1：ota_0 不受影响——升级中途断电，旧固件照常启动，啥也没发生</text>
+  </g>
+
+  <!-- 阶段三 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="320" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="342" font-size="13.5" font-weight="bold" fill="#d97706">③ 切槽重启（试用期）</text>
+    <text x="56" y="364" font-size="12" fill="#333">esp_ota_set_boot_partition(ota_1)：otadata 改投，重启后 bootloader 读票跑新固件</text>
+    <text x="56" y="384" font-size="12" fill="#d97706">新固件状态 NEW / PENDING_VERIFY——还没转正，回滚通道还开着</text>
+  </g>
+
+  <!-- 阶段四 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="320" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="342" font-size="13.5" font-weight="bold" fill="#1a7f56">④ 自检：提交或回滚</text>
+    <text x="56" y="364" font-size="12" fill="#333">esp_ota_mark_app_valid_cancel_rollback()：自检通过，票固化转正</text>
+    <text x="56" y="384" font-size="12" fill="#dc2626">panic / 看门狗没等到提交 → 重启自动回 ota_0：坏固件自动下岗（需开启回滚选项）</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="428">① 双槽轮流坐庄：otadata 记票</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="428">② 写备用槽：旧固件一直在岗</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="428">③ 切槽重启：新固件进试用期</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="428">④ 自检通过转正；失败自动回滚</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,446)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

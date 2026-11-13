@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 430" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>DMA 流配置：EN 落下来的 CR 写窗口</title>
+  <desc>四阶段动画：DMA 流的 CHSEL/CIRC 等位只有 EN=0 时可改，这是硬约束。阶段①传输中——EN=1、NDTR 递减，此时写 CR 是徒劳；阶段②可改窗口——先把 CR 清零再等 EN 落下：手写工程用 while(EN) 轮询，硬件不落地就死循环，HAL 的 __HAL_DMA_DISABLE（hal_dma.c L209）做同样的等待但加了 5ms 超时（HAL_TIMEOUT_DMA_ABORT，L215），等不到返回 HAL_TIMEOUT 而不是死锁；阶段③一笔落 CR——CHSEL 到 DBM 整段先清（L231-237）再或上 Init 字段写回（L250），FCR 的直接模式另写（L285）；阶段④两段式分工——HAL_DMA_Init 只碰流属性，本次传输的 NDTR/PAR/M0AR 留到 HAL_DMA_Start 的 DMA_SetConfig（L1157），写完 EN=1 回到跑动。底部时间轴逐点爬出整条序列。</desc>
+  <rect width="720" height="430" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">DMA 流配置：EN 落下来才有写窗口</text>
+  <text x="24" y="50" font-size="12" fill="#666">手写 03-uart-dma：CR=0 → 等 EN 落 → 落位 → 再开 · HAL：hal_dma.c @1f6451c</text>
+
+  <!-- ===== 四个状态卡片 ===== -->
+  <rect x="40" y="80" width="150" height="200" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
+  <text x="115" y="100" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">① 正在传输</text>
+  <circle cx="115" cy="130" r="8" fill="#dc2626"/>
+  <text x="115" y="160" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">EN=1</text>
+  <text x="115" y="184" font-size="11" fill="#666" text-anchor="middle">NDTR 递减中</text>
+  <text x="115" y="240" font-size="11" font-weight="bold" fill="#dc2626" text-anchor="middle">现在写 CR？徒劳</text>
+
+  <rect x="210" y="80" width="150" height="200" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
+  <text x="285" y="100" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">② 可改窗口</text>
+  <circle cx="285" cy="130" r="8" fill="#3eaf7c"/>
+  <text x="285" y="160" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">EN=0</text>
+  <text x="285" y="184" font-size="11" fill="#666" text-anchor="middle">先关流：CR=0</text>
+  <text x="285" y="216" font-size="11" font-weight="bold" fill="#92400e" text-anchor="middle">手写：while(EN) 死等</text>
+  <text x="285" y="240" font-size="11" font-weight="bold" fill="#1a7f56" text-anchor="middle">HAL：同等待+5ms 兜底</text>
+
+  <rect x="380" y="80" width="150" height="200" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
+  <text x="455" y="100" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">③ 一笔落 CR</text>
+  <rect x="395" y="124" width="20" height="12" fill="#f1f5f9" stroke="#94a3b8"/>
+  <rect x="417" y="124" width="20" height="12" fill="#f1f5f9" stroke="#94a3b8"/>
+  <rect x="439" y="124" width="20" height="12" fill="#f1f5f9" stroke="#94a3b8"/>
+  <rect x="461" y="124" width="20" height="12" fill="#f1f5f9" stroke="#94a3b8"/>
+  <rect x="483" y="124" width="20" height="12" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="455" y="160" font-size="11" fill="#666" text-anchor="middle">CHSEL…DBM 先清后写</text>
+  <text x="455" y="184" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">L231 → L250</text>
+  <text x="455" y="216" font-size="11" fill="#666" text-anchor="middle">FCR 直接模式另写</text>
+  <text x="455" y="240" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">L285</text>
+
+  <rect x="550" y="80" width="130" height="200" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
+  <text x="615" y="100" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">④ Start 写参数</text>
+  <text x="615" y="140" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">NDTR·PAR·M0AR</text>
+  <text x="615" y="164" font-size="11" font-family="Consolas,monospace" fill="#333" text-anchor="middle">L1157</text>
+  <text x="615" y="196" font-size="11" fill="#666" text-anchor="middle">属性与参数两段分家</text>
+  <circle cx="580" cy="236" r="5" fill="#3eaf7c">
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="1s" repeatCount="indefinite"/>
+  </circle>
+  <text x="592" y="240" font-size="11" fill="#1a7f56">EN=1 回到跑动</text>
+
+  <!-- ===== 生长箭头 ===== -->
+  <path d="M192,160 L192,160" stroke="#3451b2" stroke-width="3" fill="none" marker-end="url(#arrD1)">
+    <animate attributeName="d" values="M192,160 L192,160;M192,160 L192,160;M192,160 L206,160;M192,160 L206,160" keyTimes="0;0.18;0.28;1" dur="12s" repeatCount="indefinite"/>
+  </path>
+  <path d="M362,160 L362,160" stroke="#3451b2" stroke-width="3" fill="none" marker-end="url(#arrD1)">
+    <animate attributeName="d" values="M362,160 L362,160;M362,160 L362,160;M362,160 L376,160;M362,160 L376,160" keyTimes="0;0.43;0.53;1" dur="12s" repeatCount="indefinite"/>
+  </path>
+  <path d="M532,160 L532,160" stroke="#3451b2" stroke-width="3" fill="none" marker-end="url(#arrD1)">
+    <animate attributeName="d" values="M532,160 L532,160;M532,160 L532,160;M532,160 L546,160;M532,160 L546,160" keyTimes="0;0.68;0.78;1" dur="12s" repeatCount="indefinite"/>
+  </path>
+  <defs>
+    <marker id="arrD1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#3451b2"/>
+    </marker>
+  </defs>
+
+  <!-- ===== 传输中的 EN 灯闪（阶段①） ===== -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <circle cx="115" cy="130" r="12" fill="none" stroke="#dc2626" stroke-width="2">
+      <animate attributeName="opacity" values="0.2;1;0.2" dur="1s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- ===== CR 位域落位（阶段③） ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="395" y="124" width="20" height="12" fill="#fdf0d5" stroke="#d97706"/>
+    <rect x="417" y="124" width="20" height="12" fill="#fdf0d5" stroke="#d97706"/>
+    <rect x="439" y="124" width="20" height="12" fill="#fdf0d5" stroke="#d97706"/>
+    <rect x="461" y="124" width="20" height="12" fill="#fdf0d5" stroke="#d97706"/>
+    <rect x="483" y="124" width="20" height="12" fill="#fdf0d5" stroke="#d97706"/>
+  </g>
+
+  <!-- ===== 当前状态高亮环 ===== -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="80" width="150" height="200" fill="none" stroke="#3451b2" stroke-width="2.5" rx="8"/>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="210" y="80" width="150" height="200" fill="none" stroke="#3451b2" stroke-width="2.5" rx="8"/>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="380" y="80" width="150" height="200" fill="none" stroke="#3451b2" stroke-width="2.5" rx="8"/>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="550" y="80" width="130" height="200" fill="none" stroke="#3451b2" stroke-width="2.5" rx="8"/>
+  </g>
+
+  <!-- ===== 底部时间轴爬线 ===== -->
+  <path d="M60,310 H660" pathLength="1000" stroke="#94a3b8" stroke-width="2" fill="none"
+        stroke-dasharray="1000" stroke-dashoffset="1000">
+    <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.75;1" dur="12s" repeatCount="indefinite"/>
+  </path>
+  <text x="70" y="330" font-size="11" font-family="Consolas,monospace" fill="#666">CR=0</text>
+  <text x="230" y="330" font-size="11" font-family="Consolas,monospace" fill="#666">等 EN 落</text>
+  <text x="400" y="330" font-size="11" font-family="Consolas,monospace" fill="#666">一笔落 CR</text>
+  <text x="560" y="330" font-size="11" font-family="Consolas,monospace" fill="#666">Start 参数</text>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">① 硬约束：CHSEL/CIRC 只在 EN=0 可改——跑着改是徒劳</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">② 手写：CR=0 后 while(EN) 轮询——硬件不落就死循环</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">③ HAL：同样的等待加 5ms 兜底，超时返回不锁死（L215）</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">④ 两段式：Init 落流属性，Start 写本次传输参数（L1157）</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,404)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

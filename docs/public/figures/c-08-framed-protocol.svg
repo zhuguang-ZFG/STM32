@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="raw 帧布局：version、type、sequence、length、payload、CRC-16 共 8+N 字节，COBS 编码后以 0x00 收尾；每 254 字节最多多 1 字节开销"><g transform="translate(0,-1.5)" fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="16" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">raw 帧 8+N 字节（小端）</text>
+<text x="16" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">0</text>
+<text x="48" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">1</text>
+<text x="80" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">2</text>
+<text x="136" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">4</text>
+<text x="192" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">6</text>
+<text x="256" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">6+N</text>
+<path d="M16 28 C 100 26, 220 30, 304 28" stroke-width="2.2"/>
+<rect x="16" y="32" width="288" height="22" rx="3" stroke-width="1.4"/>
+<path d="M48 32 L48 54" stroke-width="1.4"/>
+<path d="M80 32 L80 54" stroke-width="1.4"/>
+<path d="M136 32 L136 54" stroke-width="1.4"/>
+<path d="M192 32 L192 54" stroke-width="1.4"/>
+<path d="M256 32 L256 54" stroke-width="1.4"/>
+<text x="32" y="46" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">ver</text>
+<text x="64" y="46" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">type</text>
+<text x="108" y="46" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">seq</text>
+<text x="164" y="46" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">length</text>
+<text x="224" y="46" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">payload N</text>
+<text x="280" y="46" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">crc16</text>
+<rect x="216" y="62" width="60" height="14" rx="3" stroke-width="1.4" stroke-dasharray="3 2"/>
+<text x="16" y="70" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">COBS 编码：数据里的 0x00 全换掉</text>
+<path d="M296 56 C 294 61, 288 65, 278 68" stroke-width="1.8"/>
+<text x="246" y="72" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">帧尾 0x00</text>
+<text x="16" y="84" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">crc 覆盖 0 到 5+N · 每 254B 最多多 1B</text>
+</g></svg>

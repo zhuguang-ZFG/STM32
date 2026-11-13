@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 430" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>UART 一帧的解剖：0x41 与 0x55 对照</title>
+  <desc>四阶段动画：空闲高电平 → 起始位拉低 → 8 个数据位 LSB 先发 → 停止位拉高。0x41（0100 0001）与 0x55（0101 0101）并排对照：帧骨架相同，数据位不同。16 倍过采样在每个位的中点判决。波形按逻辑分析仪抓取的速度逐点画出，八个采样点依次亮起。</desc>
+  <rect width="720" height="430" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">UART 一帧的解剖：起始拉低、数据八位、低位先发、停止拉高</text>
+  <text x="24" y="50" font-size="12" fill="#666">115200 8N1 · 0x41='A' · 0x55=方格旗 · 采样点在每个位的中点（16 倍过采样的第 8 拍）</text>
+
+  <!-- ===== 0x41 帧 ===== -->
+  <rect x="40" y="80" width="640" height="140" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
+  <text x="56" y="94" font-size="13" font-weight="bold" fill="#3451b2">发 'A' = 0x41 = 0100 0001（线上 LSB 先行：1,0,0,0,0,0,1,0）</text>
+
+  <!-- 波形：空闲高 | 起始低 | 1 0 0 0 0 0 1 0 | 停止高 -->
+  <!-- 画成 path 而不是 polyline：pathLength 把整条线归一化成 1000，
+       描边偏移就能让波形"被分析仪逐点抓出来"，两张图的画法节奏也一致。 -->
+  <path d="M70,120 H100 V180 H130 V120 H160 V180 H310 V120 H340 V180 H370 V120 H640"
+        pathLength="1000" stroke="#3451b2" stroke-width="3" fill="none"
+        stroke-dasharray="1000" stroke-dashoffset="1000">
+    <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.5;1" dur="12s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- 位标注 -->
+  <g font-size="11" font-family="Consolas,monospace" fill="#666" text-anchor="middle">
+    <text x="85" y="110">空闲</text>
+    <text x="115" y="200">起始</text>
+    <text x="145" y="110">D0=1</text>
+    <text x="175" y="200">D1=0</text>
+    <text x="205" y="200">D2=0</text>
+    <text x="235" y="200">D3=0</text>
+    <text x="265" y="200">D4=0</text>
+    <text x="295" y="200">D5=0</text>
+    <text x="325" y="110">D6=1</text>
+    <text x="355" y="200">D7=0</text>
+    <text x="385" y="110">停止</text>
+  </g>
+
+  <!-- 采样点：阶段③里从左到右依次点亮，一次一个位 -->
+  <g fill="#d97706">
+    <circle cx="145" cy="150" r="4" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;1" keyTimes="0;0.50;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="175" cy="150" r="4" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;1" keyTimes="0;0.53;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="205" cy="150" r="4" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;1" keyTimes="0;0.56;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="235" cy="150" r="4" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;1" keyTimes="0;0.59;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="265" cy="150" r="4" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;1" keyTimes="0;0.62;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="295" cy="150" r="4" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;1" keyTimes="0;0.65;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="325" cy="150" r="4" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;1" keyTimes="0;0.68;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="355" cy="150" r="4" opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;1" keyTimes="0;0.71;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+  <text x="430" y="155" font-size="12" fill="#d97706" font-weight="bold" opacity="0">每个位中点采样 = 16 倍过采样的第 8 拍<animate attributeName="opacity" calcMode="discrete" values="0;1;1" keyTimes="0;0.5;1" dur="12s" repeatCount="indefinite"/></text>
+
+  <!-- ===== 0x55 帧 ===== -->
+  <rect x="40" y="240" width="640" height="140" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
+  <text x="56" y="254" font-size="13" font-weight="bold" fill="#3eaf7c">发 0x55 = 0101 0101（线上 LSB 先行：1,0,1,0,1,0,1,0）——骨架一样，肉不同</text>
+
+  <!-- 波形：空闲高 | 起始低 | 1 0 1 0 1 0 1 0 | 停止高 -->
+  <path d="M70,280 H100 V340 H130 V280 H160 V340 H190 V280 H220 V340 H250 V280 H280 V340 H310 V280 H340 V340 H370 V280 H640"
+        pathLength="1000" stroke="#3eaf7c" stroke-width="3" fill="none"
+        stroke-dasharray="1000" stroke-dashoffset="1000">
+    <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.5;1" dur="12s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- 位标注 -->
+  <g font-size="11" font-family="Consolas,monospace" fill="#666" text-anchor="middle">
+    <text x="85" y="270">空闲</text>
+    <text x="115" y="360">起始</text>
+    <text x="145" y="270">D0=1</text>
+    <text x="175" y="360">D1=0</text>
+    <text x="205" y="270">D2=1</text>
+    <text x="235" y="360">D3=0</text>
+    <text x="265" y="270">D4=1</text>
+    <text x="295" y="360">D5=0</text>
+    <text x="325" y="270">D6=1</text>
+    <text x="355" y="360">D7=0</text>
+    <text x="385" y="270">停止</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">① 空闲=高：线一直挂着高电平，谁先拉低谁就开始说话（起始位）</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">② 数据八位 LSB 先行：0x41 上线顺序 1,0,0,0,0,0,1,0——分析仪按这个顺序读</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">③ 采样在中点：16 倍过采样意味着每个位被看 16 次，第 8 次拍板——抗的是边沿抖动</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">④ 停止位拉高收尾。0x41 和 0x55 帧骨架一模一样——帧结构是骨架，数据只是肉</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,404)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

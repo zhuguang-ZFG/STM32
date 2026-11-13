@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 470" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>总线矩阵：地址决定路线，路线决定速度</title>
+  <desc>Cortex-M4 统一编址 4GB，CPU 的 ICode/DCode/System 三个端口和 DMA 都挂在同一张 AHB 总线矩阵上。五个阶段依次演示：①地址高位决定归属，0x0800 是 Flash、0x2000 是 SRAM、0x1000 是 CCM、0x4000 是外设、0xE000 是内核；②取指每拍都走 ICode 到 Flash，168MHz 下 Flash 要 5 个等待周期，靠预取缓冲兜住；③读 USART1-&gt;SR 要穿过 AHB→APB2 桥，168MHz 与 84MHz 两个时钟域之间还要同步；④DMA 是矩阵上的第二台主机，搬运不经过 CPU，但要和 CPU 抢同一块 SRAM，仲裁不过就多等一拍；⑤CCM RAM 只接到 CPU，DMA 的地址空间里没有它——把 DMA 缓冲放在 CCM，传输会一声不响地失败。</desc>
+  <rect width="720" height="470" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">总线矩阵：地址决定路线，路线决定速度</text>
+  <text x="24" y="50" font-size="12" fill="#666">CPU 的三个端口和 DMA 都往同一张矩阵上挂地址；谁被选中由地址高位决定（分区见 RM0090 存储器映射）。</text>
+
+  <defs>
+    <marker id="arrB" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#3451b2"/>
+    </marker>
+    <marker id="arrA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 7,3 0,6" fill="#d97706"/>
+    </marker>
+  </defs>
+
+  <!-- ===== 主机：CPU ===== -->
+  <rect x="40" y="66" width="190" height="104" rx="8" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+  <text x="56" y="88" font-size="13" font-weight="bold" fill="#3451b2">CPU：Cortex-M4</text>
+  <text x="56" y="108" font-size="11" fill="#333">ICode → 取指令</text>
+  <text x="56" y="125" font-size="11" fill="#333">DCode → 读数据</text>
+  <text x="56" y="142" font-size="11" fill="#333">System → 外设、内核</text>
+  <text x="56" y="160" font-size="11" fill="#666">三个端口并用 · 168 MHz</text>
+
+  <!-- ===== 主机：DMA ===== -->
+  <rect x="40" y="262" width="190" height="72" rx="8" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+  <text x="56" y="284" font-size="13" font-weight="bold" fill="#d97706">DMA1 / DMA2</text>
+  <text x="56" y="304" font-size="11" fill="#333">第二台 AHB 主机</text>
+  <text x="56" y="322" font-size="11" fill="#333">外设 ↔ 内存，不经 CPU</text>
+
+  <!-- ===== 总线矩阵 ===== -->
+  <rect x="248" y="66" width="40" height="312" fill="#dbe7ff" stroke="#3451b2"/>
+  <line x1="268" y1="94" x2="268" y2="350" stroke="#3451b2" stroke-width="2" opacity="0.35"/>
+  <text x="268" y="396" font-size="11" fill="#3451b2" text-anchor="middle">AHB 总线矩阵</text>
+  <line x1="230" y1="118" x2="248" y2="118" stroke="#3451b2" stroke-width="2"/>
+  <line x1="230" y1="298" x2="248" y2="298" stroke="#d97706" stroke-width="2"/>
+
+  <!-- ===== 从机一排 ===== -->
+  <g>
+    <rect x="310" y="66" width="380" height="56" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="326" y="88" font-size="13" font-weight="bold" fill="#3451b2">FLASH · 1 MB · 0x0800_0000</text>
+    <text x="326" y="108" font-size="11" fill="#333">取指令，也放 .rodata 常量与 .data 的初值备份</text>
+    <line x1="288" y1="94" x2="310" y2="94" stroke="#94a3b8" stroke-width="2"/>
+
+    <rect x="310" y="130" width="380" height="56" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="326" y="152" font-size="13" font-weight="bold" fill="#3451b2">SRAM · 128 KB · 0x2000_0000</text>
+    <text x="326" y="172" font-size="11" fill="#333">.data .bss 栈 堆 —— CPU 和 DMA 都能读写</text>
+    <line x1="288" y1="158" x2="310" y2="158" stroke="#94a3b8" stroke-width="2"/>
+
+    <rect x="310" y="194" width="380" height="56" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="326" y="216" font-size="13" font-weight="bold" fill="#3451b2">CCM RAM · 64 KB · 0x1000_0000</text>
+    <text x="326" y="236" font-size="11" fill="#333">CPU 直连的快道，DMA 够不着</text>
+    <line x1="288" y1="222" x2="310" y2="222" stroke="#94a3b8" stroke-width="2"/>
+
+    <rect x="310" y="258" width="380" height="56" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="326" y="280" font-size="13" font-weight="bold" fill="#3451b2">AHB1 外设 · 168 MHz · 0x4002_0000</text>
+    <text x="326" y="300" font-size="11" fill="#333">GPIOA 从这里起，每个端口隔 0x400 一间房</text>
+    <line x1="288" y1="286" x2="310" y2="286" stroke="#94a3b8" stroke-width="2"/>
+
+    <rect x="310" y="322" width="380" height="56" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="326" y="344" font-size="13" font-weight="bold" fill="#3451b2">APB 外设 · 经 AHB→APB 桥 · 84 / 42 MHz</text>
+    <text x="326" y="364" font-size="11" fill="#333">USART1 0x4001_1000 · TIM2 0x4000_0000</text>
+    <line x1="288" y1="350" x2="310" y2="350" stroke="#94a3b8" stroke-width="2"/>
+  </g>
+
+  <!-- ===== ① 地址分房：把矩阵脊背画出来 ===== -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <path d="M268,94 L268,350" fill="none" stroke="#3451b2" stroke-width="3" pathLength="1000" stroke-dasharray="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.18;1" dur="15s" repeatCount="indefinite"/>
+    </path>
+    <rect x="40" y="178" width="190" height="72" rx="8" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+    <text x="54" y="198" font-size="11" font-weight="bold" fill="#3451b2">先看门牌：高位定区</text>
+    <text x="54" y="216" font-size="11" font-family="Consolas,monospace" fill="#333">0x0800 / 0x2000 / 0x1000</text>
+    <text x="54" y="234" font-size="11" font-family="Consolas,monospace" fill="#333">0x4000 外设 0xE000 内核</text>
+  </g>
+
+  <!-- ===== ② 取指：CPU → FLASH ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="310" y="66" width="380" height="56" fill="#dbe7ff" opacity="0.45">
+      <animate attributeName="opacity" values="0.25;0.6;0.25" dur="3s" repeatCount="indefinite"/>
+    </rect>
+    <path d="M230,118 L268,118 L268,94 L310,94" fill="none" stroke="#3451b2" stroke-width="3" marker-end="url(#arrB)" pathLength="1000" stroke-dasharray="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.6;1" dur="3s" repeatCount="indefinite"/>
+    </path>
+    <rect x="40" y="178" width="190" height="72" rx="8" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+    <text x="54" y="198" font-size="11" font-weight="bold" fill="#3451b2">每拍都要问 Flash 取指令</text>
+    <text x="54" y="216" font-size="11" fill="#333">168 MHz 下要 5 个等待周期</text>
+    <text x="54" y="234" font-size="11" fill="#333">预取缓冲把延迟藏起来</text>
+  </g>
+
+  <!-- ===== ③ 读寄存器：CPU → APB2 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="310" y="322" width="380" height="56" fill="#d8f3e5" opacity="0.45">
+      <animate attributeName="opacity" values="0.25;0.6;0.25" dur="5s" repeatCount="indefinite"/>
+    </rect>
+    <path d="M230,118 L268,118 L268,350 L310,350" fill="none" stroke="#3451b2" stroke-width="3" marker-end="url(#arrB)" pathLength="1000" stroke-dasharray="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.7;1" dur="5s" repeatCount="indefinite"/>
+    </path>
+    <rect x="40" y="178" width="190" height="72" rx="8" fill="#ffffff" stroke="#3eaf7c" stroke-width="2"/>
+    <text x="54" y="198" font-size="11" font-weight="bold" fill="#1a7f56">DCode → 0x4001_1000</text>
+    <text x="54" y="216" font-size="11" fill="#333">先过 AHB→APB2 桥</text>
+    <text x="54" y="234" font-size="11" fill="#333">两个时钟域之间要同步</text>
+  </g>
+
+  <!-- ===== ④ DMA → SRAM ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="310" y="130" width="380" height="56" fill="#fdf0d5" opacity="0.5">
+      <animate attributeName="opacity" values="0.3;0.7;0.3" dur="3s" repeatCount="indefinite"/>
+    </rect>
+    <path d="M230,298 L268,298 L268,158 L310,158" fill="none" stroke="#d97706" stroke-width="3" marker-end="url(#arrA)" pathLength="1000" stroke-dasharray="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.6;1" dur="3s" repeatCount="indefinite"/>
+    </path>
+    <rect x="40" y="178" width="190" height="72" rx="8" fill="#ffffff" stroke="#d97706" stroke-width="2"/>
+    <text x="54" y="198" font-size="11" font-weight="bold" fill="#92400e">DMA 自己发地址、自己搬</text>
+    <text x="54" y="216" font-size="11" fill="#333">不占 CPU 的指令周期</text>
+    <text x="54" y="234" font-size="11" fill="#333">但要和 CPU 抢这块 SRAM</text>
+  </g>
+
+  <!-- ===== ⑤ DMA → CCM：走不通 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="310" y="194" width="380" height="56" fill="#fdf0d5" opacity="0.4"/>
+    <rect x="310" y="194" width="380" height="56" rx="8" fill="none" stroke="#dc2626" stroke-width="2"/>
+    <path d="M230,298 L268,298 L268,222 L302,222" fill="none" stroke="#dc2626" stroke-width="3" pathLength="1000" stroke-dasharray="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;420;420" keyTimes="0;0.6;1" dur="3s" repeatCount="indefinite"/>
+    </path>
+    <g stroke="#dc2626" stroke-width="3">
+      <line x1="296" y1="214" x2="310" y2="230"/>
+      <line x1="310" y1="214" x2="296" y2="230"/>
+      <animate attributeName="opacity" values="0.35;1;0.35" dur="1s" repeatCount="indefinite"/>
+    </g>
+    <rect x="40" y="178" width="190" height="72" rx="8" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+    <text x="54" y="198" font-size="11" font-weight="bold" fill="#dc2626">CCM 只接到 CPU</text>
+    <text x="54" y="216" font-size="11" fill="#333">DMA 的地址空间里没有它</text>
+    <text x="54" y="234" font-size="11" fill="#333">放错地方 = 无声失败</text>
+  </g>
+
+  <!-- ===== 阶段字幕 ===== -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="424">① 统一编址：地址高位决定这段地址归哪间房，不用背，是推出来的</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="424">② 取指走 ICode 到 Flash：168 MHz 下 5 个等待周期，靠预取缓冲兜住</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="424">③ 读 USART1 要穿 AHB→APB2 桥，两个时钟域之间还要同步</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="424">④ DMA 是矩阵上的第二台主机：不经 CPU，但和 CPU 抢同一块 SRAM</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="424">⑤ CCM 只有 CPU 到得了：DMA 缓冲放在这里，传输一声不响地失败</text></g>
+  </g>
+
+  <!-- ===== 阶段指示点 ===== -->
+  <g transform="translate(612,448)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="72" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;1;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>
