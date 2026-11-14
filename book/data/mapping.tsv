@@ -32,8 +32,8 @@ root	stm32-book/book/B-例程索引.md	apB	根书附录素材	migrated
 root	stm32-book/book/C-习题答案.md	apC	根书附录素材	migrated	
 root	stm32-book/book/D-术语表.md	apD	根书附录素材	migrated	
 root	stm32-book/book/E-参考资料.md	apE	根书附录素材	migrated	
-root	stm32-book/book/F-学习路线收束.md	apF	学习路线收束	planned	
-root	stm32-book/book/F-开源地图.md	apF	根书附录素材	planned	
+root	stm32-book/book/F-学习路线收束.md	apF	学习路线收束	migrated	
+root	stm32-book/book/F-开源地图.md	apF	根书附录素材	migrated	
 mcu	mcu/docs/c/00-c-in-mcu.md	ch01	语言深潜	migrated	
 mcu	mcu/docs/c/01-memory-model.md	ch01	语言深潜	migrated	
 mcu	mcu/docs/c/02-pointer.md	ch01	语言深潜	migrated	
@@ -134,7 +134,7 @@ mcu	mcu/mcu-book/book/C-习题答案.md	apC	附录素材	migrated
 mcu	mcu/mcu-book/book/D-术语表.md	apD	附录素材	migrated	
 mcu	mcu/mcu-book/book/E-参考资料.md	apE	附录素材	migrated	
 mcu	mcu/mcu-book/book/F-常见问题.md	ch45	附录素材	migrated	
-mcu	mcu/mcu-book/book/G-开源地图.md	apF	附录素材	planned	
+mcu	mcu/mcu-book/book/G-开源地图.md	apF	附录素材	migrated	
 motor	plans/2026-11-11-motor-control/chapters-draft/29-电机驱动与供电.md	ch36	电机控制草稿	migrated	
 motor	plans/2026-11-11-motor-control/chapters-draft/30-直流电机开环调速.md	ch37	电机控制草稿	migrated	
 motor	plans/2026-11-11-motor-control/chapters-draft/31-编码器与转速测量.md	ch38	电机控制草稿	migrated	
