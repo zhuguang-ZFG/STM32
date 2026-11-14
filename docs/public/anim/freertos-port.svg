@@ -1,93 +1,93 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei',sans-serif">
   <title>移植 FreeRTOS：三个异常改名接管全记录</title>
   <desc>四阶段动画：移植的本质是三个异常函数的改名接管。① port 层选择：portable/GCC/ARM_CM4F 最后的 F 表示 FPU——任务切换要额外保存浮点寄存器；MCU 参数与端口目录是一对绑定，-mfloat-abi=hard 必须配 ARM_CM4F，拿错（不带 F 的 ARM_CM4）编译照过、运行浮点寄存器被踩。② 三异常接管：vPortSVCHandler 启动第一个任务（SVC 异常 11）、xPortPendSVHandler 上下文切换（PendSV 14）、xPortSysTickHandler 系统节拍（SysTick 15）；向量表写的是 CMSIS 标准名，FreeRTOSConfig.h 三行 #define 在编译期改名，启动文件一字不改；nm 实测三符号是 T（port.o 强定义顶替启动文件的 W 弱符号）——接管发生的物证。③ 两份优先级：数值越大优先级越低；configKERNEL_INTERRUPT_PRIORITY=255 内核垫底——BASEPRI 只能屏蔽不高于阈值的中断，内核主动让路给所有应用中断；configMAX_SYSCALL_INTERRUPT_PRIORITY=(5&lt;&lt;4)=0x50——数值 ≥80 的中断才许调 FromISR API；搞反 → 随机死机难复现。④ RAM 两套账：bss 里的 16KB heap 池子 = 所有任务栈+TCB+队列（池尽 xTaskCreate 返回 pdFAIL 而非栈溢出）；裸机主栈 _Min_Stack_Size 在 RTOS 下只给中断和启动用；configMINIMAL_STACK_SIZE=128 的单位是字 = 512 字节。图上真在跑的东西：三个接管箭头轮番接通——SVC 起死回生、PendSV 换魂、SysTick 报时，循环往复。</desc>
-  <rect width="720" height="460" fill="#f6f8fa"/>
-  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">移植 FreeRTOS：三个异常改名接管全记录</text>
-  <text x="24" y="50" font-size="12" fill="#666">SVC 起死回生、PendSV 换魂、SysTick 报时——其余全是体力活</text>
+  <rect width="720" height="460" fill="#FDF8EA"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#2B5EA7">移植 FreeRTOS：三个异常改名接管全记录</text>
+  <text x="24" y="50" font-size="12" fill="#6E6B60">SVC 起死回生、PendSV 换魂、SysTick 报时——其余全是体力活</text>
 
   <!-- ===== 常驻：三异常接管图 ===== -->
-  <rect x="40" y="64" width="640" height="168" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
-  <text x="56" y="86" font-size="12" font-weight="bold" fill="#3451b2">三异常接管（port.c 的函数 ← #define 改名 → 向量表里的 CMSIS 名）</text>
+  <rect x="40" y="64" width="640" height="168" rx="8" fill="#FFFDF6" stroke="#D8D2C0"/>
+  <text x="56" y="86" font-size="12" font-weight="bold" fill="#2B5EA7">三异常接管（port.c 的函数 ← #define 改名 → 向量表里的 CMSIS 名）</text>
   <g font-size="11" font-family="Consolas,monospace">
-    <text x="70" y="116" fill="#333">vPortSVCHandler</text>
-    <text x="70" y="160" fill="#333">xPortPendSVHandler</text>
-    <text x="70" y="204" fill="#333">xPortSysTickHandler</text>
+    <text x="70" y="116" fill="#2F2E2B">vPortSVCHandler</text>
+    <text x="70" y="160" fill="#2F2E2B">xPortPendSVHandler</text>
+    <text x="70" y="204" fill="#2F2E2B">xPortSysTickHandler</text>
   </g>
-  <g font-size="11" font-family="Consolas,monospace" fill="#1a7f56">
-    <text x="470" y="116">SVC_Handler <tspan fill="#94a3b8">异常 11</tspan></text>
-    <text x="470" y="160">PendSV_Handler <tspan fill="#94a3b8">异常 14</tspan></text>
-    <text x="470" y="204">SysTick_Handler <tspan fill="#94a3b8">异常 15</tspan></text>
+  <g font-size="11" font-family="Consolas,monospace" fill="#3F7D57">
+    <text x="470" y="116">SVC_Handler <tspan fill="#9A937F">异常 11</tspan></text>
+    <text x="470" y="160">PendSV_Handler <tspan fill="#9A937F">异常 14</tspan></text>
+    <text x="470" y="204">SysTick_Handler <tspan fill="#9A937F">异常 15</tspan></text>
   </g>
   <!-- 三条接管箭头：轮番接通（真在跑） -->
   <g stroke-width="3" fill="none">
-    <line x1="230" y1="112" x2="460" y2="112" stroke="#3451b2" marker-end="url(#pa)">
+    <line x1="230" y1="112" x2="460" y2="112" stroke="#2B5EA7" marker-end="url(#pa)">
       <animate attributeName="opacity" values="1;0.15;0.15;0.15;1" keyTimes="0;0.08;0.3;0.95;1" dur="4s" repeatCount="indefinite"/>
     </line>
-    <line x1="250" y1="156" x2="460" y2="156" stroke="#3eaf7c" marker-end="url(#pa)">
+    <line x1="250" y1="156" x2="460" y2="156" stroke="#3F7D57" marker-end="url(#pa)">
       <animate attributeName="opacity" values="0.15;1;0.15;0.15;0.15;1" keyTimes="0;0.36;0.44;0.6;0.95;1" dur="4s" repeatCount="indefinite"/>
     </line>
-    <line x1="270" y1="200" x2="460" y2="200" stroke="#d97706" marker-end="url(#pa)">
+    <line x1="270" y1="200" x2="460" y2="200" stroke="#A8801F" marker-end="url(#pa)">
       <animate attributeName="opacity" values="0.15;0.15;1;0.15;0.15;1" keyTimes="0;0.61;0.69;0.85;0.95;1" dur="4s" repeatCount="indefinite"/>
     </line>
   </g>
   <defs>
     <marker id="pa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-      <path d="M0,0 L8,4 L0,8 z" fill="#666"/>
+      <path d="M0,0 L8,4 L0,8 z" fill="#6E6B60"/>
     </marker>
   </defs>
-  <g font-size="11" fill="#94a3b8" font-family="Consolas,monospace">
+  <g font-size="11" fill="#9A937F" font-family="Consolas,monospace">
     <text x="345" y="126">#define 改名</text>
     <text x="345" y="170">#define 改名</text>
     <text x="345" y="214">#define 改名</text>
   </g>
-  <text x="250" y="226" font-size="11" fill="#94a3b8">nm 实测：三符号都是 T（port.o 强定义）——不是启动文件里的 W 弱符号</text>
+  <text x="250" y="226" font-size="11" fill="#9A937F">nm 实测：三符号都是 T（port.o 强定义）——不是启动文件里的 W 弱符号</text>
 
   <!-- ===== 阶段一：port 层选择 ===== -->
   <g opacity="1">
     <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="250" width="640" height="150" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="274" font-size="13" font-weight="bold" fill="#3451b2">① port 层怎么选：先对型号，再对 FPU</text>
-    <text x="56" y="300" font-size="12" font-family="Consolas,monospace" fill="#333">portable/GCC/ARM_CM4F/port.c   ← 最后的 F = FPU：切换时要额外保存浮点寄存器</text>
-    <text x="56" y="328" font-size="13" fill="#333">MCU 参数与端口目录是<tspan font-weight="bold">一对绑定</tspan>：改一个必须改另一个。</text>
-    <text x="56" y="356" font-size="12" font-family="Consolas,monospace" fill="#666">-mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard  ↔  ARM_CM4F</text>
-    <text x="56" y="384" font-size="12" fill="#dc2626">拿错（不带 F 的 ARM_CM4）：编译照过、运行起来浮点寄存器被任务互相踩。</text>
+    <rect x="40" y="250" width="640" height="150" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="274" font-size="13" font-weight="bold" fill="#2B5EA7">① port 层怎么选：先对型号，再对 FPU</text>
+    <text x="56" y="300" font-size="12" font-family="Consolas,monospace" fill="#2F2E2B">portable/GCC/ARM_CM4F/port.c   ← 最后的 F = FPU：切换时要额外保存浮点寄存器</text>
+    <text x="56" y="328" font-size="13" fill="#2F2E2B">MCU 参数与端口目录是<tspan font-weight="bold">一对绑定</tspan>：改一个必须改另一个。</text>
+    <text x="56" y="356" font-size="12" font-family="Consolas,monospace" fill="#6E6B60">-mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard  ↔  ARM_CM4F</text>
+    <text x="56" y="384" font-size="12" fill="#B3392F">拿错（不带 F 的 ARM_CM4）：编译照过、运行起来浮点寄存器被任务互相踩。</text>
   </g>
 
   <!-- ===== 阶段二：接管与物证 ===== -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="250" width="640" height="150" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="274" font-size="13" font-weight="bold" fill="#1a7f56">② 两种接法与接管的物证</text>
-    <text x="56" y="300" font-size="13" fill="#333">（A）改向量表——侵入启动文件；（B）#define 三行映射（FreeRTOSConfig.h:74-77）——不用妥协。</text>
-    <text x="56" y="328" font-size="12" font-family="Consolas,monospace" fill="#666">#define vPortSVCHandler SVC_Handler   /* 启动文件保持标准 CMSIS 命名 */</text>
-    <text x="56" y="356" font-size="12" font-family="Consolas,monospace" fill="#666">08003180 T SVC_Handler  080032b0 T PendSV_Handler  08003318 T SysTick_Handler</text>
-    <text x="56" y="384" font-size="12" fill="#1a7f56">注释掉三行 #define 再编译——链接错误里点名的就是没接管的证据（实物实验）。</text>
+    <rect x="40" y="250" width="640" height="150" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="274" font-size="13" font-weight="bold" fill="#3F7D57">② 两种接法与接管的物证</text>
+    <text x="56" y="300" font-size="13" fill="#2F2E2B">（A）改向量表——侵入启动文件；（B）#define 三行映射（FreeRTOSConfig.h:74-77）——不用妥协。</text>
+    <text x="56" y="328" font-size="12" font-family="Consolas,monospace" fill="#6E6B60">#define vPortSVCHandler SVC_Handler   /* 启动文件保持标准 CMSIS 命名 */</text>
+    <text x="56" y="356" font-size="12" font-family="Consolas,monospace" fill="#6E6B60">08003180 T SVC_Handler  080032b0 T PendSV_Handler  08003318 T SysTick_Handler</text>
+    <text x="56" y="384" font-size="12" fill="#3F7D57">注释掉三行 #define 再编译——链接错误里点名的就是没接管的证据（实物实验）。</text>
   </g>
 
   <!-- ===== 阶段三：两份优先级 ===== -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="250" width="640" height="150" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="274" font-size="13" font-weight="bold" fill="#d97706">③ 两份优先级：数值越大，优先级越低</text>
-    <text x="56" y="300" font-size="12" font-family="Consolas,monospace" fill="#333">configKERNEL_INTERRUPT_PRIORITY      = 255   /* 内核垫底：PendSV/SysTick 让路给一切 */</text>
-    <text x="56" y="324" font-size="12" font-family="Consolas,monospace" fill="#333">configMAX_SYSCALL_INTERRUPT_PRIORITY = (5&lt;&lt;(8-4)) = 0x50  /* ≥80 才许调 FromISR */</text>
-    <text x="56" y="350" font-size="13" fill="#333">BASEPRI 只能屏蔽"不高于阈值"的中断——内核把自己设成最低，等于主动让路。</text>
-    <text x="56" y="378" font-size="12" fill="#dc2626">搞反 → 临界区盖不住能调 API 的中断 → 链表并发改写、随机死机极难复现。</text>
+    <rect x="40" y="250" width="640" height="150" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="274" font-size="13" font-weight="bold" fill="#A8801F">③ 两份优先级：数值越大，优先级越低</text>
+    <text x="56" y="300" font-size="12" font-family="Consolas,monospace" fill="#2F2E2B">configKERNEL_INTERRUPT_PRIORITY      = 255   /* 内核垫底：PendSV/SysTick 让路给一切 */</text>
+    <text x="56" y="324" font-size="12" font-family="Consolas,monospace" fill="#2F2E2B">configMAX_SYSCALL_INTERRUPT_PRIORITY = (5&lt;&lt;(8-4)) = 0x50  /* ≥80 才许调 FromISR */</text>
+    <text x="56" y="350" font-size="13" fill="#2F2E2B">BASEPRI 只能屏蔽"不高于阈值"的中断——内核把自己设成最低，等于主动让路。</text>
+    <text x="56" y="378" font-size="12" fill="#B3392F">搞反 → 临界区盖不住能调 API 的中断 → 链表并发改写、随机死机极难复现。</text>
   </g>
 
   <!-- ===== 阶段四：RAM 两套账 ===== -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="250" width="640" height="150" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="274" font-size="13" font-weight="bold" fill="#3451b2">④ RAM 两套账：heap 池子 vs 裸机主栈</text>
-    <text x="56" y="300" font-size="12" font-family="Consolas,monospace" fill="#666">size 实测：text 43156 · data 2168 · bss 19208 —— 16KB heap 池子躺在 bss 里</text>
-    <text x="56" y="328" font-size="13" fill="#333"><tspan font-weight="bold">heap</tspan>（configTOTAL_HEAP_SIZE）= 所有任务栈 + TCB + 队列/信号量/定时器；</text>
-    <text x="56" y="356" font-size="13" fill="#333"><tspan font-weight="bold">主栈</tspan>（_Min_Stack_Size）在 RTOS 下只给中断和启动阶段用——两笔账互不相干。</text>
-    <text x="56" y="384" font-size="12" fill="#d97706">单位陷阱：configMINIMAL_STACK_SIZE=128 是 128 字 = 512 字节；池尽时 xTaskCreate 返回 pdFAIL。</text>
+    <rect x="40" y="250" width="640" height="150" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="274" font-size="13" font-weight="bold" fill="#2B5EA7">④ RAM 两套账：heap 池子 vs 裸机主栈</text>
+    <text x="56" y="300" font-size="12" font-family="Consolas,monospace" fill="#6E6B60">size 实测：text 43156 · data 2168 · bss 19208 —— 16KB heap 池子躺在 bss 里</text>
+    <text x="56" y="328" font-size="13" fill="#2F2E2B"><tspan font-weight="bold">heap</tspan>（configTOTAL_HEAP_SIZE）= 所有任务栈 + TCB + 队列/信号量/定时器；</text>
+    <text x="56" y="356" font-size="13" fill="#2F2E2B"><tspan font-weight="bold">主栈</tspan>（_Min_Stack_Size）在 RTOS 下只给中断和启动阶段用——两笔账互不相干。</text>
+    <text x="56" y="384" font-size="12" fill="#A8801F">单位陷阱：configMINIMAL_STACK_SIZE=128 是 128 字 = 512 字节；池尽时 xTaskCreate 返回 pdFAIL。</text>
   </g>
 
   <!-- 阶段字幕 -->
-  <g font-size="13" font-weight="bold" fill="#3451b2">
+  <g font-size="13" font-weight="bold" fill="#2B5EA7">
     <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
       <text x="36" y="428">① port 层：CM4F 的 F=FPU——MCU 参数与端口目录一对绑定，拿错浮点被踩</text></g>
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
@@ -99,7 +99,7 @@
   </g>
 
   <!-- 阶段指示点 -->
-  <g transform="translate(630,444)" fill="#3451b2">
+  <g transform="translate(630,444)" fill="#2B5EA7">
     <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
     <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
     <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>

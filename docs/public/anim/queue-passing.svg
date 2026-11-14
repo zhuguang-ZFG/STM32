@@ -1,27 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei',sans-serif">
   <title>队列：传值不传址的传送带</title>
   <desc>队列：传值不传址的传送带。生产者把数据拷贝进槽位（不是给指针）；满了生产者睡，空了消费者睡——睡觉不耗 CPU，唤醒零轮询。投递与取货都是顺着管路爬出去的箭头，数据块滑进槽位；空了的消费者按慢节拍呼吸，货一到就换成快节拍被唤醒。</desc>
-  <rect width="720" height="420" fill="#f6f8fa"/>
-  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">队列：传值不传址的传送带</text>
-  <text x="24" y="50" font-size="12" fill="#666">生产者把数据拷贝进槽位（不是给指针）；满了生产者睡，空了消费者睡——睡觉不耗 CPU，唤醒零轮询</text>
+  <rect width="720" height="420" fill="#FDF8EA"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#2B5EA7">队列：传值不传址的传送带</text>
+  <text x="24" y="50" font-size="12" fill="#6E6B60">生产者把数据拷贝进槽位（不是给指针）；满了生产者睡，空了消费者睡——睡觉不耗 CPU，唤醒零轮询</text>
 
   <!-- 生产者 -->
-  <rect x="40" y="90" width="140" height="110" fill="#ffffff" stroke="#3eaf7c" stroke-width="2" rx="8"/>
-  <text x="110" y="116" font-size="13" font-weight="bold" fill="#3eaf7c" text-anchor="middle">生产者任务</text>
-  <text x="110" y="136" font-size="11" fill="#666" text-anchor="middle">xQueueSend()</text>
-  <text id="prodState" x="110" y="172" font-size="12" font-weight="bold" fill="#3eaf7c" text-anchor="middle">干活中</text>
+  <rect x="40" y="90" width="140" height="110" fill="#FFFDF6" stroke="#3F7D57" stroke-width="2" rx="8"/>
+  <text x="110" y="116" font-size="13" font-weight="bold" fill="#3F7D57" text-anchor="middle">生产者任务</text>
+  <text x="110" y="136" font-size="11" fill="#6E6B60" text-anchor="middle">xQueueSend()</text>
+  <text id="prodState" x="110" y="172" font-size="12" font-weight="bold" fill="#3F7D57" text-anchor="middle">干活中</text>
 
   <!-- 队列槽位 ×5 -->
-  <rect x="240" y="80" width="240" height="140" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
-  <text x="256" y="102" font-size="12" font-weight="bold" fill="#3451b2">队列（5 槽环形缓冲）</text>
-  <g stroke="#94a3b8" fill="#f8fafc">
+  <rect x="240" y="80" width="240" height="140" fill="#FFFDF6" stroke="#D8D2C0" rx="8"/>
+  <text x="256" y="102" font-size="12" font-weight="bold" fill="#2B5EA7">队列（5 槽环形缓冲）</text>
+  <g stroke="#9A937F" fill="#FBF3DF">
     <rect x="256" y="116" width="40" height="56" rx="4"/><rect x="300" y="116" width="40" height="56" rx="4"/>
     <rect x="344" y="116" width="40" height="56" rx="4"/><rect x="388" y="116" width="40" height="56" rx="4"/>
     <rect x="432" y="116" width="40" height="56" rx="4"/>
   </g>
   <!-- 槽内数据：出现/消失都卡在对应箭头到达的那一刻（0.23 放进槽0、0.355 槽1、0.43 槽2；
        取货箭头 0.53/0.68 落地，0.75 起队列已空） -->
-  <g font-size="13" font-weight="bold" fill="#d97706" text-anchor="middle" font-family="Consolas,monospace">
+  <g font-size="13" font-weight="bold" fill="#A8801F" text-anchor="middle" font-family="Consolas,monospace">
     <text x="276" y="150" opacity="0">7<animate attributeName="opacity" calcMode="discrete" values="0;1;0;0" keyTimes="0;0.23;0.53;1" dur="15s" repeatCount="indefinite"/></text>
     <text x="320" y="150" opacity="0">9<animate attributeName="opacity" calcMode="discrete" values="0;1;0;0" keyTimes="0;0.355;0.68;1" dur="15s" repeatCount="indefinite"/></text>
     <text x="364" y="150" opacity="0">4<animate attributeName="opacity" calcMode="discrete" values="0;1;0;0" keyTimes="0;0.43;0.75;1" dur="15s" repeatCount="indefinite"/></text>
@@ -31,86 +31,86 @@
   <g transform="translate(276,182)">
     <animateTransform attributeName="transform" type="translate" calcMode="discrete"
       values="276 182;320 182;364 182;408 182;408 182" keyTimes="0;0.53;0.68;0.75;1" dur="15s" repeatCount="indefinite"/>
-    <polygon points="-8,0 8,0 0,10" fill="#3451b2"/>
-    <text y="24" font-size="11" fill="#3451b2" text-anchor="middle">head 取</text>
+    <polygon points="-8,0 8,0 0,10" fill="#2B5EA7"/>
+    <text y="24" font-size="11" fill="#2B5EA7" text-anchor="middle">head 取</text>
   </g>
   <g transform="translate(276,114)">
     <animateTransform attributeName="transform" type="translate" calcMode="discrete"
       values="276 114;320 114;364 114;408 114;276 114;276 114" keyTimes="0;0.23;0.355;0.43;0.94;1" dur="15s" repeatCount="indefinite"/>
-    <polygon points="-8,0 8,0 0,-10" fill="#d97706"/>
-    <text y="-30" font-size="11" fill="#d97706" text-anchor="middle">tail 放</text>
+    <polygon points="-8,0 8,0 0,-10" fill="#A8801F"/>
+    <text y="-30" font-size="11" fill="#A8801F" text-anchor="middle">tail 放</text>
   </g>
 
   <!-- 流动的小方块：生产者→tail，head→消费者（沿传送带滑过去，不是瞬移） -->
-  <rect x="196" y="130" width="16" height="16" fill="#3eaf7c" rx="3" opacity="0">
+  <rect x="196" y="130" width="16" height="16" fill="#3F7D57" rx="3" opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
     <animateTransform attributeName="transform" type="translate" values="0 0;0 0;56 0;56 0" keyTimes="0;0.15;0.23;1" dur="15s" repeatCount="indefinite"/>
   </rect>
-  <rect x="480" y="130" width="16" height="16" fill="#3451b2" rx="3" opacity="0">
+  <rect x="480" y="130" width="16" height="16" fill="#2B5EA7" rx="3" opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
     <animateTransform attributeName="transform" type="translate" values="0 0;0 0;56 0;56 0" keyTimes="0;0.60;0.68;1" dur="15s" repeatCount="indefinite"/>
   </rect>
 
   <!-- 消费者 -->
-  <rect x="540" y="90" width="140" height="110" fill="#ffffff" stroke="#3451b2" stroke-width="2" rx="8"/>
-  <text x="610" y="116" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">消费者任务</text>
-  <text x="610" y="136" font-size="11" fill="#666" text-anchor="middle">xQueueReceive()</text>
-  <text x="610" y="172" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">干活中</text>
+  <rect x="540" y="90" width="140" height="110" fill="#FFFDF6" stroke="#2B5EA7" stroke-width="2" rx="8"/>
+  <text x="610" y="116" font-size="13" font-weight="bold" fill="#2B5EA7" text-anchor="middle">消费者任务</text>
+  <text x="610" y="136" font-size="11" fill="#6E6B60" text-anchor="middle">xQueueReceive()</text>
+  <text x="610" y="172" font-size="12" font-weight="bold" fill="#2B5EA7" text-anchor="middle">干活中</text>
 
   <!-- 投递/取出的生长箭头：箭头从发端爬到收端 = 数据真的在路上（②放槽0，③连放槽1、槽2） -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
-    <line x1="184" y1="138" x2="184" y2="138" stroke="#3eaf7c" stroke-width="3" marker-end="url(#arrQ)">
+    <line x1="184" y1="138" x2="184" y2="138" stroke="#3F7D57" stroke-width="3" marker-end="url(#arrQ)">
       <animate attributeName="x2" values="184;184;276;276" keyTimes="0;0.15;0.23;1" dur="15s" repeatCount="indefinite"/>
     </line>
   </g>
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
-    <line x1="184" y1="138" x2="184" y2="138" stroke="#3eaf7c" stroke-width="3" marker-end="url(#arrQ)">
+    <line x1="184" y1="138" x2="184" y2="138" stroke="#3F7D57" stroke-width="3" marker-end="url(#arrQ)">
       <animate attributeName="x2" values="184;184;320;320;364;364" keyTimes="0;0.30;0.355;0.375;0.43;1" dur="15s" repeatCount="indefinite"/>
     </line>
   </g>
   <!-- ④⑤ 取货：箭头从 head 槽爬到消费者，先放的先走 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
-    <line x1="296" y1="138" x2="296" y2="138" stroke="#3451b2" stroke-width="3" marker-end="url(#arrQ2)">
+    <line x1="296" y1="138" x2="296" y2="138" stroke="#2B5EA7" stroke-width="3" marker-end="url(#arrQ2)">
       <animate attributeName="x2" values="296;296;536;536" keyTimes="0;0.45;0.53;1" dur="15s" repeatCount="indefinite"/>
     </line>
   </g>
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
-    <line x1="340" y1="138" x2="340" y2="138" stroke="#3451b2" stroke-width="3" marker-end="url(#arrQ2)">
+    <line x1="340" y1="138" x2="340" y2="138" stroke="#2B5EA7" stroke-width="3" marker-end="url(#arrQ2)">
       <animate attributeName="x2" values="340;340;536;536" keyTimes="0;0.60;0.68;1" dur="15s" repeatCount="indefinite"/>
     </line>
   </g>
   <!-- ⑥ 空了：消费者阻塞睡觉（慢节拍＝睡着，不耗 CPU 周期） -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;0;1;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
-    <rect x="536" y="86" width="148" height="118" fill="none" stroke="#666" stroke-width="3" rx="10">
+    <rect x="536" y="86" width="148" height="118" fill="none" stroke="#6E6B60" stroke-width="3" rx="10">
       <animate attributeName="opacity" values="0.15;1;0.15" dur="3s" repeatCount="indefinite"/>
     </rect>
   </g>
   <!-- ⑦ 数据一到：tail 已回绕到 0，这一份落在槽 4；同一拍里消费者被内核唤醒（快节拍） -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;0;0;1;1" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
-    <line x1="184" y1="138" x2="184" y2="138" stroke="#3eaf7c" stroke-width="3" marker-end="url(#arrQ)">
+    <line x1="184" y1="138" x2="184" y2="138" stroke="#3F7D57" stroke-width="3" marker-end="url(#arrQ)">
       <animate attributeName="x2" values="184;184;452;452" keyTimes="0;0.90;0.94;1" dur="15s" repeatCount="indefinite"/>
     </line>
-    <rect x="196" y="130" width="16" height="16" fill="#3eaf7c" rx="3">
+    <rect x="196" y="130" width="16" height="16" fill="#3F7D57" rx="3">
       <animateTransform attributeName="transform" type="translate" values="0 0;0 0;236 0;236 0" keyTimes="0;0.90;0.94;1" dur="15s" repeatCount="indefinite"/>
     </rect>
-    <rect x="536" y="86" width="148" height="118" fill="none" stroke="#3451b2" stroke-width="3" rx="10">
+    <rect x="536" y="86" width="148" height="118" fill="none" stroke="#2B5EA7" stroke-width="3" rx="10">
       <animate attributeName="opacity" values="0.25;1;0.25" dur="1.5s" repeatCount="indefinite"/>
     </rect>
   </g>
 
   <!-- 拷贝示意 -->
-  <rect x="240" y="240" width="440" height="60" fill="#f8fafc" stroke="#cbd5e1" rx="8"/>
-  <text x="256" y="264" font-size="12" font-weight="bold" fill="#3451b2">为什么是"拷贝"不是"指针"？</text>
-  <text x="256" y="284" font-size="11" fill="#666">生产者的局部变量下一秒就没了；拷贝进队列，数据的生命自己管——悬垂指针免疫。</text>
+  <rect x="240" y="240" width="440" height="60" fill="#FBF3DF" stroke="#D8D2C0" rx="8"/>
+  <text x="256" y="264" font-size="12" font-weight="bold" fill="#2B5EA7">为什么是"拷贝"不是"指针"？</text>
+  <text x="256" y="284" font-size="11" fill="#6E6B60">生产者的局部变量下一秒就没了；拷贝进队列，数据的生命自己管——悬垂指针免疫。</text>
 
   <!-- 阶段字幕 -->
-  <g font-size="13" font-weight="bold" fill="#3451b2">
+  <g font-size="13" font-weight="bold" fill="#2B5EA7">
     <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
       <text x="36" y="340">① 空队列：head=tail，消费者读不到东西</text></g>
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
@@ -126,7 +126,7 @@
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;0;0;1;1" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
       <text x="36" y="340">数据一到，消费者被内核直接唤醒——没有 while 轮询的世界 →</text></g>
   </g>
-  <g font-size="11" fill="#666">
+  <g font-size="11" fill="#6E6B60">
     <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
       <text x="36" y="360">消费者此刻在阻塞态：睡觉，等货上门</text></g>
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
@@ -145,15 +145,15 @@
 
   <defs>
     <marker id="arrQ" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-      <polygon points="0,0 7,3 0,6" fill="#3eaf7c"/>
+      <polygon points="0,0 7,3 0,6" fill="#3F7D57"/>
     </marker>
     <marker id="arrQ2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-      <polygon points="0,0 7,3 0,6" fill="#3451b2"/>
+      <polygon points="0,0 7,3 0,6" fill="#2B5EA7"/>
     </marker>
   </defs>
 
   <!-- 阶段指示点（7 个阶段，keyTimes 取自本文件的阶段时间轴；字幕有两行，所以落在第二行下方） -->
-  <g transform="translate(576,382)" fill="#3451b2">
+  <g transform="translate(576,382)" fill="#2B5EA7">
     <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/></circle>
     <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/></circle>
     <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/></circle>

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 450" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 450" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei',sans-serif">
   <title>未定义行为：编译器优化陷阱</title>
   <desc>四阶段动画展示编译器如何利用未定义行为（有符号溢出）做优化：源代码 → 编译器推理 → 汇编输出 → 运行时行为对比</desc>
   
-  <rect width="720" height="450" fill="#f6f8fa"/>
+  <rect width="720" height="450" fill="#FDF8EA"/>
   
   <!-- Stage labels -->
-  <g font-family="sans-serif" font-size="13" fill="#666">
+  <g font-family="sans-serif" font-size="13" fill="#6E6B60">
     <text x="20" y="25">① 源代码</text>
     <text x="200" y="25">② 编译器推理</text>
     <text x="420" y="25">③ 汇编输出</text>
@@ -15,86 +15,86 @@
   
   <!-- Stage 1: Source Code -->
   <g>
-    <rect x="20" y="40" width="160" height="120" rx="4" fill="#fff" stroke="#3451b2" stroke-width="1.5"/>
-    <text x="30" y="60" font-family="monospace" font-size="11" fill="#333">
+    <rect x="20" y="40" width="160" height="120" rx="4" fill="#fff" stroke="#2B5EA7" stroke-width="1.5"/>
+    <text x="30" y="60" font-family="monospace" font-size="11" fill="#2F2E2B">
       <tspan x="30" dy="0">int is_bigger(int x) {</tspan>
       <tspan x="30" dy="16">  return x+1 &gt; x;</tspan>
       <tspan x="30" dy="16">}</tspan>
     </text>
-    <text x="30" y="115" font-family="sans-serif" font-size="10" fill="#d97706">数学上：x+1 &gt; x 恒真</text>
-    <text x="30" y="130" font-family="sans-serif" font-size="10" fill="#d97706">除非 x = INT_MAX（溢出）</text>
-    <text x="30" y="150" font-family="sans-serif" font-size="11" fill="#dc2626" font-weight="bold">⚠ UB：有符号溢出</text>
+    <text x="30" y="115" font-family="sans-serif" font-size="10" fill="#A8801F">数学上：x+1 &gt; x 恒真</text>
+    <text x="30" y="130" font-family="sans-serif" font-size="10" fill="#A8801F">除非 x = INT_MAX（溢出）</text>
+    <text x="30" y="150" font-family="sans-serif" font-size="11" fill="#B3392F" font-weight="bold">⚠ UB：有符号溢出</text>
   </g>
   
   <!-- Arrow 1→2 -->
   <g>
-    <line x1="185" y1="100" x2="215" y2="100" stroke="#3eaf7c" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="185" y1="100" x2="215" y2="100" stroke="#3F7D57" stroke-width="2" marker-end="url(#arrow)"/>
     <animate attributeName="opacity" values="0;1;1;1;0" dur="12s" repeatCount="indefinite"/>
   </g>
   
   <!-- Stage 2: Compiler Reasoning -->
   <g>
-    <rect x="220" y="40" width="180" height="120" rx="4" fill="#fff" stroke="#3eaf7c" stroke-width="1.5"/>
-    <text x="230" y="60" font-family="sans-serif" font-size="11" fill="#333">
-      <tspan x="230" dy="0" font-weight="bold" fill="#3eaf7c">编译器假设：</tspan>
+    <rect x="220" y="40" width="180" height="120" rx="4" fill="#fff" stroke="#3F7D57" stroke-width="1.5"/>
+    <text x="230" y="60" font-family="sans-serif" font-size="11" fill="#2F2E2B">
+      <tspan x="230" dy="0" font-weight="bold" fill="#3F7D57">编译器假设：</tspan>
       <tspan x="230" dy="18">"代码没有 UB"</tspan>
-      <tspan x="230" dy="24" font-weight="bold" fill="#3eaf7c">推理：</tspan>
+      <tspan x="230" dy="24" font-weight="bold" fill="#3F7D57">推理：</tspan>
       <tspan x="230" dy="18">x ≠ INT_MAX（否则 UB）</tspan>
       <tspan x="230" dy="18">∴ x+1 &gt; x 恒成立</tspan>
     </text>
-    <text x="230" y="150" font-family="sans-serif" font-size="11" fill="#dc2626" font-weight="bold">→ 整段折叠为 return 1</text>
+    <text x="230" y="150" font-family="sans-serif" font-size="11" fill="#B3392F" font-weight="bold">→ 整段折叠为 return 1</text>
   </g>
   
   <!-- Arrow 2→3 -->
   <g>
-    <line x1="405" y1="100" x2="435" y2="100" stroke="#3eaf7c" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="405" y1="100" x2="435" y2="100" stroke="#3F7D57" stroke-width="2" marker-end="url(#arrow)"/>
     <animate attributeName="opacity" values="0;0;1;1;0" dur="12s" repeatCount="indefinite"/>
   </g>
   
   <!-- Stage 3: Assembly Output -->
   <g>
-    <rect x="440" y="40" width="140" height="120" rx="4" fill="#fff" stroke="#3451b2" stroke-width="1.5"/>
-    <text x="450" y="60" font-family="monospace" font-size="10" fill="#333">
-      <tspan x="450" dy="0" fill="#666">-O2 优化后：</tspan>
+    <rect x="440" y="40" width="140" height="120" rx="4" fill="#fff" stroke="#2B5EA7" stroke-width="1.5"/>
+    <text x="450" y="60" font-family="monospace" font-size="10" fill="#2F2E2B">
+      <tspan x="450" dy="0" fill="#6E6B60">-O2 优化后：</tspan>
       <tspan x="450" dy="18">is_bigger:</tspan>
-      <tspan x="450" dy="16" fill="#dc2626" font-weight="bold">  movs r0, #1</tspan>
+      <tspan x="450" dy="16" fill="#B3392F" font-weight="bold">  movs r0, #1</tspan>
       <tspan x="450" dy="16">  bx lr</tspan>
     </text>
-    <text x="450" y="135" font-family="sans-serif" font-size="10" fill="#666">没有加法、没有比较</text>
-    <text x="450" y="150" font-family="sans-serif" font-size="10" fill="#666">直接返回常量 1</text>
+    <text x="450" y="135" font-family="sans-serif" font-size="10" fill="#6E6B60">没有加法、没有比较</text>
+    <text x="450" y="150" font-family="sans-serif" font-size="10" fill="#6E6B60">直接返回常量 1</text>
   </g>
   
   <!-- Arrow 3→4 -->
   <g>
-    <line x1="585" y1="100" x2="615" y2="100" stroke="#3eaf7c" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="585" y1="100" x2="615" y2="100" stroke="#3F7D57" stroke-width="2" marker-end="url(#arrow)"/>
     <animate attributeName="opacity" values="0;0;0;1;0" dur="12s" repeatCount="indefinite"/>
   </g>
   
   <!-- Stage 4: Runtime Comparison -->
   <g>
-    <rect x="620" y="40" width="80" height="120" rx="4" fill="#fff" stroke="#3451b2" stroke-width="1.5"/>
-    <text x="625" y="58" font-family="sans-serif" font-size="10" fill="#333">
+    <rect x="620" y="40" width="80" height="120" rx="4" fill="#fff" stroke="#2B5EA7" stroke-width="1.5"/>
+    <text x="625" y="58" font-family="sans-serif" font-size="10" fill="#2F2E2B">
       <tspan x="625" dy="0" font-weight="bold">x=5:</tspan>
-      <tspan x="625" dy="14" fill="#3eaf7c">返回 1 ✓</tspan>
+      <tspan x="625" dy="14" fill="#3F7D57">返回 1 ✓</tspan>
       <tspan x="625" dy="20" font-weight="bold">x=INT_MAX:</tspan>
-      <tspan x="625" dy="14" fill="#dc2626">返回 1 ✗</tspan>
+      <tspan x="625" dy="14" fill="#B3392F">返回 1 ✗</tspan>
     </text>
-    <text x="625" y="135" font-family="sans-serif" font-size="12" fill="#666">数学期望：0</text>
-    <text x="625" y="150" font-family="sans-serif" font-size="12" fill="#666">实际结果：1</text>
+    <text x="625" y="135" font-family="sans-serif" font-size="12" fill="#6E6B60">数学期望：0</text>
+    <text x="625" y="150" font-family="sans-serif" font-size="12" fill="#6E6B60">实际结果：1</text>
   </g>
   
   <!-- Bottom section: Solution -->
-  <rect x="20" y="180" width="680" height="100" rx="6" fill="#ffffff" stroke="#3eaf7c" stroke-width="1.5"/>
-  <text x="30" y="200" font-family="sans-serif" font-size="13" font-weight="bold" fill="#3eaf7c">✓ 防御方案</text>
-  <text x="30" y="220" font-family="monospace" font-size="11" fill="#333">
+  <rect x="20" y="180" width="680" height="100" rx="6" fill="#FFFDF6" stroke="#3F7D57" stroke-width="1.5"/>
+  <text x="30" y="200" font-family="sans-serif" font-size="13" font-weight="bold" fill="#3F7D57">✓ 防御方案</text>
+  <text x="30" y="220" font-family="monospace" font-size="11" fill="#2F2E2B">
     <tspan x="30" dy="0">1. 编译旗：-fwrapv（有符号溢出按补码回绕，编译器失去"假设权"）</tspan>
     <tspan x="30" dy="16">2. 类型转换：(uint32_t)x + 1 &gt; (uint32_t)x  // 无符号溢出是定义良好的</tspan>
     <tspan x="30" dy="16">3. 静态分析：-Wstrict-overflow -fsanitize=undefined（主机侧测试）</tspan>
   </text>
-  <text x="30" y="270" font-family="sans-serif" font-size="11" fill="#d97706" font-style="italic">MISRA-C 规则 10.1：禁止有符号整数溢出——汽车/医疗固件靠这条活命</text>
+  <text x="30" y="270" font-family="sans-serif" font-size="11" fill="#A8801F" font-style="italic">MISRA-C 规则 10.1：禁止有符号整数溢出——汽车/医疗固件靠这条活命</text>
   
   <!-- Continuous animation: warning pulse -->
-  <circle cx="170" cy="150" r="8" fill="#dc2626" opacity="0.3">
+  <circle cx="170" cy="150" r="8" fill="#B3392F" opacity="0.3">
     <animate attributeName="r" values="8;12;8" dur="2s" repeatCount="indefinite"/>
     <animate attributeName="opacity" values="0.3;0.6;0.3" dur="2s" repeatCount="indefinite"/>
   </circle>
@@ -102,12 +102,12 @@
   <!-- Arrow marker -->
   <defs>
     <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-      <path d="M0,0 L0,6 L9,3 z" fill="#3eaf7c"/>
+      <path d="M0,0 L0,6 L9,3 z" fill="#3F7D57"/>
     </marker>
   </defs>
   
   <!-- Footer -->
-  <text x="360" y="310" font-family="sans-serif" font-size="11" fill="#666" text-anchor="middle">
+  <text x="360" y="310" font-family="sans-serif" font-size="11" fill="#6E6B60" text-anchor="middle">
     UB 的代价：今天能跑 ≠ 明天安全 | 编译器不是你的敌人，是严格的形式化验证者
   </text>
   

@@ -1,87 +1,87 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei',sans-serif">
   <title>heap_4：相邻块合并与最大连续块</title>
   <desc>四阶段动画：16KB 池子连续分配 A/B/C 各 1KB；释放 B 中间留洞（总空闲涨但最大连续块不够 2KB）；释放 A 与 B 相邻合并成 2KB 大块；再要 2KB 成功。总空闲 ≠ 最大可分配块，只有相邻才合并。画面里 A/B/C 逐块长出来，合并是绿框从 A 一路爬过洞变成一整条 2KB，洞每秒闪一次——它在那儿，却当不了连续块用。</desc>
-  <rect width="720" height="440" fill="#f6f8fa"/>
-  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">heap_4：空闲链表按地址排序，相邻才合并</text>
-  <text x="24" y="50" font-size="12" fill="#666">V11.1.0 heap_4.c prvInsertBlockIntoFreeList · 总空闲 vs 最大连续块是两个数 · 交替分配释放 = 碎片制造机</text>
+  <rect width="720" height="440" fill="#FDF8EA"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#2B5EA7">heap_4：空闲链表按地址排序，相邻才合并</text>
+  <text x="24" y="50" font-size="12" fill="#6E6B60">V11.1.0 heap_4.c prvInsertBlockIntoFreeList · 总空闲 vs 最大连续块是两个数 · 交替分配释放 = 碎片制造机</text>
 
   <!-- ===== 堆地图 ===== -->
-  <rect x="40" y="80" width="640" height="130" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
-  <text x="56" y="102" font-size="13" font-weight="bold" fill="#3451b2">16KB 池子（configTOTAL_HEAP_SIZE）</text>
+  <rect x="40" y="80" width="640" height="130" fill="#FFFDF6" stroke="#D8D2C0" rx="8"/>
+  <text x="56" y="102" font-size="13" font-weight="bold" fill="#2B5EA7">16KB 池子（configTOTAL_HEAP_SIZE）</text>
 
   <!-- 四个阶段的堆布局，离散切换 -->
   <!-- 阶段①：A B C 各占 1KB -->
   <g opacity="1">
     <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="14s" repeatCount="indefinite"/>
-    <rect x="70" y="120" width="140" height="34" fill="#dbe7ff" stroke="#3451b2" rx="4">
+    <rect x="70" y="120" width="140" height="34" fill="#DCE6F2" stroke="#2B5EA7" rx="4">
       <animate attributeName="width" values="0;0;140;140" keyTimes="0;0.01;0.06;1" dur="14s" repeatCount="indefinite"/>
     </rect>
-    <text x="140" y="142" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">A 1KB</text>
-    <rect x="212" y="120" width="140" height="34" fill="#dbe7ff" stroke="#3451b2" rx="4">
+    <text x="140" y="142" font-size="12" font-weight="bold" fill="#2B5EA7" text-anchor="middle">A 1KB</text>
+    <rect x="212" y="120" width="140" height="34" fill="#DCE6F2" stroke="#2B5EA7" rx="4">
       <animate attributeName="width" values="0;0;140;140" keyTimes="0;0.07;0.12;1" dur="14s" repeatCount="indefinite"/>
     </rect>
-    <text x="282" y="142" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">B 1KB</text>
-    <rect x="354" y="120" width="140" height="34" fill="#dbe7ff" stroke="#3451b2" rx="4">
+    <text x="282" y="142" font-size="12" font-weight="bold" fill="#2B5EA7" text-anchor="middle">B 1KB</text>
+    <rect x="354" y="120" width="140" height="34" fill="#DCE6F2" stroke="#2B5EA7" rx="4">
       <animate attributeName="width" values="0;0;140;140" keyTimes="0;0.13;0.18;1" dur="14s" repeatCount="indefinite"/>
     </rect>
-    <text x="424" y="142" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">C 1KB</text>
-    <rect x="496" y="120" width="154" height="34" fill="#e2e8f0" stroke="#94a3b8" rx="4"/>
-    <text x="573" y="142" font-size="12" fill="#666" text-anchor="middle">空闲 ~13KB</text>
+    <text x="424" y="142" font-size="12" font-weight="bold" fill="#2B5EA7" text-anchor="middle">C 1KB</text>
+    <rect x="496" y="120" width="154" height="34" fill="#E7E2D4" stroke="#9A937F" rx="4"/>
+    <text x="573" y="142" font-size="12" fill="#6E6B60" text-anchor="middle">空闲 ~13KB</text>
   </g>
   <!-- 阶段②：释放 B，中间留洞 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="14s" repeatCount="indefinite"/>
-    <rect x="70" y="120" width="140" height="34" fill="#dbe7ff" stroke="#3451b2" rx="4"/>
-    <text x="140" y="142" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">A 1KB</text>
-    <rect x="212" y="120" width="140" height="34" fill="#ffffff" stroke="#d97706" stroke-width="2" stroke-dasharray="5 4" rx="4">
+    <rect x="70" y="120" width="140" height="34" fill="#DCE6F2" stroke="#2B5EA7" rx="4"/>
+    <text x="140" y="142" font-size="12" font-weight="bold" fill="#2B5EA7" text-anchor="middle">A 1KB</text>
+    <rect x="212" y="120" width="140" height="34" fill="#FFFDF6" stroke="#A8801F" stroke-width="2" stroke-dasharray="5 4" rx="4">
       <!-- 洞每秒闪一下：它在那里，却当不了 2KB 用 -->
       <animate attributeName="opacity" values="1;0.25;1" keyTimes="0;0.5;1" dur="2s" repeatCount="indefinite"/>
     </rect>
-    <text x="282" y="142" font-size="12" font-weight="bold" fill="#d97706" text-anchor="middle">洞 1KB</text>
-    <rect x="354" y="120" width="140" height="34" fill="#dbe7ff" stroke="#3451b2" rx="4"/>
-    <text x="424" y="142" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">C 1KB</text>
-    <rect x="496" y="120" width="154" height="34" fill="#e2e8f0" stroke="#94a3b8" rx="4"/>
-    <text x="573" y="142" font-size="12" fill="#666" text-anchor="middle">空闲 ~13KB</text>
+    <text x="282" y="142" font-size="12" font-weight="bold" fill="#A8801F" text-anchor="middle">洞 1KB</text>
+    <rect x="354" y="120" width="140" height="34" fill="#DCE6F2" stroke="#2B5EA7" rx="4"/>
+    <text x="424" y="142" font-size="12" font-weight="bold" fill="#2B5EA7" text-anchor="middle">C 1KB</text>
+    <rect x="496" y="120" width="154" height="34" fill="#E7E2D4" stroke="#9A937F" rx="4"/>
+    <text x="573" y="142" font-size="12" fill="#6E6B60" text-anchor="middle">空闲 ~13KB</text>
   </g>
   <!-- 阶段③：释放 A，与洞合并 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="14s" repeatCount="indefinite"/>
-    <rect x="70" y="120" width="282" height="34" fill="#ffffff" stroke="#3eaf7c" stroke-width="2" rx="4">
+    <rect x="70" y="120" width="282" height="34" fill="#FFFDF6" stroke="#3F7D57" stroke-width="2" rx="4">
       <!-- 合并是"长出来"的：A 的地盘向右爬过洞，1KB+1KB 变成一条 2KB -->
       <animate attributeName="width" values="140;140;282;282" keyTimes="0;0.40;0.47;1" dur="14s" repeatCount="indefinite"/>
     </rect>
-    <text x="211" y="142" font-size="12" font-weight="bold" fill="#3eaf7c" text-anchor="middle">A+洞 合并成 2KB 连续空闲</text>
-    <rect x="354" y="120" width="140" height="34" fill="#dbe7ff" stroke="#3451b2" rx="4">
+    <text x="211" y="142" font-size="12" font-weight="bold" fill="#3F7D57" text-anchor="middle">A+洞 合并成 2KB 连续空闲</text>
+    <rect x="354" y="120" width="140" height="34" fill="#DCE6F2" stroke="#2B5EA7" rx="4">
       <animate attributeName="x" values="354;354;374;354;354" keyTimes="0;0.40;0.45;0.50;1" dur="14s" repeatCount="indefinite"/>
     </rect>
-    <text x="424" y="142" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">C 1KB<animate attributeName="x" values="424;424;444;424;424" keyTimes="0;0.40;0.45;0.50;1" dur="14s" repeatCount="indefinite"/></text>
-    <rect x="496" y="120" width="154" height="34" fill="#e2e8f0" stroke="#94a3b8" rx="4"/>
-    <text x="573" y="142" font-size="12" fill="#666" text-anchor="middle">空闲 ~13KB</text>
+    <text x="424" y="142" font-size="12" font-weight="bold" fill="#2B5EA7" text-anchor="middle">C 1KB<animate attributeName="x" values="424;424;444;424;424" keyTimes="0;0.40;0.45;0.50;1" dur="14s" repeatCount="indefinite"/></text>
+    <rect x="496" y="120" width="154" height="34" fill="#E7E2D4" stroke="#9A937F" rx="4"/>
+    <text x="573" y="142" font-size="12" fill="#6E6B60" text-anchor="middle">空闲 ~13KB</text>
   </g>
   <!-- 阶段④：再要 2KB，成功 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="14s" repeatCount="indefinite"/>
-    <rect x="70" y="120" width="282" height="34" fill="#dbe7ff" stroke="#3eaf7c" stroke-width="2" rx="4">
+    <rect x="70" y="120" width="282" height="34" fill="#DCE6F2" stroke="#3F7D57" stroke-width="2" rx="4">
       <!-- 2KB 请求从块头开始被兑现：一次写入就把整块占满 -->
       <animate attributeName="width" values="0;0;282;282" keyTimes="0;0.60;0.70;1" dur="14s" repeatCount="indefinite"/>
     </rect>
-    <text x="211" y="142" font-size="12" font-weight="bold" fill="#3eaf7c" text-anchor="middle">big 2KB（这次成了）</text>
-    <rect x="354" y="120" width="140" height="34" fill="#dbe7ff" stroke="#3451b2" rx="4"/>
-    <text x="424" y="142" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">C 1KB</text>
-    <rect x="496" y="120" width="154" height="34" fill="#e2e8f0" stroke="#94a3b8" rx="4"/>
-    <text x="573" y="142" font-size="12" fill="#666" text-anchor="middle">空闲 ~13KB</text>
+    <text x="211" y="142" font-size="12" font-weight="bold" fill="#3F7D57" text-anchor="middle">big 2KB（这次成了）</text>
+    <rect x="354" y="120" width="140" height="34" fill="#DCE6F2" stroke="#2B5EA7" rx="4"/>
+    <text x="424" y="142" font-size="12" font-weight="bold" fill="#2B5EA7" text-anchor="middle">C 1KB</text>
+    <rect x="496" y="120" width="154" height="34" fill="#E7E2D4" stroke="#9A937F" rx="4"/>
+    <text x="573" y="142" font-size="12" fill="#6E6B60" text-anchor="middle">空闲 ~13KB</text>
   </g>
 
   <!-- ===== 两个数字并列 ===== -->
-  <rect x="40" y="230" width="310" height="70" fill="#ffffff" stroke="#d97706" stroke-width="2" rx="8"/>
-  <text x="56" y="252" font-size="12" font-weight="bold" fill="#d97706">总空闲（FreeHeapSize）</text>
-  <text x="56" y="276" font-size="14" font-weight="bold" font-family="Consolas,monospace" fill="#d97706">14KB → 14KB → 14KB → 12KB</text>
-  <rect x="370" y="230" width="310" height="70" fill="#ffffff" stroke="#3eaf7c" stroke-width="2" rx="8"/>
-  <text x="386" y="252" font-size="12" font-weight="bold" fill="#3eaf7c">最大连续块（决定能不能分出大块）</text>
-  <text x="386" y="276" font-size="14" font-weight="bold" font-family="Consolas,monospace" fill="#3eaf7c">13KB → 1KB(洞) → 2KB ✓</text>
+  <rect x="40" y="230" width="310" height="70" fill="#FFFDF6" stroke="#A8801F" stroke-width="2" rx="8"/>
+  <text x="56" y="252" font-size="12" font-weight="bold" fill="#A8801F">总空闲（FreeHeapSize）</text>
+  <text x="56" y="276" font-size="14" font-weight="bold" font-family="Consolas,monospace" fill="#A8801F">14KB → 14KB → 14KB → 12KB</text>
+  <rect x="370" y="230" width="310" height="70" fill="#FFFDF6" stroke="#3F7D57" stroke-width="2" rx="8"/>
+  <text x="386" y="252" font-size="12" font-weight="bold" fill="#3F7D57">最大连续块（决定能不能分出大块）</text>
+  <text x="386" y="276" font-size="14" font-weight="bold" font-family="Consolas,monospace" fill="#3F7D57">13KB → 1KB(洞) → 2KB ✓</text>
 
   <!-- 阶段字幕 -->
-  <g font-size="13" font-weight="bold" fill="#3451b2">
+  <g font-size="13" font-weight="bold" fill="#2B5EA7">
     <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="14s" repeatCount="indefinite"/>
       <text x="36" y="332">① 连续分配 A/B/C：总空闲和最大连续块都够用</text></g>
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="14s" repeatCount="indefinite"/>
@@ -95,7 +95,7 @@
   </g>
 
   <!-- 阶段指示点 -->
-  <g transform="translate(630,414)" fill="#3451b2">
+  <g transform="translate(630,414)" fill="#2B5EA7">
     <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="14s" repeatCount="indefinite"/></circle>
     <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="14s" repeatCount="indefinite"/></circle>
     <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="14s" repeatCount="indefinite"/></circle>

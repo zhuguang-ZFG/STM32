@@ -1,94 +1,94 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei',sans-serif">
   <title>STM32F407 低功耗三档对比：Sleep · Stop · Standby</title>
   <desc>四阶段动画：STM32F407 三档睡眠的取舍是“越深越省电、但醒来代价越大”。① Sleep：只停 CPU 时钟（脑），外设全醒、SRAM 全在、时钟树没动——任意中断 µs 级唤醒，醒来原地继续跑，代价是电流仍 mA 级；② Stop：1.2V 域时钟全停，调压器低功耗模式让 SRAM/寄存器内容保留——EXTI（含 RTC 闹钟，走 EXTI line17）唤醒，醒来继续跑但 PLL 已停、HSI 16MHz 接管，要回 168MHz 必须重配时钟，电流降到 µA~几十 µA；③ Standby：1.2V 域几乎全断电，只留备份域（RTC、4KB 备份 SRAM、备份寄存器）——SRAM 全丢，醒来不是继续而是复位（像重新上电，从复位向量重来），只有 SBF 标志和备份域“记得”睡前的事，电流 nA~µA；④ 唤醒源是设计出来的：EXTI 线、RTC 闹钟、WKUP 引脚（PA0，Standby 专属），都必须睡前配置并使能——漏配唤醒源 = 睡死，只能等复位或 IWDG。图上有一个真在跑的电流计指针：从 mA（Sleep）扫到 µA（Stop）再扫到 nA（Standby）逐档下移，读数越低睡得越深。</desc>
-  <rect width="720" height="460" fill="#f6f8fa"/>
-  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">STM32F407 低功耗三档对比：Sleep · Stop · Standby</text>
-  <text x="24" y="50" font-size="12" fill="#666">睡得越深越省电，醒来的代价越大——电流计指针逐档下移：mA → µA → nA</text>
+  <rect width="720" height="460" fill="#FDF8EA"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#2B5EA7">STM32F407 低功耗三档对比：Sleep · Stop · Standby</text>
+  <text x="24" y="50" font-size="12" fill="#6E6B60">睡得越深越省电，醒来的代价越大——电流计指针逐档下移：mA → µA → nA</text>
 
   <!-- 三档卡片（常驻）：停什么/留什么/谁唤醒/醒来到哪/电流 -->
-  <rect x="40" y="62" width="200" height="118" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
-  <rect x="42" y="64" width="196" height="4" rx="2" fill="#3451b2"/>
-  <text x="56" y="84" font-size="13" font-weight="bold" fill="#3451b2">① Sleep 睡觉</text>
-  <text x="56" y="104" font-size="11" fill="#333">停：只有 CPU 时钟（脑）</text>
-  <text x="56" y="120" font-size="11" fill="#333">留：外设全醒 · SRAM 全在</text>
-  <text x="56" y="136" font-size="11" fill="#333">醒：任意中断，µs 级</text>
-  <text x="56" y="152" font-size="11" fill="#333">醒后：原地继续跑（时钟没变）</text>
-  <text x="56" y="168" font-size="11" font-weight="bold" fill="#3451b2">电流：mA 级（数十 mA）</text>
+  <rect x="40" y="62" width="200" height="118" rx="8" fill="#FFFDF6" stroke="#D8D2C0"/>
+  <rect x="42" y="64" width="196" height="4" rx="2" fill="#2B5EA7"/>
+  <text x="56" y="84" font-size="13" font-weight="bold" fill="#2B5EA7">① Sleep 睡觉</text>
+  <text x="56" y="104" font-size="11" fill="#2F2E2B">停：只有 CPU 时钟（脑）</text>
+  <text x="56" y="120" font-size="11" fill="#2F2E2B">留：外设全醒 · SRAM 全在</text>
+  <text x="56" y="136" font-size="11" fill="#2F2E2B">醒：任意中断，µs 级</text>
+  <text x="56" y="152" font-size="11" fill="#2F2E2B">醒后：原地继续跑（时钟没变）</text>
+  <text x="56" y="168" font-size="11" font-weight="bold" fill="#2B5EA7">电流：mA 级（数十 mA）</text>
 
-  <rect x="260" y="62" width="200" height="118" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
-  <rect x="262" y="64" width="196" height="4" rx="2" fill="#d97706"/>
-  <text x="276" y="84" font-size="13" font-weight="bold" fill="#d97706">② Stop 停摆</text>
-  <text x="276" y="104" font-size="11" fill="#333">停：1.2V 域全部时钟</text>
-  <text x="276" y="120" font-size="11" fill="#333">留：SRAM + 寄存器保留</text>
-  <text x="276" y="136" font-size="11" fill="#333">醒：EXTI / RTC 闹钟</text>
-  <text x="276" y="152" font-size="11" fill="#333">醒后：继续跑，HSI 16MHz 接管</text>
-  <text x="276" y="168" font-size="11" font-weight="bold" fill="#d97706">电流：µA ~ 几十 µA</text>
+  <rect x="260" y="62" width="200" height="118" rx="8" fill="#FFFDF6" stroke="#D8D2C0"/>
+  <rect x="262" y="64" width="196" height="4" rx="2" fill="#A8801F"/>
+  <text x="276" y="84" font-size="13" font-weight="bold" fill="#A8801F">② Stop 停摆</text>
+  <text x="276" y="104" font-size="11" fill="#2F2E2B">停：1.2V 域全部时钟</text>
+  <text x="276" y="120" font-size="11" fill="#2F2E2B">留：SRAM + 寄存器保留</text>
+  <text x="276" y="136" font-size="11" fill="#2F2E2B">醒：EXTI / RTC 闹钟</text>
+  <text x="276" y="152" font-size="11" fill="#2F2E2B">醒后：继续跑，HSI 16MHz 接管</text>
+  <text x="276" y="168" font-size="11" font-weight="bold" fill="#A8801F">电流：µA ~ 几十 µA</text>
 
-  <rect x="480" y="62" width="200" height="118" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
-  <rect x="482" y="64" width="196" height="4" rx="2" fill="#1a7f56"/>
-  <text x="496" y="84" font-size="13" font-weight="bold" fill="#1a7f56">③ Standby 假死</text>
-  <text x="496" y="104" font-size="11" fill="#333">停：1.2V 域断电</text>
-  <text x="496" y="120" font-size="11" fill="#333">留：仅备份域（RTC·备份SRAM）</text>
-  <text x="496" y="136" font-size="11" fill="#333">醒：WKUP 引脚 / RTC 闹钟</text>
-  <text x="496" y="152" font-size="11" fill="#333">醒后：复位重来（像重新上电）</text>
-  <text x="496" y="168" font-size="11" font-weight="bold" fill="#1a7f56">电流：nA ~ µA</text>
+  <rect x="480" y="62" width="200" height="118" rx="8" fill="#FFFDF6" stroke="#D8D2C0"/>
+  <rect x="482" y="64" width="196" height="4" rx="2" fill="#3F7D57"/>
+  <text x="496" y="84" font-size="13" font-weight="bold" fill="#3F7D57">③ Standby 假死</text>
+  <text x="496" y="104" font-size="11" fill="#2F2E2B">停：1.2V 域断电</text>
+  <text x="496" y="120" font-size="11" fill="#2F2E2B">留：仅备份域（RTC·备份SRAM）</text>
+  <text x="496" y="136" font-size="11" fill="#2F2E2B">醒：WKUP 引脚 / RTC 闹钟</text>
+  <text x="496" y="152" font-size="11" fill="#2F2E2B">醒后：复位重来（像重新上电）</text>
+  <text x="496" y="168" font-size="11" font-weight="bold" fill="#3F7D57">电流：nA ~ µA</text>
 
   <!-- 电流计：指针从 mA 逐档扫到 nA（一直转，dur=6s 整除 12s） -->
-  <path d="M 322.3 217.6 A 46 46 0 0 1 345.8 200.3" fill="none" stroke="#3451b2" stroke-width="5"/>
-  <path d="M 345.8 200.3 A 46 46 0 0 1 374.2 200.3" fill="none" stroke="#d97706" stroke-width="5"/>
-  <path d="M 374.2 200.3 A 46 46 0 0 1 397.7 217.6" fill="none" stroke="#1a7f56" stroke-width="5"/>
-  <text x="312" y="234" font-size="11" font-weight="bold" fill="#3451b2" text-anchor="middle">mA</text>
-  <text x="360" y="192" font-size="11" font-weight="bold" fill="#d97706" text-anchor="middle">µA</text>
-  <text x="408" y="234" font-size="11" font-weight="bold" fill="#1a7f56" text-anchor="middle">nA</text>
+  <path d="M 322.3 217.6 A 46 46 0 0 1 345.8 200.3" fill="none" stroke="#2B5EA7" stroke-width="5"/>
+  <path d="M 345.8 200.3 A 46 46 0 0 1 374.2 200.3" fill="none" stroke="#A8801F" stroke-width="5"/>
+  <path d="M 374.2 200.3 A 46 46 0 0 1 397.7 217.6" fill="none" stroke="#3F7D57" stroke-width="5"/>
+  <text x="312" y="234" font-size="11" font-weight="bold" fill="#2B5EA7" text-anchor="middle">mA</text>
+  <text x="360" y="192" font-size="11" font-weight="bold" fill="#A8801F" text-anchor="middle">µA</text>
+  <text x="408" y="234" font-size="11" font-weight="bold" fill="#3F7D57" text-anchor="middle">nA</text>
   <g transform="rotate(-55 360 244)">
     <animateTransform attributeName="transform" type="rotate" values="-55 360 244;-55 360 244;0 360 244;0 360 244;55 360 244;55 360 244;-55 360 244" keyTimes="0;0.12;0.38;0.5;0.76;0.9;1" dur="6s" repeatCount="indefinite"/>
-    <line x1="360" y1="244" x2="360" y2="201" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+    <line x1="360" y1="244" x2="360" y2="201" stroke="#2F2E2B" stroke-width="3" stroke-linecap="round"/>
   </g>
-  <circle cx="360" cy="244" r="4.5" fill="#24292f"/>
-  <text x="360" y="262" font-size="11" fill="#94a3b8" text-anchor="middle">电流计指针：Sleep mA → Stop µA → Standby nA，逐档下移</text>
+  <circle cx="360" cy="244" r="4.5" fill="#2F2E2B"/>
+  <text x="360" y="262" font-size="11" fill="#9A937F" text-anchor="middle">电流计指针：Sleep mA → Stop µA → Standby nA，逐档下移</text>
 
   <!-- 阶段一：Sleep -->
   <g opacity="1">
     <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="270" width="640" height="118" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="292" font-size="13" font-weight="bold" fill="#3451b2">① Sleep：只停 CPU 的脑——外设全醒，醒来零成本</text>
-    <text x="56" y="316" font-size="13" fill="#333">WFI 后 CPU 时钟停、时钟树不动：GPIO/UART/DMA 照常跑，中断 µs 级唤醒，回到 WFI 下一条。</text>
-    <text x="56" y="340" font-size="12" font-family="Consolas,monospace" fill="#333">__WFI();  /* 或 HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI) */</text>
-    <text x="56" y="364" font-size="12" fill="#d97706">电流仍是 mA 级——CPU 停了但总线外设没停，省的是功耗大头里的小头。</text>
+    <rect x="40" y="270" width="640" height="118" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="292" font-size="13" font-weight="bold" fill="#2B5EA7">① Sleep：只停 CPU 的脑——外设全醒，醒来零成本</text>
+    <text x="56" y="316" font-size="13" fill="#2F2E2B">WFI 后 CPU 时钟停、时钟树不动：GPIO/UART/DMA 照常跑，中断 µs 级唤醒，回到 WFI 下一条。</text>
+    <text x="56" y="340" font-size="12" font-family="Consolas,monospace" fill="#2F2E2B">__WFI();  /* 或 HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI) */</text>
+    <text x="56" y="364" font-size="12" fill="#A8801F">电流仍是 mA 级——CPU 停了但总线外设没停，省的是功耗大头里的小头。</text>
   </g>
 
   <!-- 阶段二：Stop -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="270" width="640" height="118" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="292" font-size="13" font-weight="bold" fill="#d97706">② Stop：1.2V 域时钟全停——记忆还在，钟没了</text>
-    <text x="56" y="316" font-size="13" fill="#333">调压器进低功耗，SRAM/寄存器都保留；靠 EXTI 唤醒（RTC 闹钟走 line17），醒来接着 WFI 之后跑。</text>
-    <text x="56" y="340" font-size="12" font-family="Consolas,monospace" fill="#333">HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);</text>
-    <text x="56" y="364" font-size="12" fill="#d97706">醒来 PLL 已停、HSI 16MHz 接管——要回 168MHz 必须重配 SystemClock_Config()。</text>
+    <rect x="40" y="270" width="640" height="118" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="292" font-size="13" font-weight="bold" fill="#A8801F">② Stop：1.2V 域时钟全停——记忆还在，钟没了</text>
+    <text x="56" y="316" font-size="13" fill="#2F2E2B">调压器进低功耗，SRAM/寄存器都保留；靠 EXTI 唤醒（RTC 闹钟走 line17），醒来接着 WFI 之后跑。</text>
+    <text x="56" y="340" font-size="12" font-family="Consolas,monospace" fill="#2F2E2B">HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);</text>
+    <text x="56" y="364" font-size="12" fill="#A8801F">醒来 PLL 已停、HSI 16MHz 接管——要回 168MHz 必须重配 SystemClock_Config()。</text>
   </g>
 
   <!-- 阶段三：Standby -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="270" width="640" height="118" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="292" font-size="13" font-weight="bold" fill="#1a7f56">③ Standby：1.2V 域断电——只留备份域的遗言</text>
-    <text x="56" y="316" font-size="13" fill="#333">SRAM 全丢、寄存器全丢；只有备份域带电：RTC、4KB 备份 SRAM、备份寄存器——"遗言"只写这儿。</text>
-    <text x="56" y="340" font-size="12" font-family="Consolas,monospace" fill="#333">if (PWR-&gt;CSR &amp; PWR_CSR_SBF) { /* SBF=1：刚从 Standby 醒来，非冷启动 */ }</text>
-    <text x="56" y="364" font-size="12" fill="#3eaf7c">醒来即复位：从复位向量重来，运行上下文全没了——只有备份域记得睡前。</text>
+    <rect x="40" y="270" width="640" height="118" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="292" font-size="13" font-weight="bold" fill="#3F7D57">③ Standby：1.2V 域断电——只留备份域的遗言</text>
+    <text x="56" y="316" font-size="13" fill="#2F2E2B">SRAM 全丢、寄存器全丢；只有备份域带电：RTC、4KB 备份 SRAM、备份寄存器——"遗言"只写这儿。</text>
+    <text x="56" y="340" font-size="12" font-family="Consolas,monospace" fill="#2F2E2B">if (PWR-&gt;CSR &amp; PWR_CSR_SBF) { /* SBF=1：刚从 Standby 醒来，非冷启动 */ }</text>
+    <text x="56" y="364" font-size="12" fill="#3F7D57">醒来即复位：从复位向量重来，运行上下文全没了——只有备份域记得睡前。</text>
   </g>
 
   <!-- 阶段四：唤醒源 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="270" width="640" height="118" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="292" font-size="13" font-weight="bold" fill="#dc2626">④ 唤醒源是设计出来的：睡前必须配好</text>
-    <text x="56" y="316" font-size="13" fill="#333">EXTI（GPIO/事件）、RTC 闹钟、WKUP 引脚（PA0，仅 Standby）——都要睡前配置、使能、清标志。</text>
-    <text x="56" y="340" font-size="12" font-family="Consolas,monospace" fill="#333">HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1);  /* Standby 唯一的引脚唤醒：PA0 上升沿 */</text>
-    <text x="56" y="364" font-size="12" fill="#dc2626">漏配唤醒源 = 睡死：没人叫得醒，只能等 IWDG 复位——选档先列唤醒源清单。</text>
+    <rect x="40" y="270" width="640" height="118" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="292" font-size="13" font-weight="bold" fill="#B3392F">④ 唤醒源是设计出来的：睡前必须配好</text>
+    <text x="56" y="316" font-size="13" fill="#2F2E2B">EXTI（GPIO/事件）、RTC 闹钟、WKUP 引脚（PA0，仅 Standby）——都要睡前配置、使能、清标志。</text>
+    <text x="56" y="340" font-size="12" font-family="Consolas,monospace" fill="#2F2E2B">HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1);  /* Standby 唯一的引脚唤醒：PA0 上升沿 */</text>
+    <text x="56" y="364" font-size="12" fill="#B3392F">漏配唤醒源 = 睡死：没人叫得醒，只能等 IWDG 复位——选档先列唤醒源清单。</text>
   </g>
 
   <!-- 阶段字幕 -->
-  <g font-size="13" font-weight="bold" fill="#3451b2">
+  <g font-size="13" font-weight="bold" fill="#2B5EA7">
     <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
       <text x="36" y="416">① Sleep 停脑外设全醒：任意中断 µs 级唤醒，电流 mA 级</text></g>
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
@@ -100,7 +100,7 @@
   </g>
 
   <!-- 阶段指示点 -->
-  <g transform="translate(630,434)" fill="#3451b2">
+  <g transform="translate(630,434)" fill="#2B5EA7">
     <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
     <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
     <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>

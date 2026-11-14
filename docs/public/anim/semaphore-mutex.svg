@@ -1,17 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei',sans-serif">
   <title>信号量 vs 互斥锁：计数牌与钥匙</title>
   <desc>信号量 vs 互斥锁：计数牌与钥匙。计数信号量 = 停车场还剩几个位（谁都能进出）；互斥锁 = 厕所钥匙（有主，借的时候连优先级都临时借走）。车位一侧的车顺着箭头爬进空位、Give 时再爬出来，位满时车D 在门口一下一下地等；钥匙一侧的箭头从挂墙飞到持锁任务手里，还锁时原路飞回。</desc>
-  <rect width="720" height="420" fill="#f6f8fa"/>
-  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">信号量 vs 互斥锁：计数牌与钥匙</text>
-  <text x="24" y="50" font-size="12" fill="#666">计数信号量 = 停车场还剩几个位（谁都能进出）；互斥锁 = 厕所钥匙（有主，借的时候连优先级都临时借走）</text>
+  <rect width="720" height="420" fill="#FDF8EA"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#2B5EA7">信号量 vs 互斥锁：计数牌与钥匙</text>
+  <text x="24" y="50" font-size="12" fill="#6E6B60">计数信号量 = 停车场还剩几个位（谁都能进出）；互斥锁 = 厕所钥匙（有主，借的时候连优先级都临时借走）</text>
 
   <!-- ===== 左：计数信号量 ===== -->
-  <rect x="36" y="70" width="316" height="240" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
-  <text x="52" y="94" font-size="13" font-weight="bold" fill="#3451b2">计数信号量 = 停车场</text>
+  <rect x="36" y="70" width="316" height="240" fill="#FFFDF6" stroke="#D8D2C0" rx="8"/>
+  <text x="52" y="94" font-size="13" font-weight="bold" fill="#2B5EA7">计数信号量 = 停车场</text>
   <!-- 计数牌 -->
-  <rect x="52" y="106" width="120" height="56" fill="#dbe7ff" stroke="#3451b2" rx="6"/>
-  <text x="112" y="128" font-size="11" fill="#3451b2" text-anchor="middle">剩余车位</text>
-  <g font-size="20" font-weight="bold" fill="#3451b2" text-anchor="middle" font-family="Consolas,monospace">
+  <rect x="52" y="106" width="120" height="56" fill="#DCE6F2" stroke="#2B5EA7" rx="6"/>
+  <text x="112" y="128" font-size="11" fill="#2B5EA7" text-anchor="middle">剩余车位</text>
+  <g font-size="20" font-weight="bold" fill="#2B5EA7" text-anchor="middle" font-family="Consolas,monospace">
     <text x="112" y="152" opacity="0">2<animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/></text>
     <text x="112" y="152" opacity="0">1<animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/></text>
     <text x="112" y="152" opacity="0">0<animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;1;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/></text>
@@ -20,80 +20,80 @@
   </g>
 
   <!-- 车位 ×3 -->
-  <g stroke="#94a3b8" fill="#f8fafc">
+  <g stroke="#9A937F" fill="#FBF3DF">
     <rect x="196" y="106" width="64" height="36" rx="4"/><rect x="196" y="150" width="64" height="36" rx="4"/><rect x="196" y="194" width="64" height="36" rx="4"/>
   </g>
-  <g font-size="11" text-anchor="middle" fill="#3eaf7c" font-weight="bold">
+  <g font-size="11" text-anchor="middle" fill="#3F7D57" font-weight="bold">
     <text x="228" y="129" opacity="0">车A<animate attributeName="opacity" calcMode="discrete" values="0;1;1;1;1;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/></text>
     <text x="228" y="173" opacity="0">车B<animate attributeName="opacity" calcMode="discrete" values="0;0;1;1;1;1;1;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/></text>
     <text x="228" y="217" opacity="0">车C<animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;1;1;1;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/></text>
   </g>
   <!-- 等待的车 -->
-  <text x="300" y="270" font-size="11" fill="#d97706" text-anchor="middle" opacity="0">车D 排队等位…
+  <text x="300" y="270" font-size="11" fill="#A8801F" text-anchor="middle" opacity="0">车D 排队等位…
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
   </text>
   <!-- ④ 位满了：车D 在门口一下一下地等（节拍脉冲） -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
-    <circle cx="252" cy="266" r="4" fill="#d97706">
+    <circle cx="252" cy="266" r="4" fill="#A8801F">
       <animate attributeName="opacity" values="0.15;1;0.15" dur="1.5s" repeatCount="indefinite"/>
     </circle>
   </g>
-  <text x="300" y="270" font-size="11" fill="#3eaf7c" text-anchor="middle" opacity="0">车D 进场！
+  <text x="300" y="270" font-size="11" fill="#3F7D57" text-anchor="middle" opacity="0">车D 进场！
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
   </text>
   <!-- Take 的生长箭头：车从通道爬进对应车位（②A ③B ④C） -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
-    <line x1="344" y1="124" x2="344" y2="124" stroke="#3eaf7c" stroke-width="3" marker-end="url(#arrIn)">
+    <line x1="344" y1="124" x2="344" y2="124" stroke="#3F7D57" stroke-width="3" marker-end="url(#arrIn)">
       <animate attributeName="x2" values="344;344;262;262" keyTimes="0;0.15;0.24;1" dur="15s" repeatCount="indefinite"/>
     </line>
   </g>
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
-    <line x1="344" y1="168" x2="344" y2="168" stroke="#3eaf7c" stroke-width="3" marker-end="url(#arrIn)">
+    <line x1="344" y1="168" x2="344" y2="168" stroke="#3F7D57" stroke-width="3" marker-end="url(#arrIn)">
       <animate attributeName="x2" values="344;344;262;262" keyTimes="0;0.30;0.39;1" dur="15s" repeatCount="indefinite"/>
     </line>
   </g>
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
-    <line x1="344" y1="212" x2="344" y2="212" stroke="#3eaf7c" stroke-width="3" marker-end="url(#arrIn)">
+    <line x1="344" y1="212" x2="344" y2="212" stroke="#3F7D57" stroke-width="3" marker-end="url(#arrIn)">
       <animate attributeName="x2" values="344;344;262;262" keyTimes="0;0.45;0.54;1" dur="15s" repeatCount="indefinite"/>
     </line>
   </g>
   <!-- ⑤ Give：车A 倒出车位（箭头向右爬出），紧接着车D 开进空出来的 A 位 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
-    <line x1="262" y1="124" x2="262" y2="124" stroke="#3eaf7c" stroke-width="3" marker-end="url(#arrIn)">
+    <line x1="262" y1="124" x2="262" y2="124" stroke="#3F7D57" stroke-width="3" marker-end="url(#arrIn)">
       <animate attributeName="x2" values="262;262;344;344" keyTimes="0;0.60;0.66;1" dur="15s" repeatCount="indefinite"/>
     </line>
-    <circle cx="300" cy="262" r="6" fill="#3eaf7c">
+    <circle cx="300" cy="262" r="6" fill="#3F7D57">
       <animate attributeName="cx" values="300;300;240;240" keyTimes="0;0.66;0.75;1" dur="15s" repeatCount="indefinite"/>
       <animate attributeName="cy" values="262;262;124;124" keyTimes="0;0.66;0.75;1" dur="15s" repeatCount="indefinite"/>
     </circle>
   </g>
 
   <!-- ===== 右：互斥锁 ===== -->
-  <rect x="368" y="70" width="316" height="240" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
-  <text x="384" y="94" font-size="13" font-weight="bold" fill="#3451b2">互斥锁 = 厕所钥匙（有主）</text>
+  <rect x="368" y="70" width="316" height="240" fill="#FFFDF6" stroke="#D8D2C0" rx="8"/>
+  <text x="384" y="94" font-size="13" font-weight="bold" fill="#2B5EA7">互斥锁 = 厕所钥匙（有主）</text>
 
-  <rect x="384" y="106" width="120" height="56" fill="#fef3c7" stroke="#d97706" rx="6"/>
+  <rect x="384" y="106" width="120" height="56" fill="#fef3c7" stroke="#A8801F" rx="6"/>
   <text x="444" y="128" font-size="11" fill="#92400e" text-anchor="middle">钥匙在谁手</text>
   <g font-size="14" font-weight="bold" text-anchor="middle" font-family="Consolas,monospace">
-    <text x="444" y="152" fill="#3eaf7c" opacity="1">空闲<animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0;0;1" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/></text>
-    <text x="444" y="152" fill="#d97706" opacity="0">TaskL<animate attributeName="opacity" calcMode="discrete" values="0;1;1;1;1;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/></text>
+    <text x="444" y="152" fill="#3F7D57" opacity="1">空闲<animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0;0;1" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/></text>
+    <text x="444" y="152" fill="#A8801F" opacity="0">TaskL<animate attributeName="opacity" calcMode="discrete" values="0;1;1;1;1;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/></text>
   </g>
 
   <!-- 优先级继承小剧场 -->
   <g font-size="11">
-    <text x="520" y="122" fill="#666">TaskL 持锁（优先级 1）</text>
-    <text x="520" y="140" fill="#666" opacity="0">TaskH 来抢锁（优先级 3）…
+    <text x="520" y="122" fill="#6E6B60">TaskL 持锁（优先级 1）</text>
+    <text x="520" y="140" fill="#6E6B60" opacity="0">TaskH 来抢锁（优先级 3）…
       <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
     </text>
-    <text x="520" y="140" fill="#d97706" font-weight="bold" opacity="0">继承！L 临时升 3，快进快出
+    <text x="520" y="140" fill="#A8801F" font-weight="bold" opacity="0">继承！L 临时升 3，快进快出
       <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
     </text>
-    <text x="520" y="140" fill="#3eaf7c" font-weight="bold" opacity="0">L 还锁 → H 立刻拿到
+    <text x="520" y="140" fill="#3F7D57" font-weight="bold" opacity="0">L 还锁 → H 立刻拿到
       <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
     </text>
     <text x="520" y="164" fill="#888" opacity="0">优先级继承：防"中优先级任务"
@@ -107,30 +107,30 @@
   <!-- 钥匙在动：② Take 成功钥匙飞到手，⑤ 用完原路飞回；③ TaskH 伸手抢，停在门外 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
-    <line x1="444" y1="190" x2="444" y2="190" stroke="#d97706" stroke-width="3" marker-end="url(#arrKey)">
+    <line x1="444" y1="190" x2="444" y2="190" stroke="#A8801F" stroke-width="3" marker-end="url(#arrKey)">
       <animate attributeName="x2" values="444;444;636;636" keyTimes="0;0.15;0.24;1" dur="15s" repeatCount="indefinite"/>
     </line>
   </g>
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
-    <line x1="636" y1="214" x2="636" y2="214" stroke="#dc2626" stroke-width="3" marker-end="url(#arrNo)">
+    <line x1="636" y1="214" x2="636" y2="214" stroke="#B3392F" stroke-width="3" marker-end="url(#arrNo)">
       <animate attributeName="x2" values="636;636;452;452" keyTimes="0;0.30;0.40;1" dur="15s" repeatCount="indefinite"/>
     </line>
   </g>
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
-    <line x1="636" y1="190" x2="636" y2="190" stroke="#3eaf7c" stroke-width="3" marker-end="url(#arrIn)">
+    <line x1="636" y1="190" x2="636" y2="190" stroke="#3F7D57" stroke-width="3" marker-end="url(#arrIn)">
       <animate attributeName="x2" values="636;636;444;444" keyTimes="0;0.60;0.69;1" dur="15s" repeatCount="indefinite"/>
     </line>
   </g>
 
   <!-- 对比条 -->
-  <rect x="36" y="322" width="648" height="40" fill="#f8fafc" stroke="#cbd5e1" rx="6"/>
-  <text x="52" y="340" font-size="11" fill="#666">选型口诀：<tspan font-weight="bold" fill="#3451b2">保护资源用互斥锁（有主、带继承），发信号/数资源用信号量（无主、可计数）。</tspan></text>
+  <rect x="36" y="322" width="648" height="40" fill="#FBF3DF" stroke="#D8D2C0" rx="6"/>
+  <text x="52" y="340" font-size="11" fill="#6E6B60">选型口诀：<tspan font-weight="bold" fill="#2B5EA7">保护资源用互斥锁（有主、带继承），发信号/数资源用信号量（无主、可计数）。</tspan></text>
   <text x="52" y="355" font-size="11" fill="#888">ISR 里只能给（Give）、不能拿（Take 会睡觉，ISR 不许睡）；二值信号量 ≈ 简化版信号量，不防优先级翻转。</text>
 
   <!-- 阶段字幕 -->
-  <g font-size="13" font-weight="bold" fill="#3451b2">
+  <g font-size="13" font-weight="bold" fill="#2B5EA7">
     <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
       <text x="36" y="396">① 开局：车位 3，钥匙挂墙——资源都在等任务</text></g>
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0;0;0" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/>
@@ -147,18 +147,18 @@
 
   <defs>
     <marker id="arrIn" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-      <polygon points="0,0 7,3 0,6" fill="#3eaf7c"/>
+      <polygon points="0,0 7,3 0,6" fill="#3F7D57"/>
     </marker>
     <marker id="arrKey" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-      <polygon points="0,0 7,3 0,6" fill="#d97706"/>
+      <polygon points="0,0 7,3 0,6" fill="#A8801F"/>
     </marker>
     <marker id="arrNo" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-      <polygon points="0,0 7,3 0,6" fill="#dc2626"/>
+      <polygon points="0,0 7,3 0,6" fill="#B3392F"/>
     </marker>
   </defs>
 
   <!-- 阶段指示点（6 段，keyTimes 取自本文件的阶段时间轴；画布高 420，只能落在字幕下方 12px） -->
-  <g transform="translate(594,408)" fill="#3451b2">
+  <g transform="translate(594,408)" fill="#2B5EA7">
     <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/></circle>
     <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/></circle>
     <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.15;0.30;0.45;0.60;0.75;0.90;1" dur="15s" repeatCount="indefinite"/></circle>

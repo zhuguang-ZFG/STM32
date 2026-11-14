@@ -1,94 +1,94 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei',sans-serif">
   <title>ESP32-S3 上电三棒接力：ROM → bootloader → app</title>
   <desc>四阶段动画：ESP32-S3 上电不是"一条指令到 main"，而是三棒接力。① ROM：芯片里烧死的引导，读 strapping 脚定启动模式，串口打印 rst:0x1 (POWERON)；② 二级 bootloader：可升级的代码，初始化 Flash/Cache、读分区表（bootloader 不烧死 app 地址）、校验并选择 app（factory → ota_0/ota_1，失败回退），串口打印 boot:；③ app：esp_startup_start_app 创建名为 main 的任务（xTaskCreatePinnedToCore），vTaskStartScheduler 启动调度器，main_task 内部调用你的 app_main()——它只是任务里的一个函数，返回即 vTaskDelete(NULL) 任务自杀；④ 对照与分诊：STM32 一条直线 vs S3 三棒接力，看串口前缀 rst:/boot:/app_start: 就能判断卡在哪一棒。图上有一个真在跑的接力点：执行沿 ROM→bootloader→app 三棒循环流动，像接力棒在三棒之间传递。</desc>
-  <rect width="720" height="460" fill="#f6f8fa"/>
-  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">ESP32-S3 上电三棒接力：ROM 认路 · bootloader 验货 · app 开工</text>
-  <text x="24" y="50" font-size="12" fill="#666">串口前缀 rst: / boot: / app: 就是定位"卡在哪一棒"的探针</text>
+  <rect width="720" height="460" fill="#FDF8EA"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#2B5EA7">ESP32-S3 上电三棒接力：ROM 认路 · bootloader 验货 · app 开工</text>
+  <text x="24" y="50" font-size="12" fill="#6E6B60">串口前缀 rst: / boot: / app: 就是定位"卡在哪一棒"的探针</text>
 
   <!-- Flash 分区条（常驻）：bootloader / 分区表 / app -->
-  <rect x="40" y="66" width="640" height="24" rx="4" fill="#ffffff" stroke="#cbd5e1"/>
-  <rect x="42" y="68" width="120" height="20" rx="3" fill="#dbe7ff"/>
-  <text x="102" y="82" font-size="11" fill="#3451b2" text-anchor="middle">bootloader</text>
+  <rect x="40" y="66" width="640" height="24" rx="4" fill="#FFFDF6" stroke="#D8D2C0"/>
+  <rect x="42" y="68" width="120" height="20" rx="3" fill="#DCE6F2"/>
+  <text x="102" y="82" font-size="11" fill="#2B5EA7" text-anchor="middle">bootloader</text>
   <rect x="164" y="68" width="90" height="20" rx="3" fill="#f1f5f9"/>
   <text x="209" y="82" font-size="11" fill="#64748b" text-anchor="middle">分区表</text>
   <rect x="256" y="68" width="150" height="20" rx="3" fill="#fdf0d5"/>
   <text x="331" y="82" font-size="11" fill="#92400e" text-anchor="middle">factory app</text>
-  <text x="430" y="82" font-size="11" fill="#94a3b8">ota_0/ota_1…</text>
-  <text x="330" y="98" font-size="11" fill="#94a3b8" text-anchor="middle">Flash 经 Cache 映射执行</text>
+  <text x="430" y="82" font-size="11" fill="#9A937F">ota_0/ota_1…</text>
+  <text x="330" y="98" font-size="11" fill="#9A937F" text-anchor="middle">Flash 经 Cache 映射执行</text>
 
   <!-- 三棒卡片 -->
-  <rect x="40" y="108" width="200" height="86" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
-  <text x="56" y="130" font-size="13" font-weight="bold" fill="#3451b2">① ROM 引导</text>
-  <text x="56" y="150" font-size="11" fill="#666">固化不可升级</text>
-  <text x="56" y="168" font-size="11" fill="#333">读 strapping 脚</text>
-  <text x="56" y="184" font-size="11" fill="#333">跳到 bootloader</text>
-  <text x="130" y="198" font-size="11" fill="#94a3b8" text-anchor="middle">串口 rst:0x1</text>
+  <rect x="40" y="108" width="200" height="86" rx="8" fill="#FFFDF6" stroke="#D8D2C0"/>
+  <text x="56" y="130" font-size="13" font-weight="bold" fill="#2B5EA7">① ROM 引导</text>
+  <text x="56" y="150" font-size="11" fill="#6E6B60">固化不可升级</text>
+  <text x="56" y="168" font-size="11" fill="#2F2E2B">读 strapping 脚</text>
+  <text x="56" y="184" font-size="11" fill="#2F2E2B">跳到 bootloader</text>
+  <text x="130" y="198" font-size="11" fill="#9A937F" text-anchor="middle">串口 rst:0x1</text>
 
-  <rect x="270" y="120" width="180" height="86" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
-  <text x="286" y="130" font-size="13" font-weight="bold" fill="#d97706">② 二级 bootloader</text>
-  <text x="286" y="150" font-size="11" fill="#666">可升级的代码</text>
-  <text x="286" y="168" font-size="11" fill="#333">初始化 Flash/Cache</text>
-  <text x="286" y="184" font-size="11" fill="#333">读分区表选 app</text>
-  <text x="360" y="198" font-size="11" fill="#94a3b8" text-anchor="middle">串口 boot:</text>
+  <rect x="270" y="120" width="180" height="86" rx="8" fill="#FFFDF6" stroke="#D8D2C0"/>
+  <text x="286" y="130" font-size="13" font-weight="bold" fill="#A8801F">② 二级 bootloader</text>
+  <text x="286" y="150" font-size="11" fill="#6E6B60">可升级的代码</text>
+  <text x="286" y="168" font-size="11" fill="#2F2E2B">初始化 Flash/Cache</text>
+  <text x="286" y="184" font-size="11" fill="#2F2E2B">读分区表选 app</text>
+  <text x="360" y="198" font-size="11" fill="#9A937F" text-anchor="middle">串口 boot:</text>
 
-  <rect x="520" y="120" width="180" height="86" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
-  <text x="536" y="130" font-size="13" font-weight="bold" fill="#1a7f56">③ app</text>
-  <text x="536" y="150" font-size="11" fill="#666">FreeRTOS 接管</text>
-  <text x="536" y="168" font-size="11" fill="#333">main task → app_main()</text>
-  <text x="536" y="184" font-size="11" fill="#333">返回即自杀</text>
-  <text x="610" y="198" font-size="11" fill="#94a3b8" text-anchor="middle">串口 app:</text>
+  <rect x="520" y="120" width="180" height="86" rx="8" fill="#FFFDF6" stroke="#D8D2C0"/>
+  <text x="536" y="130" font-size="13" font-weight="bold" fill="#3F7D57">③ app</text>
+  <text x="536" y="150" font-size="11" fill="#6E6B60">FreeRTOS 接管</text>
+  <text x="536" y="168" font-size="11" fill="#2F2E2B">main task → app_main()</text>
+  <text x="536" y="184" font-size="11" fill="#2F2E2B">返回即自杀</text>
+  <text x="610" y="198" font-size="11" fill="#9A937F" text-anchor="middle">串口 app:</text>
 
   <!-- 接力棒：沿三棒流动（一直转） -->
-  <line x1="90" y1="230" x2="630" y2="230" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4"/>
-  <circle cx="90" cy="230" r="6" fill="#3451b2">
+  <line x1="90" y1="230" x2="630" y2="230" stroke="#9A937F" stroke-width="2" stroke-dasharray="5 4"/>
+  <circle cx="90" cy="230" r="6" fill="#2B5EA7">
     <animate attributeName="cx" values="90;630;630;90" keyTimes="0;0.86;0.93;1" dur="4s" repeatCount="indefinite"/>
   </circle>
-  <text x="360" y="250" font-size="11" fill="#94a3b8" text-anchor="middle">接力棒：上电执行流从 ROM 一路交到 app</text>
+  <text x="360" y="250" font-size="11" fill="#9A937F" text-anchor="middle">接力棒：上电执行流从 ROM 一路交到 app</text>
 
   <!-- 阶段一：ROM -->
   <g opacity="1">
     <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="266" width="640" height="128" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="288" font-size="13" font-weight="bold" fill="#3451b2">① 第一棒：ROM——芯片里烧死的引导</text>
-    <text x="56" y="312" font-size="13" fill="#333">读 <tspan font-weight="bold">strapping 脚</tspan> 决定启动模式（按住 BOOT 复位 = 下载模式）→ 基础初始化 → 找到二级 bootloader。</text>
-    <text x="56" y="338" font-size="12" font-family="Consolas,monospace" fill="#333">串口第一行：rst:0x1 (POWERON)</text>
-    <text x="56" y="364" font-size="12" fill="#d97706">连这行都没有 → 问题在供电/晶振/接线，比软件更早。</text>
+    <rect x="40" y="266" width="640" height="128" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="288" font-size="13" font-weight="bold" fill="#2B5EA7">① 第一棒：ROM——芯片里烧死的引导</text>
+    <text x="56" y="312" font-size="13" fill="#2F2E2B">读 <tspan font-weight="bold">strapping 脚</tspan> 决定启动模式（按住 BOOT 复位 = 下载模式）→ 基础初始化 → 找到二级 bootloader。</text>
+    <text x="56" y="338" font-size="12" font-family="Consolas,monospace" fill="#2F2E2B">串口第一行：rst:0x1 (POWERON)</text>
+    <text x="56" y="364" font-size="12" fill="#A8801F">连这行都没有 → 问题在供电/晶振/接线，比软件更早。</text>
   </g>
 
   <!-- 阶段二：bootloader -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="266" width="640" height="128" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="288" font-size="13" font-weight="bold" fill="#d97706">② 第二棒：bootloader——验货 + 选货</text>
+    <rect x="40" y="266" width="640" height="128" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="288" font-size="13" font-weight="bold" fill="#A8801F">② 第二棒：bootloader——验货 + 选货</text>
     <!-- 流程句断成两行，单行 647px 在 Linux 回退字体下出界 -->
-    <text x="56" y="310" font-size="13" fill="#333">初始化 Flash/Cache（否则读不到 app）→ 读分区表 → 按序选 app：</text>
-    <text x="56" y="328" font-size="13" fill="#333"><tspan font-family="Consolas,monospace">factory → ota_0 → ota_1</tspan>，校验失败就回退到上一个。</text>
-    <text x="56" y="350" font-size="12" font-family="Consolas,monospace" fill="#333">bootloader_utility_load_boot_image(&amp;bs, boot_index);   // bootloader_start.c:62</text>
-    <text x="56" y="372" font-size="12" fill="#d97706">日志出现 invalid header / image verification failed = 校验失败在回退。</text>
+    <text x="56" y="310" font-size="13" fill="#2F2E2B">初始化 Flash/Cache（否则读不到 app）→ 读分区表 → 按序选 app：</text>
+    <text x="56" y="328" font-size="13" fill="#2F2E2B"><tspan font-family="Consolas,monospace">factory → ota_0 → ota_1</tspan>，校验失败就回退到上一个。</text>
+    <text x="56" y="350" font-size="12" font-family="Consolas,monospace" fill="#2F2E2B">bootloader_utility_load_boot_image(&amp;bs, boot_index);   // bootloader_start.c:62</text>
+    <text x="56" y="372" font-size="12" fill="#A8801F">日志出现 invalid header / image verification failed = 校验失败在回退。</text>
   </g>
 
   <!-- 阶段三：app -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="266" width="640" height="128" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="288" font-size="13" font-weight="bold" fill="#1a7f56">③ 第三棒：app——app_main 不是 main()</text>
-    <text x="56" y="312" font-size="13" font-family="Consolas,monospace" fill="#333">xTaskCreatePinnedToCore(main_task, "main", ...) → vTaskStartScheduler()</text>
-    <text x="56" y="338" font-size="13" fill="#333">main_task 调 app_main()；返回即 vTaskDelete(NULL)——任务自杀、栈被回收（优先级倒数第二低）。</text>
-    <text x="56" y="364" font-size="12" fill="#3eaf7c">你的代码只是 main task 的一个函数调用，不是入口。</text>
+    <rect x="40" y="266" width="640" height="128" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="288" font-size="13" font-weight="bold" fill="#3F7D57">③ 第三棒：app——app_main 不是 main()</text>
+    <text x="56" y="312" font-size="13" font-family="Consolas,monospace" fill="#2F2E2B">xTaskCreatePinnedToCore(main_task, "main", ...) → vTaskStartScheduler()</text>
+    <text x="56" y="338" font-size="13" fill="#2F2E2B">main_task 调 app_main()；返回即 vTaskDelete(NULL)——任务自杀、栈被回收（优先级倒数第二低）。</text>
+    <text x="56" y="364" font-size="12" fill="#3F7D57">你的代码只是 main task 的一个函数调用，不是入口。</text>
   </g>
 
   <!-- 阶段四：对照与分诊 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="266" width="640" height="128" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="288" font-size="13" font-weight="bold" fill="#3451b2">④ 对照与分诊：一条直线 vs 三棒接力</text>
-    <text x="56" y="312" font-size="13" fill="#333">STM32：复位向量 → Reset_Handler → main()，<tspan fill="#94a3b8">Flash 原地执行、地址写死</tspan>；</text>
-    <text x="56" y="336" font-size="13" fill="#333">S3：ROM → bootloader → app，<tspan fill="#94a3b8">Flash 经 Cache 映射、地址由分区表决定</tspan>。</text>
-    <text x="56" y="360" font-size="12" fill="#333">rst: 后有 boot: 无 → bootloader 没接上；boot: 后无 app: → 校验回退；app_start 后无调用 → 内核故障</text>
+    <rect x="40" y="266" width="640" height="128" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="288" font-size="13" font-weight="bold" fill="#2B5EA7">④ 对照与分诊：一条直线 vs 三棒接力</text>
+    <text x="56" y="312" font-size="13" fill="#2F2E2B">STM32：复位向量 → Reset_Handler → main()，<tspan fill="#9A937F">Flash 原地执行、地址写死</tspan>；</text>
+    <text x="56" y="336" font-size="13" fill="#2F2E2B">S3：ROM → bootloader → app，<tspan fill="#9A937F">Flash 经 Cache 映射、地址由分区表决定</tspan>。</text>
+    <text x="56" y="360" font-size="12" fill="#2F2E2B">rst: 后有 boot: 无 → bootloader 没接上；boot: 后无 app: → 校验回退；app_start 后无调用 → 内核故障</text>
   </g>
 
   <!-- 阶段字幕 -->
-  <g font-size="13" font-weight="bold" fill="#3451b2">
+  <g font-size="13" font-weight="bold" fill="#2B5EA7">
     <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
       <text x="36" y="420">① 第一棒 ROM：固件认路——读 strapping、打印 rst:</text></g>
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
@@ -100,7 +100,7 @@
   </g>
 
   <!-- 阶段指示点 -->
-  <g transform="translate(630,438)" fill="#3451b2">
+  <g transform="translate(630,438)" fill="#2B5EA7">
     <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
     <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
     <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
