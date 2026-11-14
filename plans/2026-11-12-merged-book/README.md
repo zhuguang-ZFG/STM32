@@ -11,7 +11,7 @@
 | B2 | 卷 2–3（10 章） | 本批完成（本地） |
 | B3 | 卷 4–5（12 章 + motor 合流） | 本批完成（本地） |
 | B4 | 卷 6–7 + 6 附录 | 本批完成（本地） |
-| B5 | `/STM32/` 切换、旧链归档 | 待开始；需发布指令 |
+| B5 | `/STM32/` 切换、旧链归档 | 本批完成（本地）；Pages 上线随 deploy.yml 于合并后执行 |
 
 ## 本批校验命令
 
@@ -40,3 +40,5 @@ node --test scripts/tests/legacy-redirects.test.mjs
 - 英文版策略固定为 `archive`，B5 删除前打 tag。
 - 旧 URL 跳转的站点级页面（guide/reference 等）在 B5 扩展，本批只覆盖 94 个 MCU 章节。
 - 临时静态站由 `book/build_html.py` 生成到 `book/dist/site/`（已 gitignore）；VitePress 站点切换仍归 B5。
+
+- B5 结束状态：全书 52 页以 `book/build_html.py` 静态站上线 `/STM32/` 根（对设计 §4.3 的 VitePress 口径做了显式偏差登记，见 B5 计划）；旧 `/mcu/**` 131 页跳转存根全量生成（`scripts/legacy-redirects.mjs`，覆盖率断言进 CI）；CI 收敛为 `book.yml`（书稿门 + 构建）+ `deploy.yml`（组装/冒烟/Pages）+ `merge-check.yml`，`mcu-book.yml`/`mcu-quality.yml`/`mcu-links.yml`/`mcu-deploy.yml`/`release-fetch.yml` 退役；旧树（stm32-book/、docs/en/、docs/00–28 旧章、mcu/{mcu-book,docs,scripts,package*,tests,playwright.config.mjs}）删除，英文版删除前打 tag `en-archive-2026-11-14` / `en-archive-v1.4.0-2026-11-14`；`mcu/` 保留 code/.trellis 及仓库元文件。
