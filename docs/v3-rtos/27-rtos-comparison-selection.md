@@ -20,7 +20,7 @@ platforms: [f407]
 
 ## 一张对照总表
 
-![FreeRTOS 与 RT-Thread 五层对照：同一条问题的两种答案，虚线连接](/arch/rtos-side-by-side.png)
+![FreeRTOS 与 RT-Thread 的迁移危险图：三套优先级坐标、级别数量条件、队列/通知/设备模型的语义陷阱](/arch/rtos-side-by-side.png)
 
 ![双 OS 对照动画：任务通知与信号量、有无设备框架、FreeRTOSConfig.h 与 Kconfig 三组并排演进](/anim/dual-os-compare.svg)
 
@@ -48,7 +48,7 @@ platforms: [f407]
 
 ## 调度器对照：方向、数量、算法都带条件
 
-**方向**。FreeRTOS 数值大 = 高；RT-Thread 数值小 = 高；NVIC 数值小 = 高。三套坐标系摆一起，是迁移事故的第一来源：把 FreeRTOS 的「5」原样填进 RT-Thread，任务从「偏高」变成「偏低」；拿任务优先级数字去填 NVIC 寄存器，方向再反一次。方向随内核，不能当通则——旧材料「任务优先级数值越大越高」只对 FreeRTOS 成立。
+**方向**。FreeRTOS 数值大 = 高；RT-Thread 数值小 = 高；NVIC 数值小 = 高。三套坐标系摆一起，是迁移事故的第一来源：32 级时把 FreeRTOS 的「5」原样填进 RT-Thread，它在 FreeRTOS 里偏低、在 RT-Thread 里偏高；在本 lab 的 FreeRTOS 里 5 直接越界（合法值 0–4）。先查合法范围，再按任务的相对顺序映射；拿任务优先级数字去填 NVIC 寄存器，方向还要再反一次。方向随内核，不能当通则——旧材料「任务优先级数值越大越高」只对 FreeRTOS 成立。
 
 **数量**。两边都不该写死：FreeRTOS 的级别数由 `configMAX_PRIORITIES` 决定，本 lab 是 5（合法值 0–4，`FreeRTOSConfig.h:23`）；CM4F 端口在开了 `configUSE_PORT_OPTIMISED_TASK_SELECTION` 时位图路径约束上限 32（`portmacro.h`），其他端口各有各的约束。RT-Thread 通过 `src/Kconfig:94-110` 配 8/32/256，默认 32。旧表「RT-Thread 32/256、二级位图」把可配置项写成了固定值。
 

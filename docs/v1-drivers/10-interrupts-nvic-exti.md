@@ -64,9 +64,9 @@ EXTI0          6     22 0x0058        0     6 0xE000E100 0xE000E406
 
 为什么 NVIC/SCB 的地址在 `core_cm4.h`，而 EXTI/SYSCFG 在 `stm32f407xx.h`？前者是 ARM 定义的 Cortex-M4 内核标配，所有 M4 芯片都一样；后者是 ST 加的外设，各家不同。查手册时，内核问题翻 PM0214，外设问题翻 RM0090。
 
-![按键到 ISR 的四层关卡：SYSCFG 选门、EXTI 设沿、NVIC 放行、ISR 清挂起](/arch/exti-chain.png)
+![PF6 到 ISR 的四层关卡：EXTICR2 选门、EXTI6 设沿、NVIC bit23 放行、EXTI9_5 清 PR bit6](/arch/exti-chain.png)
 
-图上四道门缺一不可：选门、设沿、放行、清挂起。任何一道关着，回调都不会来。
+图上四道门缺一不可：前三个决定请求能不能进 NVIC 并跳到 ISR，最后一个决定这次 ISR 结束后会不会立刻再进。只选门、设沿、放行而忘了清挂起，回调不是不来，而是反复来。
 
 ### 三条地址公式：IRQn/32、IRQn%32 与 IP 字节
 

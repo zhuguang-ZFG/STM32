@@ -58,15 +58,15 @@ FreeRTOS 把内核之外的一切留给你；RT-Thread 在内核之上叠了三�
 
 ![设备框架调用链动画：应用按名找设备，框架分发到 ops 或内联函数指针，驱动落到寄存器](/anim/rtt-device-chain.svg)
 
-![设备框架调用链：应用 rt_device_find、rt_device 分发、驱动落到硬件](/arch/device-ops.png)
+![RT-Thread 设备框架：一个设备容器按名查找；默认函数指针内联，开 RT_USING_DEVICE_OPS 后共享 ops 表；open 未激活才 init，同 flag 跳过回调](/arch/device-ops.png)
 
 三个动作各归其位（`components/drivers/core/device.c`）：
 
 - **register**（`device.c:67-93`）：`rt_device_register(dev, "uart1", flag)` 把设备挂进 **`RT_Object_Class_Device` 一个容器**——不是每种设备类一个容器。设备类枚举（Char/Block/NetIf/MTD/Pin/ADC/DAC/Bus/…，`rtdef.h:1255-1290`）只是分类标签，查找不按它。
 - **find**（`device.c:122-126`）：在该容器链表上**线性比对名字**，命中返回 `rt_device_t`。名字是 BSP 与应用的契约，`uart1`/`i2c1` 这类惯例名别乱改。设备就几十个，线性足够。
-- **open**（`device.c:222-283`）：顺序是 `ops->init`（若未初始化）→ `ops->open`，**两者都成功才 `ref_count++`**。旧材料「open 让 `ref_count++` 并调 `ops->open`」把顺序说反了——顺序错，打开失败的设备也会留下一个假引用计数，close 的对称逻辑就乱了。
+- **open**（`device.c:222-283`）：设备未激活先 `init`；未打开或 `oflag` 变了才调 `open`，同 flag 重复打开会跳过回调。`RT_EOK` 或 `-RT_ENOSYS` 才 `ref_count++`，其它错误不计数。旧材料「open 让 `ref_count++` 并调 `ops->open`」把顺序说反了。
 
-`rt_device_read/write/control` 是纯分发：框架不搬数据、不做缓冲，检查 open 状态后直接转发给驱动。缓冲、DMA、阻塞语义全在驱动里，且**各驱动不一致**——`read` 的阻塞行为不能跨设备统一假设。
+`rt_device_read/write` 是纯分发：未打开或无回调时框架返回 0 并 `rt_set_errno`（0 不等于成功）；有回调才转发给驱动。`control` 无回调返回 `-RT_ENOSYS`。缓冲、DMA、阻塞语义全在驱动里，且**各驱动不一致**——`read` 的阻塞行为不能跨设备统一假设，block 设备的 `size/pos` 单位还是块。
 
 ## PIN：编号压平与真实宏
 
@@ -283,7 +283,7 @@ group = DefineGroup('Drivers', src, depend=['RT_USING_DEVICE'], CPPPATH=[cwd])
 
 `depend=['RT_USING_DEVICE']` 就是 Kconfig 与 scons 的接合点：Kconfig 决定宏开不开，SConscript 决定宏开了才进构建。灰着选不上的菜单项是 `depends on` 的父依赖没开；勾选后自动带开的依赖是 `select`。
 
-一个容易记错的细节：Kconfig bool 生成的是**无值宏**——`rtconfig.h` 里是 `#define RT_USING_I2C`，不是 `#define RT_USING_I2C 1`。判存在用 `#ifdef`，判数值才有意义。
+一个容易记错的细节：Kconfig bool 生成的是**无值宏**——`rtconfig.h` 里是 `#define RT_USING_I2C`，不是 `#define RT_USING_I2C 1`。判存在用 `#ifdef`；要判数值，宏必须真的带值。
 
 工具链路径由 BSP 的 `rtconfig.py` 提供（`EXEC_PATH`/`PREFIX`）。旧材料里 `Environment(tools=['gccarm'], ARM_GCC_PATH=...)` 的写法不是 5.x 的标准 SConstruct 形态，按你手上的 BSP 复核后再改。
 
@@ -359,7 +359,7 @@ bsp/stm32/stm32f407-atk-explorer/
 <details><summary>参考答案</summary>menuconfig 把选择写进 `.config`；scons 读 `.config` 生成 `rtconfig.h`。两段分工，旧材料「menuconfig 生成 rtconfig.h」吞了 scons 的一步。`rtconfig.h` 是生成物，手改必被覆盖；改默认值去 Kconfig 的 `default` 或 `.config`。</details>
 
 15. `RT_USING_I2C` 在 rtconfig.h 里长什么样？
-<details><summary>参考答案</summary>无值宏：`#define RT_USING_I2C`。Kconfig bool 的产物是「定义/不定义」，不是 0/1 数值——判存在用 `#ifdef`，写 `#if RT_USING_I2C` 对无值宏是错的（未定义时是 0，定义了无值展开也是 0）。</details>
+<details><summary>参考答案</summary>无值宏：`#define RT_USING_I2C`。Kconfig bool 的产物是「定义/不定义」，不是 0/1 数值——判存在用 `#ifdef`。写 `#if RT_USING_I2C` 时，未定义会按 0 处理；定义了但宏为空，预处理后只剩一个没有表达式的 `#if`，直接报错，不是展开成 0。</details>
 
 16. `depend` 参数接的是什么？
 <details><summary>参考答案</summary>Kconfig 与 scons 的接合点：`DefineGroup(..., depend=['RT_USING_DEVICE'])` 表示只有该宏开了这组源码才进构建。Kconfig 决定宏的开与不开，SConscript 的 depend 决定开了才编。</details>

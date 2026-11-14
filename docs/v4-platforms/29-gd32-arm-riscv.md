@@ -33,7 +33,7 @@ ARM 线的「零增量」：`-mcpu/-mthumb/-mfpu/-mfloat-abi` 四旗与 F407 逐
 
 写 ch29 前先立两个上游定谳（都已在官方库实取核对）：
 
-- **USART 偏移表**：旧材料的「CTL0@0x00…DATA@0x18」整体错位。上游 `gd32f4xx_usart.h:51-60` 实际是 **STAT0@0x00、DATA@0x04、BAUD@0x08、CTL0@0x0C、CTL1@0x10、CTL2@0x14、GP@0x18**（另有 STAT1@0x88）。随文的「0x00 永远是主控制寄存器、0x0C 永远是波特率」一并废弃不用。
+- **USART 偏移表**：旧材料的「CTL0@0x00…DATA@0x18」整体错位。上游 `gd32f4xx_usart.h:51-60` 实际是 **STAT0@0x00、DATA@0x04、BAUD@0x08、CTL0@0x0C、CTL1@0x10、CTL2@0x14、GP@0x18**（另有 STAT1@0x88）。这些偏移与 STM32 的 SR/DR/BRR/CR1–3/GTPR 逐项相同（0x00–0x18）——错的是旧表把 GD32 名称按到别的位置，别误读成 GD32 挪了寄存器。随文的「0x00 永远是主控制寄存器、0x0C 永远是波特率」一并废弃不用。
 - **USART0 基址**：旧材料写「USART0 = APB1+0x4400」。上游 `gd32f4xx.h:326` 的 `USART_BASE=APB1+0x4400`（0x40004400）是 **USART1**（=STM32 的 USART2）；**USART0 = 0x40011000（APB2，`gd32f4xx_usart.h:47`）**——与 STM32 USART1 的老地址相同，也和它自己「USART0 中断号挂 APB2」的中断地图一致。
 
 v1 第 13 章已把旧表标为「待复核」，本章按上游版替换。
@@ -44,7 +44,7 @@ v1 第 13 章已把旧表标为「待复核」，本章按上游版替换。
 
 偏移对照（`gd32f4xx_rcu.h:44-57` 与 G1 逐行一致）：CTL 0x00、PLL 0x04、CFG0 0x08、AHB1EN 0x30、APB1EN 0x40——骨架同 STM32，名字换过。三条实质差异：
 
-1. **PLL1/PLL2 配而不用**：8M 分支把 `PLL1_MUL20|PLL2_MUL20` 写进 CFG1 且同样使能了 PLL1EN/PLL2EN（`system_gd32f4xx.c:800,803,809`），但不在时钟路径——旧章「配了却没使能」说反了，正确表述是「配置并使能了、但不在时钟路径」。官方还有一处把 PLL2 等待注释误写成 PLL1（`:810` 附近）——官方代码也有瑕疵，读库要带怀疑。
+1. **PLL1/PLL2 配而不用**：8M 分支把 `PLL1_MUL20|PLL2_MUL20` 写进 CFG1 且使能了 PLL1EN/PLL2EN（`system_gd32f4xx.c:800,803,809`），但两者不在时钟路径——旧章「配了却没使能」说反了。官方还把 PLL2 的等待注释误写成 PLL1（`:810` 附近）；读库要带怀疑。
 2. **200M 档的三件套**：PSC=25/N=400/P=2/Q=9，VCO 400 MHz，复算 25/25×400/2=200；握手是**真轮询**——HDEN 等 HDRF、HDS 等 HDSRF（`:981-987`），顺序 LDOVS→总线分频→PLL 启动等锁→HDEN→HDS→切 SCS（`:958-996`）。USB 的坑：Q=9 → 400/9≈44.4 MHz ≠ 48，USB 时钟走 CK48M 三源（PLLQ/PLLSAIP/IRC48M，`RCU_ADDCTL:410-412`）。
 3. **默认档是 168M**：官方副本 `system_gd32f4xx.c:56` 默认启用 `__SYSTEM_CLOCK_168M_PLL_25M_HXTAL`，200M 三档全部注释着（`:60-61`）；200M 是预设函数 `system_clock_200m_25m_hxtal`（`:936`），上 200M 要自行放开宏。旧章「SystemInit 默认拉到 200MHz」与官方仓库冲突，本章按上游改写。
 
@@ -52,7 +52,7 @@ v1 第 13 章已把旧表标为「待复核」，本章按上游版替换。
 
 ![GD32 RCU 时钟树动画：PLL 家族与 CK48M 三源](/anim/gd32-rcu-clock.svg)
 
-![RCU 树状图：与 RCC 同骨架不同名](/arch/rcu-tree.png)
+![GD32 RCU 200M 档：PLL 三件套、PLL1/PLL2 配而不用、CK48M 三源与 168M 默认档](/arch/rcu-tree.png)
 
 CK_OUT0/MCO 同款编码雷区两边同罚：PA8 输出、/1~/5 编码 0/4/5/6/7，写 3 落入**不分频**（`gd32f4xx_rcu.h:886-900`）——「分频比减一」的错误在 ch08 教过，这里是它的 GD32 分身。
 
@@ -66,9 +66,9 @@ GD32F4xx 的 GPIO 十二枚寄存器偏移与 F4 相同（CTL/OMODE/OSPD/PUD/IST
 
 ### 三、USART：8 个、0 起编号、上游修正版偏移表
 
-8 个串口、0 起编号，中断号 **37/38/39/52/53/71/82/83**（`gd32f4xx.h:159-206`，39→52 跳 13、53→71 跳 18 的「不连续」也在上游成立）。命名差异：CTL/CTL1/CTL2、STAT0（不是 SR）、DATA（不是 DR）、BAUD（不是 BRR）。寄存器偏移按上游修正版背（先做出来一节的两个定谳），外加 STAT1@0x88。这个偏移表与 STM32 的差异不是「乱了」，是 STAT 提到 0x00——读状态是最高频操作，放前面有它的道理；但迁移时按 STM32 记忆写偏移就全错位。
+8 个串口、0 起编号，中断号 **37/38/39/52/53/71/82/83**（`gd32f4xx.h:159-206`，39→52 跳 13、53→71 跳 18 的「不连续」也在上游成立）。命名差异：CTL/CTL1/CTL2、STAT0（不是 SR）、DATA（不是 DR）、BAUD（不是 BRR）。偏移与 STM32 逐项相同：SR/DR/BRR/CR1–3/GTPR → STAT0/DATA/BAUD/CTL0–2/GP，均在 0x00–0x18；额外多一个 STAT1@0x88。迁移错的是名字，不是地址。
 
-![USART 改名对照：STM32 与 GD32 的寄存器名映射](/arch/usart-rename-map.png)
+![GD32 USART 偏移表：与 STM32 同地址（0x00–0x18），名称改为 STAT0/DATA/BAUD/CTL0–2/GP，另多 STAT1@0x88](/arch/usart-rename-map.png)
 
 ### 四、VF103：外设像 F1，内核换魂
 

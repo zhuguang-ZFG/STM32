@@ -13,8 +13,8 @@ ESP32-S3 上电之后发生的事，是三棒接力：ROM 交给 bootloader，bo
 
 ## 本章罗盘
 
-- **问题**：三棒接力各做什么，卡在哪一棒看哪段日志？`app_main` 为什么不是 main——main task 的优先级、栈、亲和各是多少，`TASK_EXTRA_STACK_SIZE` 这层加项为什么不能漏？XIP 与 Cache 映射怎么改变了「代码在哪」的世界观，IRAM 纪律从哪来？分区表四列怎么读，Offset 为什么留空？组件化三板斧（SRCS/INCLUDE_DIRS/REQUIRES）与依赖图怎么走，main 为什么是「自动收集的项目组件」？Kconfig 三段论的三个产物各是什么，`CONFIG_IDF_TARGET_ESP32S3` 闭环怎么走一遍？`idf.py` 各子命令各查哪一层？错目标的 sdkconfig 为什么会静默编错芯片？
-- **交付**：能用日志前缀完成三棒分诊；能说出 main task 三参数的默认值（优先级 1、栈 3584 起、默认 CPU0）并指出栈定义里还有一层加项；能对照 F407 把 XIP 的架构差讲清；能读默认分区表（nvs 0x6000/phy_init 0x1000/factory 1M）并解释 gen_esp32part 的排布；能写一个组件的 `idf_component_register` 并画出依赖图；能走 `CONFIG_IDF_TARGET_ESP32S3` 从菜单到宏的闭环（`hello_main.c:25` 实例）；能按「配置/组件声明/编译/烧录」分层定位构建问题。
+- **问题**：三棒接力各做什么，卡在哪一棒看哪段日志？`app_main` 为什么不是 main——main task 的优先级、栈、亲和各是多少，`TASK_EXTRA_STACK_SIZE` 这层加项为什么不能漏？XIP 与 Cache 映射怎么改变了「代码在哪」的世界观，IRAM 纪律从哪来？分区表四列怎么读，Offset 为什么留空？组件化三板斧（SRCS/INCLUDE_DIRS/REQUIRES）与依赖图怎么走，main 为什么是「自动收集的项目组件」？manifest 管来源/版本、`REQUIRES` 管构建可见性，这两层怎么接进同一张图？Kconfig 三段论的三个产物各是什么，`CONFIG_IDF_TARGET_ESP32S3` 闭环怎么走一遍？`idf.py` 各子命令各查哪一层？错目标的 sdkconfig 为什么会静默编错芯片？
+- **交付**：能用日志前缀完成三棒分诊；能说出 main task 三参数的默认值（优先级 1、栈 3584 起、默认 CPU0）并指出栈定义里还有一层加项；能对照 F407 把 XIP 的架构差讲清；能读默认分区表（nvs 0x6000/phy_init 0x1000/factory 1M）并解释 gen_esp32part 的排布；能写一个组件的 `idf_component_register` 并画出依赖图；能区分本地 `components/`、`EXTRA_COMPONENT_DIRS` 与管理组件，并说出同名组件的优先级；能走 `CONFIG_IDF_TARGET_ESP32S3` 从菜单到宏的闭环（`hello_main.c:25` 实例）；能按「配置/组件声明/编译/烧录」分层定位构建问题。
 - **边界**：本章讲架构与工程，不重教 FreeRTOS 机制（[第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md)、[第 23 章](../v3-rtos/23-context-switch-porting.md)）与双 OS 选型（[第 27 章](../v3-rtos/27-rtos-comparison-selection.md) 已定「IDF 自带 FreeRTOS、S3 双核 SMP」口径）；外设驱动与音频归[第 31 章](./31-esp32-drivers-audio.md)，Wi-Fi/BLE/ESP-NOW 归[第 32 章](./32-esp32-wifi-ble-espnow.md)，OTA 的分区双槽细节留到 ch31/ch32 引用处。`sdkconfig` 数值类证据（size 账、890 项）全部标「来源说法(未复核)」。
 - **依据锚点**：E0《环境》（`mcu/docs/esp32/00-env.md`）、E1《架构与启动》（`.../01-arch-boot.md`）、E3《IDF 解剖》（`.../03-idf-anatomy.md`）。上游对账：ESP-IDF v5.5.2 的 [soc_caps.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/soc/esp32s3/include/soc/soc_caps.h)、[app_startup.c](https://github.com/espressif/esp-idf/blob/v5.5.2/components/freertos/app_startup.c)、[startup.c](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_system/startup.c)、[esp_task.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_system/include/esp_task.h)、[esp_system/Kconfig](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_system/Kconfig)、[project.cmake](https://github.com/espressif/esp-idf/blob/v5.5.2/tools/cmake/project.cmake)、[component.cmake](https://github.com/espressif/esp-idf/blob/v5.5.2/tools/cmake/component.cmake)、[kconfig.cmake](https://github.com/espressif/esp-idf/blob/v5.5.2/tools/cmake/kconfig.cmake)、[partitions_singleapp.csv](https://github.com/espressif/esp-idf/blob/v5.5.2/components/partition_table/partitions_singleapp.csv)。仓库实例：`mcu/code/esp32/00-hello`（CMakeLists 目标守卫、`hello_main.c:25` 的 `CONFIG_IDF_TARGET_ESP32S3` 实读命中）。
 
@@ -31,6 +31,10 @@ ESP32-S3 上电之后发生的事，是三棒接力：ROM 交给 bootloader，bo
 | `app_start:` 之后 | app（第三棒） | 进 app 后崩 → sdkconfig 目标/任务栈/组件问题 |
 
 （具体 banner 文本属「待上板回填」——机制成立，字样要按你手上的板回填。）三棒各自的职责：ROM 按 strapping 选启动介质；bootloader 初始化 Flash/Cache、读分区表、选 app 并校验（上游主线落在 `bootloader_start.c:62` 的 `bootloader_utility_load_boot_image`）；app 里 `esp_startup_start_app`（`startup.c:222`）创建 main task、`vTaskStartScheduler`。
+
+![ESP32-S3 启动三棒接力动画：ROM → bootloader → app，每棒一条卡点判据](/anim/esp32-boot-relay.svg)
+
+![手绘板：三棒接力与分诊口诀——rst: 归 ROM、boot: 归引导、app_start: 之后才怪软件；XIP 是最容易踩的架构差（原理示意）](/images/mc30-s3-boot-chain.png)
 
 ### 2. 一条三行的 CMakeLists 与一个目标守卫
 
@@ -91,7 +95,11 @@ phy_init, data, phy,     0xf000,  0x1000
 factory,  app,  factory, 0x10000, 1M
 ```
 
-三件事：**Offset 留空**由 `gen_esp32part.py` 自动排布（工具回读用 `idf.py partition-table`）；`nvs/phy_init` 这两个 data 区是 Wi-Fi/BT 的依赖（[第 32 章](./32-esp32-wifi-ble-espnow.md) 会回到这）；双 OTA 槽 = factory 换成 ota_0/ota_1 两个 app 区加一个 otadata。
+三件事：**Offset 留空**由 `gen_esp32part.py` 按类型对齐——data 0x1000、app 0x10000（工具回读用 `idf.py partition-table`）；`nvs` 存 Wi-Fi/BT 键值与每台设备的 PHY 校准数据；`phy_init` 存 PHY 初始化参数，默认编进 app，只有开 `CONFIG_ESP_PHY_INIT_DATA_IN_PARTITION` 才从该分区读（[第 32 章](./32-esp32-wifi-ble-espnow.md) 会回到这）；双 OTA 槽 = factory 换成 ota_0/ota_1 两个 app 区加一个 otadata。
+
+`bootloader` 在 0x0、表在 0x8000；这两项不在 CSV 里，分别取 `BOOTLOADER_OFFSET_IN_FLASH` 与 `PARTITION_TABLE_OFFSET` 的默认值（`components/bootloader/Kconfig.projbuild`、`components/partition_table/Kconfig.projbuild`，v5.5.2）。
+
+![ESP32-S3 默认单 app 分区表：bootloader 0x0、表 0x8000、nvs 0x9000、phy_init 0xF000、factory 0x10000；OTA 双槽另加 ota_0/ota_1 与 otadata](/arch/esp32-partition-map.png)
 
 ### 四、组件化三板斧与「main 是自动收集的项目组件」
 
@@ -106,11 +114,11 @@ idf_component_register(
 
 `REQUIRES` 画依赖图，构建系统按拓扑收组件。**main 不是普通组件，是「项目组件」**——构建系统自动把工程根下的 `main/` 目录收进来，落点在 `project.cmake:464-465`（`__project_component_dir("${CMAKE_CURRENT_LIST_DIR}/main" ...)`）。旧材料把这条写成 `tools/cmake/build.cmake:465`——行号 465 恰好存在但文件错了，`build.cmake` 里没有该行；引用一律写 `project.cmake:465`。
 
-![ESP32-S3 启动三棒接力动画：ROM → bootloader → app，每棒一条卡点判据](/anim/esp32-boot-relay.svg)
+### 4.1 组件管理器：依赖来源与版本解析
 
-![启动链路图：三棒各自初始化什么](/arch/boot-relay.png)
+`idf_component.yml` 管依赖来源与版本解析：registry、git、本地 `path` 都可以；解析结果进入同一张组件图，registry/git 组件通常落在 `managed_components/`。`REQUIRES`/`PRIV_REQUIRES` 管构建期依赖与头文件可见性，manifest 的 `require: public/private` 分别对应这两个 CMake 参数——两层不是互斥。`dependencies.lock` 记录解析版本，自动生成；没有 yml 就不会生成。[官方 Build System 文档](https://docs.espressif.com/projects/esp-idf/en/v5.5.2/esp32s3/api-guides/build-system.html)给的同名组件搜索优先级从高到低：`components/` → `EXTRA_COMPONENT_DIRS` → `managed_components/` → `$IDF_PATH/components`。要改下载的组件，先复制到 `components/` 再改。
 
-![手绘板：三棒接力与分诊口诀——rst: 归 ROM、boot: 归引导、app_start: 之后才怪软件；XIP 是最容易踩的架构差（原理示意）](/images/mc30-s3-boot-chain.png)
+![ESP-IDF 工程解剖：工程源 → 组件图 → app.bin；下方是同名组件的搜索优先级](/arch/idf-anatomy.png)
 
 ### 五、Kconfig 三段论：菜单 → sdkconfig → 三个产物
 
@@ -145,6 +153,8 @@ idf_component_register(
 | 三棒接力与选镜像主线 | 手册级（上游已核） | `bootloader_start.c:62`、`startup.c:222,224` |
 | 默认分区表 | 手册级（上游已核） | `partitions_singleapp.csv` 逐字符一致 |
 | main 组件收集行 `project.cmake:465` | 手册级（上游已核，**修正旧材料 build.cmake 错位**） | `project.cmake:464-465` |
+| 组件管理器目录与锁 | 手册级（官方 Build System 已核） | `managed_components/`、`idf_component.yml`、`dependencies.lock` |
+| 同名组件搜索优先级 | 手册级（官方 Build System 已核） | `components/` → `EXTRA_COMPONENT_DIRS` → `managed_components/` → `$IDF_PATH/components` |
 | Kconfig 三产物区间 | 手册级（上游已核） | `kconfig.cmake:208-216` |
 | IRAM/DIRAM size 账 | 文档推导 + 来源说法(未复核) | 加法与百分比可复算；原始读数无落盘日志 |
 | 启动 banner 字样 | 未实测（待上板回填） | 机制成立，字样按实板回填 |
