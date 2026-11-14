@@ -447,7 +447,7 @@ spiffs,   data, spiffs,   0x620000,0x9E0000,
 
 16 MB 是 `0x1000000`；两个 3 MB 的 ota 槽加约 9.8 MB 文件系统，首尾相接正好铺满。P10 的立创实战派默认布局多为 factory + 大存储区，往往没有 ota 槽；要玩 OTA，第一件事就是换一张双槽表。
 
-![ESP32 分区表、NVS 与 OTA 双槽：otadata 记账，Slot A 当前运行，新固件写入 Slot B，自检失败回滚](/arch/ota-slots.png)
+![ESP32 16 MB 双 OTA 地图：前 128 KB 放 nvs/otadata/phy_init；ota_0、ota_1 各 3 MB，spiffs 0x9E0000 收尾；流程为先验镜像、再改 otadata、重启自检，失败回滚](/arch/ota-slots.png)
 
 CSV 的六个字段与对齐约束（P10 写明这是工具链的硬性检查，写错构建期直接报错）：
 
