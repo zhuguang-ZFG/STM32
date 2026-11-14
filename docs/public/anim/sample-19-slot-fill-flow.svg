@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="Single APP slot address ranges">
+<title>Single APP slot address ranges</title>
+<style>
+@keyframes slot-range-0{0%,0.000%{opacity:0}0.100%,32.333%{opacity:1}32.433%,100%{opacity:0}}.slot-range-0{animation:slot-range-0 7.2s steps(1,end) infinite;}
+@keyframes slot-range-1{0%,33.333%{opacity:0}33.433%,65.666%{opacity:1}65.766%,100%{opacity:0}}.slot-range-1{animation:slot-range-1 7.2s steps(1,end) infinite;}
+@keyframes slot-range-2{0%,66.666%{opacity:0}66.766%,98.999%{opacity:1}99.099%,100%{opacity:0}}.slot-range-2{animation:slot-range-2 7.2s steps(1,end) infinite;}
+@media(prefers-reduced-motion:reduce){.slot-range{animation:none!important;display:none}}
+@media print{.slot-range{animation:none!important;display:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#7a4e00" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">单槽 Flash：先算范围，再放镜像</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · FA-002 · Boot 16 KiB + 参数 2 KiB + APP 46 KiB = 64 KiB</text>
+<rect x="846" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="862" y="33.32" font-size="12" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">19</text>
+<text x="40" y="100" font-size="19" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">64 KiB Flash · 1 KiB = 1024 字节</text>
+<text x="40" y="128" font-size="15" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">地址条按容量比例绘制；参数区用于保存数据。</text>
+<rect x="66" y="178" width="192" height="66" fill="#e5f3f8" opacity="1" stroke="#075e84" stroke-width="1.5"/>
+<rect x="66" y="174" width="192" height="74" fill="none" opacity="0" stroke="#075e84" stroke-width="2" class="slot-range slot-range-0"/>
+<rect x="258" y="178" width="24" height="66" fill="#f1f5f7" opacity="1" stroke="#7a4e00" stroke-width="1.5"/>
+<rect x="258" y="174" width="24" height="74" fill="none" opacity="0" stroke="#7a4e00" stroke-width="2" class="slot-range slot-range-1"/>
+<rect x="282" y="178" width="552" height="66" fill="#f1f5f7" opacity="1" stroke="#1b5c45" stroke-width="1.5"/>
+<rect x="282" y="174" width="552" height="74" fill="none" opacity="0" stroke="#1b5c45" stroke-width="2" class="slot-range slot-range-2"/>
+<text x="162" y="207" font-size="18" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Bootloader</text>
+<text x="162" y="231" font-size="16" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">16 KiB</text>
+<text x="558" y="207" font-size="21" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">APP · 46 KiB</text>
+<text x="558" y="232" font-size="16" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">长度 0xB800</text>
+<line x1="270" y1="177" x2="270" y2="154" stroke="#7a4e00" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<text x="270" y="150" font-size="15" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">参数 2 KiB</text>
+<line x1="66" y1="246" x2="66" y2="258" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="258" y1="246" x2="258" y2="258" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="282" y1="246" x2="282" y2="258" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="834" y1="246" x2="834" y2="258" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="66" y="276" font-size="15" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x08000000</text>
+<line x1="258" y1="258" x2="258" y2="287" stroke="#075e84" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="250" y="304" font-size="15" fill="#075e84" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x08004000</text>
+<line x1="282" y1="258" x2="282" y2="316" stroke="#7a4e00" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="290" y="332" font-size="15" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x08004800</text>
+<text x="834" y="276" font-size="15" fill="#1b5c45" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x08010000</text>
+<text x="834" y="302" font-size="14" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">排他上限 · 不包含这个地址</text>
+<line x1="40" y1="354" x2="860" y2="354" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="40" y="389" font-size="17" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Bootloader</text>
+<text x="842" y="389" font-size="16" fill="#17202a" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">[0x08000000, 0x08004000)  ·  16 KiB</text>
+<text x="40" y="425" font-size="17" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">参数区</text>
+<text x="842" y="425" font-size="16" fill="#17202a" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">[0x08004000, 0x08004800)  ·  2 KiB</text>
+<text x="40" y="461" font-size="17" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">APP</text>
+<text x="842" y="461" font-size="16" fill="#17202a" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">[0x08004800, 0x08010000)  ·  46 KiB</text>
+<text x="40" y="505" font-size="15" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">最后有效字节：0x0800FFFF；0x08004800 + 0xB800 = 0x08010000。</text>
+<text x="40" y="542" font-size="15" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">容量放得下，仍需检查镜像有效性与掉电恢复；单槽没有第二份 APP 备份。</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">范围分配示意，播放速度不代表写入速度</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · 原理示意 / 非实拍</text>
+</svg>

@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="Boot pin sampling and boot memory selection">
+<title>Boot pin sampling and boot memory selection</title>
+<style>
+@keyframes boot-route-0{0%,0.000%{transform:translate(0,0);opacity:0}0.100%{transform:translate(0,0);opacity:1}4.000%{transform:translate(60px,0);opacity:1}12.000%{transform:translate(60px,-54px);opacity:1}20.000%,31.000%{transform:translate(118px,-54px);opacity:1}31.100%,100%{transform:translate(118px,-54px);opacity:0}}.boot-route-0{animation:boot-route-0 9s linear infinite;}
+@keyframes boot-route-1{0%,33.333%{transform:translate(0,0);opacity:0}33.433%{transform:translate(0,0);opacity:1}37.333%{transform:translate(60px,0);opacity:1}45.333%{transform:translate(60px,38px);opacity:1}53.333%,64.333%{transform:translate(118px,38px);opacity:1}64.433%,100%{transform:translate(118px,38px);opacity:0}}.boot-route-1{animation:boot-route-1 9s linear infinite;}
+@keyframes boot-route-2{0%,66.666%{transform:translate(0,0);opacity:0}66.766%{transform:translate(0,0);opacity:1}70.666%{transform:translate(60px,0);opacity:1}78.666%{transform:translate(60px,130px);opacity:1}86.666%,97.666%{transform:translate(118px,130px);opacity:1}97.766%,100%{transform:translate(118px,130px);opacity:0}}.boot-route-2{animation:boot-route-2 9s linear infinite;}
+@media(prefers-reduced-motion:reduce){.boot-route{animation:none!important;display:none}}
+@media print{.boot-route{animation:none!important;display:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+
+<rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">复位后，BOOT 引脚决定从哪里启动</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 · FA-002 · BOOT 选择启动存储器，应用是否有效还要检查向量</text>
+<rect x="846" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="862" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">18</text>
+<rect x="40" y="104" width="250" height="148" fill="#f1f5f7" opacity="1" rx="4" stroke="#075e84" stroke-width="2"/>
+<text x="56" y="132" font-size="18" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">复位释放</text>
+<text x="56" y="163" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">第 4 个 SYSCLK 上升沿</text>
+<text x="56" y="188" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">锁存 BOOT0 与 BOOT1</text>
+<text x="56" y="220" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">BOOT0：pin 44  ·  BOOT1：PB2</text>
+<line x1="290" y1="178" x2="350" y2="178" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="350" y1="124" x2="350" y2="308" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="350" y1="124" x2="402" y2="124" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="408.00,124.00 402.00,127.00 402.00,121.00" fill="#1b5c45" opacity="1"/>
+<rect x="410" y="86" width="450" height="76" fill="#f1f5f7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="426" y="112" font-size="15" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">BOOT0 = 0 · BOOT1 任意</text>
+<text x="426" y="140" font-size="17" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">主 Flash</text>
+<text x="844" y="140" font-size="17" fill="#1b5c45" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x08000000</text>
+<circle cx="290" cy="178" r="4" fill="#1b5c45" opacity="1" class="boot-route boot-route-0"/>
+<line x1="350" y1="216" x2="402" y2="216" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="408.00,216.00 402.00,219.00 402.00,213.00" fill="#7a4e00" opacity="1"/>
+<rect x="410" y="178" width="450" height="76" fill="#f1f5f7" opacity="1" rx="4" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="426" y="204" font-size="15" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">BOOT0 = 1 · BOOT1 = 0</text>
+<text x="426" y="232" font-size="17" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">系统存储器</text>
+<text x="844" y="232" font-size="17" fill="#7a4e00" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x1FFFF000</text>
+<circle cx="290" cy="178" r="4" fill="#7a4e00" opacity="1" class="boot-route boot-route-1"/>
+<line x1="350" y1="308" x2="402" y2="308" stroke="#5b3a8c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="408.00,308.00 402.00,311.00 402.00,305.00" fill="#5b3a8c" opacity="1"/>
+<rect x="410" y="270" width="450" height="76" fill="#f1f5f7" opacity="1" rx="4" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="426" y="296" font-size="15" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">BOOT0 = 1 · BOOT1 = 1</text>
+<text x="426" y="324" font-size="17" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SRAM</text>
+<text x="844" y="324" font-size="17" fill="#5b3a8c" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x20000000</text>
+<circle cx="290" cy="178" r="4" fill="#5b3a8c" opacity="1" class="boot-route boot-route-2"/>
+<text x="40" y="284" font-size="14" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">采样后按组合选择一支</text>
+<text x="40" y="309" font-size="14" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不由探针是否连上决定</text>
+<line x1="40" y1="367" x2="860" y2="367" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="40" y="397" font-size="17" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Flash 启动：0x08000000 的内容在 0x00000000 可读</text>
+<rect x="40" y="414" width="820" height="72" fill="#f1f5f7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
+<text x="56" y="440" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x00000000 · 第 1 字</text>
+<line x1="316" y1="435" x2="370" y2="435" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="376.00,435.00 370.00,438.00 370.00,432.00" fill="#1b5c45" opacity="1"/>
+<text x="396" y="440" font-size="16" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">初始 MSP</text>
+<text x="56" y="468" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">0x00000004 · 第 2 字</text>
+<line x1="316" y1="463" x2="370" y2="463" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="376.00,463.00 370.00,466.00 370.00,460.00" fill="#1b5c45" opacity="1"/>
+<text x="396" y="468" font-size="16" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Reset 向量 · bit 0 = 1（Thumb）</text>
+<text x="40" y="521" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">BOOT0 = 0 只选中 Flash；MSP、复位向量和程序镜像仍须有效。</text>
+<text x="40" y="549" font-size="14" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">探针读 ID 另查供电、共地、PA13 / PA14 与复位；读到 ID 不等于应用已运行。</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">每次复位只选择一个启动入口</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · 原理示意 / 非实拍</text>
+</svg>
