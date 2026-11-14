@@ -1,85 +1,85 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei',sans-serif">
   <title>样本队列 16 槽：满则丢新，显式过载保护</title>
   <desc>样本队列 16 槽：满则丢新，显式过载保护。采样任务每 100 毫秒产一个样本灌进队列，上报出口偶尔才取一批；灌到 16 格全满，再来的新样本被挡在门外弹开，丢新计数加一——这是显式的过载保护，不是隐式的内存溢出；之后上报取走一批，格子清空，循环继续。看三样东西：格子怎么灌满、被挡的新样本怎么弹开、丢新计数怎么跳。</desc>
-  <rect width="720" height="420" fill="#f6f8fa"/>
-  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">样本队列 16 槽：满则丢新，显式过载保护</text>
-  <text x="24" y="50" font-size="12" fill="#666">灌入 → 灌满 → 丢新计数 +1 → 上报取走一批 · 循环 12s</text>
+  <rect width="720" height="420" fill="#FDF8EA"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#2B5EA7">样本队列 16 槽：满则丢新，显式过载保护</text>
+  <text x="24" y="50" font-size="12" fill="#6E6B60">灌入 → 灌满 → 丢新计数 +1 → 上报取走一批 · 循环 12s</text>
 
   <!-- ===== 左：采样任务（生产节拍） ===== -->
-  <rect x="40" y="70" width="150" height="240" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
-  <text x="56" y="92" font-size="13" font-weight="bold" fill="#3451b2">采样任务</text>
+  <rect x="40" y="70" width="150" height="240" fill="#FFFDF6" stroke="#D8D2C0" rx="8"/>
+  <text x="56" y="92" font-size="13" font-weight="bold" fill="#2B5EA7">采样任务</text>
   <text x="56" y="112" font-size="11" fill="#888">100ms 一采</text>
-  <rect x="66" y="130" width="98" height="150" fill="#eef2ff" stroke="#3451b2" rx="6"/>
-  <text x="115" y="200" font-size="12" fill="#3451b2" text-anchor="middle">ADC</text>
-  <text x="115" y="220" font-size="11" fill="#3451b2" text-anchor="middle">12 位码值</text>
+  <rect x="66" y="130" width="98" height="150" fill="#eef2ff" stroke="#2B5EA7" rx="6"/>
+  <text x="115" y="200" font-size="12" fill="#2B5EA7" text-anchor="middle">ADC</text>
+  <text x="115" y="220" font-size="11" fill="#2B5EA7" text-anchor="middle">12 位码值</text>
   <!-- 生产节拍点 -->
-  <circle cx="115" cy="266" r="8" fill="#3eaf7c">
+  <circle cx="115" cy="266" r="8" fill="#3F7D57">
     <animate attributeName="opacity" values="1;0.2;1" keyTimes="0;0.5;1" dur="0.75s" repeatCount="indefinite"/>
   </circle>
 
   <!-- ===== 中：样本队列 16 槽（2 列 × 8 行） ===== -->
-  <rect x="222" y="70" width="220" height="240" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
-  <text x="238" y="92" font-size="13" font-weight="bold" fill="#3451b2">样本队列</text>
+  <rect x="222" y="70" width="220" height="240" fill="#FFFDF6" stroke="#D8D2C0" rx="8"/>
+  <text x="238" y="92" font-size="13" font-weight="bold" fill="#2B5EA7">样本队列</text>
   <text x="424" y="92" font-size="11" fill="#888" text-anchor="end">16 槽 · 64B/槽</text>
   <g>
-    <!-- 16 格：i 从 0..15，灌入时刻 t1=i*0.28+0.6，取走清空 t=9.9；空槽底色 #e2e8f0 -->
+    <!-- 16 格：i 从 0..15，灌入时刻 t1=i*0.28+0.6，取走清空 t=9.9；空槽底色 #E7E2D4 -->
     <!-- 列 x=252 / x=332，行 y=104+ i/2*26 -->
-    <g stroke="#94a3b8" stroke-width="1.5">
-      <rect x="252" y="104" width="64" height="22" rx="3" fill="#e2e8f0"><animate attributeName="fill" values="#e2e8f0;#3451b2;#3451b2;#e2e8f0" keyTimes="0;0.073;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
-      <rect x="332" y="104" width="64" height="22" rx="3" fill="#e2e8f0"><animate attributeName="fill" values="#e2e8f0;#3451b2;#3451b2;#e2e8f0" keyTimes="0;0.096;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
-      <rect x="252" y="130" width="64" height="22" rx="3" fill="#e2e8f0"><animate attributeName="fill" values="#e2e8f0;#3451b2;#3451b2;#e2e8f0" keyTimes="0;0.12;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
-      <rect x="332" y="130" width="64" height="22" rx="3" fill="#e2e8f0"><animate attributeName="fill" values="#e2e8f0;#3451b2;#3451b2;#e2e8f0" keyTimes="0;0.143;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
-      <rect x="252" y="156" width="64" height="22" rx="3" fill="#e2e8f0"><animate attributeName="fill" values="#e2e8f0;#3451b2;#3451b2;#e2e8f0" keyTimes="0;0.166;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
-      <rect x="332" y="156" width="64" height="22" rx="3" fill="#e2e8f0"><animate attributeName="fill" values="#e2e8f0;#3451b2;#3451b2;#e2e8f0" keyTimes="0;0.19;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
-      <rect x="252" y="182" width="64" height="22" rx="3" fill="#e2e8f0"><animate attributeName="fill" values="#e2e8f0;#3451b2;#3451b2;#e2e8f0" keyTimes="0;0.213;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
-      <rect x="332" y="182" width="64" height="22" rx="3" fill="#e2e8f0"><animate attributeName="fill" values="#e2e8f0;#3451b2;#3451b2;#e2e8f0" keyTimes="0;0.236;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
-      <rect x="252" y="208" width="64" height="22" rx="3" fill="#e2e8f0"><animate attributeName="fill" values="#e2e8f0;#3451b2;#3451b2;#e2e8f0" keyTimes="0;0.26;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
-      <rect x="332" y="208" width="64" height="22" rx="3" fill="#e2e8f0"><animate attributeName="fill" values="#e2e8f0;#3451b2;#3451b2;#e2e8f0" keyTimes="0;0.283;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
-      <rect x="252" y="234" width="64" height="22" rx="3" fill="#e2e8f0"><animate attributeName="fill" values="#e2e8f0;#3451b2;#3451b2;#e2e8f0" keyTimes="0;0.306;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
-      <rect x="332" y="234" width="64" height="22" rx="3" fill="#e2e8f0"><animate attributeName="fill" values="#e2e8f0;#3451b2;#3451b2;#e2e8f0" keyTimes="0;0.33;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
-      <rect x="252" y="260" width="64" height="22" rx="3" fill="#e2e8f0"><animate attributeName="fill" values="#e2e8f0;#3451b2;#3451b2;#e2e8f0" keyTimes="0;0.353;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
-      <rect x="332" y="260" width="64" height="22" rx="3" fill="#e2e8f0"><animate attributeName="fill" values="#e2e8f0;#3451b2;#3451b2;#e2e8f0" keyTimes="0;0.376;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
-      <rect x="252" y="286" width="64" height="22" rx="3" fill="#e2e8f0"><animate attributeName="fill" values="#e2e8f0;#3451b2;#3451b2;#e2e8f0" keyTimes="0;0.4;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
-      <rect x="332" y="286" width="64" height="22" rx="3" fill="#e2e8f0"><animate attributeName="fill" values="#e2e8f0;#3451b2;#3451b2;#e2e8f0" keyTimes="0;0.42;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
+    <g stroke="#9A937F" stroke-width="1.5">
+      <rect x="252" y="104" width="64" height="22" rx="3" fill="#E7E2D4"><animate attributeName="fill" values="#E7E2D4;#2B5EA7;#2B5EA7;#E7E2D4" keyTimes="0;0.073;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
+      <rect x="332" y="104" width="64" height="22" rx="3" fill="#E7E2D4"><animate attributeName="fill" values="#E7E2D4;#2B5EA7;#2B5EA7;#E7E2D4" keyTimes="0;0.096;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
+      <rect x="252" y="130" width="64" height="22" rx="3" fill="#E7E2D4"><animate attributeName="fill" values="#E7E2D4;#2B5EA7;#2B5EA7;#E7E2D4" keyTimes="0;0.12;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
+      <rect x="332" y="130" width="64" height="22" rx="3" fill="#E7E2D4"><animate attributeName="fill" values="#E7E2D4;#2B5EA7;#2B5EA7;#E7E2D4" keyTimes="0;0.143;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
+      <rect x="252" y="156" width="64" height="22" rx="3" fill="#E7E2D4"><animate attributeName="fill" values="#E7E2D4;#2B5EA7;#2B5EA7;#E7E2D4" keyTimes="0;0.166;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
+      <rect x="332" y="156" width="64" height="22" rx="3" fill="#E7E2D4"><animate attributeName="fill" values="#E7E2D4;#2B5EA7;#2B5EA7;#E7E2D4" keyTimes="0;0.19;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
+      <rect x="252" y="182" width="64" height="22" rx="3" fill="#E7E2D4"><animate attributeName="fill" values="#E7E2D4;#2B5EA7;#2B5EA7;#E7E2D4" keyTimes="0;0.213;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
+      <rect x="332" y="182" width="64" height="22" rx="3" fill="#E7E2D4"><animate attributeName="fill" values="#E7E2D4;#2B5EA7;#2B5EA7;#E7E2D4" keyTimes="0;0.236;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
+      <rect x="252" y="208" width="64" height="22" rx="3" fill="#E7E2D4"><animate attributeName="fill" values="#E7E2D4;#2B5EA7;#2B5EA7;#E7E2D4" keyTimes="0;0.26;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
+      <rect x="332" y="208" width="64" height="22" rx="3" fill="#E7E2D4"><animate attributeName="fill" values="#E7E2D4;#2B5EA7;#2B5EA7;#E7E2D4" keyTimes="0;0.283;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
+      <rect x="252" y="234" width="64" height="22" rx="3" fill="#E7E2D4"><animate attributeName="fill" values="#E7E2D4;#2B5EA7;#2B5EA7;#E7E2D4" keyTimes="0;0.306;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
+      <rect x="332" y="234" width="64" height="22" rx="3" fill="#E7E2D4"><animate attributeName="fill" values="#E7E2D4;#2B5EA7;#2B5EA7;#E7E2D4" keyTimes="0;0.33;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
+      <rect x="252" y="260" width="64" height="22" rx="3" fill="#E7E2D4"><animate attributeName="fill" values="#E7E2D4;#2B5EA7;#2B5EA7;#E7E2D4" keyTimes="0;0.353;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
+      <rect x="332" y="260" width="64" height="22" rx="3" fill="#E7E2D4"><animate attributeName="fill" values="#E7E2D4;#2B5EA7;#2B5EA7;#E7E2D4" keyTimes="0;0.376;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
+      <rect x="252" y="286" width="64" height="22" rx="3" fill="#E7E2D4"><animate attributeName="fill" values="#E7E2D4;#2B5EA7;#2B5EA7;#E7E2D4" keyTimes="0;0.4;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
+      <rect x="332" y="286" width="64" height="22" rx="3" fill="#E7E2D4"><animate attributeName="fill" values="#E7E2D4;#2B5EA7;#2B5EA7;#E7E2D4" keyTimes="0;0.42;0.825;0.84" dur="12s" repeatCount="indefinite"/></rect>
     </g>
   </g>
 
   <!-- ===== 右：上报出口 + 丢新计数 ===== -->
-  <rect x="474" y="70" width="206" height="240" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
-  <text x="490" y="92" font-size="13" font-weight="bold" fill="#3451b2">USART 上报</text>
+  <rect x="474" y="70" width="206" height="240" fill="#FFFDF6" stroke="#D8D2C0" rx="8"/>
+  <text x="490" y="92" font-size="13" font-weight="bold" fill="#2B5EA7">USART 上报</text>
   <text x="490" y="112" font-size="11" fill="#888">偶尔取一批 · 4 帧槽</text>
   <!-- 取走脉冲：9.9s 一批飞出 -->
   <g>
-    <rect x="500" y="130" width="60" height="22" rx="3" fill="#3eaf7c">
+    <rect x="500" y="130" width="60" height="22" rx="3" fill="#3F7D57">
       <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.815;0.83;0.93;1" dur="12s" repeatCount="indefinite"/>
       <animateTransform attributeName="transform" type="translate" values="0 0;0 0;0 0;150 0;150 0" keyTimes="0;0.815;0.83;0.93;1" dur="12s" repeatCount="indefinite"/>
     </rect>
-    <text x="490" y="190" font-size="11" fill="#666">取走一批：</text>
-    <text x="490" y="208" font-size="11" fill="#666">格子清空，循环继续</text>
+    <text x="490" y="190" font-size="11" fill="#6E6B60">取走一批：</text>
+    <text x="490" y="208" font-size="11" fill="#6E6B60">格子清空，循环继续</text>
   </g>
   <!-- 新样本撞门（4.8s 后队列已满，弹开+红闪） -->
   <g>
-    <rect x="180" y="286" width="44" height="22" rx="3" fill="#d97706">
+    <rect x="180" y="286" width="44" height="22" rx="3" fill="#A8801F">
       <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.47;0.49;0.79;1" dur="12s" repeatCount="indefinite"/>
       <animateTransform attributeName="transform" type="translate" values="0 0;0 0;26 0;-14 0;0 0" keyTimes="0;0.47;0.5;0.56;0.6" dur="1.2s" repeatCount="indefinite"/>
     </rect>
-    <text x="176" y="330" font-size="11" fill="#d97706">队列满：新样本被挡在门外</text>
+    <text x="176" y="330" font-size="11" fill="#A8801F">队列满：新样本被挡在门外</text>
   </g>
   <!-- 丢新计数（8s 前后两态） -->
   <g>
     <text x="490" y="260" font-size="12" fill="#888">丢新计数</text>
-    <text x="490" y="290" font-size="26" font-weight="bold" fill="#94a3b8">×0
+    <text x="490" y="290" font-size="26" font-weight="bold" fill="#9A937F">×0
       <animate attributeName="opacity" values="1;0;0" keyTimes="0;0.5;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
     </text>
-    <text x="490" y="290" font-size="26" font-weight="bold" fill="#d97706" opacity="0">×3
+    <text x="490" y="290" font-size="26" font-weight="bold" fill="#A8801F" opacity="0">×3
       <animate attributeName="opacity" values="0;1;1" keyTimes="0;0.5;1" dur="12s" repeatCount="indefinite" calcMode="discrete"/>
     </text>
-    <text x="490" y="316" font-size="11" fill="#d97706">显式过载保护，</text>
-    <text x="490" y="332" font-size="11" fill="#d97706">不是隐式内存溢出</text>
+    <text x="490" y="316" font-size="11" fill="#A8801F">显式过载保护，</text>
+    <text x="490" y="332" font-size="11" fill="#A8801F">不是隐式内存溢出</text>
   </g>
 
   <!-- ===== 底部因果句（读屏/关动效兜底） ===== -->
-  <text x="24" y="356" font-size="12" fill="#3451b2">灌满之前：每个新样本都进格子；灌满之后：新样本弹开、丢新计数 +1，直到上报取走一批腾出格子。</text>
-  <text x="24" y="376" font-size="12" fill="#666">把动画停在任意一帧，画面都要能自己说话：格子颜色 = 队列占用，橙块 = 被挡的新样本，计数 = 显式丢弃的样本数。</text>
-  <text x="24" y="404" font-size="11" fill="#94a3b8">J1 · 样本队列 16 槽 × 64B = 1KB，100ms 周期下缓冲 1.6 秒 · 与架构图 /arch/logger-flow.png 配套：图定结构，动画演因果</text>
+  <text x="24" y="356" font-size="12" fill="#2B5EA7">灌满之前：每个新样本都进格子；灌满之后：新样本弹开、丢新计数 +1，直到上报取走一批腾出格子。</text>
+  <text x="24" y="376" font-size="12" fill="#6E6B60">把动画停在任意一帧，画面都要能自己说话：格子颜色 = 队列占用，橙块 = 被挡的新样本，计数 = 显式丢弃的样本数。</text>
+  <text x="24" y="404" font-size="11" fill="#9A937F">J1 · 样本队列 16 槽 × 64B = 1KB，100ms 周期下缓冲 1.6 秒 · 与架构图 /arch/logger-flow.png 配套：图定结构，动画演因果</text>
 </svg>

@@ -42,71 +42,71 @@
 </style>
 
 <rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
-<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
-<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">UART IDLE+DMA：契约 A（Normal）与契约 B（Circular）</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">mechanism · FA-002 continuous-line · 附录 A · 115200 8N1</text>
-<rect x="828" y="15" width="50" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="853" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">附录 A</text>
-<rect x="40" y="79" width="3" height="18" fill="#7a4e00" opacity="1"/>
-<text x="52" y="92" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">① 总线：字节阵到达，间隙 ≥1 帧触发 IDLE（约 86.8 μs @115200）</text>
-<rect x="48" y="118" width="70" height="44" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="83" y="146" font-size="13" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">D0</text>
-<rect x="48" y="118" width="70" height="44" fill="#075e84" opacity="0.12" rx="8" class="by0"/>
-<rect x="126" y="118" width="70" height="44" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="161" y="146" font-size="13" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">D1</text>
-<rect x="126" y="118" width="70" height="44" fill="#075e84" opacity="0.12" rx="8" class="by1"/>
-<rect x="204" y="118" width="70" height="44" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="239" y="146" font-size="13" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">D2</text>
-<rect x="204" y="118" width="70" height="44" fill="#075e84" opacity="0.12" rx="8" class="by2"/>
-<rect x="282" y="118" width="70" height="44" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="317" y="146" font-size="13" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">D3</text>
-<rect x="282" y="118" width="70" height="44" fill="#075e84" opacity="0.12" rx="8" class="by3"/>
-<rect x="360" y="118" width="70" height="44" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="395" y="146" font-size="13" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">D4</text>
-<rect x="360" y="118" width="70" height="44" fill="#075e84" opacity="0.12" rx="8" class="by4"/>
-<rect x="438" y="118" width="70" height="44" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="473" y="146" font-size="13" fill="#075e84" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">…</text>
-<rect x="438" y="118" width="70" height="44" fill="#075e84" opacity="0.12" rx="8" class="by5"/>
-<rect x="516" y="118" width="70" height="44" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<rect x="0" y="0" width="900" height="58" fill="#F7EFDA" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#6E6B60" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#1F4680" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">UART IDLE+DMA：契约 A（Normal）与契约 B（Circular）</text>
+<text x="22" y="50" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">mechanism · FA-002 continuous-line · 附录 A · 115200 8N1</text>
+<rect x="828" y="15" width="50" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="853" y="33.32" font-size="12" fill="#1F4680" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">附录 A</text>
+<rect x="40" y="79" width="3" height="18" fill="#7A5B14" opacity="1"/>
+<text x="52" y="92" font-size="14" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">① 总线：字节阵到达，间隙 ≥1 帧触发 IDLE（约 86.8 μs @115200）</text>
+<rect x="48" y="118" width="70" height="44" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="83" y="146" font-size="13" fill="#1F4680" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">D0</text>
+<rect x="48" y="118" width="70" height="44" fill="#1F4680" opacity="0.12" rx="8" class="by0"/>
+<rect x="126" y="118" width="70" height="44" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="161" y="146" font-size="13" fill="#1F4680" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">D1</text>
+<rect x="126" y="118" width="70" height="44" fill="#1F4680" opacity="0.12" rx="8" class="by1"/>
+<rect x="204" y="118" width="70" height="44" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="239" y="146" font-size="13" fill="#1F4680" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">D2</text>
+<rect x="204" y="118" width="70" height="44" fill="#1F4680" opacity="0.12" rx="8" class="by2"/>
+<rect x="282" y="118" width="70" height="44" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="317" y="146" font-size="13" fill="#1F4680" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">D3</text>
+<rect x="282" y="118" width="70" height="44" fill="#1F4680" opacity="0.12" rx="8" class="by3"/>
+<rect x="360" y="118" width="70" height="44" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="395" y="146" font-size="13" fill="#1F4680" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">D4</text>
+<rect x="360" y="118" width="70" height="44" fill="#1F4680" opacity="0.12" rx="8" class="by4"/>
+<rect x="438" y="118" width="70" height="44" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="473" y="146" font-size="13" fill="#1F4680" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">…</text>
+<rect x="438" y="118" width="70" height="44" fill="#1F4680" opacity="0.12" rx="8" class="by5"/>
+<rect x="516" y="118" width="70" height="44" fill="#F7EFDA" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
 <text x="551" y="146" font-size="13" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">IDLE</text>
 <rect x="516" y="118" width="70" height="44" fill="#8f2d2d" opacity="0.12" rx="8" class="by6"/>
-<rect x="40" y="171" width="3" height="18" fill="#1b5c45" opacity="1"/>
-<text x="52" y="184" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">② DMA 缓冲 cap=128：Size = 首个未写位置（1..128）</text>
-<rect x="40" y="210" width="820" height="56" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<rect x="40" y="210" width="280" height="56" fill="#1b5c45" opacity="0.18" rx="8" class="buf"/>
-<text x="60" y="244" font-size="13" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">写满区 [0, Size)</text>
-<text x="340" y="244" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">Size=7 例</text>
-<text x="480" y="244" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HT@64 仅契约 B 使用</text>
-<text x="720" y="244" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">127</text>
-<rect x="40" y="288" width="400" height="200" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="56" y="316" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">契约 A · Normal</text>
-<text x="56" y="348" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· ReceiveToIdle_DMA 后立即关 HT</text>
-<rect x="48" y="336" width="6" height="16" fill="#075e84" opacity="1" rx="2" class="ca0"/>
-<text x="56" y="372" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· IDLE（或 TC）→ RxEventCallback(Size)</text>
-<rect x="48" y="360" width="6" height="16" fill="#075e84" opacity="1" rx="2" class="ca1"/>
-<text x="56" y="396" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 复制 [0, Size) 进软件队列</text>
-<rect x="48" y="384" width="6" height="16" fill="#075e84" opacity="1" rx="2" class="ca2"/>
-<text x="56" y="420" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 回调内重新武装，并再次关 HT</text>
-<rect x="48" y="408" width="6" height="16" fill="#075e84" opacity="1" rx="2" class="ca3"/>
-<text x="56" y="444" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 适合：不定长命令帧</text>
-<rect x="48" y="432" width="6" height="16" fill="#075e84" opacity="1" rx="2" class="ca4"/>
-<rect x="460" y="288" width="400" height="200" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="476" y="316" font-size="14" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">契约 B · Circular</text>
-<text x="476" y="348" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 开 HT、TC、IDLE 三个来源</text>
-<rect x="468" y="336" width="6" height="16" fill="#5b3a8c" opacity="1" rx="2" class="cb0"/>
-<text x="476" y="372" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· new = (Size − old_pos) mod cap</text>
-<rect x="468" y="360" width="6" height="16" fill="#5b3a8c" opacity="1" rx="2" class="cb1"/>
-<text x="476" y="396" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 只交新增区间给业务</text>
-<rect x="468" y="384" width="6" height="16" fill="#5b3a8c" opacity="1" rx="2" class="cb2"/>
-<text x="476" y="420" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 再 old_pos = Size</text>
-<rect x="468" y="408" width="6" height="16" fill="#5b3a8c" opacity="1" rx="2" class="cb3"/>
-<text x="476" y="444" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 适合：连续流 / 高吞吐</text>
-<rect x="468" y="432" width="6" height="16" fill="#5b3a8c" opacity="1" rx="2" class="cb4"/>
-<rect x="40" y="508" width="820" height="48" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<rect x="40" y="171" width="3" height="18" fill="#2E5F42" opacity="1"/>
+<text x="52" y="184" font-size="14" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">② DMA 缓冲 cap=128：Size = 首个未写位置（1..128）</text>
+<rect x="40" y="210" width="820" height="56" fill="#F7EFDA" opacity="1" rx="8" stroke="#2E5F42" stroke-width="1.5"/>
+<rect x="40" y="210" width="280" height="56" fill="#2E5F42" opacity="0.18" rx="8" class="buf"/>
+<text x="60" y="244" font-size="13" fill="#2E5F42" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">写满区 [0, Size)</text>
+<text x="340" y="244" font-size="13" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">Size=7 例</text>
+<text x="480" y="244" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HT@64 仅契约 B 使用</text>
+<text x="720" y="244" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">127</text>
+<rect x="40" y="288" width="400" height="200" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="56" y="316" font-size="14" fill="#1F4680" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">契约 A · Normal</text>
+<text x="56" y="348" font-size="12" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· ReceiveToIdle_DMA 后立即关 HT</text>
+<rect x="48" y="336" width="6" height="16" fill="#1F4680" opacity="1" rx="2" class="ca0"/>
+<text x="56" y="372" font-size="12" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· IDLE（或 TC）→ RxEventCallback(Size)</text>
+<rect x="48" y="360" width="6" height="16" fill="#1F4680" opacity="1" rx="2" class="ca1"/>
+<text x="56" y="396" font-size="12" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 复制 [0, Size) 进软件队列</text>
+<rect x="48" y="384" width="6" height="16" fill="#1F4680" opacity="1" rx="2" class="ca2"/>
+<text x="56" y="420" font-size="12" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 回调内重新武装，并再次关 HT</text>
+<rect x="48" y="408" width="6" height="16" fill="#1F4680" opacity="1" rx="2" class="ca3"/>
+<text x="56" y="444" font-size="12" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 适合：不定长命令帧</text>
+<rect x="48" y="432" width="6" height="16" fill="#1F4680" opacity="1" rx="2" class="ca4"/>
+<rect x="460" y="288" width="400" height="200" fill="#F7EFDA" opacity="1" rx="8" stroke="#6E569B" stroke-width="1.5"/>
+<text x="476" y="316" font-size="14" fill="#6E569B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">契约 B · Circular</text>
+<text x="476" y="348" font-size="12" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 开 HT、TC、IDLE 三个来源</text>
+<rect x="468" y="336" width="6" height="16" fill="#6E569B" opacity="1" rx="2" class="cb0"/>
+<text x="476" y="372" font-size="12" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· new = (Size − old_pos) mod cap</text>
+<rect x="468" y="360" width="6" height="16" fill="#6E569B" opacity="1" rx="2" class="cb1"/>
+<text x="476" y="396" font-size="12" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 只交新增区间给业务</text>
+<rect x="468" y="384" width="6" height="16" fill="#6E569B" opacity="1" rx="2" class="cb2"/>
+<text x="476" y="420" font-size="12" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 再 old_pos = Size</text>
+<rect x="468" y="408" width="6" height="16" fill="#6E569B" opacity="1" rx="2" class="cb3"/>
+<text x="476" y="444" font-size="12" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">· 适合：连续流 / 高吞吐</text>
+<rect x="468" y="432" width="6" height="16" fill="#6E569B" opacity="1" rx="2" class="cb4"/>
+<rect x="40" y="508" width="820" height="48" fill="#F7EFDA" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
 <text x="56" y="538" font-size="13" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">陷阱：把 Size 当长度却忘了 Circular 取模；HT 回调里做重活超过半缓冲窗口。</text>
 <line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · FA-002 · UART IDLE+DMA 契约，非逻辑分析仪实拍</text>
-<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识轨 · 附录 A</text>
+<text x="24" y="602" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · FA-002 · UART IDLE+DMA 契约，非逻辑分析仪实拍</text>
+<text x="876" y="602" font-size="11" fill="#6E6B60" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识轨 · 附录 A</text>
 </svg>

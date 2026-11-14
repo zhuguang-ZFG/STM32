@@ -1,67 +1,67 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 430" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 430" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei',sans-serif">
   <title>指针三件事：取地址 · 存门牌 · 解引用登门</title>
   <desc>四阶段演示指针的三件事。① 取地址：内存按字节划格，int a 占 0x2000_0000~03 四格（小端低字节在前），&amp;a 抄出的是门牌号——回答"哪里"而不是"多少"。② 存门牌：int *p = &amp;a 后 p 自己也是个格子，值是 0x2000_0000；类型 int* 是钥匙的宽度说明——顺着门牌读一次 4 字节，类型换了指令就换（ldrb/ldrh/ldr，C2 取证）。③ 解引用：*p 是"顺着箭头登门"这个动作——读搬出 0x5A，写把 5A 盖成 0x96；箭头是唯一通路，p 的门牌不动。④ 步长与野指针：p+1 按 sizeof(int) 跳 4 格到 b 的门牌，不是 +1 字节；门牌是编出来的（未初始化/已释放/越界）就是野指针，登门三种下场：HardFault、静默改坏邻居、碰巧能用——最后一种最危险。</desc>
-  <rect width="720" height="430" fill="#f6f8fa"/>
-  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">指针三件事：取地址 · 存门牌 · 解引用登门</text>
-  <text x="24" y="50" font-size="12" fill="#666">int a = 0x5A 住 4 格；p 存门牌 0x2000_0000；*p 顺箭头登门；p+1 按 sizeof(int) 跳 4 格</text>
+  <rect width="720" height="430" fill="#FDF8EA"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#2B5EA7">指针三件事：取地址 · 存门牌 · 解引用登门</text>
+  <text x="24" y="50" font-size="12" fill="#6E6B60">int a = 0x5A 住 4 格；p 存门牌 0x2000_0000；*p 顺箭头登门；p+1 按 sizeof(int) 跳 4 格</text>
 
   <!-- 说明收短：原文右端离 x=288 的「int a」标签只剩 6px，宽字体下会叠上 -->
-  <text x="48" y="76" font-size="12" fill="#666">每格 1 byte（小端：低字节在前）</text>
+  <text x="48" y="76" font-size="12" fill="#6E6B60">每格 1 byte（小端：低字节在前）</text>
 
   <!-- 内存格子：a 占 0~3 格（绿），b 占 4~7 格（蓝） -->
-  <text x="324" y="70" font-size="12.5" font-weight="bold" fill="#1a7f56" text-anchor="middle">int a = 0x5A</text>
-  <text x="492" y="70" font-size="12.5" font-weight="bold" fill="#3451b2" text-anchor="middle">int b = 0x96</text>
-  <rect x="240" y="80" width="42" height="34" fill="#d8f3e5" stroke="#94a3b8"/>
-  <rect x="282" y="80" width="42" height="34" fill="#d8f3e5" stroke="#94a3b8"/>
-  <rect x="324" y="80" width="42" height="34" fill="#d8f3e5" stroke="#94a3b8"/>
-  <rect x="366" y="80" width="42" height="34" fill="#d8f3e5" stroke="#94a3b8"/>
-  <rect x="408" y="80" width="42" height="34" fill="#dbe7ff" stroke="#94a3b8"/>
-  <rect x="450" y="80" width="42" height="34" fill="#dbe7ff" stroke="#94a3b8"/>
-  <rect x="492" y="80" width="42" height="34" fill="#dbe7ff" stroke="#94a3b8"/>
-  <rect x="534" y="80" width="42" height="34" fill="#dbe7ff" stroke="#94a3b8"/>
-  <g font-family="Consolas,monospace" font-size="13" fill="#333" text-anchor="middle">
+  <text x="324" y="70" font-size="12.5" font-weight="bold" fill="#3F7D57" text-anchor="middle">int a = 0x5A</text>
+  <text x="492" y="70" font-size="12.5" font-weight="bold" fill="#2B5EA7" text-anchor="middle">int b = 0x96</text>
+  <rect x="240" y="80" width="42" height="34" fill="#d8f3e5" stroke="#9A937F"/>
+  <rect x="282" y="80" width="42" height="34" fill="#d8f3e5" stroke="#9A937F"/>
+  <rect x="324" y="80" width="42" height="34" fill="#d8f3e5" stroke="#9A937F"/>
+  <rect x="366" y="80" width="42" height="34" fill="#d8f3e5" stroke="#9A937F"/>
+  <rect x="408" y="80" width="42" height="34" fill="#DCE6F2" stroke="#9A937F"/>
+  <rect x="450" y="80" width="42" height="34" fill="#DCE6F2" stroke="#9A937F"/>
+  <rect x="492" y="80" width="42" height="34" fill="#DCE6F2" stroke="#9A937F"/>
+  <rect x="534" y="80" width="42" height="34" fill="#DCE6F2" stroke="#9A937F"/>
+  <g font-family="Consolas,monospace" font-size="13" fill="#2F2E2B" text-anchor="middle">
     <text x="261" y="101">5A</text><text x="303" y="101">00</text><text x="345" y="101">00</text><text x="387" y="101">00</text>
     <text x="429" y="101">96</text><text x="471" y="101">00</text><text x="513" y="101">00</text><text x="555" y="101">00</text>
   </g>
-  <g font-family="Consolas,monospace" font-size="11" fill="#666" text-anchor="middle">
+  <g font-family="Consolas,monospace" font-size="11" fill="#6E6B60" text-anchor="middle">
     <text x="261" y="126">0x2000_0000</text>
     <text x="429" y="126">0x2000_0004</text>
   </g>
-  <text x="576" y="126" font-size="11" fill="#666" text-anchor="end">…0x2000_0007</text>
+  <text x="576" y="126" font-size="11" fill="#6E6B60" text-anchor="end">…0x2000_0007</text>
 
   <!-- 指针变量格子 -->
-  <rect x="48" y="150" width="170" height="58" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
-  <text x="60" y="172" font-family="Consolas,monospace" font-size="14" font-weight="bold" fill="#3451b2">int *p</text>
+  <rect x="48" y="150" width="170" height="58" rx="8" fill="#FFFDF6" stroke="#D8D2C0"/>
+  <text x="60" y="172" font-family="Consolas,monospace" font-size="14" font-weight="bold" fill="#2B5EA7">int *p</text>
   <text x="60" y="194" font-family="Consolas,monospace" font-size="12" fill="#888" opacity="1">（垃圾值·未初始化）
     <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></text>
-  <text x="60" y="194" font-family="Consolas,monospace" font-size="13" fill="#24292f" opacity="0">0x2000_0000
+  <text x="60" y="194" font-family="Consolas,monospace" font-size="13" fill="#2F2E2B" opacity="0">0x2000_0000
     <animate attributeName="opacity" calcMode="discrete" values="0;1;1;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></text>
 
   <!-- 主箭头：p → a（阶段 2 起出现，爬线持续重画） -->
   <defs>
-    <marker id="pArw" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3eaf7c"/></marker>
+    <marker id="pArw" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3F7D57"/></marker>
     <marker id="pArwG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#888"/></marker>
   </defs>
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;1;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <path d="M 218 179 C 236 179, 242 150, 254 132" stroke="#3eaf7c" stroke-width="2.5" fill="none" marker-end="url(#pArw)" pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000">
+    <path d="M 218 179 C 236 179, 242 150, 254 132" stroke="#3F7D57" stroke-width="2.5" fill="none" marker-end="url(#pArw)" pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000">
       <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.6;1" dur="6s" repeatCount="indefinite"/>
     </path>
-    <text x="284" y="152" font-size="11.5" fill="#1a7f56">p 指向 a</text>
+    <text x="284" y="152" font-size="11.5" fill="#3F7D57">p 指向 a</text>
   </g>
 
   <!-- 读令牌：0x5A 从 a 的格子回到 p（阶段 3 前半：先读） -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0" keyTimes="0;0.5001;0.625;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="-17" y="-9" width="34" height="18" rx="4" fill="#d8f3e5" stroke="#3eaf7c"/>
-    <text x="0" y="4" font-family="Consolas,monospace" font-size="11.5" fill="#1a7f56" text-anchor="middle">0x5A</text>
+    <rect x="-17" y="-9" width="34" height="18" rx="4" fill="#d8f3e5" stroke="#3F7D57"/>
+    <text x="0" y="4" font-family="Consolas,monospace" font-size="11.5" fill="#3F7D57" text-anchor="middle">0x5A</text>
     <animateMotion dur="3s" repeatCount="indefinite" path="M 246 142 C 236 158, 230 172, 222 184"/>
   </g>
 
   <!-- 写令牌：0x96 从 p 登门到 a（阶段 3 后半：后写，与读分时出场） -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0" keyTimes="0;0.6251;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="-17" y="-9" width="34" height="18" rx="4" fill="#fdf0d5" stroke="#d97706"/>
+    <rect x="-17" y="-9" width="34" height="18" rx="4" fill="#fdf0d5" stroke="#A8801F"/>
     <text x="0" y="4" font-family="Consolas,monospace" font-size="11.5" fill="#92400e" text-anchor="middle">0x96</text>
     <animateMotion dur="3s" repeatCount="indefinite" path="M 232 186 C 244 166, 252 152, 258 142"/>
   </g>
@@ -70,51 +70,51 @@
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
     <path d="M 210 204 C 250 228, 350 232, 424 136" stroke="#888" stroke-width="2" stroke-dasharray="5 4" fill="none" marker-end="url(#pArwG)"/>
-    <text x="300" y="232" font-size="12" fill="#666" text-anchor="middle">p+1 = 0x2000_0004（跳 sizeof(int)=4 格）</text>
+    <text x="300" y="232" font-size="12" fill="#6E6B60" text-anchor="middle">p+1 = 0x2000_0004（跳 sizeof(int)=4 格）</text>
   </g>
 
   <!-- 阶段一 -->
   <g opacity="1">
     <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="240" width="640" height="104" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="262" font-size="13.5" font-weight="bold" fill="#3451b2">① &amp;a 取地址：抄的是门牌号，不是值</text>
-    <text x="56" y="284" font-size="12" fill="#333">内存按字节划格：int a 占 4 格（0x2000_0000~03），&amp;a 得到起始门牌 0x2000_0000</text>
-    <text x="56" y="304" font-size="12" fill="#333">门牌号回答的是"哪里"，不是"多少"——值 0x5A 在格子里，地址在格子下面</text>
-    <text x="56" y="324" font-size="12" fill="#d97706">p 还没初始化：里面是垃圾值，这时候解引用就是野指针（第④阶段的三宗罪）</text>
+    <rect x="40" y="240" width="640" height="104" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="262" font-size="13.5" font-weight="bold" fill="#2B5EA7">① &amp;a 取地址：抄的是门牌号，不是值</text>
+    <text x="56" y="284" font-size="12" fill="#2F2E2B">内存按字节划格：int a 占 4 格（0x2000_0000~03），&amp;a 得到起始门牌 0x2000_0000</text>
+    <text x="56" y="304" font-size="12" fill="#2F2E2B">门牌号回答的是"哪里"，不是"多少"——值 0x5A 在格子里，地址在格子下面</text>
+    <text x="56" y="324" font-size="12" fill="#A8801F">p 还没初始化：里面是垃圾值，这时候解引用就是野指针（第④阶段的三宗罪）</text>
   </g>
 
   <!-- 阶段二 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="240" width="640" height="104" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="262" font-size="13.5" font-weight="bold" fill="#1a7f56">② p 存门牌：类型是钥匙的宽度说明</text>
-    <text x="56" y="284" font-size="12" fill="#333">int *p = &amp;a 之后：p 自己也住格子，值是 0x2000_0000——箭头从此指到 a</text>
-    <text x="56" y="304" font-size="12" fill="#333">int* 说明"顺着门牌读，一次读 4 字节"：类型定了指令宽度（ldrb/ldrh/ldr，本章取证）</text>
-    <text x="56" y="324" font-size="12" fill="#333">指针变量自身大小与指向类型无关：32 位机上 int*/char*/struct* 都是 4 字节</text>
+    <rect x="40" y="240" width="640" height="104" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="262" font-size="13.5" font-weight="bold" fill="#3F7D57">② p 存门牌：类型是钥匙的宽度说明</text>
+    <text x="56" y="284" font-size="12" fill="#2F2E2B">int *p = &amp;a 之后：p 自己也住格子，值是 0x2000_0000——箭头从此指到 a</text>
+    <text x="56" y="304" font-size="12" fill="#2F2E2B">int* 说明"顺着门牌读，一次读 4 字节"：类型定了指令宽度（ldrb/ldrh/ldr，本章取证）</text>
+    <text x="56" y="324" font-size="12" fill="#2F2E2B">指针变量自身大小与指向类型无关：32 位机上 int*/char*/struct* 都是 4 字节</text>
   </g>
 
   <!-- 阶段三 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="240" width="640" height="104" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="262" font-size="13.5" font-weight="bold" fill="#d97706">③ *p 解引用：顺着箭头登门</text>
-    <text x="56" y="284" font-size="12" fill="#333">读 *p：绿色令牌从 a 的格子回到 p 手里——值 0x5A 被搬出来</text>
-    <text x="56" y="304" font-size="12" fill="#333">写 *p = 0x96：橙色令牌登门，把 5A 盖成 96——改的是 a 的格子，p 的门牌一字未动</text>
-    <text x="56" y="324" font-size="12" fill="#333">* 是动词：每次出现都表示"去访存这一次"；跟在类型后（int*）才是"钥匙规格"</text>
+    <rect x="40" y="240" width="640" height="104" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="262" font-size="13.5" font-weight="bold" fill="#A8801F">③ *p 解引用：顺着箭头登门</text>
+    <text x="56" y="284" font-size="12" fill="#2F2E2B">读 *p：绿色令牌从 a 的格子回到 p 手里——值 0x5A 被搬出来</text>
+    <text x="56" y="304" font-size="12" fill="#2F2E2B">写 *p = 0x96：橙色令牌登门，把 5A 盖成 96——改的是 a 的格子，p 的门牌一字未动</text>
+    <text x="56" y="324" font-size="12" fill="#2F2E2B">* 是动词：每次出现都表示"去访存这一次"；跟在类型后（int*）才是"钥匙规格"</text>
   </g>
 
   <!-- 阶段四 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="240" width="640" height="104" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="262" font-size="13.5" font-weight="bold" fill="#dc2626">④ p+1 跳步长；野指针三宗罪</text>
-    <text x="56" y="284" font-size="12" fill="#333">p+1 = 0x2000_0004（b 的门牌）：按 sizeof(int)=4 跳格，不是 +1 字节——步长由类型定</text>
-    <text x="56" y="304" font-size="12" fill="#333">野指针 = 门牌是编出来的：未初始化 / 已释放 / 越界后的地址</text>
-    <text x="56" y="324" font-size="12" fill="#dc2626">登门三下场：HardFault 立即翻车 · 静默改坏邻居最隐蔽 · 碰巧能用最危险（本章第三节）</text>
+    <rect x="40" y="240" width="640" height="104" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="262" font-size="13.5" font-weight="bold" fill="#B3392F">④ p+1 跳步长；野指针三宗罪</text>
+    <text x="56" y="284" font-size="12" fill="#2F2E2B">p+1 = 0x2000_0004（b 的门牌）：按 sizeof(int)=4 跳格，不是 +1 字节——步长由类型定</text>
+    <text x="56" y="304" font-size="12" fill="#2F2E2B">野指针 = 门牌是编出来的：未初始化 / 已释放 / 越界后的地址</text>
+    <text x="56" y="324" font-size="12" fill="#B3392F">登门三下场：HardFault 立即翻车 · 静默改坏邻居最隐蔽 · 碰巧能用最危险（本章第三节）</text>
   </g>
 
   <!-- 阶段字幕 -->
-  <g font-size="13" font-weight="bold" fill="#3451b2">
+  <g font-size="13" font-weight="bold" fill="#2B5EA7">
     <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
       <text x="36" y="390">① &amp;a 抄门牌：0x2000_0000 是"哪里"，不是"多少"</text></g>
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
@@ -126,7 +126,7 @@
   </g>
 
   <!-- 阶段指示点 -->
-  <g transform="translate(630,412)" fill="#3451b2">
+  <g transform="translate(630,412)" fill="#2B5EA7">
     <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
     <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
     <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>

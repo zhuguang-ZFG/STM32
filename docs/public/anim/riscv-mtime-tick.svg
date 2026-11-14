@@ -1,75 +1,75 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei',sans-serif">
   <title>RISC-V MTIME 64 位读写纪律：hi-lo-hi 防撕裂</title>
   <desc>RISC-V 的 MTIME 替代 SysTick 做内核时基。MTIME 是 64 位递增计数器（内存映射，非 CSR），MTIMECMP 是 64 位比较寄存器——MTIME ≥ MTIMECMP 时触发定时器中断。32 位 CPU 读 64 位 MTIME 要两次 lw（高 32 位 + 低 32 位），可能撕裂：两次读之间 MTIME 自增跨越 4GB 边界（低 32 位从 0xFFFFFFFF 回绕到 0，高 32 位 +1），读到的高/低不属于同一时刻。纪律是 hi-lo-hi 读：先读高、再读低、再读高，两次高相等才有效。写 MTIMECMP 要先写高后写低（防止 MTIME 在写期间跨越触发假中断）。周期 tick 要软件每次中断后把 MTIMECMP 加一个周期——不像 SysTick 硬件自动重装 LOAD。图上有一个真在跑的 MTIME 计数器：64 位递增，与 MTIMECMP 比较，相等时中断标志亮。</desc>
-  <rect width="720" height="460" fill="#f6f8fa"/>
-  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">RISC-V MTIME：64 位读写纪律 + 软件比较</text>
-  <text x="24" y="50" font-size="12" fill="#666">SysTick 硬件自动重装 → MTIME 软件比较；hi-lo-hi 防撕裂</text>
+  <rect width="720" height="460" fill="#FDF8EA"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#2B5EA7">RISC-V MTIME：64 位读写纪律 + 软件比较</text>
+  <text x="24" y="50" font-size="12" fill="#6E6B60">SysTick 硬件自动重装 → MTIME 软件比较；hi-lo-hi 防撕裂</text>
 
   <!-- MTIME 64 位递增条（常驻） -->
-  <text x="360" y="80" font-size="12" font-weight="bold" fill="#3451b2" text-anchor="middle">MTIME（64 位递增，内存映射）</text>
-  <rect x="120" y="90" width="480" height="36" rx="4" fill="#ffffff" stroke="#cbd5e1"/>
-  <rect x="120" y="90" width="240" height="36" rx="4" fill="#dbe7ff" stroke="#3451b2"/>
-  <text x="240" y="113" font-size="11" font-family="Consolas,monospace" fill="#3451b2" text-anchor="middle">高 32 位 (hi)</text>
-  <rect x="360" y="90" width="240" height="36" rx="4" fill="#d8f3e5" stroke="#3eaf7c"/>
-  <text x="480" y="113" font-size="11" font-family="Consolas,monospace" fill="#1a7f56" text-anchor="middle">低 32 位 (lo)</text>
+  <text x="360" y="80" font-size="12" font-weight="bold" fill="#2B5EA7" text-anchor="middle">MTIME（64 位递增，内存映射）</text>
+  <rect x="120" y="90" width="480" height="36" rx="4" fill="#FFFDF6" stroke="#D8D2C0"/>
+  <rect x="120" y="90" width="240" height="36" rx="4" fill="#DCE6F2" stroke="#2B5EA7"/>
+  <text x="240" y="113" font-size="11" font-family="Consolas,monospace" fill="#2B5EA7" text-anchor="middle">高 32 位 (hi)</text>
+  <rect x="360" y="90" width="240" height="36" rx="4" fill="#d8f3e5" stroke="#3F7D57"/>
+  <text x="480" y="113" font-size="11" font-family="Consolas,monospace" fill="#3F7D57" text-anchor="middle">低 32 位 (lo)</text>
   <!-- 递增脉冲（连续运动） -->
-  <rect x="360" y="92" width="0" height="32" rx="2" fill="#3eaf7c" opacity="0.4">
+  <rect x="360" y="92" width="0" height="32" rx="2" fill="#3F7D57" opacity="0.4">
     <animate attributeName="width" values="0;238;0" keyTimes="0;0.86;1" dur="4s" repeatCount="indefinite"/>
   </rect>
 
   <!-- MTIMECMP 64 位（常驻） -->
-  <text x="360" y="148" font-size="12" font-weight="bold" fill="#d97706" text-anchor="middle">MTIMECMP（64 位比较，软件设）</text>
-  <rect x="120" y="158" width="480" height="36" rx="4" fill="#ffffff" stroke="#cbd5e1"/>
-  <rect x="120" y="158" width="240" height="36" rx="4" fill="#fdf0d5" stroke="#d97706"/>
+  <text x="360" y="148" font-size="12" font-weight="bold" fill="#A8801F" text-anchor="middle">MTIMECMP（64 位比较，软件设）</text>
+  <rect x="120" y="158" width="480" height="36" rx="4" fill="#FFFDF6" stroke="#D8D2C0"/>
+  <rect x="120" y="158" width="240" height="36" rx="4" fill="#fdf0d5" stroke="#A8801F"/>
   <text x="240" y="181" font-size="11" font-family="Consolas,monospace" fill="#92400e" text-anchor="middle">高 32 位 (hi)</text>
-  <rect x="360" y="158" width="240" height="36" rx="4" fill="#fdf0d5" stroke="#d97706"/>
+  <rect x="360" y="158" width="240" height="36" rx="4" fill="#fdf0d5" stroke="#A8801F"/>
   <text x="480" y="181" font-size="11" font-family="Consolas,monospace" fill="#92400e" text-anchor="middle">低 32 位 (lo)</text>
 
   <!-- 比较结果（常驻） -->
-  <text x="360" y="218" font-size="11" fill="#666" text-anchor="middle">MTIME ≥ MTIMECMP → 定时器中断</text>
+  <text x="360" y="218" font-size="11" fill="#6E6B60" text-anchor="middle">MTIME ≥ MTIMECMP → 定时器中断</text>
 
   <!-- 阶段一：SysTick 自动重装 vs MTIME 软件比较 -->
   <g opacity="1">
     <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="236" width="640" height="100" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="258" font-size="13" font-weight="bold" fill="#3451b2">① SysTick 自动重装 vs MTIME 软件比较</text>
-    <text x="56" y="282" font-size="13" fill="#333">SysTick：写一次 LOAD，硬件自动重装，到 0 产生中断——一劳永逸。</text>
-    <text x="56" y="304" font-size="13" fill="#333">MTIME：64 位递增永不回绕，软件设 MTIMECMP，MTIME≥CMP 触发——周期中断要软件续约。</text>
-    <text x="56" y="326" font-size="12" fill="#d97706">这是 RTOS port 到 RISC-V 必须处理的差异：tick 中断后 CMP += 周期。</text>
+    <rect x="40" y="236" width="640" height="100" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="258" font-size="13" font-weight="bold" fill="#2B5EA7">① SysTick 自动重装 vs MTIME 软件比较</text>
+    <text x="56" y="282" font-size="13" fill="#2F2E2B">SysTick：写一次 LOAD，硬件自动重装，到 0 产生中断——一劳永逸。</text>
+    <text x="56" y="304" font-size="13" fill="#2F2E2B">MTIME：64 位递增永不回绕，软件设 MTIMECMP，MTIME≥CMP 触发——周期中断要软件续约。</text>
+    <text x="56" y="326" font-size="12" fill="#A8801F">这是 RTOS port 到 RISC-V 必须处理的差异：tick 中断后 CMP += 周期。</text>
   </g>
 
   <!-- 阶段二：64 位撕裂风险 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="236" width="640" height="100" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="258" font-size="13" font-weight="bold" fill="#dc2626">② 64 位撕裂：两次 lw 之间跨越 4GB 边界</text>
-    <text x="56" y="282" font-size="13" fill="#333">读 64 位 MTIME 要两次 lw（先高后低）。若两次之间低 32 位从 0xFFFFFFFF 回绕到 0、高 32 位 +1：</text>
-    <text x="56" y="304" font-size="13" font-family="Consolas,monospace" fill="#dc2626">读到 hi=0x00000001, lo=0x00000000 → 0x100000000（错！实际已是 0x100000001）</text>
-    <text x="56" y="326" font-size="12" fill="#dc2626">读到的高/低不属于同一时刻——这就是"撕裂"。</text>
+    <rect x="40" y="236" width="640" height="100" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="258" font-size="13" font-weight="bold" fill="#B3392F">② 64 位撕裂：两次 lw 之间跨越 4GB 边界</text>
+    <text x="56" y="282" font-size="13" fill="#2F2E2B">读 64 位 MTIME 要两次 lw（先高后低）。若两次之间低 32 位从 0xFFFFFFFF 回绕到 0、高 32 位 +1：</text>
+    <text x="56" y="304" font-size="13" font-family="Consolas,monospace" fill="#B3392F">读到 hi=0x00000001, lo=0x00000000 → 0x100000000（错！实际已是 0x100000001）</text>
+    <text x="56" y="326" font-size="12" fill="#B3392F">读到的高/低不属于同一时刻——这就是"撕裂"。</text>
   </g>
 
   <!-- 阶段三：hi-lo-hi 读纪律 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="236" width="640" height="100" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="258" font-size="13" font-weight="bold" fill="#1a7f56">③ hi-lo-hi 读纪律：两次高相等才有效</text>
-    <text x="56" y="282" font-size="13" font-family="Consolas,monospace" fill="#333">hi1 = MTIME_HI; lo = MTIME_LO; hi2 = MTIME_HI;</text>
-    <text x="56" y="304" font-size="13" font-family="Consolas,monospace" fill="#333">if (hi1 == hi2) value = (hi1 &lt;&lt; 32) | lo;  /* 两次高相等=没跨越 */</text>
-    <text x="56" y="326" font-size="12" fill="#3eaf7c">写 MTIMECMP 反过来：先写高后写低（防 MTIME 在写期间 ≥ 临时的小值触发假中断）。</text>
+    <rect x="40" y="236" width="640" height="100" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="258" font-size="13" font-weight="bold" fill="#3F7D57">③ hi-lo-hi 读纪律：两次高相等才有效</text>
+    <text x="56" y="282" font-size="13" font-family="Consolas,monospace" fill="#2F2E2B">hi1 = MTIME_HI; lo = MTIME_LO; hi2 = MTIME_HI;</text>
+    <text x="56" y="304" font-size="13" font-family="Consolas,monospace" fill="#2F2E2B">if (hi1 == hi2) value = (hi1 &lt;&lt; 32) | lo;  /* 两次高相等=没跨越 */</text>
+    <text x="56" y="326" font-size="12" fill="#3F7D57">写 MTIMECMP 反过来：先写高后写低（防 MTIME 在写期间 ≥ 临时的小值触发假中断）。</text>
   </g>
 
   <!-- 阶段四：周期 tick 软件续约 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="236" width="640" height="100" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="258" font-size="13" font-weight="bold" fill="#3451b2">④ 周期 tick：软件续约 CMP += 周期</text>
-    <text x="56" y="282" font-size="13" font-family="Consolas,monospace" fill="#333">void tick_handler() { MTIMECMP = MTIME + PERIOD; /* 或 CMP += PERIOD */ }</text>
-    <text x="56" y="304" font-size="13" fill="#333">每次中断后把 MTIMECMP 加一个周期——不像 SysTick 写 LOAD 一劳永逸。</text>
-    <text x="56" y="326" font-size="12" fill="#3451b2">CMP += 周期 比 CMP = now + 周期 更好：不漂移（从中断点算起而非从读 MTIME 算起）。</text>
+    <rect x="40" y="236" width="640" height="100" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="258" font-size="13" font-weight="bold" fill="#2B5EA7">④ 周期 tick：软件续约 CMP += 周期</text>
+    <text x="56" y="282" font-size="13" font-family="Consolas,monospace" fill="#2F2E2B">void tick_handler() { MTIMECMP = MTIME + PERIOD; /* 或 CMP += PERIOD */ }</text>
+    <text x="56" y="304" font-size="13" fill="#2F2E2B">每次中断后把 MTIMECMP 加一个周期——不像 SysTick 写 LOAD 一劳永逸。</text>
+    <text x="56" y="326" font-size="12" fill="#2B5EA7">CMP += 周期 比 CMP = now + 周期 更好：不漂移（从中断点算起而非从读 MTIME 算起）。</text>
   </g>
 
   <!-- 阶段字幕 -->
-  <g font-size="13" font-weight="bold" fill="#3451b2">
+  <g font-size="13" font-weight="bold" fill="#2B5EA7">
     <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
       <text x="36" y="366">① SysTick 自动重装 vs MTIME 软件比较</text></g>
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
@@ -81,7 +81,7 @@
   </g>
 
   <!-- 阶段指示点 -->
-  <g transform="translate(630,384)" fill="#3451b2">
+  <g transform="translate(630,384)" fill="#2B5EA7">
     <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
     <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
     <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>

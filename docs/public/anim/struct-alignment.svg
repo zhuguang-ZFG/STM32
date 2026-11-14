@@ -1,100 +1,100 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 452" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 452" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei',sans-serif">
   <title>结构体与 ABI：声明顺序定先后、对齐规则定间隔、volatile 定纪律</title>
   <desc>四阶段动画：GPIO_TypeDef 凭什么罩住寄存器块。① 结构体是编译器担保的地址计算器：GPIOF-&gt;BSRR 展开成 (*(volatile uint32_t *)(0x40021400 + 0x18))，偏移 0x18 由声明顺序、类型大小与对齐规则共同决定，_Static_assert 在编译期钉死；② 对齐三规则：成员对齐——uint32_t 必落 4 的倍数；结构体对齐——sizeof 是最大成员对齐的倍数（尾部补填充）；数组 stride——arr[i] = base + i*sizeof；编译器不许重排；③ 填充可视化：Padded_t {u8 a; u32 b; u8 c} 占 12 字节（a@0 + 填充3 + b@4 + c@8 + 尾填充3），成员从大到小重排后 Packed_t {u32 b; u8 a; u8 c} 只占 8 字节——省 4 字节的力学原理；④ 位域陷阱与端序：位域布局（分配方向、跨单元、填充）是 C 标准留给编译器的实现定义，换工具链位序可能不同——硬件寄存器必须用掩码宏+移位；端序由目标架构与工具链决定，本机 gcc 宿主实测小端：0x12345678 在内存里是 78 56 34 12。图上真在跑的东西：一个游标沿 GPIO_TypeDef 的偏移条带连续扫描——偏移是"数"出来的，不是背出来的。</desc>
-  <rect width="720" height="452" fill="#f6f8fa"/>
-  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">结构体与 ABI：GPIO_TypeDef 凭什么罩住寄存器块</text>
-  <text x="24" y="50" font-size="12" fill="#666">声明顺序定先后、对齐规则定间隔、volatile 定纪律——C 与工具链的布局约定</text>
+  <rect width="720" height="452" fill="#FDF8EA"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#2B5EA7">结构体与 ABI：GPIO_TypeDef 凭什么罩住寄存器块</text>
+  <text x="24" y="50" font-size="12" fill="#6E6B60">声明顺序定先后、对齐规则定间隔、volatile 定纪律——C 与工具链的布局约定</text>
 
   <!-- ===== 常驻：GPIO_TypeDef 偏移条带 ===== -->
-  <rect x="40" y="64" width="640" height="52" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
-  <text x="54" y="82" font-size="11" fill="#94a3b8">GPIO_TypeDef（RM0090 寄存器地图 → C 结构体）</text>
-  <g font-size="11" font-family="Consolas,monospace" fill="#666">
-    <rect x="54" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#94a3b8"/><text x="83" y="102" text-anchor="middle">MODER</text><text x="83" y="112" text-anchor="middle" font-size="11">0x00</text>
-    <rect x="116" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#94a3b8"/><text x="145" y="102" text-anchor="middle">OTYPER</text><text x="145" y="112" text-anchor="middle" font-size="11">0x04</text>
-    <rect x="178" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#94a3b8"/><text x="207" y="102" text-anchor="middle">OSPEEDR</text><text x="207" y="112" text-anchor="middle" font-size="11">0x08</text>
-    <rect x="240" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#94a3b8"/><text x="269" y="102" text-anchor="middle">PUPDR</text><text x="269" y="112" text-anchor="middle" font-size="11">0x0C</text>
-    <rect x="302" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#94a3b8"/><text x="331" y="102" text-anchor="middle">IDR</text><text x="331" y="112" text-anchor="middle" font-size="11">0x10</text>
-    <rect x="364" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#94a3b8"/><text x="393" y="102" text-anchor="middle">ODR</text><text x="393" y="112" text-anchor="middle" font-size="11">0x14</text>
-    <rect x="426" y="88" width="58" height="22" rx="2" fill="#fdf0d5" stroke="#d97706" stroke-width="2"/><text x="455" y="102" text-anchor="middle" fill="#92400e" font-weight="bold">BSRR</text><text x="455" y="112" text-anchor="middle" font-size="11" fill="#92400e">0x18</text>
-    <rect x="488" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#94a3b8"/><text x="517" y="102" text-anchor="middle">LCKR</text><text x="517" y="112" text-anchor="middle" font-size="11">0x1C</text>
-    <rect x="550" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#94a3b8"/><text x="579" y="102" text-anchor="middle">AFR[0]</text><text x="579" y="112" text-anchor="middle" font-size="11">0x20</text>
-    <rect x="612" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#94a3b8"/><text x="641" y="102" text-anchor="middle">AFR[1]</text><text x="641" y="112" text-anchor="middle" font-size="11">0x24</text>
+  <rect x="40" y="64" width="640" height="52" rx="8" fill="#FFFDF6" stroke="#D8D2C0"/>
+  <text x="54" y="82" font-size="11" fill="#9A937F">GPIO_TypeDef（RM0090 寄存器地图 → C 结构体）</text>
+  <g font-size="11" font-family="Consolas,monospace" fill="#6E6B60">
+    <rect x="54" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#9A937F"/><text x="83" y="102" text-anchor="middle">MODER</text><text x="83" y="112" text-anchor="middle" font-size="11">0x00</text>
+    <rect x="116" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#9A937F"/><text x="145" y="102" text-anchor="middle">OTYPER</text><text x="145" y="112" text-anchor="middle" font-size="11">0x04</text>
+    <rect x="178" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#9A937F"/><text x="207" y="102" text-anchor="middle">OSPEEDR</text><text x="207" y="112" text-anchor="middle" font-size="11">0x08</text>
+    <rect x="240" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#9A937F"/><text x="269" y="102" text-anchor="middle">PUPDR</text><text x="269" y="112" text-anchor="middle" font-size="11">0x0C</text>
+    <rect x="302" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#9A937F"/><text x="331" y="102" text-anchor="middle">IDR</text><text x="331" y="112" text-anchor="middle" font-size="11">0x10</text>
+    <rect x="364" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#9A937F"/><text x="393" y="102" text-anchor="middle">ODR</text><text x="393" y="112" text-anchor="middle" font-size="11">0x14</text>
+    <rect x="426" y="88" width="58" height="22" rx="2" fill="#fdf0d5" stroke="#A8801F" stroke-width="2"/><text x="455" y="102" text-anchor="middle" fill="#92400e" font-weight="bold">BSRR</text><text x="455" y="112" text-anchor="middle" font-size="11" fill="#92400e">0x18</text>
+    <rect x="488" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#9A937F"/><text x="517" y="102" text-anchor="middle">LCKR</text><text x="517" y="112" text-anchor="middle" font-size="11">0x1C</text>
+    <rect x="550" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#9A937F"/><text x="579" y="102" text-anchor="middle">AFR[0]</text><text x="579" y="112" text-anchor="middle" font-size="11">0x20</text>
+    <rect x="612" y="88" width="58" height="22" rx="2" fill="#f1f5f9" stroke="#9A937F"/><text x="641" y="102" text-anchor="middle">AFR[1]</text><text x="641" y="112" text-anchor="middle" font-size="11">0x24</text>
   </g>
   <!-- 游标：沿偏移条带连续扫描（真在跑） -->
-  <circle cx="54" cy="126" r="6" fill="#3451b2">
+  <circle cx="54" cy="126" r="6" fill="#2B5EA7">
     <animate attributeName="cx" values="54;670;670;54" keyTimes="0;0.86;0.93;1" dur="4s" repeatCount="indefinite"/>
   </circle>
-  <text x="360" y="144" font-size="11" fill="#94a3b8" text-anchor="middle">offsetof 逐格数出来：第 7 个成员，前面 6 格 × 4 字节 = 0x18——不是背的，是算的</text>
+  <text x="360" y="144" font-size="11" fill="#9A937F" text-anchor="middle">offsetof 逐格数出来：第 7 个成员，前面 6 格 × 4 字节 = 0x18——不是背的，是算的</text>
 
   <!-- ===== 阶段一：地址计算器 ===== -->
   <g opacity="1">
     <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="158" width="640" height="232" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="182" font-size="13" font-weight="bold" fill="#3451b2">① 结构体 = 编译器担保的地址计算器</text>
-    <text x="56" y="208" font-size="12" font-family="Consolas,monospace" fill="#333">GPIOF-&gt;BSRR = (1&lt;&lt;6);</text>
-    <text x="56" y="232" font-size="12" font-family="Consolas,monospace" fill="#333">≈ (*(volatile uint32_t *)(0x40021400 + 0x18)) = (1&lt;&lt;6);</text>
-    <text x="56" y="258" font-size="13" fill="#333">偏移由声明顺序、类型大小与对齐规则共同决定；__IO 就是 volatile——读写都可能被硬件改。</text>
-    <text x="56" y="286" font-size="12" font-family="Consolas,monospace" fill="#666">_Static_assert(offsetof(GPIO_TypeDef, BSRR) == 0x18);  /* 编译期钉死 */</text>
-    <text x="56" y="312" font-size="12" font-family="Consolas,monospace" fill="#666">_Static_assert(sizeof(GPIO_TypeDef) == 0x28);</text>
-    <text x="56" y="340" font-size="13" fill="#d97706">漏掉地图里的空洞（占位成员）→ 后面所有偏移整体前移——库版本不匹配时最阴的 bug。</text>
-    <text x="56" y="366" font-size="12" fill="#666">验证三件套：offsetof / sizeof / _Static_assert——任何"结构体封装"都能当场验真。</text>
+    <rect x="40" y="158" width="640" height="232" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="182" font-size="13" font-weight="bold" fill="#2B5EA7">① 结构体 = 编译器担保的地址计算器</text>
+    <text x="56" y="208" font-size="12" font-family="Consolas,monospace" fill="#2F2E2B">GPIOF-&gt;BSRR = (1&lt;&lt;6);</text>
+    <text x="56" y="232" font-size="12" font-family="Consolas,monospace" fill="#2F2E2B">≈ (*(volatile uint32_t *)(0x40021400 + 0x18)) = (1&lt;&lt;6);</text>
+    <text x="56" y="258" font-size="13" fill="#2F2E2B">偏移由声明顺序、类型大小与对齐规则共同决定；__IO 就是 volatile——读写都可能被硬件改。</text>
+    <text x="56" y="286" font-size="12" font-family="Consolas,monospace" fill="#6E6B60">_Static_assert(offsetof(GPIO_TypeDef, BSRR) == 0x18);  /* 编译期钉死 */</text>
+    <text x="56" y="312" font-size="12" font-family="Consolas,monospace" fill="#6E6B60">_Static_assert(sizeof(GPIO_TypeDef) == 0x28);</text>
+    <text x="56" y="340" font-size="13" fill="#A8801F">漏掉地图里的空洞（占位成员）→ 后面所有偏移整体前移——库版本不匹配时最阴的 bug。</text>
+    <text x="56" y="366" font-size="12" fill="#6E6B60">验证三件套：offsetof / sizeof / _Static_assert——任何"结构体封装"都能当场验真。</text>
   </g>
 
   <!-- ===== 阶段二：对齐三规则 ===== -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="158" width="640" height="232" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="182" font-size="13" font-weight="bold" fill="#3451b2">② 对齐三规则：成员、结构体与数组的布局</text>
-    <text x="56" y="210" font-size="13" fill="#333"><tspan font-weight="bold">成员对齐</tspan>：每个成员的起始偏移是其对齐值的倍数——uint32_t 永远落在 4 的倍数上；</text>
-    <text x="56" y="238" font-size="13" fill="#333"><tspan font-weight="bold">结构体对齐</tspan>：总大小必须是最大成员对齐值的倍数——尾部可能补填充；</text>
-    <text x="56" y="266" font-size="13" fill="#333"><tspan font-weight="bold">数组 stride</tspan>：sizeof(struct) 已含尾部填充，arr[i] = base + i × sizeof——元素天然连续。</text>
-    <text x="56" y="298" font-size="13" fill="#d97706">编译器不许重排成员——顺序写错一位，后面所有偏移全错。</text>
-    <text x="56" y="330" font-size="12" fill="#666">手册期望：0x40021400 + offsetof(BSRR) 0x18 = 0x40021418（板上结果待回填）。</text>
+    <rect x="40" y="158" width="640" height="232" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="182" font-size="13" font-weight="bold" fill="#2B5EA7">② 对齐三规则：成员、结构体与数组的布局</text>
+    <text x="56" y="210" font-size="13" fill="#2F2E2B"><tspan font-weight="bold">成员对齐</tspan>：每个成员的起始偏移是其对齐值的倍数——uint32_t 永远落在 4 的倍数上；</text>
+    <text x="56" y="238" font-size="13" fill="#2F2E2B"><tspan font-weight="bold">结构体对齐</tspan>：总大小必须是最大成员对齐值的倍数——尾部可能补填充；</text>
+    <text x="56" y="266" font-size="13" fill="#2F2E2B"><tspan font-weight="bold">数组 stride</tspan>：sizeof(struct) 已含尾部填充，arr[i] = base + i × sizeof——元素天然连续。</text>
+    <text x="56" y="298" font-size="13" fill="#A8801F">编译器不许重排成员——顺序写错一位，后面所有偏移全错。</text>
+    <text x="56" y="330" font-size="12" fill="#6E6B60">手册期望：0x40021400 + offsetof(BSRR) 0x18 = 0x40021418（板上结果待回填）。</text>
   </g>
 
   <!-- ===== 阶段三：填充可视化 ===== -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="158" width="640" height="232" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="182" font-size="13" font-weight="bold" fill="#3451b2">③ 填充肉眼可见：同一组成员，两种排法差 4 字节</text>
+    <rect x="40" y="158" width="640" height="232" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="182" font-size="13" font-weight="bold" fill="#2B5EA7">③ 填充肉眼可见：同一组成员，两种排法差 4 字节</text>
     <text x="70" y="208" font-size="11" font-family="Consolas,monospace" fill="#92400e">Padded_t { u8 a; u32 b; u8 c; }  → 12 字节</text>
     <g font-size="11">
-      <rect x="70" y="216" width="24" height="22" fill="#dbe7ff" stroke="#3451b2"/><text x="82" y="230" text-anchor="middle" fill="#3451b2">a</text>
-      <rect x="94" y="216" width="72" height="22" fill="#f1f5f9" stroke="#94a3b8" stroke-dasharray="3 2"/><text x="130" y="230" text-anchor="middle" fill="#94a3b8">pad 3</text>
-      <rect x="166" y="216" width="96" height="22" fill="#d8f3e5" stroke="#3eaf7c"/><text x="214" y="230" text-anchor="middle" fill="#1a7f56">b @4</text>
-      <rect x="262" y="216" width="24" height="22" fill="#dbe7ff" stroke="#3451b2"/><text x="274" y="230" text-anchor="middle" fill="#3451b2">c</text>
-      <rect x="286" y="216" width="72" height="22" fill="#f1f5f9" stroke="#94a3b8" stroke-dasharray="3 2"/><text x="322" y="230" text-anchor="middle" fill="#94a3b8">tail 3</text>
+      <rect x="70" y="216" width="24" height="22" fill="#DCE6F2" stroke="#2B5EA7"/><text x="82" y="230" text-anchor="middle" fill="#2B5EA7">a</text>
+      <rect x="94" y="216" width="72" height="22" fill="#f1f5f9" stroke="#9A937F" stroke-dasharray="3 2"/><text x="130" y="230" text-anchor="middle" fill="#9A937F">pad 3</text>
+      <rect x="166" y="216" width="96" height="22" fill="#d8f3e5" stroke="#3F7D57"/><text x="214" y="230" text-anchor="middle" fill="#3F7D57">b @4</text>
+      <rect x="262" y="216" width="24" height="22" fill="#DCE6F2" stroke="#2B5EA7"/><text x="274" y="230" text-anchor="middle" fill="#2B5EA7">c</text>
+      <rect x="286" y="216" width="72" height="22" fill="#f1f5f9" stroke="#9A937F" stroke-dasharray="3 2"/><text x="322" y="230" text-anchor="middle" fill="#9A937F">tail 3</text>
     </g>
-    <text x="130" y="254" font-size="11" fill="#94a3b8" text-anchor="middle">sizeof=12：1+3+4+1+3</text>
-    <text x="420" y="208" font-size="11" font-family="Consolas,monospace" fill="#1a7f56">Packed_t { u32 b; u8 a; u8 c; }  → 8 字节</text>
+    <text x="130" y="254" font-size="11" fill="#9A937F" text-anchor="middle">sizeof=12：1+3+4+1+3</text>
+    <text x="420" y="208" font-size="11" font-family="Consolas,monospace" fill="#3F7D57">Packed_t { u32 b; u8 a; u8 c; }  → 8 字节</text>
     <g font-size="11">
-      <rect x="420" y="216" width="96" height="22" fill="#d8f3e5" stroke="#3eaf7c"/><text x="468" y="230" text-anchor="middle" fill="#1a7f56">b @0</text>
-      <rect x="516" y="216" width="24" height="22" fill="#dbe7ff" stroke="#3451b2"/><text x="528" y="230" text-anchor="middle" fill="#3451b2">a</text>
-      <rect x="540" y="216" width="24" height="22" fill="#dbe7ff" stroke="#3451b2"/><text x="552" y="230" text-anchor="middle" fill="#3451b2">c</text>
-      <rect x="564" y="216" width="48" height="22" fill="#f1f5f9" stroke="#94a3b8" stroke-dasharray="3 2"/><text x="588" y="230" text-anchor="middle" fill="#94a3b8">tail 2</text>
+      <rect x="420" y="216" width="96" height="22" fill="#d8f3e5" stroke="#3F7D57"/><text x="468" y="230" text-anchor="middle" fill="#3F7D57">b @0</text>
+      <rect x="516" y="216" width="24" height="22" fill="#DCE6F2" stroke="#2B5EA7"/><text x="528" y="230" text-anchor="middle" fill="#2B5EA7">a</text>
+      <rect x="540" y="216" width="24" height="22" fill="#DCE6F2" stroke="#2B5EA7"/><text x="552" y="230" text-anchor="middle" fill="#2B5EA7">c</text>
+      <rect x="564" y="216" width="48" height="22" fill="#f1f5f9" stroke="#9A937F" stroke-dasharray="3 2"/><text x="588" y="230" text-anchor="middle" fill="#9A937F">tail 2</text>
     </g>
-    <text x="516" y="254" font-size="11" fill="#94a3b8" text-anchor="middle">sizeof=8：4+1+1+2</text>
-    <text x="56" y="290" font-size="13" fill="#333">成员按对齐要求落位、洞是编译器插的填充——你能在内存里"看见"这些洞。</text>
-    <text x="56" y="318" font-size="13" fill="#1a7f56">成员从大到小排，填充变少：Padded 12 字节 → Packed 8 字节，省 4 字节。</text>
-    <text x="56" y="346" font-size="12" fill="#666">pack(1) 取消 ABI 的偏移/对齐担保；Packed1_t 这类混合类型一旦压出非对齐成员，</text>
-    <text x="56" y="368" font-size="12" fill="#666">在某些 Cortex-M 配置/总线上可能访问出错（本集未上板）。</text>
+    <text x="516" y="254" font-size="11" fill="#9A937F" text-anchor="middle">sizeof=8：4+1+1+2</text>
+    <text x="56" y="290" font-size="13" fill="#2F2E2B">成员按对齐要求落位、洞是编译器插的填充——你能在内存里"看见"这些洞。</text>
+    <text x="56" y="318" font-size="13" fill="#3F7D57">成员从大到小排，填充变少：Padded 12 字节 → Packed 8 字节，省 4 字节。</text>
+    <text x="56" y="346" font-size="12" fill="#6E6B60">pack(1) 取消 ABI 的偏移/对齐担保；Packed1_t 这类混合类型一旦压出非对齐成员，</text>
+    <text x="56" y="368" font-size="12" fill="#6E6B60">在某些 Cortex-M 配置/总线上可能访问出错（本集未上板）。</text>
   </g>
 
   <!-- ===== 阶段四：位域陷阱与端序 ===== -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="158" width="640" height="232" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="182" font-size="13" font-weight="bold" fill="#3451b2">④ 位域慎碰硬件；端序由目标架构决定</text>
-    <text x="56" y="210" font-size="13" fill="#333">C 标准把位域布局（分配方向、是否跨单元、填充）全部留给编译器——实现定义。</text>
-    <text x="56" y="238" font-size="13" fill="#dc2626">同一份位域代码，GCC / Clang / IAR 位序可能不同——工具链不固定就别拿它罩硬件。</text>
-    <text x="56" y="266" font-size="12" font-family="Consolas,monospace" fill="#333">正确做法：#define FIELD_B_MASK (3UL&lt;&lt;1)   /* 读: (reg&amp;M)&gt;&gt;1  写: reg=(reg&amp;~M)|(v&lt;&lt;1) */</text>
-    <text x="56" y="296" font-size="13" fill="#333">端序（本机 gcc 宿主实测；Cortex-M 通常默认小端）：</text>
-    <text x="56" y="322" font-size="12" font-family="Consolas,monospace" fill="#666">0x12345678 在内存里 = 78 56 34 12（低地址→高地址，最低有效字节住最低地址）</text>
-    <text x="56" y="352" font-size="12" fill="#1a7f56">寄存器封装三句真言：顺序定先后、对齐定间隔、volatile 定纪律。</text>
+    <rect x="40" y="158" width="640" height="232" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="182" font-size="13" font-weight="bold" fill="#2B5EA7">④ 位域慎碰硬件；端序由目标架构决定</text>
+    <text x="56" y="210" font-size="13" fill="#2F2E2B">C 标准把位域布局（分配方向、是否跨单元、填充）全部留给编译器——实现定义。</text>
+    <text x="56" y="238" font-size="13" fill="#B3392F">同一份位域代码，GCC / Clang / IAR 位序可能不同——工具链不固定就别拿它罩硬件。</text>
+    <text x="56" y="266" font-size="12" font-family="Consolas,monospace" fill="#2F2E2B">正确做法：#define FIELD_B_MASK (3UL&lt;&lt;1)   /* 读: (reg&amp;M)&gt;&gt;1  写: reg=(reg&amp;~M)|(v&lt;&lt;1) */</text>
+    <text x="56" y="296" font-size="13" fill="#2F2E2B">端序（本机 gcc 宿主实测；Cortex-M 通常默认小端）：</text>
+    <text x="56" y="322" font-size="12" font-family="Consolas,monospace" fill="#6E6B60">0x12345678 在内存里 = 78 56 34 12（低地址→高地址，最低有效字节住最低地址）</text>
+    <text x="56" y="352" font-size="12" fill="#3F7D57">寄存器封装三句真言：顺序定先后、对齐定间隔、volatile 定纪律。</text>
   </g>
 
   <!-- 阶段字幕 -->
-  <g font-size="13" font-weight="bold" fill="#3451b2">
+  <g font-size="13" font-weight="bold" fill="#2B5EA7">
     <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
       <text x="36" y="420">① 地址计算器：GPIOF-&gt;BSRR ≡ 0x40021400+0x18，_Static_assert 编译期钉死</text></g>
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
@@ -106,7 +106,7 @@
   </g>
 
   <!-- 阶段指示点 -->
-  <g transform="translate(630,438)" fill="#3451b2">
+  <g transform="translate(630,438)" fill="#2B5EA7">
     <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
     <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
     <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>

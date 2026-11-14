@@ -1,44 +1,44 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei',sans-serif">
   <title>双 OS 同概念对照：FreeRTOS vs RT-Thread</title>
   <desc>四阶段动画：FreeRTOS 与 RT-Thread 三个机制深对照，背后是两种哲学。① 通知 vs 无：FreeRTOS 任务通知直接写目标 TCB 的通知值，无队列中间层——快约 45%、省 RAM，把性能抠到极致；RT-Thread 无等价物，用二值信号量表达同一件事，坚持“一切皆对象”的模型统一。② 设备框架：FreeRTOS 不规定驱动长什么样——驱动是应用自己的事（裸寄存器/厂商库，复用靠复制粘贴）；RT-Thread 用 rt_device_ops 表（init/open/close/read/write/control）把驱动变成可插拔商品——软件包生态的地基。③ 配置哲学：FreeRTOSConfig.h 是 C 头文件派，#define 手填每个旋钮，简单直接零工具；Kconfig 是菜单派，menuconfig 勾选生成 rtconfig.h、依赖自动检查，加软件包不改源文件，生态可扩展。④ 思想差异：一个抠性能到极致（内核小、机制不替你选），一个求模型统一（框架全、约定替你选）——没有银弹，选型即工程取舍。图上有一个真在跑的对照天平：左右两端分别是 FreeRTOS 与 RT-Thread，绕中间支点来回摆动。</desc>
-  <rect width="720" height="460" fill="#f6f8fa"/>
-  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">双 OS 同概念对照：FreeRTOS vs RT-Thread</text>
+  <rect width="720" height="460" fill="#FDF8EA"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#2B5EA7">双 OS 同概念对照：FreeRTOS vs RT-Thread</text>
   <!-- 副标题上提 4px、列头下压 2px：两者横向相叠，竖向墨迹原本只差 0.5px，Linux 字体下就碰上 -->
-  <text x="24" y="46" font-size="12" fill="#666">同概念，不同取舍</text>
+  <text x="24" y="46" font-size="12" fill="#6E6B60">同概念，不同取舍</text>
 
-  <text x="180" y="60" font-size="11" font-weight="bold" fill="#3451b2" text-anchor="middle">FreeRTOS（性能优先）</text>
-  <text x="540" y="60" font-size="11" font-weight="bold" fill="#1a7f56" text-anchor="middle">RT-Thread（模型统一）</text>
+  <text x="180" y="60" font-size="11" font-weight="bold" fill="#2B5EA7" text-anchor="middle">FreeRTOS（性能优先）</text>
+  <text x="540" y="60" font-size="11" font-weight="bold" fill="#3F7D57" text-anchor="middle">RT-Thread（模型统一）</text>
 
   <!-- 第一行：任务同步 -->
-  <rect x="40" y="64" width="280" height="54" rx="6" fill="#eef2ff" stroke="#cbd5e1"/>
-  <text x="52" y="86" font-size="11.5" font-weight="bold" fill="#3451b2">任务通知直写 TCB</text>
+  <rect x="40" y="64" width="280" height="54" rx="6" fill="#eef2ff" stroke="#D8D2C0"/>
+  <text x="52" y="86" font-size="11.5" font-weight="bold" fill="#2B5EA7">任务通知直写 TCB</text>
   <text x="52" y="104" font-size="11" fill="#57606a">xTaskNotifyGive()：不走队列，快 ~45% · 省 RAM</text>
-  <rect x="328" y="64" width="64" height="54" rx="6" fill="#f1f5f9" stroke="#e2e8f0"/>
-  <text x="360" y="88" font-size="11" font-weight="bold" fill="#24292f" text-anchor="middle">任务同步</text>
-  <text x="360" y="104" font-size="11" fill="#94a3b8" text-anchor="middle">VS</text>
-  <rect x="400" y="64" width="280" height="54" rx="6" fill="#eef7f1" stroke="#cbd5e1"/>
+  <rect x="328" y="64" width="64" height="54" rx="6" fill="#f1f5f9" stroke="#E7E2D4"/>
+  <text x="360" y="88" font-size="11" font-weight="bold" fill="#2F2E2B" text-anchor="middle">任务同步</text>
+  <text x="360" y="104" font-size="11" fill="#9A937F" text-anchor="middle">VS</text>
+  <rect x="400" y="64" width="280" height="54" rx="6" fill="#eef7f1" stroke="#D8D2C0"/>
   <text x="412" y="86" font-size="11.5" font-weight="bold" fill="#166534">无等价物 → 二值信号量</text>
   <text x="412" y="104" font-size="11" fill="#57606a">rt_sem_release/take：一套对象模型打天下</text>
 
   <!-- 第二行：设备驱动 -->
-  <rect x="40" y="122" width="280" height="54" rx="6" fill="#eef2ff" stroke="#cbd5e1"/>
-  <text x="52" y="144" font-size="11.5" font-weight="bold" fill="#3451b2">驱动是应用自己的事</text>
+  <rect x="40" y="122" width="280" height="54" rx="6" fill="#eef2ff" stroke="#D8D2C0"/>
+  <text x="52" y="144" font-size="11.5" font-weight="bold" fill="#2B5EA7">驱动是应用自己的事</text>
   <text x="52" y="162" font-size="11" fill="#57606a">裸寄存器/厂商库，复用靠复制粘贴</text>
-  <rect x="328" y="122" width="64" height="54" rx="6" fill="#f1f5f9" stroke="#e2e8f0"/>
-  <text x="360" y="146" font-size="11" font-weight="bold" fill="#24292f" text-anchor="middle">设备驱动</text>
-  <text x="360" y="162" font-size="11" fill="#94a3b8" text-anchor="middle">VS</text>
-  <rect x="400" y="122" width="280" height="54" rx="6" fill="#eef7f1" stroke="#cbd5e1"/>
+  <rect x="328" y="122" width="64" height="54" rx="6" fill="#f1f5f9" stroke="#E7E2D4"/>
+  <text x="360" y="146" font-size="11" font-weight="bold" fill="#2F2E2B" text-anchor="middle">设备驱动</text>
+  <text x="360" y="162" font-size="11" fill="#9A937F" text-anchor="middle">VS</text>
+  <rect x="400" y="122" width="280" height="54" rx="6" fill="#eef7f1" stroke="#D8D2C0"/>
   <text x="412" y="144" font-size="11.5" font-weight="bold" fill="#166534">设备框架 rt_device_ops</text>
   <text x="412" y="162" font-size="11" fill="#57606a">init/open/read/write/ioctl：驱动变可插拔商品</text>
 
   <!-- 第三行：系统配置 -->
-  <rect x="40" y="180" width="280" height="54" rx="6" fill="#eef2ff" stroke="#cbd5e1"/>
-  <text x="52" y="202" font-size="11.5" font-weight="bold" fill="#3451b2">FreeRTOSConfig.h</text>
+  <rect x="40" y="180" width="280" height="54" rx="6" fill="#eef2ff" stroke="#D8D2C0"/>
+  <text x="52" y="202" font-size="11.5" font-weight="bold" fill="#2B5EA7">FreeRTOSConfig.h</text>
   <text x="52" y="220" font-size="11" fill="#57606a">C 头文件 #define 手填，简单直接零工具</text>
-  <rect x="328" y="180" width="64" height="54" rx="6" fill="#f1f5f9" stroke="#e2e8f0"/>
-  <text x="360" y="204" font-size="11" font-weight="bold" fill="#24292f" text-anchor="middle">系统配置</text>
-  <text x="360" y="220" font-size="11" fill="#94a3b8" text-anchor="middle">VS</text>
-  <rect x="400" y="180" width="280" height="54" rx="6" fill="#eef7f1" stroke="#cbd5e1"/>
+  <rect x="328" y="180" width="64" height="54" rx="6" fill="#f1f5f9" stroke="#E7E2D4"/>
+  <text x="360" y="204" font-size="11" font-weight="bold" fill="#2F2E2B" text-anchor="middle">系统配置</text>
+  <text x="360" y="220" font-size="11" fill="#9A937F" text-anchor="middle">VS</text>
+  <rect x="400" y="180" width="280" height="54" rx="6" fill="#eef7f1" stroke="#D8D2C0"/>
   <text x="412" y="202" font-size="11.5" font-weight="bold" fill="#166534">Kconfig 菜单</text>
   <text x="412" y="220" font-size="11" fill="#57606a">menuconfig：依赖自动检查，软件包生态地基</text>
 
@@ -46,61 +46,61 @@
        幅度 ±3.5°：臂长 160px，4.5° 时托盘标签会下沉 12.6px 压进 y=307 的说明行 -->
   <g transform="rotate(-3.5 360 254)">
     <animateTransform attributeName="transform" type="rotate" values="-3.5 360 254;3.5 360 254;-3.5 360 254" keyTimes="0;0.5;1" dur="4s" repeatCount="indefinite"/>
-    <line x1="200" y1="254" x2="520" y2="254" stroke="#333" stroke-width="3" stroke-linecap="round"/>
-    <line x1="200" y1="254" x2="200" y2="270" stroke="#666" stroke-width="1.5"/>
-    <rect x="148" y="270" width="104" height="16" rx="4" fill="#dbe7ff" stroke="#3451b2"/>
-    <text x="200" y="282" font-size="11" font-weight="bold" fill="#3451b2" text-anchor="middle">FreeRTOS 极致性能</text>
-    <line x1="520" y1="254" x2="520" y2="270" stroke="#666" stroke-width="1.5"/>
-    <rect x="468" y="270" width="104" height="16" rx="4" fill="#d8f3e5" stroke="#1a7f56"/>
+    <line x1="200" y1="254" x2="520" y2="254" stroke="#2F2E2B" stroke-width="3" stroke-linecap="round"/>
+    <line x1="200" y1="254" x2="200" y2="270" stroke="#6E6B60" stroke-width="1.5"/>
+    <rect x="148" y="270" width="104" height="16" rx="4" fill="#DCE6F2" stroke="#2B5EA7"/>
+    <text x="200" y="282" font-size="11" font-weight="bold" fill="#2B5EA7" text-anchor="middle">FreeRTOS 极致性能</text>
+    <line x1="520" y1="254" x2="520" y2="270" stroke="#6E6B60" stroke-width="1.5"/>
+    <rect x="468" y="270" width="104" height="16" rx="4" fill="#d8f3e5" stroke="#3F7D57"/>
     <text x="520" y="282" font-size="11" font-weight="bold" fill="#166534" text-anchor="middle">RT-Thread 统一模型</text>
   </g>
-  <circle cx="360" cy="254" r="4.5" fill="#24292f"/>
-  <polygon points="360,258 348,290 372,290" fill="#cbd5e1"/>
+  <circle cx="360" cy="254" r="4.5" fill="#2F2E2B"/>
+  <polygon points="360,258 348,290 372,290" fill="#D8D2C0"/>
   <line x1="330" y1="290" x2="390" y2="290" stroke="#d0d7de" stroke-width="3"/>
-  <text x="360" y="307" font-size="11" fill="#94a3b8" text-anchor="middle">天平两端：极致性能 vs 统一模型，摆动即取舍</text>
+  <text x="360" y="307" font-size="11" fill="#9A937F" text-anchor="middle">天平两端：极致性能 vs 统一模型，摆动即取舍</text>
 
   <!-- 阶段一：通知 vs 无 -->
   <g opacity="1">
     <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="312" width="640" height="94" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="332" font-size="13" font-weight="bold" fill="#3451b2">① 通知 vs 无：直写 TCB 的极致性能</text>
-    <text x="56" y="353" font-size="11.5" fill="#333">xTaskNotifyGive() 直接改目标 TCB 的通知值，不走队列——更快更省；RT-Thread 无等价物，二值信号量顶上。</text>
-    <text x="56" y="374" font-size="11.5" font-family="Consolas,monospace" fill="#333">xTaskNotifyGive(hTask);  /* 快 ~45% */   vs   rt_sem_release(&amp;sem);  /* 模型统一 */</text>
-    <text x="56" y="395" font-size="11.5" fill="#d97706">快 45% 的代价是语义绑死 FreeRTOS；模型统一的代价是多一层对象开销。</text>
+    <rect x="40" y="312" width="640" height="94" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="332" font-size="13" font-weight="bold" fill="#2B5EA7">① 通知 vs 无：直写 TCB 的极致性能</text>
+    <text x="56" y="353" font-size="11.5" fill="#2F2E2B">xTaskNotifyGive() 直接改目标 TCB 的通知值，不走队列——更快更省；RT-Thread 无等价物，二值信号量顶上。</text>
+    <text x="56" y="374" font-size="11.5" font-family="Consolas,monospace" fill="#2F2E2B">xTaskNotifyGive(hTask);  /* 快 ~45% */   vs   rt_sem_release(&amp;sem);  /* 模型统一 */</text>
+    <text x="56" y="395" font-size="11.5" fill="#A8801F">快 45% 的代价是语义绑死 FreeRTOS；模型统一的代价是多一层对象开销。</text>
   </g>
 
   <!-- 阶段二：设备框架 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="312" width="640" height="94" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="332" font-size="13" font-weight="bold" fill="#1a7f56">② 设备框架：驱动是私事，还是可插拔商品</text>
-    <text x="56" y="353" font-size="11.5" fill="#333">FreeRTOS 不规定驱动形态——厂商库/裸寄存器，换芯片重写；RT-Thread 用 rt_device_ops 统一接口，驱动可插拔。</text>
-    <text x="56" y="374" font-size="11.5" font-family="Consolas,monospace" fill="#333">static const struct rt_device_ops ops = { init, open, close, read, write, control };</text>
-    <text x="56" y="395" font-size="11.5" fill="#3eaf7c">ops 表是“约定大于配置”：应用按接口编程、驱动按接口交付——软件包生态的地基。</text>
+    <rect x="40" y="312" width="640" height="94" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="332" font-size="13" font-weight="bold" fill="#3F7D57">② 设备框架：驱动是私事，还是可插拔商品</text>
+    <text x="56" y="353" font-size="11.5" fill="#2F2E2B">FreeRTOS 不规定驱动形态——厂商库/裸寄存器，换芯片重写；RT-Thread 用 rt_device_ops 统一接口，驱动可插拔。</text>
+    <text x="56" y="374" font-size="11.5" font-family="Consolas,monospace" fill="#2F2E2B">static const struct rt_device_ops ops = { init, open, close, read, write, control };</text>
+    <text x="56" y="395" font-size="11.5" fill="#3F7D57">ops 表是“约定大于配置”：应用按接口编程、驱动按接口交付——软件包生态的地基。</text>
   </g>
 
   <!-- 阶段三：配置哲学 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="312" width="640" height="94" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="332" font-size="13" font-weight="bold" fill="#d97706">③ 配置哲学：C 头文件派 vs 菜单派</text>
-    <text x="56" y="353" font-size="11.5" fill="#333">FreeRTOSConfig.h 全靠 #define 手填，简单直接、零工具依赖；Kconfig 菜单勾选生成 rtconfig.h，依赖自动检查。</text>
-    <text x="56" y="374" font-size="11.5" font-family="Consolas,monospace" fill="#333">#define configUSE_PREEMPTION 1  /* 手填 */   vs   menuconfig → 生成 rtconfig.h</text>
-    <text x="56" y="395" font-size="11.5" fill="#d97706">生态一大，Kconfig 的依赖检查救命——冲突在菜单里拦下，而不是编译报错一百行。</text>
+    <rect x="40" y="312" width="640" height="94" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="332" font-size="13" font-weight="bold" fill="#A8801F">③ 配置哲学：C 头文件派 vs 菜单派</text>
+    <text x="56" y="353" font-size="11.5" fill="#2F2E2B">FreeRTOSConfig.h 全靠 #define 手填，简单直接、零工具依赖；Kconfig 菜单勾选生成 rtconfig.h，依赖自动检查。</text>
+    <text x="56" y="374" font-size="11.5" font-family="Consolas,monospace" fill="#2F2E2B">#define configUSE_PREEMPTION 1  /* 手填 */   vs   menuconfig → 生成 rtconfig.h</text>
+    <text x="56" y="395" font-size="11.5" fill="#A8801F">生态一大，Kconfig 的依赖检查救命——冲突在菜单里拦下，而不是编译报错一百行。</text>
   </g>
 
   <!-- 阶段四：思想差异 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="312" width="640" height="94" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="332" font-size="13" font-weight="bold" fill="#24292f">④ 思想差异：抠性能到极致 vs 求模型统一</text>
-    <text x="56" y="353" font-size="11.5" fill="#333">FreeRTOS 内核极小、机制不替你选——把性能抠到极致；RT-Thread 框架全、约定替你选——把模型做到统一。</text>
-    <text x="56" y="374" font-size="11.5" font-family="Consolas,monospace" fill="#333">/* FreeRTOS */ 机制最小化，不替你选    /* RT-Thread */ 约定最大化，替你选</text>
-    <text x="56" y="395" font-size="11.5" fill="#3451b2">没有银弹：深度嵌入式偏前者，产品化与生态协作偏后者——天平怎么摆看工程约束。</text>
+    <rect x="40" y="312" width="640" height="94" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="332" font-size="13" font-weight="bold" fill="#2F2E2B">④ 思想差异：抠性能到极致 vs 求模型统一</text>
+    <text x="56" y="353" font-size="11.5" fill="#2F2E2B">FreeRTOS 内核极小、机制不替你选——把性能抠到极致；RT-Thread 框架全、约定替你选——把模型做到统一。</text>
+    <text x="56" y="374" font-size="11.5" font-family="Consolas,monospace" fill="#2F2E2B">/* FreeRTOS */ 机制最小化，不替你选    /* RT-Thread */ 约定最大化，替你选</text>
+    <text x="56" y="395" font-size="11.5" fill="#2B5EA7">没有银弹：深度嵌入式偏前者，产品化与生态协作偏后者——天平怎么摆看工程约束。</text>
   </g>
 
   <!-- 阶段字幕 -->
-  <g font-size="13" font-weight="bold" fill="#3451b2">
+  <g font-size="13" font-weight="bold" fill="#2B5EA7">
     <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
       <text x="36" y="428">① 通知 vs 无：直写 TCB 快 ~45%，信号量换模型统一</text></g>
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
@@ -112,7 +112,7 @@
   </g>
 
   <!-- 阶段指示点 -->
-  <g transform="translate(630,442)" fill="#3451b2">
+  <g transform="translate(630,442)" fill="#2B5EA7">
     <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
     <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
     <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>

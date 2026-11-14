@@ -1,18 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei',sans-serif">
   <title>复位之后一毫秒：从两个地址到 main()</title>
   <desc>复位之后一毫秒：从两个地址到 main()。硬件只读两个字（初始 MSP、复位 PC），剩下十几条指令全是软件自己干。动效承担两件事：五条工序支管被逻辑分析仪那样逐条画出来（走到哪一站，哪一站的管道才存在；①②③ 通向 Flash、⑤⑥ 通向 RAM，④ 写的 CPACR 两边都不是，所以不接线），.data 的三个方块在阶段⑤从 Flash 滑进 RAM，不是瞬移。</desc>
-  <rect width="720" height="440" fill="#f6f8fa"/>
-  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">复位之后一毫秒：从两个地址到 main()</text>
-  <text x="24" y="50" font-size="12" fill="#666">硬件只读两个字（初始 MSP、复位 PC），剩下十几条指令全是软件自己干</text>
+  <rect width="720" height="440" fill="#FDF8EA"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#2B5EA7">复位之后一毫秒：从两个地址到 main()</text>
+  <text x="24" y="50" font-size="12" fill="#6E6B60">硬件只读两个字（初始 MSP、复位 PC），剩下十几条指令全是软件自己干</text>
 
   <!-- ===== 工序条：六站 ===== -->
   <g font-size="11" text-anchor="middle">
-    <g fill="#ffffff" stroke="#cbd5e1">
+    <g fill="#FFFDF6" stroke="#D8D2C0">
       <rect x="36" y="68" width="104" height="46" rx="6"/><rect x="152" y="68" width="104" height="46" rx="6"/>
       <rect x="268" y="68" width="104" height="46" rx="6"/><rect x="384" y="68" width="104" height="46" rx="6"/>
       <rect x="500" y="68" width="104" height="46" rx="6"/><rect x="616" y="68" width="104" height="46" rx="6"/>
     </g>
-    <g fill="#3451b2" font-weight="bold">
+    <g fill="#2B5EA7" font-weight="bold">
       <text x="88" y="86">① 上电复位</text><text x="204" y="86">② 读 0x00</text>
       <text x="320" y="86">③ 读 0x04</text><text x="436" y="86">④ 开 FPU</text>
       <text x="552" y="86">⑤ 搬 .data</text><text x="668" y="86">⑥ 清 .bss</text>
@@ -28,7 +28,7 @@
        一条 path 的六个子路径不行——dash 会在每个子路径重新起算，几根会同时长；所以拆成几段，
        每段 0.13 的窗口（= 一个阶段槽），最后一段在 0.65→0.78 收尾。
        ④ 开 FPU 故意不接线：它写的 CPACR 既不在 Flash 也不在 RAM，接向哪块面板都是假话。 -->
-  <g stroke="#94a3b8" stroke-width="2" fill="none">
+  <g stroke="#9A937F" stroke-width="2" fill="none">
     <path d="M88,114 V130" pathLength="16" stroke-dasharray="16" stroke-dashoffset="16">
       <animate attributeName="stroke-dashoffset" values="16;0;0" keyTimes="0;0.13;1" dur="18s" repeatCount="indefinite"/>
     </path>
@@ -50,54 +50,54 @@
   <g transform="translate(88,58)">
     <animateTransform attributeName="transform" type="translate" calcMode="discrete"
       values="88 58;204 58;320 58;436 58;552 58;668 58;668 58;668 58" keyTimes="0;0.13;0.26;0.39;0.52;0.65;0.78;1" dur="18s" repeatCount="indefinite"/>
-    <circle r="6" fill="#d97706"/>
+    <circle r="6" fill="#A8801F"/>
   </g>
 
   <!-- ===== Flash 面板 ===== -->
-  <rect x="36" y="130" width="320" height="240" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
-  <text x="52" y="154" font-size="12" font-weight="bold" fill="#3451b2">Flash @0x08000000 · 断电不丢</text>
+  <rect x="36" y="130" width="320" height="240" fill="#FFFDF6" stroke="#D8D2C0" rx="8"/>
+  <text x="52" y="154" font-size="12" font-weight="bold" fill="#2B5EA7">Flash @0x08000000 · 断电不丢</text>
 
-  <rect x="52" y="166" width="288" height="30" fill="#eef2ff" stroke="#3451b2" rx="4"/>
-  <text x="62" y="186" font-size="11" fill="#3451b2" font-family="Consolas,monospace">0x08000000 → _estack（初始 MSP）</text>
-  <rect x="52" y="204" width="288" height="30" fill="#eef2ff" stroke="#3451b2" rx="4"/>
-  <text x="62" y="224" font-size="11" fill="#3451b2" font-family="Consolas,monospace">0x08000004 → Reset_Handler（入口）</text>
+  <rect x="52" y="166" width="288" height="30" fill="#eef2ff" stroke="#2B5EA7" rx="4"/>
+  <text x="62" y="186" font-size="11" fill="#2B5EA7" font-family="Consolas,monospace">0x08000000 → _estack（初始 MSP）</text>
+  <rect x="52" y="204" width="288" height="30" fill="#eef2ff" stroke="#2B5EA7" rx="4"/>
+  <text x="62" y="224" font-size="11" fill="#2B5EA7" font-family="Consolas,monospace">0x08000004 → Reset_Handler（入口）</text>
 
   <!-- 两读高亮框 -->
-  <rect x="48" y="162" width="296" height="38" fill="none" stroke="#d97706" stroke-width="2.5" rx="6" opacity="0">
+  <rect x="48" y="162" width="296" height="38" fill="none" stroke="#A8801F" stroke-width="2.5" rx="6" opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;1;0;0;0;0;0" keyTimes="0;0.13;0.26;0.39;0.52;0.65;0.78;1" dur="18s" repeatCount="indefinite"/>
     <animateTransform attributeName="transform" type="translate" calcMode="discrete"
       values="0 0;0 0;0 38;0 38;0 38;0 38;0 38;0 38" keyTimes="0;0.13;0.26;0.39;0.52;0.65;0.78;1" dur="18s" repeatCount="indefinite"/>
   </rect>
 
-  <rect x="52" y="252" width="288" height="52" fill="#fef3c7" stroke="#d97706" rx="6"/>
+  <rect x="52" y="252" width="288" height="52" fill="#fef3c7" stroke="#A8801F" rx="6"/>
   <text x="64" y="274" font-size="11" font-weight="bold" fill="#92400e">.data 初值仓库（_sidata）</text>
   <text x="64" y="292" font-size="11" fill="#92400e">全局变量的初值存在这里，等搬运</text>
 
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;1;1;1;1" keyTimes="0;0.13;0.26;0.39;0.52;0.65;0.78;1" dur="18s" repeatCount="indefinite"/>
-    <rect x="52" y="318" width="288" height="36" fill="#f8fafc" stroke="#3451b2" rx="6"/>
-    <text x="64" y="334" font-size="11" fill="#3451b2" font-family="Consolas,monospace">CPACR @0xE000ED88：CP10/CP11 开门</text>
-    <text x="64" y="348" font-size="11" fill="#666">不做这步，第一条浮点指令就 UsageFault</text>
+    <rect x="52" y="318" width="288" height="36" fill="#FBF3DF" stroke="#2B5EA7" rx="6"/>
+    <text x="64" y="334" font-size="11" fill="#2B5EA7" font-family="Consolas,monospace">CPACR @0xE000ED88：CP10/CP11 开门</text>
+    <text x="64" y="348" font-size="11" fill="#6E6B60">不做这步，第一条浮点指令就 UsageFault</text>
   </g>
 
   <!-- ===== RAM 面板 ===== -->
-  <rect x="380" y="130" width="304" height="240" fill="#ffffff" stroke="#cbd5e1" rx="8"/>
-  <text x="396" y="154" font-size="12" font-weight="bold" fill="#3451b2">RAM @0x20000000 · 掉电即失</text>
+  <rect x="380" y="130" width="304" height="240" fill="#FFFDF6" stroke="#D8D2C0" rx="8"/>
+  <text x="396" y="154" font-size="12" font-weight="bold" fill="#2B5EA7">RAM @0x20000000 · 掉电即失</text>
 
-  <rect x="396" y="166" width="272" height="34" fill="#dbe7ff" stroke="#3451b2" rx="4"/>
-  <text x="408" y="188" font-size="11" fill="#3451b2">栈：MSP = _estack，从顶端向下长</text>
+  <rect x="396" y="166" width="272" height="34" fill="#DCE6F2" stroke="#2B5EA7" rx="4"/>
+  <text x="408" y="188" font-size="11" fill="#2B5EA7">栈：MSP = _estack，从顶端向下长</text>
 
-  <rect x="396" y="214" width="272" height="52" fill="#f8fafc" stroke="#94a3b8" stroke-dasharray="5 3" rx="6">
-    <animate attributeName="fill" calcMode="discrete" values="#f8fafc;#dcfce7;#dcfce7" keyTimes="0;0.65;1" dur="18s" repeatCount="indefinite"/>
-    <animate attributeName="stroke" calcMode="discrete" values="#94a3b8;#3eaf7c;#3eaf7c" keyTimes="0;0.65;1" dur="18s" repeatCount="indefinite"/>
+  <rect x="396" y="214" width="272" height="52" fill="#FBF3DF" stroke="#9A937F" stroke-dasharray="5 3" rx="6">
+    <animate attributeName="fill" calcMode="discrete" values="#FBF3DF;#dcfce7;#dcfce7" keyTimes="0;0.65;1" dur="18s" repeatCount="indefinite"/>
+    <animate attributeName="stroke" calcMode="discrete" values="#9A937F;#3F7D57;#3F7D57" keyTimes="0;0.65;1" dur="18s" repeatCount="indefinite"/>
   </rect>
-  <text x="408" y="236" font-size="11" fill="#3451b2">.data 目的地（_sdata .. _edata）</text>
+  <text x="408" y="236" font-size="11" fill="#2B5EA7">.data 目的地（_sdata .. _edata）</text>
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;1" keyTimes="0;0.65;1" dur="18s" repeatCount="indefinite"/>
     <text x="408" y="254" font-size="11" fill="#166534">搬完：初值生效，C 的承诺兑现</text>
   </g>
 
-  <rect x="396" y="280" width="272" height="52" fill="#f1f5f9" stroke="#94a3b8" rx="6">
+  <rect x="396" y="280" width="272" height="52" fill="#f1f5f9" stroke="#9A937F" rx="6">
     <animate attributeName="fill" calcMode="discrete" values="#f1f5f9;#dcfce7;#dcfce7" keyTimes="0;0.78;1" dur="18s" repeatCount="indefinite"/>
   </rect>
   <g opacity="1">
@@ -111,10 +111,10 @@
   </g>
 
   <!-- 搬运小方块 -->
-  <path d="M356,278 L396,240" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4 3" fill="none">
-    <animate attributeName="stroke" calcMode="discrete" values="#cbd5e1;#3eaf7c;#3eaf7c" keyTimes="0;0.52;1" dur="18s" repeatCount="indefinite"/>
+  <path d="M356,278 L396,240" stroke="#D8D2C0" stroke-width="2" stroke-dasharray="4 3" fill="none">
+    <animate attributeName="stroke" calcMode="discrete" values="#D8D2C0;#3F7D57;#3F7D57" keyTimes="0;0.52;1" dur="18s" repeatCount="indefinite"/>
   </path>
-  <g fill="#d97706" transform="translate(0,0)">
+  <g fill="#A8801F" transform="translate(0,0)">
     <!-- 搬 .data：三个方块在阶段⑤（0.52→0.65）被逐拍滑进 RAM，不是到点了瞬移过去 -->
     <animateTransform attributeName="transform" type="translate"
       values="0 0;0 0;0 0;0 0;0 0;52 -40;52 -40;52 -40" keyTimes="0;0.13;0.26;0.39;0.52;0.65;0.78;1" dur="18s" repeatCount="indefinite"/>
@@ -124,7 +124,7 @@
   </g>
 
   <!-- ===== 阶段字幕 ===== -->
-  <g font-size="13" font-weight="bold" fill="#3451b2">
+  <g font-size="13" font-weight="bold" fill="#2B5EA7">
     <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0;0;0" keyTimes="0;0.13;0.26;0.39;0.52;0.65;0.78;1" dur="18s" repeatCount="indefinite"/>
       <text x="36" y="400">① 复位松手：CPU 醒来——没有 OS、没有 C，硬件只会做两件事</text></g>
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0;0;0" keyTimes="0;0.13;0.26;0.39;0.52;0.65;0.78;1" dur="18s" repeatCount="indefinite"/>
@@ -140,7 +140,7 @@
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;0;0;1;1" keyTimes="0;0.13;0.26;0.39;0.52;0.65;0.78;1" dur="18s" repeatCount="indefinite"/>
       <text x="36" y="400">⑦ bl main：C 世界开门营业（main 敢 return 就进死循环）</text></g>
   </g>
-  <g font-size="11" fill="#666">
+  <g font-size="11" fill="#6E6B60">
     <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0;0;0" keyTimes="0;0.13;0.26;0.39;0.52;0.65;0.78;1" dur="18s" repeatCount="indefinite"/>
       <text x="36" y="420">0 号地址是谁由 BOOT 引脚映射决定：正常 = 用户 Flash 的别名</text></g>
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0;0;0" keyTimes="0;0.13;0.26;0.39;0.52;0.65;0.78;1" dur="18s" repeatCount="indefinite"/>
@@ -158,7 +158,7 @@
   </g>
 
   <!-- 阶段指示点：keyTimes 照抄字幕的 7 个槽位（最后一格落在 [0.78,1)，不是回环槽） -->
-  <g transform="translate(576,422)" fill="#3451b2">
+  <g transform="translate(576,422)" fill="#2B5EA7">
     <circle cx="0" cy="0" r="5" opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.13;0.26;0.39;0.52;0.65;0.78;1" dur="18s" repeatCount="indefinite"/></circle>
     <circle cx="18" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.13;0.26;0.39;0.52;0.65;0.78;1" dur="18s" repeatCount="indefinite"/></circle>
     <circle cx="36" cy="0" r="5" opacity="0.2"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.13;0.26;0.39;0.52;0.65;0.78;1" dur="18s" repeatCount="indefinite"/></circle>

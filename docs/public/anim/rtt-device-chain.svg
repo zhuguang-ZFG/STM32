@@ -1,40 +1,40 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe Print','Comic Sans MS','Microsoft YaHei',sans-serif">
   <title>RT-Thread 设备框架调用链：应用 → 框架 → 驱动 → 寄存器</title>
   <desc>四阶段动画：RT-Thread 设备框架的调用链：应用层调 rt_device_find("uart1") 按名取柄，再调 rt_device_open/read/write/control 统一 API；框架层通过 ops 表（init/open/close/read/write/control）做一次间接跳转；ops 表由驱动作者实现；底层落到寄存器。驱动填表 ops，应用喊名 find，换板只换 ops 表，应用纹丝不动——与 Linux 字符设备的 file_operations 一脉相承。注册时 rt_device_register 挂进对象容器，finsh 的 list_device 一屏看全家。图上有一个真在跑的调用包：从应用层的 rt_device_write 出发，经 ops 表跳转到驱动的 write 函数，再落到寄存器地址。</desc>
-  <rect width="720" height="460" fill="#f6f8fa"/>
-  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">RT-Thread 设备框架：应用喊名 · 框架查表 · 驱动落地</text>
-  <text x="24" y="50" font-size="12" fill="#666">换板只换 ops 表，应用的 rt_device_write 一行不改——与 Linux file_operations 同源</text>
+  <rect width="720" height="460" fill="#FDF8EA"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#2B5EA7">RT-Thread 设备框架：应用喊名 · 框架查表 · 驱动落地</text>
+  <text x="24" y="50" font-size="12" fill="#6E6B60">换板只换 ops 表，应用的 rt_device_write 一行不改——与 Linux file_operations 同源</text>
 
   <defs>
     <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-      <path d="M0 0L8 4L0 8z" fill="#94a3b8"/>
+      <path d="M0 0L8 4L0 8z" fill="#9A937F"/>
     </marker>
   </defs>
 
   <!-- 调用包竖线（在层框左侧） -->
-  <line x1="160" y1="80" x2="160" y2="230" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 3"/>
-  <text x="160" y="74" font-size="11" fill="#dc2626" text-anchor="middle" font-weight="bold">调用包</text>
+  <line x1="160" y1="80" x2="160" y2="230" stroke="#B3392F" stroke-width="2" stroke-dasharray="4 3"/>
+  <text x="160" y="74" font-size="11" fill="#B3392F" text-anchor="middle" font-weight="bold">调用包</text>
 
   <!-- 应用层 -->
-  <rect x="180" y="80" width="380" height="30" rx="6" fill="#dbeafe" stroke="#3451b2"/>
-  <text x="370" y="100" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">应用层：rt_device_write(uart1, 0, buf, len)</text>
+  <rect x="180" y="80" width="380" height="30" rx="6" fill="#dbeafe" stroke="#2B5EA7"/>
+  <text x="370" y="100" font-size="13" font-weight="bold" fill="#2B5EA7" text-anchor="middle">应用层：rt_device_write(uart1, 0, buf, len)</text>
 
   <!-- 框架层 -->
-  <rect x="180" y="120" width="380" height="30" rx="6" fill="#fef3c7" stroke="#d97706"/>
+  <rect x="180" y="120" width="380" height="30" rx="6" fill="#fef3c7" stroke="#A8801F"/>
   <text x="370" y="140" font-size="13" font-weight="bold" fill="#92400e" text-anchor="middle">框架层：device->ops->write(device, 0, buf, len)</text>
 
   <!-- 驱动层 -->
-  <rect x="180" y="160" width="380" height="30" rx="6" fill="#d8f3e5" stroke="#1a7f56"/>
+  <rect x="180" y="160" width="380" height="30" rx="6" fill="#d8f3e5" stroke="#3F7D57"/>
   <text x="370" y="180" font-size="13" font-weight="bold" fill="#166534" text-anchor="middle">驱动层：drv_uart_write(bus, buf, len)</text>
 
   <!-- 寄存器层 -->
-  <rect x="180" y="200" width="380" height="30" rx="6" fill="#f1f5f9" stroke="#cbd5e1"/>
-  <text x="370" y="220" font-size="12" font-family="Consolas,monospace" fill="#333" text-anchor="middle">寄存器：*(volatile uint32_t*)0x40011004 = ch</text>
+  <rect x="180" y="200" width="380" height="30" rx="6" fill="#f1f5f9" stroke="#D8D2C0"/>
+  <text x="370" y="220" font-size="12" font-family="Consolas,monospace" fill="#2F2E2B" text-anchor="middle">寄存器：*(volatile uint32_t*)0x40011004 = ch</text>
 
   <!-- 层间向下箭头 -->
-  <line x1="370" y1="110" x2="370" y2="118" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
-  <line x1="370" y1="150" x2="370" y2="158" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
-  <line x1="370" y1="190" x2="370" y2="198" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="370" y1="110" x2="370" y2="118" stroke="#9A937F" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="370" y1="150" x2="370" y2="158" stroke="#9A937F" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="370" y1="190" x2="370" y2="198" stroke="#9A937F" stroke-width="1.5" marker-end="url(#arr)"/>
 
   <!-- 右侧角色标签 -->
   <text x="575" y="100" font-size="11" fill="#57606a">喊名 + write</text>
@@ -43,56 +43,56 @@
   <text x="575" y="220" font-size="11" fill="#57606a">落到寄存器</text>
 
   <!-- 连续运动：调用包从应用层向寄存器层流动 -->
-  <circle cx="160" cy="95" r="6" fill="#dc2626">
+  <circle cx="160" cy="95" r="6" fill="#B3392F">
     <animate attributeName="cy" values="95;215;95" dur="4s" repeatCount="indefinite"/>
   </circle>
 
   <!-- 阶段一：应用喊名 find -->
   <g opacity="1">
     <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="266" width="640" height="128" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="288" font-size="13" font-weight="bold" fill="#3451b2">① 应用喊名 find：按名取柄，不碰地址</text>
-    <text x="56" y="312" font-size="13" fill="#333">应用调 rt_device_find("uart1")，按名在对象容器里查，返回 rt_device_t 句柄。</text>
-    <text x="56" y="336" font-size="13" fill="#333">之后所有操作都走这个句柄：open/read/write/control，不再碰寄存器地址。</text>
-    <text x="56" y="360" font-size="12" font-family="Consolas,monospace" fill="#333">rt_device_t uart1 = rt_device_find("uart1");</text>
-    <text x="56" y="380" font-size="11" fill="#d97706">这一步把"哪个外设"和"怎么操作"解耦：应用只知道名字。</text>
+    <rect x="40" y="266" width="640" height="128" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="288" font-size="13" font-weight="bold" fill="#2B5EA7">① 应用喊名 find：按名取柄，不碰地址</text>
+    <text x="56" y="312" font-size="13" fill="#2F2E2B">应用调 rt_device_find("uart1")，按名在对象容器里查，返回 rt_device_t 句柄。</text>
+    <text x="56" y="336" font-size="13" fill="#2F2E2B">之后所有操作都走这个句柄：open/read/write/control，不再碰寄存器地址。</text>
+    <text x="56" y="360" font-size="12" font-family="Consolas,monospace" fill="#2F2E2B">rt_device_t uart1 = rt_device_find("uart1");</text>
+    <text x="56" y="380" font-size="11" fill="#A8801F">这一步把"哪个外设"和"怎么操作"解耦：应用只知道名字。</text>
   </g>
 
   <!-- 阶段二：框架查 ops 表 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="266" width="640" height="128" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <rect x="40" y="266" width="640" height="128" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
     <text x="56" y="288" font-size="13" font-weight="bold" fill="#92400e">② 框架查 ops 表：一次间接跳转，不关心硬件</text>
-    <text x="56" y="312" font-size="13" fill="#333">rt_device_write 内部调 device->ops->write，ops 是驱动填的函数指针表。</text>
-    <text x="56" y="336" font-size="13" fill="#333">ops 表六个槽：init/open/close/read/write/control——框架只做一次间接跳转。</text>
-    <text x="56" y="360" font-size="12" font-family="Consolas,monospace" fill="#333">struct rt_device_ops { init, open, close, read, write, control };</text>
-    <text x="56" y="380" font-size="11" fill="#3eaf7c">框架不关心具体硬件，只负责把调用转给 ops 里那个函数指针。</text>
+    <text x="56" y="312" font-size="13" fill="#2F2E2B">rt_device_write 内部调 device->ops->write，ops 是驱动填的函数指针表。</text>
+    <text x="56" y="336" font-size="13" fill="#2F2E2B">ops 表六个槽：init/open/close/read/write/control——框架只做一次间接跳转。</text>
+    <text x="56" y="360" font-size="12" font-family="Consolas,monospace" fill="#2F2E2B">struct rt_device_ops { init, open, close, read, write, control };</text>
+    <text x="56" y="380" font-size="11" fill="#3F7D57">框架不关心具体硬件，只负责把调用转给 ops 里那个函数指针。</text>
   </g>
 
   <!-- 阶段三：驱动实现落地 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="266" width="640" height="128" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="288" font-size="13" font-weight="bold" fill="#1a7f56">③ 驱动实现落地：唯一碰硬件的地方</text>
-    <text x="56" y="312" font-size="13" fill="#333">驱动的 write 函数操作具体寄存器：*(volatile uint32_t*)0x40011004 = ch。</text>
-    <text x="56" y="336" font-size="13" fill="#333">寄存器地址、位定义、时序要求都在这一层——驱动作者填 ops 表。</text>
-    <text x="56" y="360" font-size="12" font-family="Consolas,monospace" fill="#333">static const struct rt_device_ops uart_ops = { ...drv_uart_write };</text>
-    <text x="56" y="380" font-size="11" fill="#3eaf7c">框架和应用都不用改——硬件细节被封死在驱动这一层里。</text>
+    <rect x="40" y="266" width="640" height="128" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="288" font-size="13" font-weight="bold" fill="#3F7D57">③ 驱动实现落地：唯一碰硬件的地方</text>
+    <text x="56" y="312" font-size="13" fill="#2F2E2B">驱动的 write 函数操作具体寄存器：*(volatile uint32_t*)0x40011004 = ch。</text>
+    <text x="56" y="336" font-size="13" fill="#2F2E2B">寄存器地址、位定义、时序要求都在这一层——驱动作者填 ops 表。</text>
+    <text x="56" y="360" font-size="12" font-family="Consolas,monospace" fill="#2F2E2B">static const struct rt_device_ops uart_ops = { ...drv_uart_write };</text>
+    <text x="56" y="380" font-size="11" fill="#3F7D57">框架和应用都不用改——硬件细节被封死在驱动这一层里。</text>
   </g>
 
   <!-- 阶段四：换板只换 ops 应用不动 -->
   <g opacity="0">
     <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
-    <rect x="40" y="266" width="640" height="128" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="56" y="288" font-size="13" font-weight="bold" fill="#d97706">④ 换板只换 ops：应用纹丝不动</text>
-    <text x="56" y="312" font-size="13" fill="#333">换芯片：只改 ops 表里的函数指针，指向新驱动的实现。</text>
-    <text x="56" y="336" font-size="13" fill="#333">应用的 rt_device_write("uart1", ...) 一行不改——这就是设备框架的价值。</text>
-    <text x="56" y="360" font-size="12" font-family="Consolas,monospace" fill="#333">rt_device_register(&amp;uart1_dev, "uart1", ...);  // 挂进对象容器</text>
-    <text x="56" y="380" font-size="11" fill="#3eaf7c">与 Linux 字符设备 file_operations 同源；finsh 的 list_device 一屏看全家。</text>
+    <rect x="40" y="266" width="640" height="128" rx="8" fill="#FBF3DF" stroke="#E7E2D4"/>
+    <text x="56" y="288" font-size="13" font-weight="bold" fill="#A8801F">④ 换板只换 ops：应用纹丝不动</text>
+    <text x="56" y="312" font-size="13" fill="#2F2E2B">换芯片：只改 ops 表里的函数指针，指向新驱动的实现。</text>
+    <text x="56" y="336" font-size="13" fill="#2F2E2B">应用的 rt_device_write("uart1", ...) 一行不改——这就是设备框架的价值。</text>
+    <text x="56" y="360" font-size="12" font-family="Consolas,monospace" fill="#2F2E2B">rt_device_register(&amp;uart1_dev, "uart1", ...);  // 挂进对象容器</text>
+    <text x="56" y="380" font-size="11" fill="#3F7D57">与 Linux 字符设备 file_operations 同源；finsh 的 list_device 一屏看全家。</text>
   </g>
 
   <!-- 阶段字幕 -->
-  <g font-size="13" font-weight="bold" fill="#3451b2">
+  <g font-size="13" font-weight="bold" fill="#2B5EA7">
     <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;1" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
       <text x="36" y="420">① 应用喊名：rt_device_find("uart1") 按名取柄</text></g>
     <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
@@ -104,7 +104,7 @@
   </g>
 
   <!-- 阶段指示点 -->
-  <g transform="translate(630,438)" fill="#3451b2">
+  <g transform="translate(630,438)" fill="#2B5EA7">
     <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
     <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
     <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
