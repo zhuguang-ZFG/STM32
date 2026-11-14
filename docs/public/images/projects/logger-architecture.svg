@@ -80,7 +80,7 @@
   <!-- 规则 -->
   <rect x="24" y="282" width="672" height="92" fill="#fdf3e1" stroke="#d97706" rx="6"/>
   <g font-size="12" fill="#a16207">
-    <text x="40" y="304">每条记录是 64 字节 SAMPLE：sequence · timestamp · generation · valid_mask · raw[6] · filtered[6]，全部小端</text>
+    <text x="40" y="304">每条 SAMPLE 载荷 64 字节（线上 74 B）：sequence · timestamp · generation · valid_mask · raw[6] · filtered[6]，全部小端</text>
     <text x="40" y="324">队列满就丢新记录并计数；串口没有流控，主机靠 sequence 断号发现丢失，不承诺无限缓存</text>
     <text x="40" y="344">"健康" = 每个任务在期限内完成有界工作；传感器报错但循环仍在走，不算卡死，不该触发复位</text>
     <text x="40" y="364">任务层、滤波、队列、协议、配置镜像两板共用；橙色框各板一份 port 适配</text>
