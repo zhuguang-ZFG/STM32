@@ -5,7 +5,7 @@
 避免"门"和"体检脚本"各写一套判据（两边漂移是这类项目最常见的腐化方式）。
 
 用法：
-  python mcu-book/print/pdf_audit.py <pdf> [--bleed 0|3.2] [--manifest mcu-book/manifest.json] [--json]
+  python book/print/pdf_audit.py <pdf> [--bleed 0|3.2] [--manifest docs/manifest.json] [--json]
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ import fitz  # PyMuPDF
 BOOK_DIR = Path(__file__).resolve().parents[1]
 DOCS_DIR = BOOK_DIR.parent / "docs"
 
-TRIM_MM = (185.0, 260.0)
+TRIM_MM = (210.0, 297.0)
 PT_PER_MM = 72 / 25.4
 
 # 中文禁则（W3C clreq §行首行尾禁则）：
@@ -75,12 +75,19 @@ SHIPPED_FAMILIES = (
     "NotoSansSymbols2",
     "NotoSansMath",
 )
+# 插图 SVG 作为 <img> 嵌入时读不到页面 @font-face，<text> 会回退到系统雅黑。
+# 只允许这几族出现在插图标签里；正文/标题/代码仍必须用随书子集。
+PLATE_FAMILIES = (
+    "MicrosoftYaHei", "MicrosoftYaHei-Bold", "SegoeUI", "SegoeUI-Bold",
+    "SegoeUISymbol", "Consolas", "Consolas-Bold", "NSimSun",
+)
 
 
 def check_fonts(document: fitz.Document) -> dict:
-    """字体体检：不许 Type3 位图字形，也不许出现未随书分发的字体族。"""
+    """字体体检：不许 Type3 位图字形，也不许正文出现未随书分发的字体族。"""
     type3: dict[str, int] = {}
     foreign: dict[str, int] = {}
+    plate: dict[str, int] = {}
     shipped: dict[str, int] = {}
     for index in range(document.page_count):
         for font in document[index].get_fonts():
@@ -90,12 +97,15 @@ def check_fonts(document: fitz.Document) -> dict:
                 type3[name or "(未命名的 Type3)"] = type3.get(name or "(未命名的 Type3)", 0) + 1
             elif any(name.startswith(family) for family in SHIPPED_FAMILIES):
                 shipped[name] = shipped.get(name, 0) + 1
+            elif any(name.startswith(family) for family in PLATE_FAMILIES):
+                plate[name] = plate.get(name, 0) + 1
             else:
                 foreign[name or "(未命名)"] = foreign.get(name or "(未命名)", 0) + 1
     return {
         "ok": not type3 and not foreign,
         "type3": type3,
         "foreign": foreign,
+        "plate": plate,
         "shipped": shipped,
     }
 
@@ -144,15 +154,22 @@ def check_headers(document: fitz.Document) -> dict:
 
 
 def chapter_titles(manifest_path: Path) -> dict[str, str]:
-    """章号 → 章题（TOC 与实际页都对它）。"""
+    """章题 → 文件（manifest 的 parts[].chapters 与 appendices）。"""
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    entries = [
+        chapter
+        for part in manifest.get("parts", [])
+        for chapter in part.get("chapters", [])
+    ] + list(manifest.get("appendices", []))
     titles: dict[str, str] = {}
-    for _index, part in enumerate(manifest["parts"], start=1):
-        for name in part["files"]:
-            text = (DOCS_DIR / name).read_text(encoding="utf-8")
-            match = re.search(r"^title:\s*(.+)$", text, re.M)
-            if match:
-                titles[match.group(1).strip().strip("'\"")] = name
+    for entry in entries:
+        name = entry.get("file")
+        if not name:
+            continue
+        text = (DOCS_DIR / name).read_text(encoding="utf-8")
+        match = re.search(r"^title:\s*(.+)$", text, re.M)
+        if match:
+            titles[match.group(1).strip().strip("'\"")] = name
     return titles
 
 
@@ -172,27 +189,37 @@ def check_contents(document: fitz.Document, manifest_path: Path) -> dict:
         return {"ok": False, "reason": "找不到目录页", "checked": 0, "problems": []}
     first, last = contents_pages[0], contents_pages[-1]
 
-    # 目录里每行形如 "01．C0 为什么嵌入式 C 是另一种 C  12"
-    entry_re = re.compile(r"^\s*(\d{2})[．.]\s*(.+?)\s+(\d{1,4})\s*$")
+    # 目录是 flex 两列：标题在左、页码右对齐，提取出来是同 y 附近的独立行。
     listed: dict[str, int] = {}
     for index in range(first, last + 1):
-        page_text = document[index].get_text()
-        if not isinstance(page_text, str):
+        page_text = document[index].get_text("dict")
+        if not isinstance(page_text, dict):
             continue
-        for line in page_text.splitlines():
-            match = entry_re.match(line)
-            if match:
-                listed[match.group(2).strip()] = int(match.group(3))
+        labels: list[tuple[float, str]] = []
+        numbers: list[tuple[float, int]] = []
+        width = document[index].rect.width
+        for block in page_text.get("blocks", []):
+            for line in block.get("lines", []):
+                text = "".join(span["text"] for span in line["spans"]).strip()
+                if not text or text == "目录":
+                    continue
+                x0, y0 = line["bbox"][0], line["bbox"][1]
+                if x0 > width * 0.72 and text.isdigit():
+                    numbers.append((y0, int(text)))
+                elif x0 < width * 0.55:
+                    labels.append((y0, text))
+        for y, title in labels:
+            if not numbers:
+                break
+            py, page = min(numbers, key=lambda item: abs(item[0] - y))
+            if abs(py - y) <= 12:
+                listed[title] = page
 
-    # 实际起始页：在目录之后的页里找章题首次出现
+    # 实际起始页用 PDF 书签，不搜正文：页眉/章内引用会提前命中章题。
     actual: dict[str, int] = {}
-    for index in range(last + 1, document.page_count):
-        text = document[index].get_text()
-        if not isinstance(text, str):
-            continue
-        for title in titles:
-            if title not in actual and title in text:
-                actual[title] = index + 1
+    for level, title, page in document.get_toc():
+        if level >= 2 and title not in actual:
+            actual[title] = page
 
     problems = []
     checked = 0
@@ -214,7 +241,7 @@ def check_contents(document: fitz.Document, manifest_path: Path) -> dict:
 
 
 def check_measure(document: fitz.Document, sample: int = 12) -> dict:
-    """版心与行长：正文页每行字数与行宽要落在 16 开惯例区间。"""
+    """版心与行长：正文页每行字数与行宽要落在 A4 176mm 版心区间。"""
     widths: list[float] = []
     chars: list[int] = []
     step = max(1, document.page_count // sample)
@@ -291,6 +318,8 @@ def render(result: dict) -> int:
           + (f"，**外来字体族 {fonts['foreign']}**" if fonts["foreign"] else "，无外来字体"))
     if fonts["foreign"]:
         print(f"        外来: {sorted(fonts['foreign'])}")
+    if fonts.get("plate"):
+        print(f"        插图 SVG 系统字体（已知例外）: {sorted(fonts['plate'])}")
     print(f"  页码: {'✓' if pagination['ok'] else '✗ ' + str(pagination['problems'])}（有页脚页 {pagination['pages_with_footer']}，总数 {pagination['total']}）")
     print(f"  页眉: {'✓' if result['headers']['ok'] else '✗'}（奇 {result['headers']['odd']} / 偶 {result['headers']['even']} / 空 {result['headers']['empty']}）")
     for sample_key, sample_value in result["headers"]["samples"].items():
@@ -299,8 +328,8 @@ def render(result: dict) -> int:
     for problem in contents.get("problems", [])[:5]:
         print(f"        {problem}")
     print(f"  版心/行长: 每行字数 中位 {measure.get('charsPerLineMedian')}（P10 {measure.get('charsPerLineP10')} / P90 {measure.get('charsPerLineP90')}），行宽中位 {measure.get('lineWidthMedianMm')} mm 最大 {measure.get('lineWidthMaxMm')} mm")
-    break_note = "✓" if breaks["ok"] else f"✗ {breaks['count']} 处（扫 {breaks['lines']} 行）"
-    print(f"  中文禁则: {break_note}")
+    break_note = "✓" if breaks["ok"] else f"{breaks['count']} 处提示（扫 {breaks['lines']} 行，不作为门禁）"
+    print(f"  中文禁则（参考）: {break_note}")
     for problem in breaks["problems"][:5]:
         print(f"        {problem}")
     failed = [
@@ -315,7 +344,7 @@ def render(result: dict) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("pdf", type=Path)
-    parser.add_argument("--manifest", type=Path, default=BOOK_DIR / "manifest.json")
+    parser.add_argument("--manifest", type=Path, default=DOCS_DIR / "manifest.json")
     parser.add_argument("--bleed", type=float, default=0.0)
     parser.add_argument("--json", action="store_true")
     options = parser.parse_args(argv)

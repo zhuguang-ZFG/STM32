@@ -33,7 +33,7 @@ sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(BOOK_DIR))
 
 import build_html as site  # noqa: E402  — build_html 里相对 book/ 导入 manifest
-from print_css import PRINT_CSS  # noqa: E402
+from print_css import build_css  # noqa: E402
 
 DOCS = REPO_ROOT / "docs"
 QUIZ_DIR = DOCS / ".vitepress" / "data" / "quizzes"
@@ -142,9 +142,21 @@ def rewrite_book_links(content: str, current_file: str,
     return site.MD_HREF_RE.sub(replace, content)
 
 
+def chapter_number(anchor: str) -> str:
+    """ch07 → 07；appendix-a → A；其他锚点不造编号。"""
+    if anchor.startswith("ch") and anchor[2:].isdigit():
+        return anchor[2:]
+    if anchor.startswith("appendix-"):
+        return anchor.rsplit("-", 1)[-1].upper()
+    return ""
+
+
 def chapter_section(entry: dict, docs_root: Path,
                     file_to_id: dict[str, str]) -> str:
-    """一章 → <section id=…>。返回 (html, 标题)。"""
+    """一章 → <section id=…>。返回 (html, 标题)。
+
+    Markdown 自己的 H1 就是章标题；不再额外包一层 H1，否则纸上会印两遍。
+    """
     text = (docs_root / entry["file"]).read_text(encoding="utf-8")
     _, body = site.split_frontmatter(text)
     content = site.render_markdown(body, QUIZ_DIR)
@@ -152,10 +164,18 @@ def chapter_section(entry: dict, docs_root: Path,
     content = site.wrap_figures(content)
     content = inline_assets(content)
     content = open_quiz_details(content)
+    # 标签是块级时，<strong>标签</strong>：正文 会把冒号留在下一行行首。
+    # 把冒号收进 strong，罗盘卡片的“问题/交付/边界/依据”不再以标点起行。
+    content = re.sub(r"</strong>(\s*：)", r"\1</strong>", content)
     head = CHAPTER_HEAD.search(body)
     title = head.group(1).strip() if head else entry["title"]
+    prefix = "" if re.match(r'\s*<h1', content) else f'<h1>{html_lib.escape(title)}</h1>\n'
+    number = chapter_number(entry["id"])
+    if number:
+        prefix = (f'<div class="chapter-no" aria-hidden="true">{number}</div>\n'
+                  + prefix)
     return (f'<section class="chapter" id="{entry["id"]}">\n'
-            f'<h1>{html_lib.escape(entry["title"])}</h1>\n{content}\n</section>\n'), title
+            f'{prefix}{content}\n</section>\n'), title
 
 
 def build(out_path: Path | None = None, sample: int | None = None) -> Path:
@@ -183,13 +203,25 @@ def build(out_path: Path | None = None, sample: int | None = None) -> Path:
     if sample:
         flat = flat[:sample]
 
+    title = manifest["title"]
+    subtitle = manifest.get("subtitle", "")
+    main, sep, tail = title.partition("：")
+    if not sep:
+        main, sep, tail = title.partition(":")
+    if not sep:
+        main, tail = title, subtitle
     cover = (
         '<section class="cover" id="front">\n'
-        '<div class="kicker">STM32 · ESP32-S3 · GD32 · FreeRTOS · RT-Thread</div>\n'
-        f'<h1>{html_lib.escape(manifest["title"])}</h1>\n'
-        f'<p class="subtitle">{html_lib.escape(manifest.get("subtitle", ""))}</p>\n'
-        '<div class="rule-block meta">寄存器级深度教学 · 全程实物实验 · 双书合并版<br>'
-        'GitHub: zhuguang-ZFG/STM32</div>\n</section>\n'
+        '<div class="cover-inner">\n'
+        '<span class="cover-seal" aria-hidden="true">单片机</span>\n'
+        '<p class="cover-kicker">STM32 · ESP32-S3 · GD32 · FreeRTOS · RT-Thread</p>\n'
+        f'<h1 class="book-title"><span class="bt-main">{html_lib.escape(main.strip())}</span>'
+        f'<span class="bt-tail">{html_lib.escape(tail.strip())}</span></h1>\n'
+        '<div class="cover-rule"><i></i><span class="cover-mark">MCU</span><i></i></div>\n'
+        '<p class="book-sub">寄存器级深度教学 · 全程实物实验 · 双书合并版</p>\n'
+        '<div class="cover-foot"><span>zhuguang-ZFG</span>'
+        '<span>GitHub · STM32</span></div>\n'
+        '</div></section>\n'
     )
 
     toc_rows = []
@@ -240,7 +272,7 @@ def build(out_path: Path | None = None, sample: int | None = None) -> Path:
     document = (
         "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n<meta charset=\"utf-8\">\n"
         f"<title>{html_lib.escape(manifest['title'])}</title>\n"
-        f"<style>{PRINT_CSS}</style>\n</head>\n<body>\n"
+        f"<style>{build_css()}</style>\n</head>\n<body>\n"
         + '<main class="book">\n' + cover + "\n".join(toc_html) + "\n" + "\n".join(sections) + "\n</main>\n</body>\n</html>\n"
     )
     document = inline_assets(document)          # 封面/分隔页若有内联资源一并处理

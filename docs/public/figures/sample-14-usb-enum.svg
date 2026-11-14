@@ -37,13 +37,13 @@
 <text x="686" y="218" font-size="11" fill="#2E5F42" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">USBPRE = 0</text>
 <text x="686" y="262" font-size="12" fill="#2E5F42" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">÷ 1.5</text>
 <rect x="690" y="202" width="210" height="64" fill="#FBF3DF" opacity="1" rx="4" stroke="#2E5F42" stroke-width="1.5"/>
-<text x="795" y="230" font-size="16" fill="#2E5F42" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">48 MHz ✓</text>
+<text x="795" y="230" font-size="16" fill="#2E5F42" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">48 MHz √</text>
 <text x="795" y="252" font-size="11" fill="#6E6B60" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">全速设备要的频率</text>
 <line x1="658" y1="234" x2="686.591" y2="373.143" stroke="#B3392F" stroke-width="2" stroke-linecap="round" opacity="1"/>
 <polygon points="688.00,380.00 683.16,373.85 690.02,372.44" fill="#B3392F" opacity="1"/>
 <text x="640" y="330" font-size="12" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">USBPRE = 1：不分频</text>
 <rect x="690" y="348" width="210" height="64" fill="#FBF3DF" opacity="1" rx="4" stroke="#B3392F" stroke-width="1.5"/>
-<text x="795" y="376" font-size="16" fill="#B3392F" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">72 MHz ✗</text>
+<text x="795" y="376" font-size="16" fill="#B3392F" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">72 MHz ×</text>
 <text x="795" y="398" font-size="11" fill="#B3392F" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">主机读描述符失败</text>
 <text x="486" y="448" font-size="13" fill="#7A5B14" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">480 Mbit/s 在这颗料上不成立——这是全速 12 Mbit/s 的设备</text>
 <text x="486" y="476" font-size="13" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bulk / interrupt 的 wMaxPacketSize 上限是 64，1023 是别的类</text>

@@ -8,5 +8,5 @@
 <text x="220" y="24" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">now=2000</text>
 <path d="M60 40 C 100 64, 230 64, 280 40" stroke-width="2.2" stroke-dasharray="4 3"/>
 <text x="155" y="74" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">(now-then)=3000 > 500</text>
-<text x="8" y="86" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">now >= then+timeout ×</text> <text x="176" y="86" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">(now-then) >= timeout ✓</text>
+<text x="8" y="86" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">now >= then+timeout ×</text> <text x="176" y="86" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">(now-then) >= timeout √</text>
 </g></svg>

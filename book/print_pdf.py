@@ -24,7 +24,8 @@ from pathlib import Path
 
 import fitz  # PyMuPDF
 
-CJK_FONTS = ["C:/Windows/Fonts/msyh.ttc", "C:/Windows/Fonts/simsun.ttc",
+CJK_FONTS = [str(Path(__file__).resolve().parent / "print" / "fonts" / "head-regular.ttf"),
+             "C:/Windows/Fonts/msyh.ttc", "C:/Windows/Fonts/simsun.ttc",
              "C:/Windows/Fonts/simhei.ttf",
              "/System/Library/Fonts/PingFang.ttc",
              "/System/Library/Fonts/Supplemental/Songti.ttc",
@@ -109,6 +110,30 @@ def _print_pdf(html_path: Path, raw: Path, browser: str | None) -> None:
         except Exception:
             pass
         page.emulate_media(media="print")
+        overflow = page.evaluate(
+            """() => {
+              const book = document.querySelector('.book');
+              if (!book) return [];
+              const W = book.getBoundingClientRect().width;
+              const block = /^(block|flex|grid|table|table-row|table-cell|list-item)$/;
+              return [...book.querySelectorAll('*')].filter((e) => {
+                if (e.closest('figure.landscape')) return false;
+                const tag = e.tagName;
+                if (!block.test(getComputedStyle(e).display) &&
+                    !['IMG', 'SVG', 'TABLE', 'PRE'].includes(tag)) return false;
+                return e.getBoundingClientRect().width > W + 1 ||
+                       e.scrollWidth > W + 1;
+              }).slice(0, 8).map((e) =>
+                `${e.tagName.toLowerCase()}.${e.className || '-'} ` +
+                `w=${Math.round(e.getBoundingClientRect().width)} ` +
+                `sw=${e.scrollWidth}`);
+            }"""
+        )
+        if overflow:
+            launched.close()
+            raise RuntimeError(
+                "pdf: an element is wider than the 176mm text block; "
+                "Chromium would scale the whole book down: " + "; ".join(overflow))
         page.pdf(path=str(raw), format="A4", print_background=True,
                  prefer_css_page_size=True,
                  margin={"top": "0", "bottom": "0", "left": "0", "right": "0"})
@@ -263,9 +288,9 @@ def build_pdf(html_path: Path, meta_path: Path, out: Path | None = None,
                 best[anchor] = (pno, r)
     for anchor, (pno, r) in best.items():
         label = str(dest[anchor] + 1)
-        w = fitz.get_text_length(label, fontname="helv", fontsize=8.2)
-        doc[pno].insert_text((r.x1 - w, r.y1 - 7), label, fontsize=8.2,
-                             fontname="helv", color=(0.36, 0.32, 0.24))
+        w = head.width(label, 8.2)
+        head.draw(doc[pno], r.x1 - w, r.y1 - 7, label, 8.2,
+                  (0.36, 0.32, 0.24))
     if len(best) < len(rows):
         missed = sorted(rows - set(best))
         doc.close()

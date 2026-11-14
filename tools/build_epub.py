@@ -284,11 +284,14 @@ def render_cover_png(html_path: Path, out_png: Path) -> bool:
                 if el is None:
                     return False
                 if el.get_attribute("id") == "front":
-                    # The print cover is A4 when paginated, but its screen
-                    # min-height is 245mm; give it the full A4 viewport so the
-                    # EPUB cover image is not a squat 1.13:1 crop.
+                    # The print cover lives in a 176mm text block. The EPUB
+                    # cover must be the full A4 sheet, so widen it to the A4
+                    # viewport; otherwise el.screenshot() makes a 1332×3394
+                    # squat image instead of 2400×3394.
                     page.add_style_tag(
-                        content="#front { min-height: 1697px !important; "
+                        content="#front { width: 1200px !important; "
+                                "max-width: none !important; "
+                                "min-height: 1697px !important; "
                                 "box-sizing: border-box; }"
                     )
                     page.wait_for_timeout(50)
