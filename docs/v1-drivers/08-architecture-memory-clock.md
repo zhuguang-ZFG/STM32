@@ -63,7 +63,7 @@ Cortex-M4 是 32 位机，地址空间正好 4GB。ARM 把这 4GB 按 512MB 一�
 
 “192KB RAM”的账就是这么来的：128KB 通用 SRAM 加 64KB CCM。但这两块地的可达性不同：前 128KB 挂在总线矩阵上，DMA 能进出；CCM 只有 CPU 一条路，DMA 缓冲区放错地方是无声失败。
 
-![Cortex-M 的 4GB 存储器地图：Code、SRAM、外设、外部 RAM/设备与 PPB](/arch/memory-map.png)
+![Cortex-M 的 4GB 存储器地图：Code、SRAM、外设、外部 RAM/设备、保留与 PPB；F407 的 Flash、SRAM、CCM 与 CPUID 落位](/arch/cortex-m-4gb-map.png)
 
 ### 总线矩阵：三个端口与五条访问路线
 
