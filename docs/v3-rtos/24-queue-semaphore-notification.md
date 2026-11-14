@@ -611,6 +611,19 @@ R2 里有几处名字与口径要按 v5.3.0 改写：
 | E04 二值版把 H 等待算成 6500 ms | 把 L 的剩余工作当成 3000 ms | 时间线 500 ms 已做 | 剩余 2500 ms，等待 6000 ms |
 | E04 两版等待一样长 | L 的临界区写成 `vTaskDelay`，睡着不占 CPU | L 是否用 `cpu_work_ms` | 改真占 CPU 的忙等 |
 
+## 社区开源实现
+
+本章最意外的社区结论是：**信号量、互斥量、事件组在 FreeRTOS 里都不是独立实现**——它们全是队列的皮。按章对照读源码：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `queue.c` | `xQueueSend`/`xQueueReceive` 的阻塞实现：等待事件挂队尾、复制数据、解锁等待方——「队列是 FreeRTOS 的第一等公民」在这里成立 |
+| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `include/semphr.h`（`semphr.c` 只是薄壳） | 二值/计数信号量与互斥量全用 `xQueueGenericCreate` + 宏定义出来：互斥量的优先级继承靠 `xQueuePriorityInherit` 挂到队列 take 上——对照本章互斥量继承的 22→20→22 |
+| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `event_groups.c` | 事件组的置位/等待实现：等待条件不满足时才阻塞，置位后按条件逐个唤醒——对照"事件组位宽条件"失败分支 |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/ipc.c` | 信号量/互斥量/邮箱/消息队列四个原语的完整实现：`rt_sem_take` 的挂起线程按优先级插队、`rt_mutex` 的 `owner/hold/priority/ceiling_priority/taken_list` 字段——对照失败分支里"字段名与模型记错" |
+
+对照后的共性值得记住：两个内核的阻塞语义都落在"线程挂到对象的等待链表上，事件到来时按优先级唤醒"这一套机制，区别只在 RT-Thread 把四个原语集中在一个 `ipc.c`（约两千行），FreeRTOS 把它们摊进 queue.c 与头文件宏。想快速定位某条失败分支对应的源码行，先搜对象类型名再搜操作函数名，比按目录猜快。
+
 ## 离开检查
 
 1. `QueueDefinition` 的三种人生靠哪几个字段区分？`uxQueueType` 是什么？
