@@ -88,14 +88,14 @@ EEPROM 双槽与 NVS 单 blob 的取舍：双槽能在断电时回退到上一�
 
 ### 六、故障注入：四命令
 
-| 命令 | 注入 | 预期（**逻辑结果，非实测**） |
-| --- | --- | --- |
-| fault 1 | 停喂狗 | watchdog 复位，重启后配置还在 |
-| fault 2 | 停发 STATUS | 主机侧超时；板侧监督不受影响 |
-| fault 3 | 传感器失联 1 s | 保持健康（采样失败 ≠ 任务死亡）；valid_mask 置零 |
-| fault 4 | TX 暂停 2 s | 队列积压至满，丢新计数增长 |
+| 命令 | 参数 | 注入 | 预期（**逻辑结果，非实测**） |
+| --- | --- | --- | --- |
+| fault 1 | `id=0` 采样 / `id=1` 通信 | 暂停指定任务的主循环：`id=0` 停采样，`id=1` 停收包与 `progress`（发送仍走） | 该任务不再更新 `last_ms`；采样超过 2500 ms、通信超过 1500 ms 后 supervisor 锁存 overdue 并停喂狗；约 2 s 后 watchdog 复位，已 save 的配置保留 |
+| fault 2 | `id=0` | 置 `supervisor_stop=true`，直接停喂狗 | 不等任务期限，下一轮 supervisor 即停止喂狗；约 2 s 后 watchdog 复位，已 save 的配置保留 |
+| fault 3 | `id=0` | 传感器失联 1 s | 采样循环继续、`progress` 照常上报，任务不被判死；每帧 `valid` 置零，`sensor_errors` 增长 |
+| fault 4 | `id=0` | TX 暂停 2 s | 发送暂停但采样继续入队；默认 100 ms 周期下约 1.6 s 队列满，`dropped` 增长 |
 
-构建开关先开（F407 `FAULTS=1`、S3 `sdkconfig.defaults.faults`），普通固件对 fault 命令返回 UNSUPPORTED。应答入队后 200 ms 执行——注入也是被协议管理的动作。所有 fault 行保持「预期逻辑结果（非实测）」限定，真板验证待执行。
+`fault 1`/`fault 2` 的锁存状态直到复位才清除，`fault 3`/`fault 4` 按 1 s/2 s 自动恢复；`fault 1` 的 `id` 只允许 0/1，其余命令的 `id` 必须为 0，越界应答 `2`（参数错）。构建开关先开（F407 `FAULTS=1`、S3 `sdkconfig.defaults.faults`），普通固件对 fault 命令返回 UNSUPPORTED。应答入队后 200 ms 执行——注入也是被协议管理的动作。所有 fault 行保持「预期逻辑结果（非实测）」限定，真板验证待执行。
 
 ### 七、协议承诺的边界
 
@@ -123,7 +123,7 @@ EEPROM 双槽与 NVS 单 blob 的取舍：双槽能在断电时回退到上一�
 | --- | --- | --- |
 | 丢弃计数持续增长 | 消费端慢于生产端 | 查通信任务期限；调 period 或缩帧 |
 | 断电后配置丢失 | save 没调（只 configure）；或双槽提交标记没写完就断电 | 三态检查；押注实验重做 |
-| watchdog 复位但配置丢 | 双槽启动挑选逻辑错（选了标记未完成的槽） | 读 generation 与标记位；注入 fault 1 复现 |
+| watchdog 复位但配置丢 | 双槽启动挑选逻辑错（选了标记未完成的槽） | 读 generation 与标记位；注入 fault 2 复现，先 save 再复位 |
 | S3 任务被 TWDT 点名 | 长操作没喂进展上报 | 订阅与上报点核对；区分 Pro/App 核 |
 | 监督点名但任务「活着」 | `last_ms` 长期不更新（活锁） | 期限监督 vs 心跳的分工——看最近进展不看心跳 |
 | 两板行为不一致 | port 层语义漂移（同函数不同义） | 对照表逐行审 port |
