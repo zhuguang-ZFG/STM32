@@ -345,6 +345,19 @@ tick 侧：`SysTick_Handler` 调 `rt_interrupt_enter()` → `rt_tick_increase()`
 | RT-Thread 选错线程 | 以为 CLZ 找最低置位，方向写反 | 对照 `__rt_ffs` 结果与位图；0 最高 | 用 `__rt_ffs` / CTZ 找最低置位，不要用裸 CLZ |
 | 任务打印后 HardFault，水位接近 0 | 栈按字/字节混淆，或局部大数组占栈 | `uxTaskGetStackHighWaterMark` 接近 0；`0xA5` 溢出钩子命中 | 按字算栈，加大栈，把大数组移出栈 |
 
+## 社区开源实现
+
+本章的概念——TCB、就绪表、优先级位图、上下文切换——在两个最常用的开源内核里就是主干源码文件，值得按章对照读：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `tasks.c` | 本章所有抽象的工业实现：`tskTCB` 结构体、`pxReadyTasksLists[]` 每优先级一条链表（对应"约 20 B/级"的 RAM 账）、`xTaskCreate` 先分配栈+TCB 再挂就绪表、`prvAddTaskToReadyList` 是宏而非函数——位图优化路径就在这个宏里 |
+| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `list.c` | `List_t`/`ListItem_t` 的环形双向链表与 `listGET_OWNER_OF_NEXT_ENTRY`——同优先级时间片轮转就是"游标下移一格"，代码只有几行 |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/scheduler_up.c`（v5.0 起由旧 `scheduler.c` 拆分） | RT-Thread 的单核调度器：`rt_schedule()` 取最高优先级线程、就绪表位图用 `__rt_ffs`（CTZ 找最低置位，0 最高——对照失败分支里"方向写反"那条） |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/thread.c` | `rt_thread_create`/`rt_thread_init` 只把线程放进 INIT 态，必须 `rt_thread_startup` 才进调度——对照失败分支"创建后不运行" |
+
+两个内核值得对着读同一处：FreeRTOS 的 `configUSE_PORT_OPTIMISED_TASK_SELECTION`（CLZ，≤32 级，失败分支里 `#error` 的来源）与 RT-Thread 的 `__rt_ffs`（标量+位图混合）是同一个问题——"O(1) 找最高优先级"——的两份答案。读完再回看本章机制一节，抽象名词就都有了出处。版本口径：本书取证绑 FreeRTOS V11.x 与 RT-Thread v5.3.0，读源码时选对应 tag。
+
 ## 离开检查
 
 1. TCB 的第一个字段是什么？为什么不能在前面加字段？

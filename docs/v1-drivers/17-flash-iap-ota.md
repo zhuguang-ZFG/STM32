@@ -669,7 +669,7 @@ ESP32 只划边界。ESP32-S3 没有 STM32 的 FLASH_KEYR/CR/SR，也没有扇�
 | 回滚确认 | `bootutil_misc.c` 的 confirm 逻辑 | 试运行槽位必须被 App 显式确认（`image confirm`），超时回滚——对应 ESP32 的 PENDING_VERIFY 语义 |
 | 版图描述 | `boot/zephyr/targets.*` 或各板 dts | 槽位地址、大小以数据结构声明，不散落在代码里——本章的"版图先于代码"思路 |
 
-ESP32 一侧的社区参考是 [espressif/esp-idf](https://github.com/espressif/esp-idf) 本身：`components/bootloader_support/src/ota_utility.c` 与 `flash_partitions.c` 把本章引用的 P10 说法（otadata 三态、`CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 回滚门）落成了可读的源码——本章说"没有核 IDF 原文"，想核的时候从这两个文件进去。STM32 一侧如果不想自己写跳板，社区还有 [RT-Thread 的 OTA 框架](https://github.com/RT-Thread/rt-thread)（FAL 分区抽象 + bootloader 固件）与 ST 官方的 [X-CUBE-SBSFU](https://github.com/STMicroelectronics/x-cube-sbsfu)（双镜像 + 安全启动，代码量大但覆盖了签名加密全套）。这些实现的共性值得记住：**没有哪个生产级 bootloader 把升级状态只放在 RAM 里**——本章失败分支里"复位后重试"的教训，在它们那里都变成了 Flash 里的持久状态字。
+ESP32 一侧的社区参考是 [espressif/esp-idf](https://github.com/espressif/esp-idf) 本身：`components/app_update/esp_ota_ops.c`（`esp_ota_begin` 全流程）与 `components/bootloader_support/src/bootloader_utility.c`（otadata 三态选择启动分区）把本章引用的 P10 说法（otadata 三态、`CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 回滚门）落成了可读的源码——本章说"没有核 IDF 原文"，想核的时候从这两个文件进去。STM32 一侧如果不想自己写跳板，社区还有 [RT-Thread 的 OTA 框架](https://github.com/RT-Thread/rt-thread)（FAL 分区抽象 + bootloader 固件）与 ST 官方的 [X-CUBE-SBSFU](https://github.com/STMicroelectronics/x-cube-sbsfu)（双镜像 + 安全启动，代码量大但覆盖了签名加密全套）。这些实现的共性值得记住：**没有哪个生产级 bootloader 把升级状态只放在 RAM 里**——本章失败分支里"复位后重试"的教训，在它们那里都变成了 Flash 里的持久状态字。
 
 ## 离开检查
 
