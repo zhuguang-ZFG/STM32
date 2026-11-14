@@ -120,8 +120,8 @@ mcu	mcu/docs/lab/e05-i2c-eeprom.md	ch16;ch40	实验方法与证据	migrated
 mcu	mcu/docs/lab/e06-lowpower-current.md	ch18;ch40	实验方法与证据	migrated	
 mcu	mcu/docs/lab/e07-qmi8658.md	ch16;ch40	实验方法与证据	migrated	
 mcu	mcu/docs/lab/e08-audio-play.md	ch31;ch40	实验方法与证据	migrated	
-mcu	mcu/docs/projects/01-f407-logger.md	ch41	项目案例	planned	
-mcu	mcu/docs/projects/02-s3-logger.md	ch41	项目案例	planned	
+mcu	mcu/docs/projects/01-f407-logger.md	ch41	项目案例	migrated	
+mcu	mcu/docs/projects/02-s3-logger.md	ch41	项目案例	migrated	
 mcu	mcu/docs/ai/00-pair-not-ghost.md	ch43	AI 工程方法	planned	
 mcu	mcu/docs/ai/01-prompt-patterns.md	ch43	AI 工程方法	planned	
 mcu	mcu/docs/ai/02-manual-reconciliation.md	ch44	AI 工程方法	planned	
