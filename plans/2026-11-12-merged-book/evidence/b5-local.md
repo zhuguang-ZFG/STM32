@@ -40,3 +40,20 @@
 - 未验证：远程 required checks 现状核实（分支保护设置未改动，按 AC5 记录口径）。
 - 遗留（站点固化迭代）：VitePress 迁入、外链巡检（links.yml）、搜索索引与 SEO 工具链、PDF/EPUB 管线接入新构建器。
 - 未执行：任何超出 B5 的远程操作；Pages 切换由 deploy.yml 在 main 上自动完成。
+
+## 印刷与 EPUB 管线（B5 后续迭代，同分支）
+
+- `tools/restyle_anims.py`：113 个 SMIL 动画色板/字体重映射（6941 处），扁平 Tailwind 色板 → 手绘米纸色系（#FDF8EA/#2B5EA7/#3F7D57/#A8801F/#B3392F），幂等；目检确认去 AI 味。
+- `book/build_print_edition.py`：单文件印刷版 HTML（封面 + 目录 + 52 章 + 6 附录），SMIL 动画截帧 62% → PNG 数据 URI，全部本地资产 → 数据 URI，测验答案 details[open] 展开，跨章 .md 链接 → 书内锚点。
+- `book/print_pdf.py`：Chromium page.pdf（A4 零边距）→ PyMuPDF 精加工（书签树 61 条/页眉双外侧/页码 n/total/目录行页码盖章/空页检测/CJK 字体子集化/garbage=4 压缩）。541 页 / 26 MB。
+- `book/build_epub.py`：薄壳复用 `tools/build_epub.py` 的节拆分/data URI 抽取/XHTML 序列化/nav+NCX 容器。62 spine / 254 图 / 22.7 MB。
+- 产物：`book/dist/print/merged-book.pdf`（541 页，26 MB）、`book/dist/print/merged-book.epub`（62 节，254 图，22.7 MB）。均为 gitignored 本地产物，不上传。
+
+| 验证 | 结果 |
+| --- | --- |
+| PDF 页数 | 541 |
+| PDF 书签数 | 61（8 卷 + 46 章 + 附录 A–F + 封面） |
+| PDF 目检（封面/ch41） | 页眉双外侧线 + 页码 n/541 + 手绘色系动画帧/衬线体 |
+| EPUB spine | 62 节 |
+| EPUB 图片 | 254 张（data URI → images/） |
+| EPUB 文件大小 | 22.7 MB |
