@@ -8,6 +8,7 @@
  * meta-refresh 对 .md 路径由目标站的 cleanUrls/服务器重写兜底——这里统一
  * 发到合并书附录的 .html 形态（build 产物路径）。
  */
+import fs from 'node:fs'
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import path from 'node:path'
