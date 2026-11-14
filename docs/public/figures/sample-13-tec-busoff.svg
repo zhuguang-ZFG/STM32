@@ -1,43 +1,43 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="CAN error counters">
 
 
-<rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
-<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
-<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#7a4e00" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">CAN error counters</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TEC 128 = passive; TEC &gt; 255 = bus-off</text>
-<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="922" y="33.32" font-size="12" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">13</text>
-<text x="40" y="86" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">No ACK on a lone node: TEC climbs by 8 per try, stops at error-passive.</text>
-<rect x="40" y="130" width="210" height="130" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="145" y="168" font-size="14" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Error-active</text>
-<text x="145" y="204" font-size="15" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">TEC &lt; 128</text>
-<text x="145" y="236" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">drives active flags</text>
-<rect x="270" y="130" width="210" height="130" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="375" y="168" font-size="14" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Error-passive</text>
-<text x="375" y="204" font-size="15" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">TEC ≥ 128</text>
-<text x="375" y="236" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">passive flags only</text>
-<rect x="500" y="130" width="210" height="130" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="605" y="168" font-size="14" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Bus-off</text>
-<text x="605" y="204" font-size="15" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">TEC &gt; 255</text>
-<text x="605" y="236" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">stops driving bus</text>
-<rect x="730" y="130" width="210" height="130" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="835" y="168" font-size="14" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Recover</text>
-<text x="835" y="204" font-size="15" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">128×11 recessives</text>
-<text x="835" y="236" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ABOM or software</text>
-<rect x="40" y="290" width="880" height="130" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="56" y="324" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Single node, normal mode, no ACK: TEC reaches 128 and keeps retransmitting.</text>
-<text x="56" y="354" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">It will NOT walk into bus-off from ACK-less alone — need real bit errors.</text>
-<text x="56" y="384" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ABOM: hardware waits 128 sequences of 11 recessive bits, then retries.</text>
-<rect x="40" y="440" width="880" height="120" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="56" y="474" font-size="14" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Lab: unplug second node → watch TEC; plug back → first good frame clears stress.</text>
-<text x="56" y="504" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Do not call 'bus-off' when you are only error-passive at 128.</text>
-<text x="56" y="534" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Pairs with can-arbitration animation — this card is the counter ladder.</text>
-<rect x="40" y="580" width="880" height="90" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="56" y="614" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Extra density for ch13 (thinnest chapter) — real TEC numbers, not icons.</text>
-<text x="56" y="644" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Numbers from RM0008 CAN error management.</text>
-<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Hand-drawn. TEC/REC thresholds from RM0008 CAN.</text>
-<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+<rect x="0" y="0" width="960" height="880" fill="#FBF3DF"/>
+<rect x="0" y="0" width="960" height="58" fill="#F7EFDA" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#6E6B60" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#7A5B14" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">CAN error counters</text>
+<text x="22" y="50" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TEC 128 = passive; TEC &gt; 255 = bus-off</text>
+<rect x="906" y="15" width="32" height="28" fill="#DCE6F2" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#7A5B14" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">13</text>
+<text x="40" y="86" font-size="15" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">No ACK on a lone node: TEC climbs by 8 per try, stops at error-passive.</text>
+<rect x="40" y="130" width="210" height="130" fill="#F7EFDA" opacity="1" rx="8" stroke="#2E5F42" stroke-width="1.5"/>
+<text x="145" y="168" font-size="14" fill="#2E5F42" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Error-active</text>
+<text x="145" y="204" font-size="15" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">TEC &lt; 128</text>
+<text x="145" y="236" font-size="12" fill="#6E6B60" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">drives active flags</text>
+<rect x="270" y="130" width="210" height="130" fill="#F7EFDA" opacity="1" rx="8" stroke="#7A5B14" stroke-width="1.5"/>
+<text x="375" y="168" font-size="14" fill="#7A5B14" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Error-passive</text>
+<text x="375" y="204" font-size="15" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">TEC ≥ 128</text>
+<text x="375" y="236" font-size="12" fill="#6E6B60" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">passive flags only</text>
+<rect x="500" y="130" width="210" height="130" fill="#F7EFDA" opacity="1" rx="8" stroke="#B3392F" stroke-width="1.5"/>
+<text x="605" y="168" font-size="14" fill="#B3392F" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Bus-off</text>
+<text x="605" y="204" font-size="15" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">TEC &gt; 255</text>
+<text x="605" y="236" font-size="12" fill="#6E6B60" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">stops driving bus</text>
+<rect x="730" y="130" width="210" height="130" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="835" y="168" font-size="14" fill="#1F4680" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Recover</text>
+<text x="835" y="204" font-size="15" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">128×11 recessives</text>
+<text x="835" y="236" font-size="12" fill="#6E6B60" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ABOM or software</text>
+<rect x="40" y="290" width="880" height="130" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="56" y="324" font-size="14" fill="#1F4680" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Single node, normal mode, no ACK: TEC reaches 128 and keeps retransmitting.</text>
+<text x="56" y="354" font-size="13" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">It will NOT walk into bus-off from ACK-less alone — need real bit errors.</text>
+<text x="56" y="384" font-size="13" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ABOM: hardware waits 128 sequences of 11 recessive bits, then retries.</text>
+<rect x="40" y="440" width="880" height="120" fill="#F7EFDA" opacity="1" rx="8" stroke="#B3392F" stroke-width="1.5"/>
+<text x="56" y="474" font-size="14" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Lab: unplug second node → watch TEC; plug back → first good frame clears stress.</text>
+<text x="56" y="504" font-size="13" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Do not call 'bus-off' when you are only error-passive at 128.</text>
+<text x="56" y="534" font-size="13" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Pairs with can-arbitration animation — this card is the counter ladder.</text>
+<rect x="40" y="580" width="880" height="90" fill="#F7EFDA" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="56" y="614" font-size="14" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Extra density for ch13 (thinnest chapter) — real TEC numbers, not icons.</text>
+<text x="56" y="644" font-size="13" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Numbers from RM0008 CAN error management.</text>
+<line x1="24" y1="844" x2="936" y2="844" stroke="#D8D2C0" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="864" font-size="11" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Hand-drawn. TEC/REC thresholds from RM0008 CAN.</text>
+<text x="936" y="864" font-size="11" fill="#6E6B60" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
 </svg>

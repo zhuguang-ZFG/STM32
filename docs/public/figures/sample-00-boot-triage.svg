@@ -1,52 +1,52 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="970" viewBox="0 0 960 970" role="img" aria-label="上板无现象时按供电、BOOT0、SWDIO/SWCLK 三环依次排查，第一环不通过就不改代码">
 
 
-<rect x="0" y="0" width="960" height="970" fill="#fbfaf7"/>
-<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
-<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">上板无现象时按供电、BOOT0、SWDIO/SWCLK 三环依次排查，第一环不通过就不改代码</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 LQFP48 · DS5319 Rev 20 Table 5 / RM0008 Rev 21 Table 9</text>
-<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">00</text>
-<text x="40" y="86" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F103C8T6  LQFP48  three rings, stop at the first one that fails</text>
-<text x="40" y="112" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ring 1 supply    ring 2 BOOT0    ring 3 SWDIO / SWCLK</text>
-<text x="40" y="138" font-size="14" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">pin 34 PA13 = SWDIO    pin 37 PA14 = SWCLK    pin 44 = BOOT0    pin 7 = NRST</text>
-<text x="40" y="170" font-size="16" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">正常路径  先量电，再看 BOOT0，最后才接探针</text>
-<rect x="40" y="184" width="880" height="138" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<circle cx="78" cy="218" r="15" fill="#1b5c45" opacity="1" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="78" y="223" font-size="14" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
-<text x="108" y="214" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ring 1  supply: 3.3 V between VDD and VSS, measured at the MCU</text>
-<text x="108" y="244" font-size="14" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">one source only: Micro-USB; the clone ST-Link 3V3 stays unconnected</text>
-<text x="108" y="270" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">a reading at the USB plug does not prove the MCU pin sees 3.3 V</text>
-<line x1="78" y1="322" x2="78" y2="331" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="78.00,338.00 74.50,331.00 81.50,331.00" fill="#1b5c45" opacity="1"/>
-<rect x="40" y="338" width="880" height="120" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<circle cx="78" cy="372" r="15" fill="#1b5c45" opacity="1" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="78" y="377" font-size="14" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2</text>
-<text x="108" y="368" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ring 2  boot: pin 44 BOOT0 = 0</text>
-<text x="108" y="396" font-size="14" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0x00000000 then aliases Flash at 0x08000000; the 4th SYSCLK edge latches it</text>
-<text x="108" y="422" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">setting BOOT0 inside main means this reset already took the other path</text>
-<line x1="78" y1="458" x2="78" y2="467" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="78.00,474.00 74.50,467.00 81.50,467.00" fill="#1b5c45" opacity="1"/>
-<rect x="40" y="474" width="880" height="120" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<circle cx="78" cy="508" r="15" fill="#1b5c45" opacity="1" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="78" y="513" font-size="14" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3</text>
-<text x="108" y="504" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ring 3  debug: pin 34 SWDIO, pin 37 SWCLK, common ground</text>
-<text x="108" y="532" font-size="14" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">pin 7 NRST is optional and enables connect-under-reset</text>
-<text x="108" y="558" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">pin 35 is VSS_2; a probe parked there has no clock</text>
-<text x="40" y="626" font-size="16" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">失败路径  跳过前两环，直接在代码里找原因</text>
-<rect x="40" y="640" width="880" height="146" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="56" y="670" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">BOOT0 = 1 and BOOT1 = 0: the CPU runs 0x1FFFF000</text>
-<text x="56" y="698" font-size="14" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">the image is in Flash and looks as if it was never programmed</text>
-<text x="56" y="724" font-size="14" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">3.3 V read at the plug while the MCU pin reads 0 V</text>
-<text x="56" y="750" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">a probe on pin 35 VSS_2 instead of pin 37 SWCLK: no clock, no target</text>
-<text x="56" y="772" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">-O2 does not move a boot pin or close a missing ground</text>
-<rect x="40" y="802" width="880" height="120" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="56" y="832" font-size="15" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">旁注  three rings in this order, and stop at the first failure</text>
-<text x="56" y="858" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">pin 35 VSS_2 and pin 36 VDD_2 sit between the two SWD pins</text>
-<text x="56" y="884" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">a probe that sees no target is still ring 3, not a program bug</text>
-<line x1="24" y1="934" x2="936" y2="934" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="954" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。脚位来自 DS5319 Rev 20 表 5；0x1FFFF000 与第 4 个 SYSCLK 上升沿来自 RM0008 Rev 21 表 9。</text>
-<text x="936" y="954" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+<rect x="0" y="0" width="960" height="970" fill="#FBF3DF"/>
+<rect x="0" y="0" width="960" height="58" fill="#F7EFDA" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#6E6B60" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#1F4680" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">上板无现象时按供电、BOOT0、SWDIO/SWCLK 三环依次排查，第一环不通过就不改代码</text>
+<text x="22" y="50" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 LQFP48 · DS5319 Rev 20 Table 5 / RM0008 Rev 21 Table 9</text>
+<rect x="906" y="15" width="32" height="28" fill="#DCE6F2" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#1F4680" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">00</text>
+<text x="40" y="86" font-size="16" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32F103C8T6  LQFP48  three rings, stop at the first one that fails</text>
+<text x="40" y="112" font-size="14" fill="#1F4680" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ring 1 supply    ring 2 BOOT0    ring 3 SWDIO / SWCLK</text>
+<text x="40" y="138" font-size="14" fill="#7A5B14" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">pin 34 PA13 = SWDIO    pin 37 PA14 = SWCLK    pin 44 = BOOT0    pin 7 = NRST</text>
+<text x="40" y="170" font-size="16" fill="#2E5F42" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">正常路径  先量电，再看 BOOT0，最后才接探针</text>
+<rect x="40" y="184" width="880" height="138" fill="#F7EFDA" opacity="1" rx="8" stroke="#2E5F42" stroke-width="1.5"/>
+<circle cx="78" cy="218" r="15" fill="#2E5F42" opacity="1" stroke="#2E5F42" stroke-width="1.5"/>
+<text x="78" y="223" font-size="14" fill="#FBF3DF" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
+<text x="108" y="214" font-size="15" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ring 1  supply: 3.3 V between VDD and VSS, measured at the MCU</text>
+<text x="108" y="244" font-size="14" fill="#2E5F42" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">one source only: Micro-USB; the clone ST-Link 3V3 stays unconnected</text>
+<text x="108" y="270" font-size="14" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">a reading at the USB plug does not prove the MCU pin sees 3.3 V</text>
+<line x1="78" y1="322" x2="78" y2="331" stroke="#2E5F42" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="78.00,338.00 74.50,331.00 81.50,331.00" fill="#2E5F42" opacity="1"/>
+<rect x="40" y="338" width="880" height="120" fill="#F7EFDA" opacity="1" rx="8" stroke="#2E5F42" stroke-width="1.5"/>
+<circle cx="78" cy="372" r="15" fill="#2E5F42" opacity="1" stroke="#2E5F42" stroke-width="1.5"/>
+<text x="78" y="377" font-size="14" fill="#FBF3DF" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2</text>
+<text x="108" y="368" font-size="15" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ring 2  boot: pin 44 BOOT0 = 0</text>
+<text x="108" y="396" font-size="14" fill="#2E5F42" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0x00000000 then aliases Flash at 0x08000000; the 4th SYSCLK edge latches it</text>
+<text x="108" y="422" font-size="14" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">setting BOOT0 inside main means this reset already took the other path</text>
+<line x1="78" y1="458" x2="78" y2="467" stroke="#2E5F42" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="78.00,474.00 74.50,467.00 81.50,467.00" fill="#2E5F42" opacity="1"/>
+<rect x="40" y="474" width="880" height="120" fill="#F7EFDA" opacity="1" rx="8" stroke="#2E5F42" stroke-width="1.5"/>
+<circle cx="78" cy="508" r="15" fill="#2E5F42" opacity="1" stroke="#2E5F42" stroke-width="1.5"/>
+<text x="78" y="513" font-size="14" fill="#FBF3DF" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3</text>
+<text x="108" y="504" font-size="15" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ring 3  debug: pin 34 SWDIO, pin 37 SWCLK, common ground</text>
+<text x="108" y="532" font-size="14" fill="#2E5F42" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">pin 7 NRST is optional and enables connect-under-reset</text>
+<text x="108" y="558" font-size="14" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">pin 35 is VSS_2; a probe parked there has no clock</text>
+<text x="40" y="626" font-size="16" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">失败路径  跳过前两环，直接在代码里找原因</text>
+<rect x="40" y="640" width="880" height="146" fill="#F7EFDA" opacity="1" rx="8" stroke="#B3392F" stroke-width="1.5"/>
+<text x="56" y="670" font-size="15" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">BOOT0 = 1 and BOOT1 = 0: the CPU runs 0x1FFFF000</text>
+<text x="56" y="698" font-size="14" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">the image is in Flash and looks as if it was never programmed</text>
+<text x="56" y="724" font-size="14" fill="#7A5B14" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">3.3 V read at the plug while the MCU pin reads 0 V</text>
+<text x="56" y="750" font-size="14" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">a probe on pin 35 VSS_2 instead of pin 37 SWCLK: no clock, no target</text>
+<text x="56" y="772" font-size="13" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">-O2 does not move a boot pin or close a missing ground</text>
+<rect x="40" y="802" width="880" height="120" fill="#F7EFDA" opacity="1" rx="8" stroke="#6E569B" stroke-width="1.5"/>
+<text x="56" y="832" font-size="15" fill="#6E569B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">旁注  three rings in this order, and stop at the first failure</text>
+<text x="56" y="858" font-size="14" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">pin 35 VSS_2 and pin 36 VDD_2 sit between the two SWD pins</text>
+<text x="56" y="884" font-size="13" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">a probe that sees no target is still ring 3, not a program bug</text>
+<line x1="24" y1="934" x2="936" y2="934" stroke="#D8D2C0" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="954" font-size="11" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。脚位来自 DS5319 Rev 20 表 5；0x1FFFF000 与第 4 个 SYSCLK 上升沿来自 RM0008 Rev 21 表 9。</text>
+<text x="936" y="954" font-size="11" fill="#6E6B60" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
 </svg>

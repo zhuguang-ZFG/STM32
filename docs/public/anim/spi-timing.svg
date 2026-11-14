@@ -85,7 +85,7 @@
 
   <!-- 四模式对照 -->
   <g font-size="12" text-anchor="middle">
-    <rect x="90" y="345" width="140" height="66" rx="6" fill="#dbeafe" stroke="#2B5EA7" stroke-width="2"/>
+    <rect x="90" y="345" width="140" height="66" rx="6" fill="#DCE6F2" stroke="#2B5EA7" stroke-width="2"/>
     <text x="160" y="366" font-weight="bold" fill="#2B5EA7">Mode 0 ★本章</text>
     <text x="160" y="384" fill="#2F2E2B">CPOL=0 CPHA=0</text>
     <text x="160" y="401" fill="#2F2E2B">空闲低·上升沿采样</text>

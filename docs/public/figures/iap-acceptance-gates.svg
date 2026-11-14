@@ -1,52 +1,52 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="IAP：写入检查和启动确认分开验收">
 
 
-<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
-<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
-<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#5b3a8c" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">IAP：写入检查和启动确认分开验收</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">单槽示例：保留可重新下载的 Bootloader 入口；旧 APP 不保证留存</text>
-<rect x="747" y="15" width="131" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="812.5" y="33.32" font-size="12" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">12 / 19 · IAP</text>
-<rect x="28" y="102" width="190" height="88" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="123" y="136" font-size="20" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">边界 / 长度</text>
-<text x="123" y="170" font-size="17" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先于擦写</text>
-<line x1="222" y1="146" x2="235" y2="146" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="241.00,146.00 235.00,149.00 235.00,143.00" fill="#5e6872" opacity="1"/>
-<rect x="246" y="102" width="190" height="88" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="341" y="136" font-size="20" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">接收 / 写入</text>
-<text x="341" y="170" font-size="17" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">仅 APP 区</text>
-<line x1="440" y1="146" x2="453" y2="146" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="459.00,146.00 453.00,149.00 453.00,143.00" fill="#5e6872" opacity="1"/>
-<rect x="464" y="102" width="190" height="88" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="559" y="136" font-size="20" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">完成后校验</text>
-<text x="559" y="170" font-size="17" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CRC + 向量</text>
-<line x1="658" y1="146" x2="671" y2="146" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="677.00,146.00 671.00,149.00 671.00,143.00" fill="#5e6872" opacity="1"/>
-<rect x="682" y="102" width="190" height="88" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="777" y="136" font-size="20" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">跳转 / 启动</text>
-<text x="777" y="170" font-size="17" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">版本心跳</text>
-<text x="34" y="231" font-size="19" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">写入前越界</text>
-<line x1="184" y1="224" x2="217" y2="224" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="224.00,224.00 217.00,227.50 217.00,220.50" fill="#8f2d2d" opacity="1"/>
-<text x="242" y="231" font-size="18" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">拒绝擦写；Bootloader / 参数区不在 APP 写入范围内。</text>
-<text x="34" y="283" font-size="19" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">传输 / 校验失败</text>
-<line x1="214" y1="276" x2="247" y2="276" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="254.00,276.00 247.00,279.50 247.00,272.50" fill="#8f2d2d" opacity="1"/>
-<text x="272" y="283" font-size="18" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不跳转，请求重传；写入中的旧 APP 可能已被覆盖。</text>
-<text x="34" y="335" font-size="19" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">MSP / Reset 无效</text>
-<line x1="224" y1="328" x2="257" y2="328" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="264.00,328.00 257.00,331.50 257.00,324.50" fill="#8f2d2d" opacity="1"/>
-<text x="282" y="335" font-size="18" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">留在 Bootloader；核对栈顶范围、对齐与 Thumb 入口。</text>
-<text x="34" y="387" font-size="19" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">跳转后无心跳</text>
-<line x1="204" y1="380" x2="237" y2="380" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="244.00,380.00 237.00,383.50 237.00,376.50" fill="#7a4e00" opacity="1"/>
-<text x="262" y="387" font-size="18" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">启动未通过；预先设计超时复位和重新下载入口。</text>
-<line x1="28" y1="419" x2="872" y2="419" stroke="#d7dce1" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
-<text x="34" y="453" font-size="18" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">记录 length、CRC、slot 范围、vector[0/1]、boot_id 与 app_version。</text>
-<text x="34" y="490" font-size="18" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自动回退需要仍然完好的旧镜像和可恢复的切换记录，单槽不提供这项保证。</text>
-<line x1="24" y1="518" x2="876" y2="518" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="542" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量图 · 单槽恢复边界；双镜像回退另行设计</text>
-<text x="876" y="542" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">FA-002 · IG-010 · C-03/C-10/C-27/C-31</text>
+<rect x="0" y="0" width="900" height="560" fill="#FBF3DF"/>
+<rect x="0" y="0" width="900" height="58" fill="#F7EFDA" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#6E6B60" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#6E569B" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">IAP：写入检查和启动确认分开验收</text>
+<text x="22" y="50" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">单槽示例：保留可重新下载的 Bootloader 入口；旧 APP 不保证留存</text>
+<rect x="747" y="15" width="131" height="28" fill="#DCE6F2" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="812.5" y="33.32" font-size="12" fill="#6E569B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">12 / 19 · IAP</text>
+<rect x="28" y="102" width="190" height="88" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="123" y="136" font-size="20" fill="#1F4680" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">边界 / 长度</text>
+<text x="123" y="170" font-size="17" fill="#6E6B60" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先于擦写</text>
+<line x1="222" y1="146" x2="235" y2="146" stroke="#6E6B60" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="241.00,146.00 235.00,149.00 235.00,143.00" fill="#6E6B60" opacity="1"/>
+<rect x="246" y="102" width="190" height="88" fill="#F7EFDA" opacity="1" rx="8" stroke="#7A5B14" stroke-width="1.5"/>
+<text x="341" y="136" font-size="20" fill="#7A5B14" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">接收 / 写入</text>
+<text x="341" y="170" font-size="17" fill="#6E6B60" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">仅 APP 区</text>
+<line x1="440" y1="146" x2="453" y2="146" stroke="#6E6B60" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="459.00,146.00 453.00,149.00 453.00,143.00" fill="#6E6B60" opacity="1"/>
+<rect x="464" y="102" width="190" height="88" fill="#F7EFDA" opacity="1" rx="8" stroke="#2E5F42" stroke-width="1.5"/>
+<text x="559" y="136" font-size="20" fill="#2E5F42" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">完成后校验</text>
+<text x="559" y="170" font-size="17" fill="#6E6B60" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CRC + 向量</text>
+<line x1="658" y1="146" x2="671" y2="146" stroke="#6E6B60" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="677.00,146.00 671.00,149.00 671.00,143.00" fill="#6E6B60" opacity="1"/>
+<rect x="682" y="102" width="190" height="88" fill="#F7EFDA" opacity="1" rx="8" stroke="#6E569B" stroke-width="1.5"/>
+<text x="777" y="136" font-size="20" fill="#6E569B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">跳转 / 启动</text>
+<text x="777" y="170" font-size="17" fill="#6E6B60" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">版本心跳</text>
+<text x="34" y="231" font-size="19" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">写入前越界</text>
+<line x1="184" y1="224" x2="217" y2="224" stroke="#B3392F" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="224.00,224.00 217.00,227.50 217.00,220.50" fill="#B3392F" opacity="1"/>
+<text x="242" y="231" font-size="18" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">拒绝擦写；Bootloader / 参数区不在 APP 写入范围内。</text>
+<text x="34" y="283" font-size="19" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">传输 / 校验失败</text>
+<line x1="214" y1="276" x2="247" y2="276" stroke="#B3392F" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="254.00,276.00 247.00,279.50 247.00,272.50" fill="#B3392F" opacity="1"/>
+<text x="272" y="283" font-size="18" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不跳转，请求重传；写入中的旧 APP 可能已被覆盖。</text>
+<text x="34" y="335" font-size="19" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">MSP / Reset 无效</text>
+<line x1="224" y1="328" x2="257" y2="328" stroke="#B3392F" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="264.00,328.00 257.00,331.50 257.00,324.50" fill="#B3392F" opacity="1"/>
+<text x="282" y="335" font-size="18" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">留在 Bootloader；核对栈顶范围、对齐与 Thumb 入口。</text>
+<text x="34" y="387" font-size="19" fill="#7A5B14" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">跳转后无心跳</text>
+<line x1="204" y1="380" x2="237" y2="380" stroke="#7A5B14" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="244.00,380.00 237.00,383.50 237.00,376.50" fill="#7A5B14" opacity="1"/>
+<text x="262" y="387" font-size="18" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">启动未通过；预先设计超时复位和重新下载入口。</text>
+<line x1="28" y1="419" x2="872" y2="419" stroke="#D8D2C0" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<text x="34" y="453" font-size="18" fill="#1F4680" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">记录 length、CRC、slot 范围、vector[0/1]、boot_id 与 app_version。</text>
+<text x="34" y="490" font-size="18" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自动回退需要仍然完好的旧镜像和可恢复的切换记录，单槽不提供这项保证。</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#D8D2C0" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量图 · 单槽恢复边界；双镜像回退另行设计</text>
+<text x="876" y="542" font-size="11" fill="#6E6B60" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">FA-002 · IG-010 · C-03/C-10/C-27/C-31</text>
 </svg>

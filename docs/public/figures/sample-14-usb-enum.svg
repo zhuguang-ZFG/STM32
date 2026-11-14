@@ -1,66 +1,66 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="980" viewBox="0 0 960 980" role="img" aria-label="全速要 48 MHz；D+ 上拉在第 33 脚；描述符是 18 字节设备加 67 字节配置集合，VID/PID 是 0x1209/0x0001">
 
 
-<rect x="0" y="0" width="960" height="980" fill="#fbfaf7"/>
-<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
-<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
-<text x="22" y="32" font-size="16.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">全速要 48 MHz；D+ 上拉在第 33 脚；描述符是 18 字节设备加 67 字节配置集合，VID/PID 是 0x1209/0x0001</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 LQFP48 · RM0008 Rev 21 USB device</text>
-<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">14</text>
-<text x="40" y="122" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">枚举的第一课：时钟 48 MHz、D+ 上拉、描述符长度——三样都对主机才开口</text>
-<rect x="40" y="152" width="250" height="120" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="165" y="200" font-size="22" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">主机</text>
-<text x="165" y="232" font-size="13" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">问描述符的是它</text>
-<rect x="40" y="392" width="250" height="120" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="165" y="438" font-size="20" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">设备 STM32</text>
-<text x="165" y="468" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">pin 32 PA11 = DM</text>
-<text x="165" y="490" font-size="12" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">pin 33 PA12 = DP</text>
-<line x1="120" y1="272" x2="120" y2="392" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<text x="108" y="338" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">DM (PA11)</text>
-<line x1="190" y1="272" x2="190" y2="392" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<text x="178" y="338" font-size="11" fill="#1b5c45" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">DP (PA12)</text>
-<line x1="190" y1="330" x2="232" y2="330" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<rect x="232" y="316" width="56" height="28" fill="#fbfaf7" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="260" y="335" font-size="11" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1.5 kΩ</text>
-<line x1="288" y1="330" x2="316" y2="330" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<text x="324" y="335" font-size="12" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">→ 3.3 V</text>
-<text x="232" y="368" font-size="11" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">接错到 DM 会被当低速</text>
-<rect x="470" y="152" width="450" height="360" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="486" y="182" font-size="15" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">时钟门：USBPRE 只有两档</text>
-<rect x="486" y="202" width="170" height="64" fill="#fbfaf7" opacity="1" rx="4" stroke="#075e84" stroke-width="1.5"/>
-<text x="571" y="230" font-size="15" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PLL 72 MHz</text>
-<text x="571" y="252" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">来自第 02 章</text>
-<line x1="658" y1="234" x2="681" y2="234" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="688.00,234.00 681.00,237.50 681.00,230.50" fill="#1b5c45" opacity="1"/>
-<text x="686" y="218" font-size="11" fill="#1b5c45" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">USBPRE = 0</text>
-<text x="686" y="262" font-size="12" fill="#1b5c45" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">÷ 1.5</text>
-<rect x="690" y="202" width="210" height="64" fill="#fbfaf7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="795" y="230" font-size="16" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">48 MHz ✓</text>
-<text x="795" y="252" font-size="11" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">全速设备要的频率</text>
-<line x1="658" y1="234" x2="686.591" y2="373.143" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="688.00,380.00 683.16,373.85 690.02,372.44" fill="#8f2d2d" opacity="1"/>
-<text x="640" y="330" font-size="12" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">USBPRE = 1：不分频</text>
-<rect x="690" y="348" width="210" height="64" fill="#fbfaf7" opacity="1" rx="4" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="795" y="376" font-size="16" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">72 MHz ✗</text>
-<text x="795" y="398" font-size="11" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">主机读描述符失败</text>
-<text x="486" y="448" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">480 Mbit/s 在这颗料上不成立——这是全速 12 Mbit/s 的设备</text>
-<text x="486" y="476" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bulk / interrupt 的 wMaxPacketSize 上限是 64，1023 是别的类</text>
-<text x="40" y="590" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">描述符是字节数对出来的：18 字节设备 + 67 字节配置集合</text>
-<rect x="40" y="606" width="288" height="58" fill="#fbfaf7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="184" y="632" font-size="14" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">设备描述符 18 B</text>
-<text x="184" y="654" font-size="11" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VID/PID 0x1209 / 0x0001</text>
-<rect x="340" y="606" width="580" height="58" fill="#fbfaf7" opacity="1" rx="4" stroke="#1e4d63" stroke-width="1.5"/>
-<text x="630" y="632" font-size="14" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">配置集合 67 B（wTotalLength = 0x0043）</text>
-<text x="630" y="654" font-size="11" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">bMaxPower 0x32 = 100 mA　·　bMaxPacketSize0 = 64</text>
-<text x="40" y="696" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">总长度算错，枚举常常卡在选择配置之前——先数字节再谈驱动</text>
-<text x="40" y="722" font-size="13" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0x0483/0x5740 不是本仓库的描述符；1.5 kΩ 接到 DM 也不是这台全速设备</text>
-<rect x="40" y="756" width="880" height="116" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="56" y="786" font-size="15" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">旁注  这张图只画枚举的入场条件</text>
-<text x="56" y="812" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不画 CAN 收发器与 ULPI；USB 中断与 CAN 共用向量的细节看源卡</text>
-<text x="56" y="838" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">图证明时钟/上拉/长度三道入场条件；不证明主机驱动的匹配过程</text>
-<line x1="24" y1="944" x2="936" y2="944" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="964" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。48 MHz 来自已冻结的 USBPRE；脚位来自 DS5319 Rev 20 表 5；长度来自本仓库 usb-cdc。</text>
-<text x="936" y="964" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+<rect x="0" y="0" width="960" height="980" fill="#FBF3DF"/>
+<rect x="0" y="0" width="960" height="58" fill="#F7EFDA" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#6E6B60" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#1F4680" opacity="1"/>
+<text x="22" y="32" font-size="16.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">全速要 48 MHz；D+ 上拉在第 33 脚；描述符是 18 字节设备加 67 字节配置集合，VID/PID 是 0x1209/0x0001</text>
+<text x="22" y="50" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 LQFP48 · RM0008 Rev 21 USB device</text>
+<rect x="906" y="15" width="32" height="28" fill="#DCE6F2" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#1F4680" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">14</text>
+<text x="40" y="122" font-size="15" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">枚举的第一课：时钟 48 MHz、D+ 上拉、描述符长度——三样都对主机才开口</text>
+<rect x="40" y="152" width="250" height="120" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="165" y="200" font-size="22" fill="#1F4680" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">主机</text>
+<text x="165" y="232" font-size="13" fill="#6E6B60" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">问描述符的是它</text>
+<rect x="40" y="392" width="250" height="120" fill="#F7EFDA" opacity="1" rx="8" stroke="#2E5F42" stroke-width="1.5"/>
+<text x="165" y="438" font-size="20" fill="#2E5F42" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">设备 STM32</text>
+<text x="165" y="468" font-size="12" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">pin 32 PA11 = DM</text>
+<text x="165" y="490" font-size="12" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">pin 33 PA12 = DP</text>
+<line x1="120" y1="272" x2="120" y2="392" stroke="#6E6B60" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="108" y="338" font-size="11" fill="#6E6B60" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">DM (PA11)</text>
+<line x1="190" y1="272" x2="190" y2="392" stroke="#2E5F42" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="178" y="338" font-size="11" fill="#2E5F42" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">DP (PA12)</text>
+<line x1="190" y1="330" x2="232" y2="330" stroke="#7A5B14" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<rect x="232" y="316" width="56" height="28" fill="#FBF3DF" opacity="1" rx="2" stroke="#7A5B14" stroke-width="1.5"/>
+<text x="260" y="335" font-size="11" fill="#7A5B14" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1.5 kΩ</text>
+<line x1="288" y1="330" x2="316" y2="330" stroke="#7A5B14" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="324" y="335" font-size="12" fill="#7A5B14" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">→ 3.3 V</text>
+<text x="232" y="368" font-size="11" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">接错到 DM 会被当低速</text>
+<rect x="470" y="152" width="450" height="360" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="486" y="182" font-size="15" fill="#1F4680" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">时钟门：USBPRE 只有两档</text>
+<rect x="486" y="202" width="170" height="64" fill="#FBF3DF" opacity="1" rx="4" stroke="#1F4680" stroke-width="1.5"/>
+<text x="571" y="230" font-size="15" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PLL 72 MHz</text>
+<text x="571" y="252" font-size="11" fill="#6E6B60" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">来自第 02 章</text>
+<line x1="658" y1="234" x2="681" y2="234" stroke="#2E5F42" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="688.00,234.00 681.00,237.50 681.00,230.50" fill="#2E5F42" opacity="1"/>
+<text x="686" y="218" font-size="11" fill="#2E5F42" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">USBPRE = 0</text>
+<text x="686" y="262" font-size="12" fill="#2E5F42" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">÷ 1.5</text>
+<rect x="690" y="202" width="210" height="64" fill="#FBF3DF" opacity="1" rx="4" stroke="#2E5F42" stroke-width="1.5"/>
+<text x="795" y="230" font-size="16" fill="#2E5F42" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">48 MHz ✓</text>
+<text x="795" y="252" font-size="11" fill="#6E6B60" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">全速设备要的频率</text>
+<line x1="658" y1="234" x2="686.591" y2="373.143" stroke="#B3392F" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="688.00,380.00 683.16,373.85 690.02,372.44" fill="#B3392F" opacity="1"/>
+<text x="640" y="330" font-size="12" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">USBPRE = 1：不分频</text>
+<rect x="690" y="348" width="210" height="64" fill="#FBF3DF" opacity="1" rx="4" stroke="#B3392F" stroke-width="1.5"/>
+<text x="795" y="376" font-size="16" fill="#B3392F" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">72 MHz ✗</text>
+<text x="795" y="398" font-size="11" fill="#B3392F" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">主机读描述符失败</text>
+<text x="486" y="448" font-size="13" fill="#7A5B14" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">480 Mbit/s 在这颗料上不成立——这是全速 12 Mbit/s 的设备</text>
+<text x="486" y="476" font-size="13" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">bulk / interrupt 的 wMaxPacketSize 上限是 64，1023 是别的类</text>
+<text x="40" y="590" font-size="15" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">描述符是字节数对出来的：18 字节设备 + 67 字节配置集合</text>
+<rect x="40" y="606" width="288" height="58" fill="#FBF3DF" opacity="1" rx="4" stroke="#2E5F42" stroke-width="1.5"/>
+<text x="184" y="632" font-size="14" fill="#2E5F42" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">设备描述符 18 B</text>
+<text x="184" y="654" font-size="11" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VID/PID 0x1209 / 0x0001</text>
+<rect x="340" y="606" width="580" height="58" fill="#FBF3DF" opacity="1" rx="4" stroke="#1F4680" stroke-width="1.5"/>
+<text x="630" y="632" font-size="14" fill="#1F4680" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">配置集合 67 B（wTotalLength = 0x0043）</text>
+<text x="630" y="654" font-size="11" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">bMaxPower 0x32 = 100 mA　·　bMaxPacketSize0 = 64</text>
+<text x="40" y="696" font-size="13" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">总长度算错，枚举常常卡在选择配置之前——先数字节再谈驱动</text>
+<text x="40" y="722" font-size="13" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">0x0483/0x5740 不是本仓库的描述符；1.5 kΩ 接到 DM 也不是这台全速设备</text>
+<rect x="40" y="756" width="880" height="116" fill="#F7EFDA" opacity="1" rx="8" stroke="#6E569B" stroke-width="1.5"/>
+<text x="56" y="786" font-size="15" fill="#6E569B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">旁注  这张图只画枚举的入场条件</text>
+<text x="56" y="812" font-size="13" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不画 CAN 收发器与 ULPI；USB 中断与 CAN 共用向量的细节看源卡</text>
+<text x="56" y="838" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">图证明时钟/上拉/长度三道入场条件；不证明主机驱动的匹配过程</text>
+<line x1="24" y1="944" x2="936" y2="944" stroke="#D8D2C0" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="964" font-size="11" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。48 MHz 来自已冻结的 USBPRE；脚位来自 DS5319 Rev 20 表 5；长度来自本仓库 usb-cdc。</text>
+<text x="936" y="964" font-size="11" fill="#6E6B60" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
 </svg>

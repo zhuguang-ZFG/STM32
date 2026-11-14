@@ -1,62 +1,62 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="开源地图：按证据层选择仓库，星标多不等于该读">
 
 
-<rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
-<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
-<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#1b5c45" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">开源项目地图：先问要哪一份证据</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">appendix F · Cube / CMSIS / libopencm3 / FreeRTOS / RT-Thread</text>
-<rect x="915" y="15" width="23" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="926.5" y="33.32" font-size="12" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">F</text>
-<text x="40" y="88" font-size="13" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">concept · clone → find the .h / function → compare with RM/DS → keep license boundary</text>
-<rect x="40" y="130" width="280" height="210" fill="#f1f5f7" opacity="1" rx="8" stroke="#1e4d63" stroke-width="1.5"/>
-<rect x="40" y="130" width="280" height="46" fill="#f1f5f7" opacity="1" rx="8" stroke="#1e4d63" stroke-width="1.5"/>
-<text x="180" y="160" font-size="15" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">厂商实现</text>
-<text x="60" y="208" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32Cube*</text>
-<text x="60" y="248" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先读：Init/MSP/例程结构</text>
-<text x="60" y="282" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">许可：BSD/Apache/SLA 混用</text>
-<text x="60" y="314" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">边界：仅对照，不分发源码</text>
-<rect x="340" y="130" width="280" height="210" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<rect x="340" y="130" width="280" height="46" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="480" y="160" font-size="15" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">内核头文件</text>
-<text x="360" y="208" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">CMSIS_6</text>
-<text x="360" y="248" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先读：__I/__O/__IO 权限</text>
-<text x="360" y="282" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">许可：Apache-2.0</text>
-<text x="360" y="314" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">边界：仅对照，不分发源码</text>
-<rect x="640" y="130" width="280" height="210" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<rect x="640" y="130" width="280" height="46" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="780" y="160" font-size="15" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">手册翻译</text>
-<text x="660" y="208" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">libopencm3</text>
-<text x="660" y="248" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先读：memorymap.h 宏</text>
-<text x="660" y="282" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">许可：见 COPYING</text>
-<text x="660" y="314" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">边界：仅对照，不分发源码</text>
-<rect x="40" y="370" width="280" height="210" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<rect x="40" y="370" width="280" height="46" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="180" y="400" font-size="15" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">调度内核</text>
-<text x="60" y="448" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">FreeRTOS-Kernel</text>
-<text x="60" y="488" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先读：port 层上下文切换</text>
-<text x="60" y="522" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">许可：MIT</text>
-<text x="60" y="554" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">边界：仅对照，不分发源码</text>
-<rect x="340" y="370" width="280" height="210" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<rect x="340" y="370" width="280" height="46" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="480" y="400" font-size="15" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">组件框架</text>
-<text x="360" y="448" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">RT-Thread</text>
-<text x="360" y="488" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先读：设备框架与启动序</text>
-<text x="360" y="522" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">许可：Apache-2.0</text>
-<text x="360" y="554" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">边界：仅对照，不分发源码</text>
-<rect x="640" y="370" width="280" height="210" fill="#f1f5f7" opacity="1" rx="8" stroke="#8e2f5b" stroke-width="1.5"/>
-<rect x="640" y="370" width="280" height="46" fill="#f1f5f7" opacity="1" rx="8" stroke="#8e2f5b" stroke-width="1.5"/>
+<rect x="0" y="0" width="960" height="880" fill="#FBF3DF"/>
+<rect x="0" y="0" width="960" height="58" fill="#F7EFDA" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#6E6B60" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#2E5F42" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">开源项目地图：先问要哪一份证据</text>
+<text x="22" y="50" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">appendix F · Cube / CMSIS / libopencm3 / FreeRTOS / RT-Thread</text>
+<rect x="915" y="15" width="23" height="28" fill="#DCE6F2" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="926.5" y="33.32" font-size="12" fill="#2E5F42" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">F</text>
+<text x="40" y="88" font-size="13" fill="#1F4680" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">concept · clone → find the .h / function → compare with RM/DS → keep license boundary</text>
+<rect x="40" y="130" width="280" height="210" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<rect x="40" y="130" width="280" height="46" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="180" y="160" font-size="15" fill="#1F4680" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">厂商实现</text>
+<text x="60" y="208" font-size="16" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">STM32Cube*</text>
+<text x="60" y="248" font-size="13" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先读：Init/MSP/例程结构</text>
+<text x="60" y="282" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">许可：BSD/Apache/SLA 混用</text>
+<text x="60" y="314" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">边界：仅对照，不分发源码</text>
+<rect x="340" y="130" width="280" height="210" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<rect x="340" y="130" width="280" height="46" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="480" y="160" font-size="15" fill="#1F4680" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">内核头文件</text>
+<text x="360" y="208" font-size="16" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">CMSIS_6</text>
+<text x="360" y="248" font-size="13" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先读：__I/__O/__IO 权限</text>
+<text x="360" y="282" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">许可：Apache-2.0</text>
+<text x="360" y="314" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">边界：仅对照，不分发源码</text>
+<rect x="640" y="130" width="280" height="210" fill="#F7EFDA" opacity="1" rx="8" stroke="#2E5F42" stroke-width="1.5"/>
+<rect x="640" y="130" width="280" height="46" fill="#F7EFDA" opacity="1" rx="8" stroke="#2E5F42" stroke-width="1.5"/>
+<text x="780" y="160" font-size="15" fill="#2E5F42" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">手册翻译</text>
+<text x="660" y="208" font-size="16" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">libopencm3</text>
+<text x="660" y="248" font-size="13" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先读：memorymap.h 宏</text>
+<text x="660" y="282" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">许可：见 COPYING</text>
+<text x="660" y="314" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">边界：仅对照，不分发源码</text>
+<rect x="40" y="370" width="280" height="210" fill="#F7EFDA" opacity="1" rx="8" stroke="#7A5B14" stroke-width="1.5"/>
+<rect x="40" y="370" width="280" height="46" fill="#F7EFDA" opacity="1" rx="8" stroke="#7A5B14" stroke-width="1.5"/>
+<text x="180" y="400" font-size="15" fill="#7A5B14" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">调度内核</text>
+<text x="60" y="448" font-size="16" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">FreeRTOS-Kernel</text>
+<text x="60" y="488" font-size="13" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先读：port 层上下文切换</text>
+<text x="60" y="522" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">许可：MIT</text>
+<text x="60" y="554" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">边界：仅对照，不分发源码</text>
+<rect x="340" y="370" width="280" height="210" fill="#F7EFDA" opacity="1" rx="8" stroke="#6E569B" stroke-width="1.5"/>
+<rect x="340" y="370" width="280" height="46" fill="#F7EFDA" opacity="1" rx="8" stroke="#6E569B" stroke-width="1.5"/>
+<text x="480" y="400" font-size="15" fill="#6E569B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">组件框架</text>
+<text x="360" y="448" font-size="16" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">RT-Thread</text>
+<text x="360" y="488" font-size="13" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先读：设备框架与启动序</text>
+<text x="360" y="522" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">许可：Apache-2.0</text>
+<text x="360" y="554" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">边界：仅对照，不分发源码</text>
+<rect x="640" y="370" width="280" height="210" fill="#F7EFDA" opacity="1" rx="8" stroke="#8e2f5b" stroke-width="1.5"/>
+<rect x="640" y="370" width="280" height="46" fill="#F7EFDA" opacity="1" rx="8" stroke="#8e2f5b" stroke-width="1.5"/>
 <text x="780" y="400" font-size="15" fill="#8e2f5b" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">生成式构建</text>
-<text x="660" y="448" font-size="16" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Zephyr</text>
-<text x="660" y="488" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先读：DT + Kconfig</text>
-<text x="660" y="522" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">许可：Apache-2.0+</text>
-<text x="660" y="554" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">边界：仅对照，不分发源码</text>
-<rect x="40" y="640" width="880" height="120" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="56" y="672" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">提问前五件事：订货号、手册修订、最小复现、已排除项、期望行为——再贴仓库路径。</text>
-<text x="56" y="702" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">星标是人气，不是阅读优先级；归档与只读镜像要分开标注。</text>
-<text x="56" y="732" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">冲突裁定：官方 RM/DS 适用条件优先；开源差异写入坑表。</text>
-<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 开源证据层地图 · 非实拍</text>
-<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+<text x="660" y="448" font-size="16" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Zephyr</text>
+<text x="660" y="488" font-size="13" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先读：DT + Kconfig</text>
+<text x="660" y="522" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">许可：Apache-2.0+</text>
+<text x="660" y="554" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">边界：仅对照，不分发源码</text>
+<rect x="40" y="640" width="880" height="120" fill="#F7EFDA" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="56" y="672" font-size="14" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">提问前五件事：订货号、手册修订、最小复现、已排除项、期望行为——再贴仓库路径。</text>
+<text x="56" y="702" font-size="13" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">星标是人气，不是阅读优先级；归档与只读镜像要分开标注。</text>
+<text x="56" y="732" font-size="13" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">冲突裁定：官方 RM/DS 适用条件优先；开源差异写入坑表。</text>
+<line x1="24" y1="844" x2="936" y2="844" stroke="#D8D2C0" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="864" font-size="11" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 开源证据层地图 · 非实拍</text>
+<text x="936" y="864" font-size="11" fill="#6E6B60" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
 </svg>

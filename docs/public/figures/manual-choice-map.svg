@@ -1,55 +1,55 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="先问问题，再选手册">
 
 
-<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
-<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
-<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先问问题，再选手册</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">同一颗 STM32 通常要同时打开 DS 与 RM；勘误表 ES 不能省</text>
-<rect x="738" y="15" width="140" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="808" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">20 文档 · IG-008</text>
-<rect x="42" y="92" width="392" height="88" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="60" y="120" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">引脚 / 电压 / 极限值</text>
-<rect x="320" y="106" width="92" height="30" fill="#075e84" opacity="0.88" rx="4"/>
-<text x="366" y="126" font-size="13" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">DS</text>
-<text x="60" y="150" font-size="10.2" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">确认具体订货号与封装</text>
-<text x="60" y="168" font-size="9.4" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">搜索：型号 + 文档号 + 关键词</text>
-<rect x="456" y="92" width="392" height="88" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="474" y="120" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">寄存器 / 时序 / 状态机</text>
-<rect x="734" y="106" width="92" height="30" fill="#1b5c45" opacity="0.88" rx="4"/>
-<text x="780" y="126" font-size="13" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">RM</text>
-<text x="474" y="150" font-size="10.2" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">再回寄存器表核对位定义</text>
-<text x="474" y="168" font-size="9.4" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">搜索：型号 + 文档号 + 关键词</text>
-<rect x="42" y="204" width="392" height="88" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="60" y="232" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Cortex-M 内核 / Fault</text>
-<rect x="320" y="218" width="92" height="30" fill="#5b3a8c" opacity="0.88" rx="4"/>
-<text x="366" y="238" font-size="13" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">PM</text>
-<text x="60" y="262" font-size="10.2" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">区分内核规则与厂商外设</text>
-<text x="60" y="280" font-size="9.4" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">搜索：型号 + 文档号 + 关键词</text>
-<rect x="456" y="204" width="392" height="88" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="474" y="232" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">已知硅片问题</text>
-<rect x="734" y="218" width="92" height="30" fill="#8f2d2d" opacity="0.88" rx="4"/>
-<text x="780" y="238" font-size="13" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">ES</text>
-<text x="474" y="262" font-size="10.2" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">按 revision 判断规避条件</text>
-<text x="474" y="280" font-size="9.4" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">搜索：型号 + 文档号 + 关键词</text>
-<rect x="42" y="316" width="392" height="88" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="60" y="344" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">一种设计方法</text>
-<rect x="320" y="330" width="92" height="30" fill="#7a4e00" opacity="0.88" rx="4"/>
-<text x="366" y="350" font-size="13" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">AN</text>
-<text x="60" y="374" font-size="10.2" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">做法不是器件规格</text>
-<text x="60" y="392" font-size="9.4" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">搜索：型号 + 文档号 + 关键词</text>
-<rect x="456" y="316" width="392" height="88" fill="#f1f5f7" opacity="1" rx="8" stroke="#8e2f5b" stroke-width="1.5"/>
-<text x="474" y="344" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">工具 / 开发板用法</text>
+<rect x="0" y="0" width="900" height="560" fill="#FBF3DF"/>
+<rect x="0" y="0" width="900" height="58" fill="#F7EFDA" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#6E6B60" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#1F4680" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先问问题，再选手册</text>
+<text x="22" y="50" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">同一颗 STM32 通常要同时打开 DS 与 RM；勘误表 ES 不能省</text>
+<rect x="738" y="15" width="140" height="28" fill="#DCE6F2" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="808" y="33.32" font-size="12" fill="#1F4680" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">20 文档 · IG-008</text>
+<rect x="42" y="92" width="392" height="88" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="60" y="120" font-size="12.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">引脚 / 电压 / 极限值</text>
+<rect x="320" y="106" width="92" height="30" fill="#1F4680" opacity="0.88" rx="4"/>
+<text x="366" y="126" font-size="13" fill="#FBF3DF" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">DS</text>
+<text x="60" y="150" font-size="10.2" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">确认具体订货号与封装</text>
+<text x="60" y="168" font-size="9.4" fill="#6E6B60" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">搜索：型号 + 文档号 + 关键词</text>
+<rect x="456" y="92" width="392" height="88" fill="#F7EFDA" opacity="1" rx="8" stroke="#2E5F42" stroke-width="1.5"/>
+<text x="474" y="120" font-size="12.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">寄存器 / 时序 / 状态机</text>
+<rect x="734" y="106" width="92" height="30" fill="#2E5F42" opacity="0.88" rx="4"/>
+<text x="780" y="126" font-size="13" fill="#FBF3DF" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">RM</text>
+<text x="474" y="150" font-size="10.2" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">再回寄存器表核对位定义</text>
+<text x="474" y="168" font-size="9.4" fill="#6E6B60" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">搜索：型号 + 文档号 + 关键词</text>
+<rect x="42" y="204" width="392" height="88" fill="#F7EFDA" opacity="1" rx="8" stroke="#6E569B" stroke-width="1.5"/>
+<text x="60" y="232" font-size="12.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Cortex-M 内核 / Fault</text>
+<rect x="320" y="218" width="92" height="30" fill="#6E569B" opacity="0.88" rx="4"/>
+<text x="366" y="238" font-size="13" fill="#FBF3DF" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">PM</text>
+<text x="60" y="262" font-size="10.2" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">区分内核规则与厂商外设</text>
+<text x="60" y="280" font-size="9.4" fill="#6E6B60" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">搜索：型号 + 文档号 + 关键词</text>
+<rect x="456" y="204" width="392" height="88" fill="#F7EFDA" opacity="1" rx="8" stroke="#B3392F" stroke-width="1.5"/>
+<text x="474" y="232" font-size="12.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">已知硅片问题</text>
+<rect x="734" y="218" width="92" height="30" fill="#B3392F" opacity="0.88" rx="4"/>
+<text x="780" y="238" font-size="13" fill="#FBF3DF" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">ES</text>
+<text x="474" y="262" font-size="10.2" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">按 revision 判断规避条件</text>
+<text x="474" y="280" font-size="9.4" fill="#6E6B60" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">搜索：型号 + 文档号 + 关键词</text>
+<rect x="42" y="316" width="392" height="88" fill="#F7EFDA" opacity="1" rx="8" stroke="#7A5B14" stroke-width="1.5"/>
+<text x="60" y="344" font-size="12.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">一种设计方法</text>
+<rect x="320" y="330" width="92" height="30" fill="#7A5B14" opacity="0.88" rx="4"/>
+<text x="366" y="350" font-size="13" fill="#FBF3DF" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">AN</text>
+<text x="60" y="374" font-size="10.2" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">做法不是器件规格</text>
+<text x="60" y="392" font-size="9.4" fill="#6E6B60" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">搜索：型号 + 文档号 + 关键词</text>
+<rect x="456" y="316" width="392" height="88" fill="#F7EFDA" opacity="1" rx="8" stroke="#8e2f5b" stroke-width="1.5"/>
+<text x="474" y="344" font-size="12.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">工具 / 开发板用法</text>
 <rect x="734" y="330" width="92" height="30" fill="#8e2f5b" opacity="0.88" rx="4"/>
-<text x="780" y="350" font-size="13" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">UM</text>
-<text x="474" y="374" font-size="10.2" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">版本和板卡必须对得上</text>
-<text x="474" y="392" font-size="9.4" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">搜索：型号 + 文档号 + 关键词</text>
-<rect x="42" y="446" width="816" height="66" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="60" y="472" font-size="11.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">停止条件</text>
-<text x="132" y="472" font-size="10.6" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">找不到型号、封装或 revision，就先补齐身份；不要用搜索结果摘要代替原文。</text>
-<text x="132" y="495" font-size="10.2" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">引脚和电气看 DS；寄存器和时序看 RM；异常行为还要交叉检查 ES。</text>
-<line x1="24" y1="518" x2="876" y2="518" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="542" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">视觉规范：FA-002 概念连续线 · IG-008 多路径流程 · C-03 / C-10 / C-27 / C-31</text>
-<text x="876" y="542" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量图 · STM32 知识库</text>
+<text x="780" y="350" font-size="13" fill="#FBF3DF" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="800">UM</text>
+<text x="474" y="374" font-size="10.2" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">版本和板卡必须对得上</text>
+<text x="474" y="392" font-size="9.4" fill="#6E6B60" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">搜索：型号 + 文档号 + 关键词</text>
+<rect x="42" y="446" width="816" height="66" fill="#F7EFDA" opacity="1" rx="8" stroke="#B3392F" stroke-width="1.5"/>
+<text x="60" y="472" font-size="11.5" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">停止条件</text>
+<text x="132" y="472" font-size="10.6" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">找不到型号、封装或 revision，就先补齐身份；不要用搜索结果摘要代替原文。</text>
+<text x="132" y="495" font-size="10.2" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">引脚和电气看 DS；寄存器和时序看 RM；异常行为还要交叉检查 ES。</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#D8D2C0" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">视觉规范：FA-002 概念连续线 · IG-008 多路径流程 · C-03 / C-10 / C-27 / C-31</text>
+<text x="876" y="542" font-size="11" fill="#6E6B60" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量图 · STM32 知识库</text>
 </svg>

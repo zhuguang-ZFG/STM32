@@ -1,77 +1,77 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="980" viewBox="0 0 960 980" role="img" aria-label="低功耗稳压器的 Stop 典型值是 14 µA；醒来先是 HSI 8 MHz；不重配时钟时 0x271 变成 12800 bit/s">
 
 
-<rect x="0" y="0" width="960" height="980" fill="#fbfaf7"/>
-<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
-<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">进 Stop、被 EXTI 叫醒、再把时钟接回 72 MHz</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 LQFP48 · DS5319 Rev 20 Table 16 / Table 26</text>
-<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">16</text>
-<text x="24" y="82" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先选择 Stop，再用 LPDS 选择稳压器；模式位不保证电流值</text>
-<rect x="24" y="94" width="292" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="36" y="114" font-size="10.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">SLEEPDEEP=1</text>
-<text x="36" y="132" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SCB-&gt;SCR，决定睡深不睡浅</text>
-<rect x="330" y="94" width="292" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="342" y="114" font-size="10.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">PDDS=0</text>
-<text x="342" y="132" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PWR-&gt;CR，0 是 Stop，1 是 Standby</text>
-<rect x="636" y="94" width="292" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="648" y="114" font-size="10.5" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">LPDS=1</text>
-<text x="648" y="132" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">低功耗稳压器；14 uA 还须满足测量条件</text>
-<text x="24" y="168" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">同一颗 Stop，稳压器不同差 10 uA —— 引用哪一格要看配置</text>
-<text x="24" y="198" font-size="9.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LPDS=1 · 低功耗稳压器</text>
-<rect x="250" y="184" width="268.333" height="20" fill="#1b5c45" opacity="0.26" rx="2"/>
-<rect x="250" y="184" width="268.333" height="20" fill="none" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="526.333" y="198" font-size="9.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">14 uA</text>
-<text x="24" y="218" font-size="8.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">3.3 V / 25 °C / 关 IWDG</text>
-<text x="24" y="238" font-size="9.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LPDS=0 · 主稳压器</text>
-<rect x="250" y="224" width="460" height="20" fill="#7a4e00" opacity="0.26" rx="2"/>
-<rect x="250" y="224" width="460" height="20" fill="none" opacity="1" rx="2" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="718" y="238" font-size="9.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">24 uA</text>
-<text x="24" y="258" font-size="8.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">同一个 Stop 状态，另一格数据</text>
-<text x="700" y="198" font-size="9" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Stop 加 IWDG：表 16 未给电流</text>
-<text x="700" y="214" font-size="9" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">表 16 的条件里写明关掉它</text>
-<text x="24" y="286" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">EXTI 叫醒之后不是立刻回到 72 MHz：先 HSI，再锁 PLL</text>
-<line x1="60" y1="364" x2="900" y2="364" stroke="#5e6872" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
-<rect x="60" y="338" width="136" height="52" fill="#5e6872" opacity="0.22" rx="4"/>
-<rect x="60" y="338" width="136" height="52" fill="none" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
-<text x="68" y="358" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">进入 Stop</text>
-<text x="68" y="376" font-size="8.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">pin 10 PA0 上的 EXTI 一直在等</text>
-<rect x="200" y="338" width="196" height="52" fill="#1b5c45" opacity="0.22" rx="4"/>
-<rect x="200" y="338" width="196" height="52" fill="none" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="208" y="358" font-size="9.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">唤醒：HSI 8 MHz</text>
-<text x="208" y="376" font-size="8.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">事件至首条指令 5.4 us</text>
-<rect x="400" y="338" width="216" height="52" fill="#7a4e00" opacity="0.22" rx="4"/>
-<rect x="400" y="338" width="216" height="52" fill="none" opacity="1" rx="4" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="408" y="358" font-size="9.5" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">SystemClock_Config</text>
-<text x="408" y="376" font-size="8.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">重开 HSE / PLL 并等待就绪</text>
-<rect x="620" y="338" width="236" height="52" fill="#075e84" opacity="0.22" rx="4"/>
-<rect x="620" y="338" width="236" height="52" fill="none" opacity="1" rx="4" stroke="#075e84" stroke-width="1.5"/>
-<text x="628" y="358" font-size="9.5" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">业务恢复：72 MHz</text>
-<text x="628" y="376" font-size="8.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">切回 PLL 后再用原波特率</text>
-<text x="200" y="408" font-size="9" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">事件 → 首条指令：5.4 us</text>
-<text x="620" y="408" font-size="9" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PLL lock max 200 us</text>
-<text x="24" y="432" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">阶段宽度不代表耗时。5.4 us 到首条指令；HSE 起振、PLL 锁定和软件恢复另行计时。</text>
-<text x="24" y="470" font-size="12.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">最容易漏的一步：醒来重配时钟，否则 0x271 不是 115200</text>
-<rect x="24" y="482" width="912" height="150" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="38" y="506" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BRR 原始值 0x271 = 625；USARTDIV = 39.0625（16 倍过采样）</text>
-<text x="38" y="528" font-size="9" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">72 MHz: 72e6 / (16 × 39.0625)</text>
-<rect x="38" y="536" width="520" height="20" fill="#1b5c45" opacity="0.24" rx="2"/>
-<rect x="38" y="536" width="520" height="20" fill="none" opacity="1" rx="2" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="568" y="550" font-size="9.5" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">115200 bit/s</text>
-<text x="38" y="574" font-size="9" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">8 MHz: 8e6 / (16 × 39.0625)</text>
-<rect x="38" y="582" width="57.7778" height="20" fill="#8f2d2d" opacity="0.24" rx="2"/>
-<rect x="38" y="582" width="57.7778" height="20" fill="none" opacity="1" rx="2" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="105.778" y="596" font-size="9.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">12800 bit/s</text>
-<text x="700" y="514" font-size="9.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">主机仍是 115200</text>
-<text x="600" y="570" font-size="9.5" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">12800 × 9 = 115200</text>
-<text x="600" y="588" font-size="9.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">差 9 倍，收到的是乱码不是短帧</text>
-<text x="600" y="610" font-size="9" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先跑 SystemClock_Config()，再开 USART</text>
-<rect x="24" y="648" width="912" height="62" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="40" y="672" font-size="10.5" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Standby 全关条件典型 2 uA，唤醒 50 us；F4 的周期唤醒定时器在 C8 上不存在。</text>
-<text x="40" y="692" font-size="10" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">这里也不画第 06 章的 UART 位帧 —— 12800 与 115200 的差别在位宽，不在帧格式。</text>
-<line x1="24" y1="944" x2="936" y2="944" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="964" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。电流和 5.4 us 来自 DS5319 Rev 20 表 16 与表 26。8 MHz 来自第 02 章。</text>
-<text x="936" y="964" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+<rect x="0" y="0" width="960" height="980" fill="#FBF3DF"/>
+<rect x="0" y="0" width="960" height="58" fill="#F7EFDA" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#6E6B60" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#1F4680" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">进 Stop、被 EXTI 叫醒、再把时钟接回 72 MHz</text>
+<text x="22" y="50" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32F103C8T6 LQFP48 · DS5319 Rev 20 Table 16 / Table 26</text>
+<rect x="906" y="15" width="32" height="28" fill="#DCE6F2" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#1F4680" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">16</text>
+<text x="24" y="82" font-size="12.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先选择 Stop，再用 LPDS 选择稳压器；模式位不保证电流值</text>
+<rect x="24" y="94" width="292" height="52" fill="#F7EFDA" opacity="1" rx="8" stroke="#2E5F42" stroke-width="1.5"/>
+<text x="36" y="114" font-size="10.5" fill="#2E5F42" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">SLEEPDEEP=1</text>
+<text x="36" y="132" font-size="9" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SCB-&gt;SCR，决定睡深不睡浅</text>
+<rect x="330" y="94" width="292" height="52" fill="#F7EFDA" opacity="1" rx="8" stroke="#7A5B14" stroke-width="1.5"/>
+<text x="342" y="114" font-size="10.5" fill="#7A5B14" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">PDDS=0</text>
+<text x="342" y="132" font-size="9" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">PWR-&gt;CR，0 是 Stop，1 是 Standby</text>
+<rect x="636" y="94" width="292" height="52" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="648" y="114" font-size="10.5" fill="#1F4680" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">LPDS=1</text>
+<text x="648" y="132" font-size="9" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">低功耗稳压器；14 uA 还须满足测量条件</text>
+<text x="24" y="168" font-size="12.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">同一颗 Stop，稳压器不同差 10 uA —— 引用哪一格要看配置</text>
+<text x="24" y="198" font-size="9.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LPDS=1 · 低功耗稳压器</text>
+<rect x="250" y="184" width="268.333" height="20" fill="#2E5F42" opacity="0.26" rx="2"/>
+<rect x="250" y="184" width="268.333" height="20" fill="none" opacity="1" rx="2" stroke="#2E5F42" stroke-width="1.5"/>
+<text x="526.333" y="198" font-size="9.5" fill="#2E5F42" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">14 uA</text>
+<text x="24" y="218" font-size="8.5" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">3.3 V / 25 °C / 关 IWDG</text>
+<text x="24" y="238" font-size="9.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">LPDS=0 · 主稳压器</text>
+<rect x="250" y="224" width="460" height="20" fill="#7A5B14" opacity="0.26" rx="2"/>
+<rect x="250" y="224" width="460" height="20" fill="none" opacity="1" rx="2" stroke="#7A5B14" stroke-width="1.5"/>
+<text x="718" y="238" font-size="9.5" fill="#7A5B14" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">24 uA</text>
+<text x="24" y="258" font-size="8.5" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">同一个 Stop 状态，另一格数据</text>
+<text x="700" y="198" font-size="9" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Stop 加 IWDG：表 16 未给电流</text>
+<text x="700" y="214" font-size="9" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">表 16 的条件里写明关掉它</text>
+<text x="24" y="286" font-size="12.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">EXTI 叫醒之后不是立刻回到 72 MHz：先 HSI，再锁 PLL</text>
+<line x1="60" y1="364" x2="900" y2="364" stroke="#6E6B60" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<rect x="60" y="338" width="136" height="52" fill="#6E6B60" opacity="0.22" rx="4"/>
+<rect x="60" y="338" width="136" height="52" fill="none" opacity="1" rx="4" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="68" y="358" font-size="9.5" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">进入 Stop</text>
+<text x="68" y="376" font-size="8.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">pin 10 PA0 上的 EXTI 一直在等</text>
+<rect x="200" y="338" width="196" height="52" fill="#2E5F42" opacity="0.22" rx="4"/>
+<rect x="200" y="338" width="196" height="52" fill="none" opacity="1" rx="4" stroke="#2E5F42" stroke-width="1.5"/>
+<text x="208" y="358" font-size="9.5" fill="#2E5F42" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">唤醒：HSI 8 MHz</text>
+<text x="208" y="376" font-size="8.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">事件至首条指令 5.4 us</text>
+<rect x="400" y="338" width="216" height="52" fill="#7A5B14" opacity="0.22" rx="4"/>
+<rect x="400" y="338" width="216" height="52" fill="none" opacity="1" rx="4" stroke="#7A5B14" stroke-width="1.5"/>
+<text x="408" y="358" font-size="9.5" fill="#7A5B14" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">SystemClock_Config</text>
+<text x="408" y="376" font-size="8.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">重开 HSE / PLL 并等待就绪</text>
+<rect x="620" y="338" width="236" height="52" fill="#1F4680" opacity="0.22" rx="4"/>
+<rect x="620" y="338" width="236" height="52" fill="none" opacity="1" rx="4" stroke="#1F4680" stroke-width="1.5"/>
+<text x="628" y="358" font-size="9.5" fill="#1F4680" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">业务恢复：72 MHz</text>
+<text x="628" y="376" font-size="8.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">切回 PLL 后再用原波特率</text>
+<text x="200" y="408" font-size="9" fill="#2E5F42" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">事件 → 首条指令：5.4 us</text>
+<text x="620" y="408" font-size="9" fill="#1F4680" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PLL lock max 200 us</text>
+<text x="24" y="432" font-size="9.5" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">阶段宽度不代表耗时。5.4 us 到首条指令；HSE 起振、PLL 锁定和软件恢复另行计时。</text>
+<text x="24" y="470" font-size="12.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">最容易漏的一步：醒来重配时钟，否则 0x271 不是 115200</text>
+<rect x="24" y="482" width="912" height="150" fill="#F7EFDA" opacity="1" rx="8" stroke="#B3392F" stroke-width="1.5"/>
+<text x="38" y="506" font-size="9.5" fill="#6E6B60" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BRR 原始值 0x271 = 625；USARTDIV = 39.0625（16 倍过采样）</text>
+<text x="38" y="528" font-size="9" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">72 MHz: 72e6 / (16 × 39.0625)</text>
+<rect x="38" y="536" width="520" height="20" fill="#2E5F42" opacity="0.24" rx="2"/>
+<rect x="38" y="536" width="520" height="20" fill="none" opacity="1" rx="2" stroke="#2E5F42" stroke-width="1.5"/>
+<text x="568" y="550" font-size="9.5" fill="#2E5F42" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">115200 bit/s</text>
+<text x="38" y="574" font-size="9" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">8 MHz: 8e6 / (16 × 39.0625)</text>
+<rect x="38" y="582" width="57.7778" height="20" fill="#B3392F" opacity="0.24" rx="2"/>
+<rect x="38" y="582" width="57.7778" height="20" fill="none" opacity="1" rx="2" stroke="#B3392F" stroke-width="1.5"/>
+<text x="105.778" y="596" font-size="9.5" fill="#B3392F" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">12800 bit/s</text>
+<text x="700" y="514" font-size="9.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">主机仍是 115200</text>
+<text x="600" y="570" font-size="9.5" fill="#B3392F" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">12800 × 9 = 115200</text>
+<text x="600" y="588" font-size="9.5" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">差 9 倍，收到的是乱码不是短帧</text>
+<text x="600" y="610" font-size="9" fill="#2E5F42" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先跑 SystemClock_Config()，再开 USART</text>
+<rect x="24" y="648" width="912" height="62" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="40" y="672" font-size="10.5" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Standby 全关条件典型 2 uA，唤醒 50 us；F4 的周期唤醒定时器在 C8 上不存在。</text>
+<text x="40" y="692" font-size="10" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">这里也不画第 06 章的 UART 位帧 —— 12800 与 115200 的差别在位宽，不在帧格式。</text>
+<line x1="24" y1="944" x2="936" y2="944" stroke="#D8D2C0" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="964" font-size="11" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。电流和 5.4 us 来自 DS5319 Rev 20 表 16 与表 26。8 MHz 来自第 02 章。</text>
+<text x="936" y="964" font-size="11" fill="#6E6B60" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
 </svg>
