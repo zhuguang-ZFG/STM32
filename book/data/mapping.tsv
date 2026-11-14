@@ -31,7 +31,7 @@ root	stm32-book/book/A-工程深读.md	apA	根书附录素材	migrated
 root	stm32-book/book/B-例程索引.md	apB	根书附录素材	migrated	
 root	stm32-book/book/C-习题答案.md	apC	根书附录素材	migrated	
 root	stm32-book/book/D-术语表.md	apD	根书附录素材	migrated	
-root	stm32-book/book/E-参考资料.md	apE	根书附录素材	planned	
+root	stm32-book/book/E-参考资料.md	apE	根书附录素材	migrated	
 root	stm32-book/book/F-学习路线收束.md	apF	学习路线收束	planned	
 root	stm32-book/book/F-开源地图.md	apF	根书附录素材	planned	
 mcu	mcu/docs/c/00-c-in-mcu.md	ch01	语言深潜	migrated	
@@ -132,7 +132,7 @@ mcu	mcu/mcu-book/book/A-工程深读.md	apA	附录素材	migrated
 mcu	mcu/mcu-book/book/B-例程索引.md	apB	附录素材	migrated	
 mcu	mcu/mcu-book/book/C-习题答案.md	apC	附录素材	migrated	
 mcu	mcu/mcu-book/book/D-术语表.md	apD	附录素材	migrated	
-mcu	mcu/mcu-book/book/E-参考资料.md	apE	附录素材	planned	
+mcu	mcu/mcu-book/book/E-参考资料.md	apE	附录素材	migrated	
 mcu	mcu/mcu-book/book/F-常见问题.md	ch45	附录素材	migrated	
 mcu	mcu/mcu-book/book/G-开源地图.md	apF	附录素材	planned	
 motor	plans/2026-11-11-motor-control/chapters-draft/29-电机驱动与供电.md	ch36	电机控制草稿	migrated	
