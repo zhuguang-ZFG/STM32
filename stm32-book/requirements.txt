@@ -1,5 +1,0 @@
-Markdown>=3.11,<4
-Playwright>=1.61,<2
-PyMuPDF>=1.28,<2
-Pillow>=12,<13
-lxml>=6.0,<7

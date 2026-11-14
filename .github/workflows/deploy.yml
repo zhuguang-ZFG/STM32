@@ -1,0 +1,60 @@
+name: 部署合并书站点到 GitHub Pages（/STM32/）
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'book/**'
+      - 'scripts/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.13"
+      - name: Install book build deps
+        run: python -m pip install -r book/requirements.txt
+      # 站点构建（52 页 + 首页）
+      - name: 构建合并书站点
+        run: python -m book.build_html
+      # 旧 /mcu/** 全量跳转存根（131 页；覆盖率不足即失败）
+      - name: 生成旧链跳转存根（覆盖率 100%）
+        run: node scripts/legacy-redirects.mjs --mapping plans/2026-11-12-merged-book/mapping.json --manifest docs/manifest.json --out book/dist/site/mcu --docs mcu/docs
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "20"
+      # 组装 staging（根 index = 合并书首页；mcu/ 下只有存根）
+      - name: 组装 Pages staging（/STM32/ 根 = 合并书）
+        run: node scripts/site-assemble.mjs --dist book/dist/site --stubs book/dist/site/mcu --out .temp/pages-site
+      # 挂载冒烟：按 /STM32/ 起服务，Chromium 回归 首页/深链/旧链跳转/附录/资源/quiz
+      - name: 安装 Chromium（挂载冒烟用）
+        run: npx --yes playwright@1.63.0 install --with-deps chromium
+      - name: 挂载冒烟（/STM32/）
+        run: node scripts/site-smoke.mjs --root .temp/pages-site --mount /STM32
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: .temp/pages-site
+      - id: deployment
+        uses: actions/deploy-pages@v5

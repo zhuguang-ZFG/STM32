@@ -7,7 +7,6 @@ build/
 *.hex
 *.bin
 MDK-ARM/*/
-stm32-book/dist/
 book/dist/
 .mxproject
 

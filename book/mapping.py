@@ -48,19 +48,20 @@ def dumps(mapping: dict) -> str:
     return json.dumps(mapping, ensure_ascii=False, indent=2) + "\n"
 
 
+def _expected_sources() -> dict:
+    """AC1 冻结清单（B4 迁移完成时两书 manifest 的源文件全集）。
+
+    B5 删除旧树后，两书 manifest 不再存在于工作树，覆盖率核对改用本冻结文件。
+    """
+    return json.loads((ROOT / "book" / "data" / "expected-sources.json").read_text(encoding="utf-8"))
+
+
 def expected_root_sources() -> list[str]:
-    manifest = json.loads((ROOT / "stm32-book" / "manifest.json").read_text(encoding="utf-8"))
-    sources = [f"docs/{name}" for part in manifest["parts"] for name in part["files"]]
-    sources += [f"stm32-book/book/{appendix['file']}" for appendix in manifest["appendices"]]
-    sources.append("stm32-book/book/F-学习路线收束.md")
-    return sources
+    return _expected_sources()["root"]
 
 
 def expected_mcu_sources() -> list[str]:
-    manifest = json.loads((ROOT / "mcu" / "mcu-book" / "manifest.json").read_text(encoding="utf-8"))
-    sources = [f"mcu/docs/{name}" for part in manifest["parts"] for name in part["files"]]
-    sources += [f"mcu/mcu-book/book/{appendix['file']}" for appendix in manifest["appendices"]]
-    return sources
+    return _expected_sources()["mcu"]
 
 
 def expected_motor_sources() -> list[str]:
@@ -89,7 +90,7 @@ def validate(rows: list[dict], manifest: dict, docs_root: Path | None = None) ->
         for target in row["targets"]:
             if target not in files:
                 errors.append(f"unknown target {target} for {row['source']}")
-        if not (ROOT / row["source"]).exists():
+        if row["status"] in ("planned", "partial") and not (ROOT / row["source"]).exists():
             errors.append(f"missing source file: {row['source']}")
         if not row["purpose"].strip():
             errors.append(f"missing purpose: {row['source']}")
