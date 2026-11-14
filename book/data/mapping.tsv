@@ -19,8 +19,8 @@ root	docs/17-调试与性能优化.md	ch20	根书原章	migrated
 root	docs/18-常见问题FAQ.md	ch45	根书原章	planned	
 root	docs/19-项目实战合集.md	ch42	根书原章	planned	
 root	docs/20-学习资源与工具链.md	ch46	根书原章	planned	
-root	docs/21-原理图与实物图鉴.md	ch40	根书原章	planned	
-root	docs/22-仿真实验Wokwi与Renode.md	ch40	根书原章	planned	
+root	docs/21-原理图与实物图鉴.md	ch40	根书原章	migrated	
+root	docs/22-仿真实验Wokwi与Renode.md	ch40	根书原章	migrated	
 root	docs/23-STM32G0引脚.md	ch28	根书原章	migrated	
 root	docs/24-STM32L4引脚.md	ch28	根书原章	migrated	
 root	docs/25-STM32H7引脚.md	ch28;ch34	根书原章	migrated	Cache→ch34
@@ -112,14 +112,14 @@ mcu	mcu/docs/gd32/06-clic-irq.md	ch29	平台对照（GD32）	migrated
 mcu	mcu/docs/gd32/07-rcu-108m.md	ch29	平台对照（GD32）	migrated	
 mcu	mcu/docs/gd32/08-mtime-delay.md	ch29	平台对照（GD32）	migrated	
 mcu	mcu/docs/gd32/09-gpio-minimal.md	ch29	平台对照（GD32）	migrated	
-mcu	mcu/docs/lab/e01-blink.md	ch09;ch40	实验方法与证据	partial	实验拆入ch09，方法→ch40
-mcu	mcu/docs/lab/e02-logic-uart.md	ch13;ch40	实验方法与证据	partial	
-mcu	mcu/docs/lab/e03-scope-pwm.md	ch12;ch40	实验方法与证据	partial	
-mcu	mcu/docs/lab/e04-priority-inversion.md	ch24;ch40	实验方法与证据	partial	
-mcu	mcu/docs/lab/e05-i2c-eeprom.md	ch16;ch40	实验方法与证据	partial	
-mcu	mcu/docs/lab/e06-lowpower-current.md	ch18;ch40	实验方法与证据	partial	
-mcu	mcu/docs/lab/e07-qmi8658.md	ch16;ch40	实验方法与证据	partial	
-mcu	mcu/docs/lab/e08-audio-play.md	ch31;ch40	实验方法与证据	partial	
+mcu	mcu/docs/lab/e01-blink.md	ch09;ch40	实验方法与证据	migrated	实验拆入ch09，方法→ch40
+mcu	mcu/docs/lab/e02-logic-uart.md	ch13;ch40	实验方法与证据	migrated	
+mcu	mcu/docs/lab/e03-scope-pwm.md	ch12;ch40	实验方法与证据	migrated	
+mcu	mcu/docs/lab/e04-priority-inversion.md	ch24;ch40	实验方法与证据	migrated	
+mcu	mcu/docs/lab/e05-i2c-eeprom.md	ch16;ch40	实验方法与证据	migrated	
+mcu	mcu/docs/lab/e06-lowpower-current.md	ch18;ch40	实验方法与证据	migrated	
+mcu	mcu/docs/lab/e07-qmi8658.md	ch16;ch40	实验方法与证据	migrated	
+mcu	mcu/docs/lab/e08-audio-play.md	ch31;ch40	实验方法与证据	migrated	
 mcu	mcu/docs/projects/01-f407-logger.md	ch41	项目案例	planned	
 mcu	mcu/docs/projects/02-s3-logger.md	ch41	项目案例	planned	
 mcu	mcu/docs/ai/00-pair-not-ghost.md	ch43	AI 工程方法	planned	
