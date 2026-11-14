@@ -10,11 +10,6 @@ on:
       - 'scripts/legacy-redirects.mjs'
       - 'scripts/tests/**'
       - 'tools/slop_lint.py'
-      - 'stm32-book/manifest.json'
-      - 'stm32-book/book/**'
-      - 'mcu/mcu-book/manifest.json'
-      - 'mcu/mcu-book/book/**'
-      - 'mcu/docs/**'
   push:
     branches: [main]
     paths:
@@ -25,11 +20,6 @@ on:
       - 'scripts/legacy-redirects.mjs'
       - 'scripts/tests/**'
       - 'tools/slop_lint.py'
-      - 'stm32-book/manifest.json'
-      - 'stm32-book/book/**'
-      - 'mcu/mcu-book/manifest.json'
-      - 'mcu/mcu-book/book/**'
-      - 'mcu/docs/**'
   workflow_dispatch:
 
 permissions:
