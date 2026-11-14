@@ -137,6 +137,18 @@ esp_now_send(peer.peer_addr, data, len);
 | recv 回调里取 info 崩溃或数据错 | 把临时变量存下来了 | 回调内 memcpy |
 | 发送 1.5 KB 丢一半 | 超 250B 未按 v2 长帧口径 | 对齐 `ESP_NOW_MAX_DATA_LEN(_V2)`；分片 |
 
+## 社区开源实现
+
+本章的 ESP-NOW 用法有两层官方参考——底层 API 例程与官方增强组件，正好对应「先用最小 API 理解机制，再按需上框架」：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `examples/wifi/espnow` | 官方最小例程，五个步骤与本章一致：Start WiFi → init ESPNOW → 注册收发回调 → add peer → send/recv；重点看回调里立即 memcpy（对照"recv 回调里取 info 崩溃"失败分支）与信道一致性处理（CHAN 报错） |
+| [espressif/esp-now](https://github.com/espressif/esp-now) | 组件仓库（Component Manager 安装：`idf.py add-dependency "espressif/esp-now"`） | 官方增强组件：自动配对（pairing）、加密、信道跳变、调试通道——本章裸 API 之上的产品化层，看看它怎么补齐裸协议没有的发现与安全 |
+| [ESP-NOW API 参考](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/network/esp_now.html) | esp_now_send / 收发回调 / peer 管理 | API 语义权威出处：v2 长帧 `ESP_NOW_MAX_DATA_LEN_V2`、回调上下文有效期——失败分支里两条口径的原文 |
+
+社区常见踩坑与本章失败分支高度重合：最典型的是「回调里把 info/desc 指针存起来慢慢处理」（官方文档明说回调返回后缓冲失效）与「两板一板连 AP 一板裸跑导致信道漂移」。BLE 侧社区参考是 esp-idf 的 `examples/bluetooth/` 例程族（nimble 与 bluedroid 两套 host 对照），量级大，建议先跑本章的双栈 choice 再进去。
+
 ## 离开检查
 
 - 六步骨架与「start 异步、connect 等 STA_START」能落到代码顺序。
