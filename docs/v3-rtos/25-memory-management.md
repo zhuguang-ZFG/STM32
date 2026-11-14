@@ -70,7 +70,7 @@ FreeRTOS 的内存分配不是五个开关，是一条能力阶梯——你放�
 
 ![heap_4 合并动画：A/B/C 逐块长出，释放 B 中间留洞总空闲涨但最大连续块不够，释放 A 后相邻合并成 2KB](/anim/heap4-coalesce.svg)
 
-![heap_4 空闲链表：ucHeap 里已用块与空闲块交替，xFreeList 按地址排序，相邻空闲块合并，两个指标都从这条链表读](/arch/heap-free-list.png)
+![heap_4 空闲链表：ucHeap 里已用块与空闲块交替，xFreeList 按地址排序，相邻才合并；右侧是当前空闲、历史最低与最大连续块三个读数](/arch/heap-free-list.png)
 
 ### 块头：每次分配的 8 B 暗税
 
