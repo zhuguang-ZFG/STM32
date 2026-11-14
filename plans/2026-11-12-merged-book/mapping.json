@@ -12,7 +12,7 @@
         "ch46"
       ],
       "purpose": "根书原章",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -217,7 +217,7 @@
         "ch46"
       ],
       "purpose": "根书原章",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -308,7 +308,7 @@
         "apA"
       ],
       "purpose": "根书附录素材",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -318,7 +318,7 @@
         "apB"
       ],
       "purpose": "根书附录素材",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -328,7 +328,7 @@
         "apC"
       ],
       "purpose": "根书附录素材",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -359,7 +359,7 @@
       ],
       "purpose": "学习路线收束",
       "status": "planned",
-      "note": "书稿专有收束页"
+      "note": ""
     },
     {
       "book": "root",
@@ -1327,7 +1327,7 @@
         "apA"
       ],
       "purpose": "附录素材",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -1337,7 +1337,7 @@
         "apB"
       ],
       "purpose": "附录素材",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {
@@ -1347,7 +1347,7 @@
         "apC"
       ],
       "purpose": "附录素材",
-      "status": "planned",
+      "status": "migrated",
       "note": ""
     },
     {

@@ -1,0 +1,246 @@
+---
+title: "习题与自测答案"
+platforms: [generic]
+---
+
+# 附录 C · 习题与自测答案
+
+## 本章罗盘
+
+- **问题**：各章末的自测题答案在哪，一源多目标的章（如根书 02→两章）答案怎么归属？
+- **交付**：能先独立作答再对照；能按合并章号定位对应章的正文与失败分支。
+- **边界**：答案只给判断依据；寄存器位与电气值仍要回目标型号手册。分频、BRR、采样周期和看门狗重载的算式在附录 D 文末的账里，不要从某一题的一句话反推到别的系列。已发布合并章若保留了章内 details 自答，本附录不重复收录；本附录收录的是根书来源的自测答案，按 mapping 重排章号。
+- **依据锚点**：根书附录 C（`stm32-book/book/C-习题答案.md`，235 行）为主体；mcu 书附录 C 为占位（答案在正文 quizzes 渲染），不搬正文。六段对账数字与附录 D 三张账、已发布章数值交叉核对过（CFSR/HFSR/MMFAR/BFAR 地址、`0x50`、`0xEF4017` 抽查一致）。
+
+先独立作答，再对照。答案只给判断依据；具体寄存器位和电气值仍要回到目标型号手册。分频、BRR、采样周期和看门狗重载的算式在附录 D 文末，不要从某一题的一句话反推到别的系列。每个小节的标题标注「根书章号 → 合并章号」，一源多目标的章把双方章号都列出。
+## 根书 00 如何学习 STM32 → [第 46 章](../v7-delivery/46-resources-roadmap-open-source.md)
+
+
+<p align="center">
+  <img src="/images/app-c-discipline.png" width="760" alt="Handraw：答案怎么用（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。先自做再对照；禁背答案替实验。非实拍。</sub>
+</p>
+1. BOOT0 拉低时从主 Flash 启动。
+2. HAL 在寄存器之上提供句柄、状态机、参数检查和跨系列较统一的 API；它没有消除底层时钟、引脚和寄存器约束。
+3. 第一场胜利是让一颗灯按**自己算过并测过**的频率闪，而不是只看到它亮过。
+
+## 根书 01 开发环境搭建 → [第 5 章](../v0-foundations/05-toolchain-four-steps.md)
+
+1. 向量表第 0 个字是复位后装入 MSP 的初始栈顶。
+2. 第 1 个字是 `Reset_Handler` 的入口地址，最低位用于表示 Thumb 状态。
+3. SWD 使用 PA13/SWDIO 与 PA14/SWCLK，并要共地和供电参考。
+
+## 根书 02 芯片选型与存储器时钟 → 第 1 章与第 8 章
+
+1. F103 在 72 MHz 条件下需要按电压范围配置相应 Flash 等待周期；本书示例使用 2 WS，最终以 RM0008 的 Flash 表为准。
+2. AHB/HCLK 高于 APB1；典型 72 MHz 配置中 APB1 为 36 MHz。
+3. 外设时钟门未开时，对该外设寄存器的访问不会产生预期硬件行为，读回也可能保持复位值。
+
+## 根书 03 GPIO 与 LED → [第 9 章](../v1-drivers/09-gpio.md)
+
+
+<p align="center">
+  <img src="/images/app-c-early-checks.png" width="760" alt="Handraw：前几章自测焦点（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。极性、EXTI、1 kHz 算术是早期核对轴。非实拍。</sub>
+</p>
+1. BluePill 的 PC13 板载 LED 通常低电平点亮。
+2. 按键接 GND 时用上拉，使松开为 1、按下为 0。
+3. F1 做 AFIO 重映射前必须使能 AFIO 时钟，并保留 SWD 所需引脚。
+
+## 根书 04 中断与 NVIC → 第 4 章与第 10 章
+
+1. EXTI0 只能在同一时刻选择 PA0、PB0 等端口来源中的一个。
+2. 阻塞延时会延长中断屏蔽/嵌套时间，推迟其他中断并破坏响应预算；ISR 应有界并尽快退出。
+3. PRIMASK 管可屏蔽中断总闸，BASEPRI 按优先级阈值屏蔽，FAULTMASK 还会屏蔽大多数故障；NMI 不受这些普通屏蔽影响。
+
+## 根书 05 定时器与 PWM → 第 11 章与第 12 章
+
+1. PSC 与 ARR 共同决定计数更新周期：`f_update = f_tim / ((PSC+1)(ARR+1))`（向上计数的基本情况）。
+2. CCR 决定比较位置，从而决定 PWM 占空比或输出比较事件时刻。
+3. 输入捕获锁存的是边沿到来时的 CNT，不是电压幅值。
+
+## 根书 06 串口 UART → [第 13 章](../v1-drivers/13-uart-framed-protocol.md)
+
+1. 8N1 的 8 是每帧 8 个数据位；N 表示无校验；1 表示 1 个停止位。
+2. F1 清 ORE 的经典序列先读 SR，再读 DR；使用 HAL 时按对应版本的错误处理接口核对。
+3. RS485 必须等 TC，因为 TXE 只表示数据寄存器可再写，最后几位可能仍在移位线上发送。
+
+## 根书 07 I2C 总线 → [第 16 章](../v1-drivers/16-i2c-spi.md)
+
+1. ACK 是接收方在第 9 个时钟把 SDA 拉低。
+2. 典型“写寄存器地址再读数据”在中间使用重复起始，不先释放总线。
+3. 总线被拉死时先确认电源/接线，再在 SDA 可释放的前提下补 SCL 脉冲并产生 STOP；不能用软件超时掩盖硬件短路。
+
+## 根书 08 SPI 总线 → [第 16 章](../v1-drivers/16-i2c-spi.md)
+
+1. 模式 0 的 CPOL=0，空闲时 SCK 为低。
+2. MOSI 与 MISO 方向不同，不能在主从之间同名直连错误；主 MOSI 接从输入，主 MISO 接从输出。
+3. 一次事务结束应把目标从设备的 CS 释放到非有效电平，并满足器件手册的保持时间。
+
+对账：SPI1 挂在 APB2。72 MHz、`BR = 010` 是 ÷8，SCK = 9 MHz；`BR = 001` 是 18 MHz。分频档只有 2、4、8、16、32、64、128、256。W25Q64 的 JEDEC 命令是 `0x9F`。本仓库 `spi-flash` 期待的三字节是厂商 `0xEF`、存储器类型 `0x40`、容量 `0x17`（64 Mbit），合起来常写成 `0xEF4017`。`0x40` 不是容量。页大小 256 字节。Mode 0 是 CPOL = 0、CPHA = 0。
+
+## 根书 09 ADC 与 DAC → [第 15 章](../v1-drivers/15-adc-dac-sampling.md)
+
+1. 采样时间主要受源阻抗、采样电容、目标精度和 ADC 时钟影响。
+2. 12 位共有 `2^12 = 4096` 个量化区间，码值范围 0..4095；用 4096 还是 4095 必须写清采用的端点模型。
+3. STM32F103C8 没有片上 DAC；需要 PWM+滤波或外接 DAC。
+
+## 根书 10 DMA → [第 14 章](../v1-drivers/14-dma.md)
+
+1. NDTR/CNDTR 存剩余传输项数，不是地址；每一项的字节数由传输宽度决定。
+2. 循环模式由 DMA 硬件在计数归零后重装计数并把地址回到起点。
+3. 半字传输每项 2 字节；半满对应“项目数的一半 × 2 字节”，不能把项目数直接当字节数。
+
+对账：F103C8 只有 DMA1 的 7 条通道，没有 DMA2。USART1_TX 是 Channel 4，USART1_RX 是 Channel 5，ADC1 是 Channel 1。缓冲区长度 8、半字、`CNDTR` 读回 3：已写入 `8 − 3 = 5` 个采样，`5 × 2 = 10` 字节。半传输在 4 个采样，也就是 8 字节，不是 4 字节。F1 的 DMA 控制器是 AHB 主机，外设寄存器在 APB。F4 的 USART1_RX 换成 DMA2 Stream 5、Channel 4；FIFO 是 4 个 32 位字。
+
+## 根书 11 RTC 与看门狗 → 第 11 章与第 19 章
+
+1. 主电源掉电后，RTC 依靠 VBAT 备份域和 LSE/LSI（取决于配置）继续运行。
+2. WWDG 有窗口，喂得过早或过晚都可复位；IWDG 主要约束过晚。
+3. 若无关定时中断一直喂狗，主业务卡死时看门狗仍不会复位；喂狗必须汇总关键任务健康条件。
+
+## 根书 12 Flash 与 IAP 升级 → [第 17 章](../v1-drivers/17-flash-iap-ota.md)
+
+1. Flash 控制器上锁是为了防止误擦写，编程/擦除前必须按规定序列解锁。
+2. F103 的 RDP 选项字节特定值表示 Level 0/未保护；改变级别可能触发整片擦除，必须以目标修订版手册为准。
+3. F4 的 RDP Level 2 是不可逆安全级别，不能再靠 ST-Link 恢复调试。
+
+## 根书 13 CAN 总线 → [第 35 章](../v4-platforms/35-can-usb-fieldbus.md)
+
+
+<p align="center">
+  <img src="/images/app-c-bus-system.png" width="760" alt="Handraw：总线到系统核对轴（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。环回≠ACK；IAP 拒跳；FromISR 优先级；CFSR 先读。非实拍。</sub>
+</p>
+1. 单节点正常模式没有其他节点发送 ACK，错误计数上升，最终可能 Bus-Off；先用回环或增加正确终端的第二节点。
+2. 36 MHz、总时间份额 8、500 kbit/s 时预分频是 `36 MHz / (8 × 500 kHz) = 9`。
+3. 常见 F1 重映射下 PB8 是 CAN_RX，PB9 是 CAN_TX，最终核对 AFIO 映射与数据手册。
+
+## 根书 14 USB → [第 35 章](../v4-platforms/35-can-usb-fieldbus.md)
+
+1. F103 的 USB FS 通常使用 PA11/DM 与 PA12/DP。
+2. 72 MHz 系统时钟通过 USB 预分频得到 48 MHz；必须核对 RCC 配置和晶振误差。
+3. CDC 在主机上表现得更像串口；HID 表现为键盘、鼠标等人机接口。
+
+对账：PLL 72 MHz 且 `RCC_CFGR.USBPRE = 0` 时，USB 时钟是 `72 / 1.5 = 48` MHz。全速设备在 D+ 上拉 1.5 kΩ。本仓库 `usb-cdc` 的设备描述符是 18 字节，`bMaxPacketSize0` 是 64，VID/PID 是 `0x1209/0x0001`，不是 ST 例程常见的 `0x0483/0x5740`。配置集合 `wTotalLength` 是 `0x0043`，也就是 67 字节；`bMaxPower` 的 `0x32` 表示 100 mA。全速批量和中断的最大包长都是 64 字节；1023 只属于全速等时。
+
+## 根书 15 FreeRTOS 入门 → 第 21 章与第 22 章
+
+1. 同优先级且启用时间片的就绪任务会在 tick 边界轮转。
+2. 固定周期任务用 `vTaskDelayUntil`，因为它锚定绝对唤醒时间，不把本轮执行时间累加到周期。
+3. 软件定时器回调不能做会阻塞定时器服务任务的操作；应投递事件后立即返回。
+
+对账：4 位优先级时 `5 << (8 − 4) = 0x50`。能调用 `FromISR` 的中断，数值优先级要大于等于 5；数值 0 会停在 `configASSERT`。任务优先级相反，空闲任务是 0。`xTaskCreate` 的栈参数单位是字。本仓库 `freertos-task` 里 LED 是 128 字（512 字节），KEY 是 192 字（768 字节），UART 是 256 字（1024 字节）。`configTICK_RATE_HZ` 为 1000 时，一个 tick 是 1 ms。短于一个 tick 的期限，内核不保证。`HAL_Delay` 若仍占用 SysTick，要先把 HAL 时基改到别的定时器。
+
+## 根书 16 低功耗设计 → [第 18 章](../v2-reliability/18-low-power.md)
+
+1. Stop 比 Sleep 关闭更多高速时钟和外设，通常更省电但恢复成本更高。
+2. 从 Stop 唤醒后先按目标系列要求恢复系统时钟，再使用依赖该时钟的串口和外设。
+3. 不能。数据手册数字针对芯片和指定条件，开发板还包含稳压器、LED、调试器和外设负载。
+
+## 根书 17 调试与性能优化 → [第 20 章](../v2-reliability/20-debug-performance.md)
+
+1. F103 的 SWO/JTDO 复用在 PB3；使用前核对调试端口重映射。
+2. 先保存堆栈中的 PC/LR 和 SCB 的 CFSR/HFSR，再按有效位查看 BFAR/MMFAR。
+3. 没有同输入、同编译选项的周期基线，就无法判断优化是否有效或只是改变了测试条件。
+
+对账：`CFSR` 在 `0xE000ED28`，`HFSR` 在 `0xE000ED2C`，`MMFAR` 在 `0xE000ED34`，`BFAR` 在 `0xE000ED38`。`HFSR.FORCED` 是 bit 30，值是 `0x40000000`，表示故障被升级进了 HardFault。`BFAR` 只有 `CFSR` bit 15（`BFARVALID`）为 1 时才是这次的地址；`MMFAR` 要看 bit 7（`MMARVALID`）。异常栈上的 PC 在 `stack[6]`。先置 `DEMCR`（`0xE000EDFC`）的 `TRCENA`（bit 24），再使能 `DWT_CTRL.CYCCNTENA`，读 `0xE0001004`。72 MHz 时 72 个周期是 1 µs。M3/M4 的硬件断点比较器是 6 个，M7 是 8 个。
+
+## 根书 18 常见问题 FAQ → [第 45 章](../v7-delivery/45-troubleshooting-handbook.md)
+
+1. 前两步是稳定复现，再缩小到最小工程/最小输入，找到第一个期望与实际分歧的边界。
+2. 调试器认不出芯片先查供电、共地、SWD 接线、BOOT/复位和连接速率，不先改业务代码。
+3. 一次只改一处才能把结果归因到一个原因；同时改三处即使恢复也无法知道根因。
+
+## 根书 19 项目实战合集 → [第 42 章](../v6-labs-projects/42-project-delivery-acceptance.md)
+
+1. 下一轮只增加一个新外设或一个新不确定接口，并保留上一轮可运行基线。
+2. “做完”是别人按说明能复现目标现象，失败路径和未覆盖边界也被写明。
+3. 板上时钟不同先改并验证时钟树和时间基准，再调整依赖它的波特率、定时器和 USB。
+
+## 根书 20 学习资源与工具链 → [第 46 章](../v7-delivery/46-resources-roadmap-open-source.md)
+
+1. CAN 过滤器位定义在参考手册 RM；数据手册只说明芯片是否具备 CAN 及引脚/电气信息。
+2. 引脚与电气参数查数据手册 DS。
+3. 读写选项字节和烧录使用 STM32CubeProgrammer，并先确认操作是否会擦除或锁死调试。
+
+## 根书 21 原理图与实物图鉴 → [第 40 章](../v6-labs-projects/40-lab-method-instruments.md)
+
+1. BOOT0 悬空会受噪声和漏电影响，启动去向不确定；必须用明确上拉/下拉定义。
+2. BluePill 的 PC13 板载 LED 通常低电平点亮。
+3. 丝印与数据手册冲突时，以确切料号/封装的官方数据手册和可追溯原理图为准，再用测量确认板级实现。
+
+## 根书 22 仿真实验：Wokwi 与 Renode → [第 40 章](../v6-labs-projects/40-lab-method-instruments.md)
+
+1. Wokwi BluePill 已有板载 PC13 LED，点灯实验不需要再外接一颗。
+2. Wokwi 的 `A0` 对应芯片 PA0。
+3. 当前模型不能证明 UART DMA+IDLE 的完整行为；这属于模型边界，应在真板或明确支持该外设的模型上验证。
+
+## 根书 23 STM32G0 引脚 → [第 28 章](../v4-platforms/28-chip-migration-differences.md)
+
+1. G071RB LQFP64 的第 1 脚是 PC11。
+2. 该具体料号没有 bxCAN；不能从 F1 的 CAN 工程直接推断。
+3. 其 USB-C 相关能力是 UCPD，不是 F103 那种 USB Device FS 控制器。
+4. `nBOOT_SEL=0` 选择 PA14 引脚路径；`=1` 选择 `nBOOT0/nBOOT1` 选项位路径。它不是 System memory 开关。
+5. 该配置启动到 Main Flash。`nBOOT_SEL=1, nBOOT0=0` 时，`nBOOT1=1` 选 System memory，`nBOOT1=0` 选 Embedded SRAM；前提均为 `BOOT_LOCK=0`。
+6. `BOOT_LOCK=1` 会强制 Main Flash，`nBOOT_SEL=1` 会排除 PA14；空 Flash 检查也能改变实际去向。选项字节还需规定的复位/加载流程并读回，写入返回值本身不证明已生效。选项字节与互补值不匹配会强制 `BOOT_LOCK=1`，RDP 不匹配默认进入 Level 1。
+7. 先保留现场并接好 SWD/NRST/供电参考，再尝试 Under Reset 并在可连接时读取选项字节。`BOOT_LOCK=1 + RDP Level 1` 会停止调试并令 `DBG_SWEN` 复位为 0；应用不置位时手册不允许承诺恢复。清除 `BOOT_LOCK` 仅在 RDP Level 0，或 Level 1 → 0 且 full mass-erase 后可行；Level 2 不可逆，不能把降级或擦除当默认恢复。
+
+## 根书 24 STM32L4 引脚 → [第 28 章](../v4-platforms/28-chip-migration-differences.md)
+
+1. Stop 2 保持 SRAM1/2 与大多数寄存器，唤醒后从 `WFI/WFE` 的下一条指令继续；Standby/Shutdown 的唤醒才走复位路径。
+2. CPU 可先由 `STOPWUCK` 选定的 MSI 或 HSI16 继续执行，但 Stop 中 PLL 已关闭。恢复目标 SYSCLK、总线分频和外设内核时钟前，UART 波特率和定时器周期都可能错误。
+3. SysTick 默认每 1 ms 产生中断；不暂停就会立刻成为唤醒源，无法形成预期的 Stop 2 窗口。
+4. MB1136 版 NUCLEO-L476RG 的 JP6 (IDD) 串表路径测的是 STM32 MCU 电流，不是 USB 输入或整板所有器件的总电流；仍要排查 GPIO 回灌和调试连接。
+5. 平均电流由各段电荷除以完整周期：`I_avg = Σ(I_i × t_i) / T_cycle`。活动与睡眠持续时间通常差几个数量级，不能做算术平均。
+6. 小量程常带来更大的分流压降或自动换挡瞬态，即负担电压；唤醒毫安峰值可能拉低 MCU 端 VDD 并触发复位。
+7. DS10198 给料号/引脚/电气和典型值；RM0351 给 PWR/RCC 状态机与寄存器；AN4746 给功耗优化方法；UM1724 给 Nucleo 板与 JP6 测量路径；ES0250 给指定 silicon revision 的已知限制和 workaround。
+8. 固定的 HAL RTC wake-up handler 在调用 callback 前已经清掉 EXTI pending 与 `RTC_FLAG_WUTF`；callback 或 Stop 返回后再读只能看到清零结果。应在 `RTC_WKUP_IRQHandler()` 入口、调用 HAL handler 前把 RTC/EXTI/PWR 原始位发布到 Stop 2 保持的 SRAM，返回后消费该软件记录。
+
+## 根书 25 STM32H7 引脚 → 第 28 章与第 34 章
+
+1. H743ZI LQFP144 的第 1 脚是 PE2。
+2. 第二只 VCAP（VCAP2）是第 106 脚；VCAP1 是第 71 脚。
+3. 控制器叫 FDCAN；FDCAN1 还可按 Table 9 选择 PD0/PD1 或 PB8/PB9 等复用组合。
+4. ES0392 规定 Rev Y/W 没有 VOS0，CPU 上限 400 MHz；只有确认 Rev V 后，才能按 DS12110/RM0433 的条件走 VOS0 + 480 MHz 路径。数据手册封面是家族上限，不能覆盖具体硅片勘误。
+5. `8 / 4 × 480 / 2 = 480 MHz` SYSCLK；HCLK 为 240 MHz；PCLK 为 120 MHz；APB 分频不为 1 时定时器时钟为 240 MHz；MCO2/5 为 96 MHz。
+6. 软件读回和配置公式可能共享同一错误假设，MCO 仪器测量与 UART/PWM 波形才能提供独立证据。本例 `SystemCoreClock` 是 CM7 CPU/SYSCLK=480 MHz，`SystemD2Clock` 是 AXI/AHB HCLK=240 MHz。HAL 默认 SysTick 使用 CPU 时钟；总线与外设计算使用 HCLK/PCLK，二者不能混用。
+
+## 根书 26 STM32F10x 标准外设库（SPL） → [第 7 章](../v0-foundations/07-build-systems-legacy.md)
+
+1. `USE_STDPERIPH_DRIVER` 让设备头文件引入 `stm32f10x_conf.h` 和驱动声明；`STM32F10X_MD` 选择 F103C8/B 一类中容量设备定义，必须与料号、启动文件和链接布局一致。
+2. `USART_SendData()` 只写数据寄存器，不负责完整缓冲发送、等待边界和超时；调用方还要检查 TXE/TC，并为等待定义截止时间与失败处理。
+3. SPL 与 HAL 都会配置同一组 USART 寄存器，但各自不知道对方的状态和所有权；双重初始化会让波特率、IRQ、DMA 和状态机互相覆盖。
+
+## 根书 27 STM32 网络与协议栈 → [第 33 章](../v4-platforms/33-network-protocol-stack.md)
+
+1. link LED 通常只说明 PHY 检测到链路脉冲；它不证明 MDIO 配置、MAC/DMA 描述符、Cache 一致性、lwIP 输入路径和 IP 参数正确。
+2. H7 的 Ethernet DMA 不能访问 `0x20000000` 的 DTCM；描述符与数据缓冲必须放在 DMA 可达的 D1/D2 SRAM，并从 map 文件核对最终地址。
+3. invalidate 以 Cache line 为单位。若 RX 缓冲与别的脏变量共享首尾 line，invalidate 会把那些未写回的数据一起丢掉，因此缓冲区要独占并按 32 字节对齐。
+4. `NO_SYS` 主循环或 `tcpip_thread` 才能直接调用 raw API；Netconn/socket 是给应用任务使用的 sequential API。中断不能直接调用 raw `tcp_write()` / `udp_send()`。
+5. TCP 只提供有序可靠字节流，会拆分或合并应用写入；应用必须用长度、分隔符或固定尺寸自行恢复消息边界。
+6. TCP ACK 证明字节到达对端 TCP 栈，不证明应用读取、校验、执行或持久化。业务完成需要带业务序号的应用 ACK。
+7. MQTT QoS 1 是至少一次，断线重发可产生重复 PUBLISH；执行器和写入服务必须用业务幂等键去重。
+8. CA 建立信任根，主机名防止合法证书被用于错误服务，随机数保护握手密钥，可信时间用于证书有效期判断；缺一项都会削弱认证。
+9. 按 DNS 结果 → TCP 三次握手 → TLS 验证 → MQTT CONNECT/CONNACK → 订阅/发布逐层定位，保留对应 PCAP 和错误码。
+10. 仍需维护 AT transaction/URC 解析、deadline、UART 流控、模组复位、网络注册、socket 生命周期、指数退避、离线队列与业务幂等状态机。
+
+对账：RMII 的 `REF_CLK` 是 50 MHz，不是 MII 的 25 MHz。DHCP 是 UDP 67（服务器）和 68（客户端），DNS 是端口 53。IPv4 头无选项（20 字节）、TCP 头无选项（20 字节）、以太网 MTU 1500 时，MSS 上限是 `1500 − 20 − 20 = 1460`。对端 SYN 里给出的 MSS 更小，就用更小的那个。1460 不是已经协商好的值。
+
+## 根书 28 嵌入式系统与 RTOS 生态 → [第 27 章](../v3-rtos/27-rtos-comparison-selection.md)
+
+
+<p align="center">
+  <img src="/images/app-c-not-proof.png" width="760" alt="Handraw：答对数字≠产品证据（原理示意）">
+  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。自测证明读懂契约，不签收量产与最坏响应。非实拍。</sub>
+</p>
+1. FreeRTOS Kernel 主要提供调度、IPC、定时器和内存等内核机制；RT-Thread/Zephyr 还把设备框架、构建配置、网络、文件系统、Shell 等组件组织进统一生态。产品策略与验收仍由项目负责。
+2. 互斥量只序列化被包住的代码；片选、DMA 完成、超时恢复和驱动状态可能仍被拆成多个临界段。所有者任务把完整事务和状态集中在一个写入者中。
+3. `U < 1` 只说明已计入的执行时间总量没有超过单核容量；共享资源阻塞、ISR、优先级、Cache/Flash 等额外时延仍可能让具体任务错过截止时间。这一页的示例是 `80 µs / 1 ms = 8%`，`420 µs / 10 ms = 4.2%`，`70 µs / 2 ms = 3.5%`，`1.5 ms / 100 ms = 1.5%`，合计 17.2%。这不是某块 STM32 的测量。
+4. 至少保留单调时间戳、boot id、事件/业务序号、ISR 入队结果、目标线程状态、调度点和稳定结果码。
+5. 二值信号量表达事件，不具有资源所有权；互斥量表达所有权并通常提供优先级继承，不能在 ISR 中持有。
+6. Devicetree 描述硬件实例和启动期硬件属性；Kconfig 选择软件能力、依赖和配置。不能用 Kconfig 替代板上真实连线，也不应把运行策略塞进 Devicetree。
+7. CMSIS-RTOS2 统一了 API 表面，但底层内核的优先级映射、栈单位、ISR 许可、调度和扩展语义仍要逐项核对。
+8. tickless 只改变空闲时的内核 tick；外设事务、唤醒源、PHY、板载器件、时钟恢复和 GPIO 回灌仍可能阻止或破坏最低功耗状态。
+9. H745 的 M7 与 M4 是能力不同的核心，通常各自运行固件、通过共享内存交换数据并用 HSEM 完成核间同步，属于 AMP/异构边界；共享内存、Cache、消息协议和启动恢复需显式设计。
+10. 只有所有关键任务都完成有效工作，队列/内存水位和关键状态机满足健康条件时，健康监督者才刷新硬件看门狗。
