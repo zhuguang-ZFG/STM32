@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """Logger data-flow plate (ch41).
 
-Facts pinned to the chapter and common core: SAMPLE is 64 B little-endian;
-the queue is 16 x 64 B = 1 KB, which buffers 1.6 s at the 100 ms period.
+Facts pinned to the chapter and common core: the SAMPLE payload is 64 B
+little-endian, while one wire frame is 74 B (6 B header + 2 B CRC + COBS
+and delimiter). The queue holds 16 frames: 1 KiB of payload, but the
+actual ``samples`` array is 16 * sizeof(frame_t) = 1120 B on ARM, which
+is the RAM budget; 16 slots buffer 1.6 s at the 100 ms period.
 When full, the new sample is rejected (``dropped`` grows) while the 16
 already queued samples stay; the sequence number is consumed before the
 capacity check, so the host sees a sequence gap. The supervisor compares
@@ -35,7 +38,7 @@ def _slot(f, x, y, w, h, label, color=GREEN, fill=WHITE, dash=None):
 
 
 def logger_flow():
-    f = Fig("arch-logger-flow", "记录器数据流：64 B 一帧，满则丢新")
+    f = Fig("arch-logger-flow", "记录器数据流：64 B 载荷，线上 74 B")
     f.text(576, 122, "两板共用任务层与核心；端口只换传感器与串口",
            size=17, color=MUTED, anchor="middle")
 
@@ -56,19 +59,21 @@ def logger_flow():
     f.rect(510, 155, 200, 130, color=GREEN_D, fill=WHITE, sw=2.5)
     f.text(524, 184, "滤波 + 封帧", size=19, color=GREEN_D, weight="bold")
     f.text(524, 214, "整数 IIR", size=15, color=INK)
-    f.text(524, 240, "SAMPLE 64 B", size=15, color=GREEN_D, weight="bold")
-    f.text(524, 264, "序号在这里消耗", size=13, color=MUTED)
+    f.text(524, 240, "SAMPLE 64 B 载荷", size=14, color=GREEN_D, weight="bold")
+    f.text(524, 264, "线上 74 B；序号已消耗", size=12, color=MUTED)
     f.arrow(492, 220, 508, 220, color=BLUE_D, sw=2.4, bend=0.0)
 
     # -- queue ----------------------------------------------------------
     f.rect(745, 120, 367, 252, color=AMBER_STROKE, fill=WHITE, sw=2.6)
-    f.text(763, 148, "队列 16 槽 × 64 B = 1 KB", size=17, color=AMBER_STROKE,
-           weight="bold")
-    f.text(1092, 148, "满", size=17, color=RED, anchor="end", weight="bold")
+    f.text(763, 146, "队列 16 槽 × 64 B 载荷 = 1 KiB", size=16,
+           color=AMBER_STROKE, weight="bold")
+    f.text(763, 170, "sizeof(samples) = 1120 B（16×70 B）", size=12,
+           color=MUTED)
+    f.text(1092, 146, "满", size=17, color=RED, anchor="end", weight="bold")
     for row in range(4):
         for col in range(4):
-            _slot(f, 786 + col * 74, 165 + row * 44, 64, 36, "64B")
-    f.text(763, 358, "满：dropped +1，已入队的 16 条不动", size=13, color=RED,
+            _slot(f, 786 + col * 74, 178 + row * 40, 64, 36, "64B")
+    f.text(763, 356, "满：dropped +1，已入队的 16 条不动", size=13, color=RED,
            weight="bold")
 
     # full queue rejects the new sample; consumer still drains the head
@@ -101,11 +106,12 @@ def logger_flow():
 
     # -- byte account ---------------------------------------------------
     f.rect(40, 320, 680, 92, color=BLUE_D, fill=WHITE, sw=2.3)
-    f.text(60, 346, "SAMPLE 64 B（小端）", size=17, color=BLUE_D, weight="bold")
+    f.text(60, 346, "SAMPLE 载荷 64 B（小端）", size=16, color=BLUE_D,
+           weight="bold")
     f.text(60, 372,
            "seq 4 + ts 4 + gen 4 + type 1 + valid 1 + status 2 + raw 24 + filt 24",
            size=13, color=INK)
-    f.text(60, 398, "= 64 B；16 条 = 1 KB；100 ms 周期下缓冲 1.6 s", size=14,
+    f.text(60, 398, "= 64 B 载荷；线上 74 B；16 份载荷 = 1 KiB", size=13,
            color=GREEN_D, weight="bold")
 
     # -- supervisor -----------------------------------------------------
@@ -130,7 +136,7 @@ def logger_flow():
            color=MUTED)
 
     f.htext(576, 736,
-            "64 B 进队，16 槽封顶；满则丢新并计数，主机靠序号缺口发现。",
+            "64 B 载荷进队，16 槽封顶；满则丢新并计数，主机靠序号缺口发现。",
             size=19, color=AMBER_STROKE, anchor="middle", weight="bold",
             hl=True, hl_fill=AMBER_FILL)
     return f
