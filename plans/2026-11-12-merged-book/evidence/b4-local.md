@@ -62,3 +62,8 @@
 - CI slop 扩到九 glob（新增 v6/v7/appendix）。
 
 未验证：CI 远程运行结果；未执行任何远程推送或 Pages 切换；VitePress 站点切换仍归 B5（需发布指令）。
+
+## 批次收口验证
+
+- commit：`2893d087a13d84ebfa03560ca754e432560b1b55`（批次收口提交 HEAD）
+- 上表 7 条命令在该 HEAD 重跑，退出码全部为 0：`checks passed`、`built 52 pages, 0 planned chapters missing`、slop 九 glob 无机械命中、31 tests OK、redirects pass 2 / fail 0；工作树干净（除 .qoder 工具目录）。
