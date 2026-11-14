@@ -160,6 +160,19 @@ E6 收尾的对照表，落进本章收束：
 | 音频爆音 | PA 先开、数据后到 | 三段纪律：静音→数据→放开 PA |
 | 回声明显 | 缓冲超过容忍延迟 | 缓冲容量=采样率×容忍延迟×2 重算 |
 
+## 社区开源实现
+
+本章讲的驱动安装模型（driver_install + 事件队列 + 收发函数）与音频缓冲纪律，最权威的参考实现就是 ESP-IDF 自身的组件与例程——读官方源码比读二手教程可靠得多：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/esp_driver_i2s/i2s_std.c` + `include/driver/i2s_std.h` | I2S 标准模式驱动的完整实现：`I2S_STD_CLK_DEFAULT_CONFIG`/`I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG` 宏封装、MCLK 细分计算——v5.x 起 I2S 重设计，旧 `driver/i2s.h` 已弃用 |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `examples/peripherals/i2s/i2s_basic/i2s_std` | 官方 I2S 收发最小例程：DMA 缓冲配置、回调里只搬数据不做重活——对照本章三层缓冲模型 |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/esp_driver_ledc/include/driver/ledc.h` + `examples/peripherals/ledc/ledc_basic` | LEDC 驱动头文件与例程：`ledc_set_duty`+`ledc_update_duty` 成对出现的证据、fade 服务安装顺序——对照失败分支"改 duty 不生效" |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `examples/peripherals/uart/uart_events` | UART 事件驱动例程：`uart_driver_install` 的事件队列与 FIFO_OVF 事件处理——对照失败分支"UART 丢字节" |
+
+三个值得记的社区口径：一，v5.3 起驱动拆成 `esp_driver_*` 独立组件（esp_driver_i2s/ledc/uart/gpio…），旧 `components/driver` 里的单一头文件查不到了，报"找不到头文件"先补 `REQUIRES`；二，官方例程的事件回调里从不做耗时工作，数据都丢队列给任务——这与本章"事件≠数据"的口径一致；三，音频方向社区另有 [espressif/esp-adf](https://github.com/espressif/esp-adf)（Audio Development Framework，element/pipeline 模型），那是本章三层缓冲之上的完整框架，学完本章再看它分层就不吃力。
+
 ## 离开检查
 
 - 「任意引脚四前提」能背，45=22+23 与 `SOC_GPIO_PIN_COUNT=49` 的口径差能讲。
