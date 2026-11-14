@@ -131,6 +131,19 @@ DISABLED → (HEARTBEAT 会话) → ARMED → RUN_OPEN / RUN_SPEED → REVERSING
 - DWT 耗时测量与断点预算：归 [v1 第 20 章](../v2-reliability/20-debug-performance.md)；IWDG：归 [v1 第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。
 - 换 MCU 平台：控制律是纯算术可平移；时基与 PWM 重算按 [第 28 章](../v4-platforms/28-chip-migration-differences.md) 的方法；上 RTOS 的任务所有权回链 [v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md)。
 
+## 社区开源实现
+
+速度闭环这几十行代码，社区里有几处实现值得对照着读——重点看它们怎么处理本章的四个难点（抗饱和、测量滤波、节拍一致性、符号语义）：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [br3ttb/Arduino-PID-Library](https://github.com/br3ttb/Arduino-PID-Library) | `PID_v1.cpp` | Brett Beauregard 的经典实现：抗饱和用输出限幅时冻结积分（本章条件积分规则的极简版）、微分取测量而非误差（阶跃不踢）、`SetSampleTime` 强制节拍一致——配套博客系列 [Improving the Beginner's PID](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/) 逐条解释为什么这么写 |
+| [simplefoc/arduino-foc](https://github.com/simplefoc/arduino-foc) | `src/communication/` + `src/current_sense/` 之外的 `PID` 类（`src/common/foc_utils.h`） | SimpleFOC 的 `PIDController` 把 P/I/限幅/输出斜坡挤在一个类里：`limit` 既是输出限幅也是抗饱和边界、输出电压直接接 PWM 驱动——对照本章「限幅与抗饱和是两个概念」的分离论证 |
+| [simplefoc/arduino-foc](https://github.com/simplefoc/arduino-foc) | 速度环入口 `motor.FOC_move()` | 测量先过低通再进 PI（`lpf_velocity`），帧率由 `motor.loop()` 的调用节拍决定——本章 60 Hz 定节拍 + rpm_filt 的同款思路 |
+| [SimpleFOC 社区论坛](https://community.simplefoc.com/) | velocity loop / tuning 相关帖 | 实物调试记录：Kp 从 0 逐步加到轻微振荡再回退的整定过程、编码器量化与滤波时间的取舍——与本章调参六步同一条路径，且都是实物数据 |
+
+对照之后会看到一个共性：社区实现的积分项几乎从不只存 `Ki·e·dt` 的裸累加——要么限幅时冻结（Arduino-PID-Library），要么把积分边界绑到输出限幅上（SimpleFOC）。本章的四规则是同一件事的显式展开。另一个共性：所有实现都假设调用节拍恒定并在文档里声明，`dt` 不作为每次调用的自由参数——这正是本章"控制节拍漂移"失败分支的预防措施。
+
 ## 离开检查
 
 - PI 离散式与单位能写对，一个时间步能手算；负输出的方向语义说得清。

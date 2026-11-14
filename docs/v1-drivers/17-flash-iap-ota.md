@@ -657,6 +657,20 @@ ESP32 只划边界。ESP32-S3 没有 STM32 的 FLASH_KEYR/CR/SR，也没有扇�
 
 其它分工：W25Q 外部 Flash 的 SPI 读写在[第 16 章](./16-i2c-spi.md)；存储器地图与时钟树在[第 8 章](./08-architecture-memory-clock.md)；链接脚本、VMA/LMA 与启动序列在[第 6 章](../v0-foundations/06-linker-startup-map.md)；长擦除期间的看门狗与复位原因在[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)；低功耗下的 Flash 掉电与唤醒在[第 18 章](../v2-reliability/18-low-power.md)。
 
+## 社区开源实现
+
+本章的双槽升级、签名、回滚三个概念，有一条现成的参考实现可以逐文件对照——[mcu-tools/mcuboot](https://github.com/mcu-tools/mcuboot)。它是 Zephyr、Mynewt 等多数 RTOS 共用的 bootloader，本章的抽象概念在它那里都是具体文件：
+
+| 本章概念 | MCUboot 对应物 | 看什么 |
+| --- | --- | --- |
+| 双槽 + 元数据记录 | `bootutil/src/bootutil_public.c` 的 swap state | "原子切换靠什么记录"的工业答案：两槽各自扇区里的 swap 状态字，写到一半断电也能恢复 |
+| 升级路径 | `bootutil/src/loader.c` | swap-move 与 overwrite 两种策略的选择逻辑——本章的单槽对应 overwrite-only（无回头路），双槽对应 swap |
+| 签名验证 | `bootutil/src/image_validate.c` | SHA-256 摘要 + ECDSA/Ed25519 签名链的验证顺序：先验哈希再验签，任一失败进 fallback |
+| 回滚确认 | `bootutil_misc.c` 的 confirm 逻辑 | 试运行槽位必须被 App 显式确认（`image confirm`），超时回滚——对应 ESP32 的 PENDING_VERIFY 语义 |
+| 版图描述 | `boot/zephyr/targets.*` 或各板 dts | 槽位地址、大小以数据结构声明，不散落在代码里——本章的"版图先于代码"思路 |
+
+ESP32 一侧的社区参考是 [espressif/esp-idf](https://github.com/espressif/esp-idf) 本身：`components/bootloader_support/src/ota_utility.c` 与 `flash_partitions.c` 把本章引用的 P10 说法（otadata 三态、`CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 回滚门）落成了可读的源码——本章说"没有核 IDF 原文"，想核的时候从这两个文件进去。STM32 一侧如果不想自己写跳板，社区还有 [RT-Thread 的 OTA 框架](https://github.com/RT-Thread/rt-thread)（FAL 分区抽象 + bootloader 固件）与 ST 官方的 [X-CUBE-SBSFU](https://github.com/STMicroelectronics/x-cube-sbsfu)（双镜像 + 安全启动，代码量大但覆盖了签名加密全套）。这些实现的共性值得记住：**没有哪个生产级 bootloader 把升级状态只放在 RAM 里**——本章失败分支里"复位后重试"的教训，在它们那里都变成了 Flash 里的持久状态字。
+
 ## 离开检查
 
 1. 为什么 Flash 必须“先擦后写”？擦除单位为什么不是字节？
