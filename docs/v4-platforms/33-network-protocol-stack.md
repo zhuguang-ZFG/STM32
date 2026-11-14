@@ -15,7 +15,7 @@ MCU 上网络的第一课不是 API，是**边界**：DMA 看见的内存与 CPU
 
 - **问题**：五条网络路径（内置 MAC+PHY / SPI Ethernet / AT offload / PPP / OS 网络栈）各自适合什么，为什么「CubeMX 能勾选」不是上内置 Ethernet 的理由？RMII 六组信号是什么，link LED 亮为什么只是线索？H7 的 Ethernet DMA 为什么进不了 DTCM，F407 的对应禁区是什么，描述符与缓冲放哪、怎么用 map 核对？Cache 维护的方向表（TX clean / RX invalidate）为什么不能反，未对齐窄区间 invalidate 错在哪？pbuf 为什么是所有权不是指针，`tot_len` 不变式是什么，free 为什么恰好一次？lwIP 三套 API 的线程边界是什么，IRQ 里为什么禁调 `tcp_write`？TCP 字节流上的帧协议怎么定义，单截止点发送为什么依赖 `LWIP_SOCKET_SELECT` 而不依赖 `LWIP_SO_SNDTIMEO`？RAM_net 七项账怎么列？ESP32 的 esp_netif 与 GOT_IP 事件是什么角色？
 - **交付**：能按需求走五路径决策表；能列出 RMII 六组信号并设计「link 灯亮但 ping 不通」的排查顺序；能写出三平台 DMA 禁区表（H7 DTCM / F407 CCM / ESP32 关 Cache 窗口）并配 map 核对动作；能画 Cache 交接方向表与 32 B 行对齐纪律；能用 `pbuf.h:198` 的不变式解释 pbuf 链与所有权；能按三套 API 的线程边界回答「IRQ 里能不能发网络包」；能定义 0x534E 帧格式并写出单截止点 `send_all_until`；能列 RAM_net 七项账与三本运行账（goodput/丢包恢复/重试率）。
-- **边界**：单讲 lwIP 侧网络栈；Wi-Fi 连接层（事件循环、六步骨架）归 [第 32 章](./32-esp32-wifi-ble-espnow.md)，本章从 `IP_EVENT_STA_GOT_IP` 之后接手；DMA 机制与 CCM 禁区归 [v1 第 14 章](../v1-drivers/14-dma.md)；H7 的 Cache/双核语义归第 34 章（本章只用「TX clean/RX invalidate」结论）；RTOS 堆策略归 [第 25 章](../v3-rtos/25-memory-management.md)。MQTT/TLS 只讲语义与前提，具体端口号与库细节不展开。
+- **边界**：单讲 lwIP 侧网络栈；Wi-Fi 连接层（事件循环、六步骨架）归 [第 32 章](./32-esp32-wifi-ble-espnow.md)，本章从 `IP_EVENT_STA_GOT_IP` 之后接手；DMA 机制与 CCM 禁区归 [v1 第 14 章](../v1-drivers/14-dma.md)；H7 的 Cache/双核语义归[第 34 章](./34-multicore-cache.md)（本章只用「TX clean/RX invalidate」结论）；RTOS 堆策略归 [第 25 章](../v3-rtos/25-memory-management.md)。MQTT/TLS 只讲语义与前提，具体端口号与库细节不展开。
 - **依据锚点**：D27《网络与协议栈》（`docs/27-网络与协议栈.md`）、E8《Wi-Fi》（`mcu/docs/esp32/08-wifi.md`，仅衔接段）。上游对账：lwIP `stm32-mw-lwip@07680c81` 的 [pbuf.h](https://github.com/STMicroelectronics/stm32-mw-lwip/blob/07680c81/src/include/lwip/pbuf.h)、[opt.h](https://github.com/STMicroelectronics/stm32-mw-lwip/blob/07680c81/src/include/lwip/opt.h)、[init.h](https://github.com/STMicroelectronics/stm32-mw-lwip/blob/07680c81/src/include/lwip/init.h)、[tcpip.h](https://github.com/STMicroelectronics/stm32-mw-lwip/blob/07680c81/src/include/lwip/tcpip.h)；AN4891（H7 系统架构）；CubeH7 `@8ec3113d`（lwIP 子模块 gitlink 已核）。
 
 ## 先做出来
@@ -57,7 +57,7 @@ H7 的 D-Cache 使 DMA 一致性变成显式工作（M7 cache 行 **32 字节**�
 | TX（CPU→DMA） | **clean**：把 cache 里改过的缓冲冲到内存 | DMA 只看内存 |
 | RX（DMA→CPU） | **invalidate**：让 CPU 丢弃 cache 旧值，重读内存 | DMA 已写内存 |
 
-两个纪律：缓冲**独占 cache 行**（32 B 对齐独占，不与别的变量共行）；**禁对未对齐窄区间直接 invalidate**——整行生效会把首尾邻位的脏变量一并丢掉。F407 无 cache，描述符 4 字对齐即可（RM0090 页码待核）。方向表与双核扩展归第 34 章，此处只留结论。
+两个纪律：缓冲**独占 cache 行**（32 B 对齐独占，不与别的变量共行）；**禁对未对齐窄区间直接 invalidate**——整行生效会把首尾邻位的脏变量一并丢掉。F407 无 cache，描述符 4 字对齐即可（RM0090 页码待核）。方向表与双核扩展归[第 34 章](./34-multicore-cache.md)，此处只留结论。
 
 ### 三、pbuf：所有权不是指针
 
@@ -161,7 +161,7 @@ Wireshark 过滤器速查（实验 A–D 用）：`arp`、`icmp`、`bootp`（DHC
 
 - Wi-Fi 连接层与事件循环：归 [第 32 章](./32-esp32-wifi-ble-espnow.md)；本章从 GOT_IP 接手。
 - DMA 机制与 CCM 的完整语义：归 [v1 第 14 章](../v1-drivers/14-dma.md)。
-- H7 双核、cache 细节与 AMP 契约：归第 34 章。
+- H7 双核、cache 细节与 AMP 契约：归[第 34 章](./34-multicore-cache.md)。
 - RTOS 堆与内存池策略：归 [第 25 章](../v3-rtos/25-memory-management.md)；本章的 RAM_net 账不与 heap_x 选型混排。
 
 ## 离开检查

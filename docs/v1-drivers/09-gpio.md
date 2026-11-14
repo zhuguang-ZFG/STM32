@@ -11,7 +11,7 @@ platforms: [f407, f103, gd32, esp32]
 
 - **问题**：为什么 PF6 在 `MODER` 里占 bits[13:12]，而 PF6 的灯用 BSRR 的 bit6 与 bit22 控制？为什么不给 `RCC_AHB1ENR` 的 GPIOF 位合闸，写 `MODER` 再读回全是 0？为什么改一个引脚电平要用 `BSRR`，而 `ODR |=` 会偶尔丢一次电平？`MODER=10` 与 `AFR` 为什么必须成对写？输入的施密特触发器修整了什么，而“10~20ms 消抖”为什么查不到手册出处？F103 的 `CRL/CRH`、`AFIO->MAPR` 与 F407 的 `MODER`、`AFR` 哪套账能互相照抄？共阳灯为什么写低电平才亮？
 - **交付**：能按“时钟→MODER→OTYPER→OSPEEDR→PUPDR→数据”的顺序手写一个引脚的配置，并说出每一位的取值理由；能用一条 `BSRR` 写入完成原子置位或复位，并说清读改写窗口在哪里；能为一个复用功能查表配好 `MODER` 与 `AFR`；能为按键选定上拉还是下拉，并说清消抖放在硬件还是软件；能把 e01 的接线、步骤、预期现象和记录格式复述给同学。
-- **边界**：四平台章。F407 的偏移、位段与 PF6 演算来自 S3《GPIO：七个寄存器位级图解》与 RM0090 §8.4；F103 的 `CRL/CRH`、AFIO 重映射、PC13–PC15 的 3mA/2MHz/30pF 界限来自根书第 03 章与 RM0008、DS5319；GD32 与 ESP32 只在“跨平台边界”指路，不写没有来源的差异。NVIC/EXTI 的按键中断留给[第 10 章](./10-interrupts-nvic-exti.md)，PWM 调光留给[第 12 章](./12-timers-pwm.md)，I2C/SPI 的引脚配对留给[第 16 章](./16-i2c-spi.md)，实验方法与仪器证据留给[第 40 章][ch40]。e01 的来源记录是 `hardware_status: pending`、实测记录表为空，本章不把它的现象写成已跑读数。
+- **边界**：四平台章。F407 的偏移、位段与 PF6 演算来自 S3《GPIO：七个寄存器位级图解》与 RM0090 §8.4；F103 的 `CRL/CRH`、AFIO 重映射、PC13–PC15 的 3mA/2MHz/30pF 界限来自根书第 03 章与 RM0008、DS5319；GD32 与 ESP32 只在“跨平台边界”指路，不写没有来源的差异。NVIC/EXTI 的按键中断留给[第 10 章](./10-interrupts-nvic-exti.md)，PWM 调光留给[第 12 章](./12-timers-pwm.md)，I2C/SPI 的引脚配对留给[第 16 章](./16-i2c-spi.md)，实验方法与仪器证据留给[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。e01 的来源记录是 `hardware_status: pending`、实测记录表为空，本章不把它的现象写成已跑读数。
 - **依据锚点**：S3《GPIO：七个寄存器位级图解》（`mcu/docs/stm32/03-gpio.md`）、根书第 03 章《GPIO 与 LED》（`docs/03-GPIO与LED.md`）、E01《点亮霸天虎的 RGB 红灯（寄存器版）》（`mcu/docs/lab/e01-blink.md`）；[第 8 章](./08-architecture-memory-clock.md)的 AHB1 门牌与位带、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 7 章](../v0-foundations/07-build-systems-legacy.md)的 `GPIO_Init` 解剖。RM0090、RM0008 与 DS5319 的条文均转引自上述来源。
 
 ## 先做出来
@@ -232,7 +232,7 @@ e01 的记录格式照抄来源，日期与结果留空，等第一次实跑填�
 | | 霸天虎 | 肉眼加秒表 | | |
 | | 霸天虎 | 肉眼（改延时） | | |
 
-一次完整记录至少要有三样：接线（哪个引脚、共阳还是共阴）、观测手段（秒表、万用表还是调试器读 ODR）、读数（周期、电压或寄存器值）。缺一样，下一次复现就只能靠记忆。仪器选择与证据等级留给[第 40 章][ch40]。
+一次完整记录至少要有三样：接线（哪个引脚、共阳还是共阴）、观测手段（秒表、万用表还是调试器读 ODR）、读数（周期、电压或寄存器值）。缺一样，下一次复现就只能靠记忆。仪器选择与证据等级留给[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。
 
 ```bash
 cd mcu/code/stm32/00-blink
@@ -294,4 +294,3 @@ ESP32 这一侧，本章没有取证来源，不写寄存器差异。ESP32-S3 �
 
 </details>
 
-[ch40]: ../v6-labs-projects/40-lab-method-instruments.md

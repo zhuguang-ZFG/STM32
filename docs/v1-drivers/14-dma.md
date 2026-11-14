@@ -301,7 +301,7 @@ F407 一侧：DMA1 与 DMA2 都挂在 AHB1，基址分别是 `0x4002_6000` 与 `
 
 F103 一侧：DMA1 在 `0x4002_0000`，7 条通道；C8 只有 DMA1，没有 DMA2。通道寄存器从 `0x08` 开始，每条隔 `0x14`，顺序是 `CCR/CNDTR/CPAR/CMAR`；公共寄存器是 `ISR 0x00`、`IFCR 0x04`。时钟门是 `RCC_AHBENR` bit0。通道与外设请求固定绑定：ADC1→CH1、USART1_TX→CH4、USART1_RX→CH5，其余查 RM0008 表 78。`CCR` 的 `MEM2MEM`（bit14）支持内存到内存，`PSIZE/MSIZE` 与 `PINC/MINC` 位号都和 F4 不同；没有 FIFO、没有 DBM，乒乓只能用 HT/TC 半区模拟。DMA1 是 AHB 主设备，外设寄存器在 APB 上，搬运要过桥。F103 没有 CCM，也没有 D-Cache；4KB 内存搬运实验能放进 20KB SRAM。
 
-GD32 与 ESP32 不在本章平台列表。GD32 的 DMA 控制器命名、通道数与请求映射和 STM32 不是一套，完整对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)；ESP32-S3 的 DMA 由 ESP-IDF 的驱动与描述符管理，寄存器名字一个都不要带过去，外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。多核与 Cache 一致性见[第 34 章](../v4-platforms/34-multicore-cache.md)；仪器与证据方法见[第 40 章][ch40]。
+GD32 与 ESP32 不在本章平台列表。GD32 的 DMA 控制器命名、通道数与请求映射和 STM32 不是一套，完整对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)；ESP32-S3 的 DMA 由 ESP-IDF 的驱动与描述符管理，寄存器名字一个都不要带过去，外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。多核与 Cache 一致性见[第 34 章](../v4-platforms/34-multicore-cache.md)；仪器与证据方法见[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。
 
 ## 离开检查
 
@@ -328,4 +328,3 @@ GD32 与 ESP32 不在本章平台列表。GD32 的 DMA 控制器命名、通道�
 
 </details>
 
-[ch40]: ../v6-labs-projects/40-lab-method-instruments.md

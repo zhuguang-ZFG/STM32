@@ -10,7 +10,7 @@ platforms: [generic]
 - **问题**：串口接收链路的每一段（DMA 缓冲/字节队列/帧协议）各签了什么「合同」，违反后的典型症状是什么？IDLE 为什么不是帧边界？环形缓冲免锁的前提是什么？帧协议为什么选 COBS+CRC-16，「从任意字节流再同步」怎么实现？慢消费者的失败怎么变成可读计数？F1 与 F4 的 DMA 通道/流怎么对照，NDTR 与 BRR 的账怎么算？
 - **交付**：能按五契约走读一条完整接收链路；能写出契约 A/B 两种实现并说清各自空窗与禁项；能用 `tot_len`/不变式与 COBS+CRC 检查串验证实现；能把 NDTR/BRR/H7 32 字节四笔账当场复算。
 - **边界**：本附录是工程深读层；UART/DMA 机制归 [v1 第 13、14 章](../v1-drivers/13-uart-framed-protocol.md)，Cache 一致性归 [第 34 章](../v4-platforms/34-multicore-cache.md)，队列语义归 [第 24 章](../v3-rtos/24-queue-semaphore-notification.md)。寄存器名按平台分列，禁混写。
-- **依据锚点**：双源合并——五契约骨架（`mcu/code/stm32/03-uart-dma`、`05-framed-protocol`、`code/common/reliability`）与 F103 双契约（根书附录 A）；出处登记见附录 E 注册表，账表见附录 D 文末的账（附录落位后链接）。
+- **依据锚点**：双源合并——五契约骨架（`mcu/code/stm32/03-uart-dma`、`05-framed-protocol`、`code/common/reliability`）与 F103 双契约（根书附录 A）；出处登记见[附录 E](./E-sources-version-license.md) 注册表，账表见[附录 D](./D-glossary.md) 文末的账。
 
 
 本附录把 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[v1 第 14 章](../v1-drivers/14-dma.md)、[v0 第 4 章](../v0-foundations/04-function-pointer-state-machine.md) 与 [第 41 章](../v6-labs-projects/41-dual-board-logger-project.md) 各讲一段的串口接收链路，接成**一条完整的字节旅程**：从线路上的电平跳变到业务层手里的一帧数据，每一段都签着一份「合同」——违反任何一条，链路会以典型症状死给你看，而症状往往出现在离违约现场很远的地方。

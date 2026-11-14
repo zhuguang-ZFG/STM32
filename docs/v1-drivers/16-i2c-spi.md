@@ -438,7 +438,7 @@ F103 一侧：I2C1/2 在 APB1，I2C1 基址 `0x40005400`，72 MHz 主频下 PCLK
 
 ESP32 只划边界。ESP32-S3 没有 STM32 的 I2C/SPI 寄存器，I2C 走 ESP-IDF 的 `i2c_master` 驱动，SPI 走 `spi_master`；START/STOP/ACK、7 位地址、重复起始这些线上规则仍然成立，但 SR1/SR2、CCR/TRISE、CPOL/CPHA 的寄存器名一个都不要带过去。E07 的 QMI8658 是板载 I2C 器件，SDA=GPIO1、SCL=GPIO2、7 位地址 0x6A，读 WHO_AM_I 0x00 预期 0x05，从 0x35 连读 12 字节；这套配置是那一块板子的具体值，不是 ESP32 系列通用常数。ESP32-S3 的外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)，架构与启动不在本章展开。
 
-其它分工：DMA 的请求映射与 NDTR/半字账在[第 14 章](./14-dma.md)；GPIO 的开漏、复用与 BSRR 在[第 9 章](./09-gpio.md)；PCLK1/PCLK2 的时钟树在[第 8 章](./08-architecture-memory-clock.md)；抓包与仪器方法在[第 40 章][ch40]；Flash 与 IAP 的页/扇区账在[第 17 章](./17-flash-iap-ota.md)；低功耗下外设关断在[第 18 章](../v2-reliability/18-low-power.md)。
+其它分工：DMA 的请求映射与 NDTR/半字账在[第 14 章](./14-dma.md)；GPIO 的开漏、复用与 BSRR 在[第 9 章](./09-gpio.md)；PCLK1/PCLK2 的时钟树在[第 8 章](./08-architecture-memory-clock.md)；抓包与仪器方法在[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)；Flash 与 IAP 的页/扇区账在[第 17 章](./17-flash-iap-ota.md)；低功耗下外设关断在[第 18 章](../v2-reliability/18-low-power.md)。
 
 ## 离开检查
 
@@ -467,4 +467,3 @@ ESP32 只划边界。ESP32-S3 没有 STM32 的 I2C/SPI 寄存器，I2C 走 ESP-I
 
 </details>
 
-[ch40]: ../v6-labs-projects/40-lab-method-instruments.md

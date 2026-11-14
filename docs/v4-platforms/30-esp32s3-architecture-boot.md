@@ -15,7 +15,7 @@ ESP32-S3 上电之后发生的事，是三棒接力：ROM 交给 bootloader，bo
 
 - **问题**：三棒接力各做什么，卡在哪一棒看哪段日志？`app_main` 为什么不是 main——main task 的优先级、栈、亲和各是多少，`TASK_EXTRA_STACK_SIZE` 这层加项为什么不能漏？XIP 与 Cache 映射怎么改变了「代码在哪」的世界观，IRAM 纪律从哪来？分区表四列怎么读，Offset 为什么留空？组件化三板斧（SRCS/INCLUDE_DIRS/REQUIRES）与依赖图怎么走，main 为什么是「自动收集的项目组件」？Kconfig 三段论的三个产物各是什么，`CONFIG_IDF_TARGET_ESP32S3` 闭环怎么走一遍？`idf.py` 各子命令各查哪一层？错目标的 sdkconfig 为什么会静默编错芯片？
 - **交付**：能用日志前缀完成三棒分诊；能说出 main task 三参数的默认值（优先级 1、栈 3584 起、默认 CPU0）并指出栈定义里还有一层加项；能对照 F407 把 XIP 的架构差讲清；能读默认分区表（nvs 0x6000/phy_init 0x1000/factory 1M）并解释 gen_esp32part 的排布；能写一个组件的 `idf_component_register` 并画出依赖图；能走 `CONFIG_IDF_TARGET_ESP32S3` 从菜单到宏的闭环（`hello_main.c:25` 实例）；能按「配置/组件声明/编译/烧录」分层定位构建问题。
-- **边界**：本章讲架构与工程，不重教 FreeRTOS 机制（[第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md)、[第 23 章](../v3-rtos/23-context-switch-porting.md)）与双 OS 选型（[第 27 章](../v3-rtos/27-rtos-comparison-selection.md) 已定「IDF 自带 FreeRTOS、S3 双核 SMP」口径）；外设驱动与音频归第 31 章，Wi-Fi/BLE/ESP-NOW 归第 32 章（均在本卷内），OTA 的分区双槽细节留到 ch31/ch32 引用处。`sdkconfig` 数值类证据（size 账、890 项）全部标「来源说法(未复核)」。
+- **边界**：本章讲架构与工程，不重教 FreeRTOS 机制（[第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md)、[第 23 章](../v3-rtos/23-context-switch-porting.md)）与双 OS 选型（[第 27 章](../v3-rtos/27-rtos-comparison-selection.md) 已定「IDF 自带 FreeRTOS、S3 双核 SMP」口径）；外设驱动与音频归[第 31 章](./31-esp32-drivers-audio.md)，Wi-Fi/BLE/ESP-NOW 归[第 32 章](./32-esp32-wifi-ble-espnow.md)，OTA 的分区双槽细节留到 ch31/ch32 引用处。`sdkconfig` 数值类证据（size 账、890 项）全部标「来源说法(未复核)」。
 - **依据锚点**：E0《环境》（`mcu/docs/esp32/00-env.md`）、E1《架构与启动》（`.../01-arch-boot.md`）、E3《IDF 解剖》（`.../03-idf-anatomy.md`）。上游对账：ESP-IDF v5.5.2 的 [soc_caps.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/soc/esp32s3/include/soc/soc_caps.h)、[app_startup.c](https://github.com/espressif/esp-idf/blob/v5.5.2/components/freertos/app_startup.c)、[startup.c](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_system/startup.c)、[esp_task.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_system/include/esp_task.h)、[esp_system/Kconfig](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_system/Kconfig)、[project.cmake](https://github.com/espressif/esp-idf/blob/v5.5.2/tools/cmake/project.cmake)、[component.cmake](https://github.com/espressif/esp-idf/blob/v5.5.2/tools/cmake/component.cmake)、[kconfig.cmake](https://github.com/espressif/esp-idf/blob/v5.5.2/tools/cmake/kconfig.cmake)、[partitions_singleapp.csv](https://github.com/espressif/esp-idf/blob/v5.5.2/components/partition_table/partitions_singleapp.csv)。仓库实例：`mcu/code/esp32/00-hello`（CMakeLists 目标守卫、`hello_main.c:25` 的 `CONFIG_IDF_TARGET_ESP32S3` 实读命中）。
 
 ## 先做出来
@@ -91,7 +91,7 @@ phy_init, data, phy,     0xf000,  0x1000
 factory,  app,  factory, 0x10000, 1M
 ```
 
-三件事：**Offset 留空**由 `gen_esp32part.py` 自动排布（工具回读用 `idf.py partition-table`）；`nvs/phy_init` 这两个 data 区是 Wi-Fi/BT 的依赖（第 32 章会回到这）；双 OTA 槽 = factory 换成 ota_0/ota_1 两个 app 区加一个 otadata。
+三件事：**Offset 留空**由 `gen_esp32part.py` 自动排布（工具回读用 `idf.py partition-table`）；`nvs/phy_init` 这两个 data 区是 Wi-Fi/BT 的依赖（[第 32 章](./32-esp32-wifi-ble-espnow.md) 会回到这）；双 OTA 槽 = factory 换成 ota_0/ota_1 两个 app 区加一个 otadata。
 
 ### 四、组件化三板斧与「main 是自动收集的项目组件」
 

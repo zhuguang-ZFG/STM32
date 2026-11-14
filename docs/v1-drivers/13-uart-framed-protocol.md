@@ -11,7 +11,7 @@ platforms: [f407, f103, esp32, gd32]
 
 - **问题**：0x41 在线上为什么是 1,0,0,0,0,0,1,0，115200 下一位多宽？72MHz 与 84MHz 的 BRR 为什么是 `0x271` 与 729，`baud = PCLK / BRR` 里的 BRR 到底是寄存器整数值还是两个字段？TXE 与 TC 差在哪，RS-485 为什么必须等 TC？IDLE 与 ORE 为什么要“读 SR 再读 DR”，FE 置位时坏字节为什么还进了 DR？HAL 的 MspInit 与 SetConfig 两层与手写 `usart1_init()` 怎么一一对上？UART 为什么不能告诉你命令的边界，长度前缀、转义、COBS 在丢一个字节后各付什么代价？一帧为什么是 8+N 字节、74 字节上限怎么推出来？CRC-16/CCITT-FALSE 的四个参数与检查值 0x29B1 怎么验？EMPTY/COLLECT/DISCARD 三态在丢字节后怎么重新对齐，确认帧入队失败为什么不能执行命令？e02 的探头接哪里、记录什么，来源留下了哪些读数？
 - **交付**：能从真实 PCLK 算出两套 BRR 并说明字段拆法；能在逻辑分析仪上认出一帧并量出位宽；能写出 TXE/TC 与 RXNE/IDLE/ORE 的判据与清除序列；能把 HAL 的 MspInit、SetConfig、Transmit 三层与手写落位对上；能手算一帧的 CRC 与 COBS 编码，说出解码的四个拒绝条件；能画出三态状态机与八项计数，解释丢字节后第一帧为什么可能被牺牲；能按 e02 接线、设采样率、解码并留下记录。
-- **边界**：四平台章。F407 的 84MHz、PA9/PA10 复用、HAL 行号来自 S7《S7 USART：让芯片开口说话》及 DS8626、RM0090；F103 的 72MHz、`0x271`、没有 OVER8 来自根书第 06 章及 RM0008、DS5319；可恢复帧协议来自 C8《C8 串口协议：从字节流到可恢复的消息》与 `mcu/code/common/reliability`；实验来自 E02。四个来源都没有留下本章的上板读数：S7 的八行误差表由宿主脚本按公式打印，e02 的 `hardware_status` 是 pending、记录表为空，C8 的实验记录写“待实测”。S7 有一句说 16MHz 下改 OVER8=1 能把 921600 的误差降到 -0.794%，按 RM0090 的 3 位小数位复算对不上，本章标为待复核、不复述结论。GD32 只写寄存器改名与编号边界，并指出 G3 的偏移表与 RM0090 的 USART 布局冲突；ESP32 只写 UART 驱动边界。DMA 引擎留给[第 14 章](./14-dma.md)，仪器与证据方法留给[第 40 章][ch40]。
+- **边界**：四平台章。F407 的 84MHz、PA9/PA10 复用、HAL 行号来自 S7《S7 USART：让芯片开口说话》及 DS8626、RM0090；F103 的 72MHz、`0x271`、没有 OVER8 来自根书第 06 章及 RM0008、DS5319；可恢复帧协议来自 C8《C8 串口协议：从字节流到可恢复的消息》与 `mcu/code/common/reliability`；实验来自 E02。四个来源都没有留下本章的上板读数：S7 的八行误差表由宿主脚本按公式打印，e02 的 `hardware_status` 是 pending、记录表为空，C8 的实验记录写“待实测”。S7 有一句说 16MHz 下改 OVER8=1 能把 921600 的误差降到 -0.794%，按 RM0090 的 3 位小数位复算对不上，本章标为待复核、不复述结论。GD32 只写寄存器改名与编号边界，并指出 G3 的偏移表与 RM0090 的 USART 布局冲突；ESP32 只写 UART 驱动边界。DMA 引擎留给[第 14 章](./14-dma.md)，仪器与证据方法留给[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。
 - **依据锚点**：S7（`mcu/docs/stm32/07-usart.md`）、根书第 06 章《06 串口 UART》（`docs/06-串口UART.md`）、C8（`mcu/docs/c/08-framed-protocol.md`）、E02（`mcu/docs/lab/e02-logic-uart.md`）；[第 8 章](./08-architecture-memory-clock.md)的 APB 时钟与 USART1 基址、[第 10 章](./10-interrupts-nvic-exti.md)的 NVIC 使能、[第 12 章](./12-timers-pwm.md)的时基对照、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体与 ABI、[第 4 章](../v0-foundations/04-function-pointer-state-machine.md)的状态机写法。RM0090、RM0008、DS8626、DS5319 与 HAL 源码行号均转引自上述来源。
 
 ## 先做出来
@@ -389,7 +389,7 @@ GD32 只划边界。G3《USART 增强点》记录了两条可用的差异：GD32
 
 ESP32 只划边界。ESP32-S3 没有 STM32 的 USART 寄存器，串口走 ESP-IDF 的 UART 驱动，环形缓冲、事件队列与超时语义都由驱动定义；本章的 BRR、TXE/TC、IDLE 名字一个都不要带过去。C8 在 S3 上用的是 UART1、GPIO10=TX、GPIO11=RX、驱动 RX 环形区 1024 字节、每轮最多取 512 字节、事件最多等 5ms，这些是那一份工程的具体配置，不是系列通用常数。外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)，架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)。
 
-其它分工：DMA 引擎在[第 14 章](./14-dma.md)；仪器与证据方法在[第 40 章][ch40]；双板记录器项目用的是同一份 codec，见[第 41 章][ch41]。CAN 与 USB 的现场总线对照在[第 35 章](../v4-platforms/35-can-usb-fieldbus.md)。
+其它分工：DMA 引擎在[第 14 章](./14-dma.md)；仪器与证据方法在[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)；双板记录器项目用的是同一份 codec，见[第 41 章](../v6-labs-projects/41-dual-board-logger-project.md)。CAN 与 USB 的现场总线对照在[第 35 章](../v4-platforms/35-can-usb-fieldbus.md)。
 
 ## 离开检查
 
@@ -416,5 +416,3 @@ ESP32 只划边界。ESP32-S3 没有 STM32 的 USART 寄存器，串口走 ESP-I
 
 </details>
 
-[ch40]: ../v6-labs-projects/40-lab-method-instruments.md
-[ch41]: ../v6-labs-projects/41-dual-board-logger-project.md

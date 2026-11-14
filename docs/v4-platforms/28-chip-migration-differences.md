@@ -15,7 +15,7 @@ platforms: [f407, f103]
 
 - **问题**：迁移的第一动作为什么是「从第 1 脚数一圈」而不是查寄存器？F103/G071/L476/H743 四个家族的 BOOT 机制差在哪，G0 的 BOOT_LOCK 真值表怎么读，「拉高 PA14 就进 Bootloader」这句旧印象错在哪？复位后 GPIO 默认态两家族为何不同？PA11/PA12 被两个外设抢时，G0/L4/H7 各自的解法是什么？VDDUSB/VDD33USB/VCAP/PDR_ON 这些电源脚为什么不能漏？H7 的 Rev V 与 Rev Y/W 为什么是 480/400 两条线，官方示例到底背书哪条？时钟链复算后为什么还要软件读回加 MCO 两道证据？L4 低功耗迁移的两条铁律是什么？GD32 从 STM32 迁过去，位宽陷阱藏在哪？
 - **交付**：能按「料是谁→引脚对照→复用查表→BOOT/保护→时钟复算→三证据」走完一次迁移检查表；能数对四家族的第 1 脚（PC11/VBAT/PE2）与 H7 顶边的右往左方向；能区分 `nBOOT_SEL` 选的是「用引脚还是用选项位」；能给出 PA11/PA12 冲突的三家族解法表；能把 H7 的 CPU 480/HCLK 240/PCLK 120/定时器 240 四本账和 MCO2=96 MHz 的证据链说清；能守住「官方基线 400 vs 本书改写 480」的界限；能把 L4 醒来分类与快照时序复述对；能把 GD32 的 SDIO 位宽陷阱与 CAN_BT 可搬性写清。
-- **边界**：方法论章，不重教任何外设的寄存器细节——GPIO/时钟/中断/UART 各回 [v1 第 8–13 章](../v1-drivers/08-architecture-memory-clock.md)；H7 的 Cache/DMA 一致性与双核契约归第 34 章（B3 卷 4 内），本章只划界；GD32 的 RISC-V 侧（CLIC/mtime/工具链）归第 29 章；FDCAN 的寄存器层归 H7 场，本章只提「它与 bxCAN 不是同一外设」。手册未取件的行一律带「来源说法待核」，不改写成结论。
+- **边界**：方法论章，不重教任何外设的寄存器细节——GPIO/时钟/中断/UART 各回 [v1 第 8–13 章](../v1-drivers/08-architecture-memory-clock.md)；H7 的 Cache/DMA 一致性与双核契约归第 34 章（B3 卷 4 内），本章只划界；GD32 的 RISC-V 侧（CLIC/mtime/工具链）归[第 29 章](./29-gd32-arm-riscv.md)；FDCAN 的寄存器层归 H7 场，本章只提「它与 bxCAN 不是同一外设」。手册未取件的行一律带「来源说法待核」，不改写成结论。
 - **依据锚点**：P23《G0 引脚》（`docs/23-STM32G0引脚.md`）、P24《L4 引脚》（`docs/24-STM32L4引脚.md`）、P25《H7 引脚》（`docs/25-STM32H7引脚.md`）、G4《GD32 外设差异》（`mcu/docs/gd32/04-periph-diff.md`）。上游核对：GD32 官方固件库 [system_gd32f4xx.c](https://github.com/) `@10d02f4`（`:958-996`、`:970-971`）、CubeH7 master（`main.c:189-192,276-279`）。F103/F407 时钟账见 [v1 第 8 章](../v1-drivers/08-architecture-memory-clock.md)（probe 断言 `0x07405408` 等）；保护与选项字节的 RDP 语义见 [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md)。
 
 ## 先做出来
@@ -144,7 +144,7 @@ GD32 从 STM32 迁过去，先分「可搬」与「丢位」两类（G4 的口�
 
 ## 跨平台边界
 
-- H7 的 Cache/DMA 一致性、DTCM 禁区、双核 AMP 契约：归第 34 章，本章只划界。
+- H7 的 Cache/DMA 一致性、DTCM 禁区、双核 AMP 契约：归[第 34 章](./34-multicore-cache.md)，本章只划界。
 - GD32 的 RISC-V 半场（CLIC/ECLIC、mtime、工具链三元组）：归第 29 章。
 - F407/F103 的时钟账与 probe 断言（`0x07405408` 等）：已在 [v1 第 8 章](../v1-drivers/08-architecture-memory-clock.md) 核过，本章引用不重算。
 - FDCAN 与 bxCAN 是两个外设：本章只说「位时序寄存器值可搬」的结论由 CAN_BT/CAN_BTR 位域全等支撑（来源说法待核），FDCAN 寄存器层不在本章。

@@ -83,7 +83,7 @@ platforms: [generic]
 - **怎么选**：维护活跃度（最近 commit）、license（五族口径见 附录 F）、社区（issue 响应）、与你的芯片匹配（port 层存在性）。
 - **怎么读**：先读 README 的「编译一条命令」、再读目录结构、再读一个最小例程——**归档 vs 镜像**要分清（mirror 不含 issue 讨论）。
 - **怎么问**：提问五件事——版本三元组（SDK/内核 commit/工具链）、最小复现、预期 vs 实际、完整日志、你已经试过什么。
-- **入口仓库一行表**（全量表与 9 条知识点在 附录 F）：FreeRTOS-Kernel、RT-Thread、libopencm3、STM32CubeF4、esp-idf、lwIP、Mbed TLS、OpenOCD、KiCad——星标与 archived 状态以 apF 表（2026-10-26）为准。
+- **入口仓库一行表**（全量表与 9 条知识点在 附录 F）：FreeRTOS-Kernel、RT-Thread、libopencm3、STM32CubeF4、esp-idf、lwIP、Mbed TLS、OpenOCD、KiCad——星标与 archived 状态以[附录 F](../appendix/F-open-source-community-map.md) 表（2026-10-26）为准。
 
 开源库七行对比（HAL/LL、SPL V3.5.0、libopencm3、ChibiOS、Zephyr、RT-Thread、FreeRTOS）的定位描述沿用 D20 表；版本细节带 附录 F 的证据口径。
 
