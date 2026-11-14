@@ -1,47 +1,47 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="项目卡住时，沿第一条失败边界检查">
 
 
-<rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
-<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
-<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">项目卡住时，沿第一条失败边界检查</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">每个项目选择自己的模块路径；不是所有项目都需要存储和升级</text>
-<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">19</text>
-<text x="40" y="110" font-size="24" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先回答：这次新增的结果，能否单独演示？</text>
-<rect x="40" y="164" width="310" height="98" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="60" y="205" font-size="23" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">需求同时增加</text>
-<text x="60" y="240" font-size="18" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先保存能复现的现象</text>
-<line x1="362" y1="213" x2="409" y2="213" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="416.00,213.00 409.00,216.50 409.00,209.50" fill="#8f2d2d" opacity="1"/>
-<text x="440" y="199" font-size="24" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">范围</text>
-<text x="440" y="241" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">只保留一个可验证输入 / 输出</text>
-<rect x="40" y="346" width="310" height="98" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="60" y="387" font-size="23" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">单模块还没跑通</text>
-<text x="60" y="422" font-size="18" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先保存能复现的现象</text>
-<line x1="362" y1="395" x2="409" y2="395" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="416.00,395.00 409.00,398.50 409.00,391.50" fill="#7a4e00" opacity="1"/>
-<text x="440" y="381" font-size="24" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">模块</text>
-<text x="440" y="423" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">断开其他模块，保留配置和错误码</text>
-<rect x="40" y="528" width="310" height="98" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="60" y="569" font-size="23" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">单独正常，组合失败</text>
-<text x="60" y="604" font-size="18" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先保存能复现的现象</text>
-<line x1="362" y1="577" x2="409" y2="577" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="416.00,577.00 409.00,580.50 409.00,573.50" fill="#075e84" opacity="1"/>
-<text x="440" y="563" font-size="24" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">集成</text>
-<text x="440" y="605" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">比较时序、资源和缓冲所有权</text>
-<line x1="40" y1="678" x2="920" y2="678" stroke="#d7dce1" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
-<text x="40" y="722" font-size="22" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">输入 / 配置</text>
-<line x1="218" y1="715" x2="271" y2="715" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="278.00,715.00 271.00,718.50 271.00,711.50" fill="#075e84" opacity="1"/>
-<text x="300" y="722" font-size="22" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">预期与实测</text>
-<line x1="478" y1="715" x2="531" y2="715" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="538.00,715.00 531.00,718.50 531.00,711.50" fill="#1b5c45" opacity="1"/>
-<text x="560" y="722" font-size="22" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">失败注入与恢复</text>
-<text x="40" y="777" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">交付记录要包含板卡、固件、接线、复现步骤和已知限制。</text>
-<text x="40" y="814" font-size="18" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">证据可用波形、日志或缓冲记录；按要验证的机制选择。</text>
-<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。本章项目推进方法；按具体项目选择模块与验收项。</text>
-<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+<rect x="0" y="0" width="960" height="880" fill="#FBF3DF"/>
+<rect x="0" y="0" width="960" height="58" fill="#F7EFDA" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#6E6B60" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#1F4680" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">项目卡住时，沿第一条失败边界检查</text>
+<text x="22" y="50" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">每个项目选择自己的模块路径；不是所有项目都需要存储和升级</text>
+<rect x="906" y="15" width="32" height="28" fill="#DCE6F2" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#1F4680" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">19</text>
+<text x="40" y="110" font-size="24" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先回答：这次新增的结果，能否单独演示？</text>
+<rect x="40" y="164" width="310" height="98" fill="#F7EFDA" opacity="1" rx="8" stroke="#B3392F" stroke-width="1.5"/>
+<text x="60" y="205" font-size="23" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">需求同时增加</text>
+<text x="60" y="240" font-size="18" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先保存能复现的现象</text>
+<line x1="362" y1="213" x2="409" y2="213" stroke="#B3392F" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="416.00,213.00 409.00,216.50 409.00,209.50" fill="#B3392F" opacity="1"/>
+<text x="440" y="199" font-size="24" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">范围</text>
+<text x="440" y="241" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">只保留一个可验证输入 / 输出</text>
+<rect x="40" y="346" width="310" height="98" fill="#F7EFDA" opacity="1" rx="8" stroke="#7A5B14" stroke-width="1.5"/>
+<text x="60" y="387" font-size="23" fill="#7A5B14" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">单模块还没跑通</text>
+<text x="60" y="422" font-size="18" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先保存能复现的现象</text>
+<line x1="362" y1="395" x2="409" y2="395" stroke="#7A5B14" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="416.00,395.00 409.00,398.50 409.00,391.50" fill="#7A5B14" opacity="1"/>
+<text x="440" y="381" font-size="24" fill="#7A5B14" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">模块</text>
+<text x="440" y="423" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">断开其他模块，保留配置和错误码</text>
+<rect x="40" y="528" width="310" height="98" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="60" y="569" font-size="23" fill="#1F4680" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">单独正常，组合失败</text>
+<text x="60" y="604" font-size="18" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先保存能复现的现象</text>
+<line x1="362" y1="577" x2="409" y2="577" stroke="#1F4680" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="416.00,577.00 409.00,580.50 409.00,573.50" fill="#1F4680" opacity="1"/>
+<text x="440" y="563" font-size="24" fill="#1F4680" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">集成</text>
+<text x="440" y="605" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">比较时序、资源和缓冲所有权</text>
+<line x1="40" y1="678" x2="920" y2="678" stroke="#D8D2C0" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<text x="40" y="722" font-size="22" fill="#1F4680" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">输入 / 配置</text>
+<line x1="218" y1="715" x2="271" y2="715" stroke="#1F4680" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="278.00,715.00 271.00,718.50 271.00,711.50" fill="#1F4680" opacity="1"/>
+<text x="300" y="722" font-size="22" fill="#2E5F42" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">预期与实测</text>
+<line x1="478" y1="715" x2="531" y2="715" stroke="#2E5F42" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="538.00,715.00 531.00,718.50 531.00,711.50" fill="#2E5F42" opacity="1"/>
+<text x="560" y="722" font-size="22" fill="#7A5B14" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">失败注入与恢复</text>
+<text x="40" y="777" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">交付记录要包含板卡、固件、接线、复现步骤和已知限制。</text>
+<text x="40" y="814" font-size="18" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">证据可用波形、日志或缓冲记录；按要验证的机制选择。</text>
+<line x1="24" y1="844" x2="936" y2="844" stroke="#D8D2C0" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="864" font-size="11" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。本章项目推进方法；按具体项目选择模块与验收项。</text>
+<text x="936" y="864" font-size="11" fill="#6E6B60" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
 </svg>

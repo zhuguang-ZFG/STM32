@@ -21,13 +21,13 @@
 @media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
-<rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="620" fill="#FBF3DF"/>
 <rect x="0" y="0" width="900" height="58" fill="#F7EFDA" opacity="1"/>
 <line x1="0" y1="58" x2="900" y2="58" stroke="#6E6B60" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#1F4680" opacity="1"/>
 <text x="22" y="32" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">网络包旅程：从 APP 到 PHY 的证据链</text>
 <text x="22" y="50" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">mechanism · FA-002 continuous-line · MQTT QoS1 over TLS/TCP</text>
-<rect x="819" y="15" width="59" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
+<rect x="819" y="15" width="59" height="28" fill="#DCE6F2" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
 <text x="848.5" y="33.32" font-size="12" fill="#1F4680" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">27 网络</text>
 <rect x="48" y="92" width="500" height="52" fill="#F7EFDA" opacity="1" rx="8" stroke="#8e2f5b" stroke-width="1.5"/>
 <rect x="48" y="92" width="78" height="52" fill="#F7EFDA" opacity="1" rx="8" stroke="#8e2f5b" stroke-width="1.5"/>
@@ -69,62 +69,62 @@
 <rect x="48" y="332" width="500" height="52" fill="#1F4680" opacity="0.1" rx="8" class="net4"/>
 <line x1="298" y1="385" x2="298" y2="386" stroke="#1F4680" stroke-width="2" stroke-linecap="round" opacity="1" class="net-flow"/>
 <polygon points="298.00,391.00 295.50,386.00 300.50,386.00" fill="#1F4680" opacity="1"/>
-<rect x="48" y="392" width="500" height="52" fill="#F7EFDA" opacity="1" rx="8" stroke="#1e4d63" stroke-width="1.5"/>
-<rect x="48" y="392" width="78" height="52" fill="#F7EFDA" opacity="1" rx="8" stroke="#1e4d63" stroke-width="1.5"/>
-<text x="87" y="422" font-size="12" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Eth</text>
+<rect x="48" y="392" width="500" height="52" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<rect x="48" y="392" width="78" height="52" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="87" y="422" font-size="12" fill="#1F4680" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Eth</text>
 <text x="144" y="412" font-size="11" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="600">dst MAC · type · FCS</text>
 <text x="144" y="432" font-size="10" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ARP / 二层广播域</text>
-<rect x="48" y="392" width="500" height="52" fill="#1e4d63" opacity="0.1" rx="8" class="net5"/>
+<rect x="48" y="392" width="500" height="52" fill="#1F4680" opacity="0.1" rx="8" class="net5"/>
 <line x1="298" y1="445" x2="298" y2="446" stroke="#1F4680" stroke-width="2" stroke-linecap="round" opacity="1" class="net-flow"/>
 <polygon points="298.00,451.00 295.50,446.00 300.50,446.00" fill="#1F4680" opacity="1"/>
-<rect x="48" y="452" width="500" height="52" fill="#F7EFDA" opacity="1" rx="8" stroke="#9a3412" stroke-width="1.5"/>
-<rect x="48" y="452" width="78" height="52" fill="#F7EFDA" opacity="1" rx="8" stroke="#9a3412" stroke-width="1.5"/>
-<text x="87" y="482" font-size="12" fill="#9a3412" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">DMA</text>
+<rect x="48" y="452" width="500" height="52" fill="#F7EFDA" opacity="1" rx="8" stroke="#B3392F" stroke-width="1.5"/>
+<rect x="48" y="452" width="78" height="52" fill="#F7EFDA" opacity="1" rx="8" stroke="#B3392F" stroke-width="1.5"/>
+<text x="87" y="482" font-size="12" fill="#B3392F" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">DMA</text>
 <text x="144" y="472" font-size="11" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="600">desc → RMII → PHY</text>
 <text x="144" y="492" font-size="10" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SRAM 对齐 · Cache 一致</text>
-<rect x="48" y="452" width="500" height="52" fill="#9a3412" opacity="0.1" rx="8" class="net6"/>
+<rect x="48" y="452" width="500" height="52" fill="#B3392F" opacity="0.1" rx="8" class="net6"/>
 <rect x="572" y="92" width="288" height="200" fill="#F7EFDA" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
 <text x="590" y="118" font-size="13" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">链路证据顺序</text>
-<circle cx="600" cy="144" r="9" fill="#9a3412" opacity="1"/>
-<text x="600" y="148" font-size="9" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
-<text x="620" y="148" font-size="11" fill="#9a3412" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">PHY link</text>
+<circle cx="600" cy="144" r="9" fill="#B3392F" opacity="1"/>
+<text x="600" y="148" font-size="9" fill="#FBF3DF" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">1</text>
+<text x="620" y="148" font-size="11" fill="#B3392F" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">PHY link</text>
 <text x="700" y="148" font-size="10" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">读 BSR，不只看 LED</text>
-<circle cx="600" cy="172" r="9" fill="#1e4d63" opacity="1"/>
-<text x="600" y="176" font-size="9" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2</text>
-<text x="620" y="176" font-size="11" fill="#1e4d63" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">ARP</text>
+<circle cx="600" cy="172" r="9" fill="#1F4680" opacity="1"/>
+<text x="600" y="176" font-size="9" fill="#FBF3DF" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">2</text>
+<text x="620" y="176" font-size="11" fill="#1F4680" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">ARP</text>
 <text x="700" y="176" font-size="10" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">who-has / is-at</text>
 <circle cx="600" cy="200" r="9" fill="#1F4680" opacity="1"/>
-<text x="600" y="204" font-size="9" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3</text>
+<text x="600" y="204" font-size="9" fill="#FBF3DF" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3</text>
 <text x="620" y="204" font-size="11" fill="#1F4680" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">IP</text>
 <text x="700" y="204" font-size="10" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">ping≠业务可达</text>
 <circle cx="600" cy="228" r="9" fill="#2E5F42" opacity="1"/>
-<text x="600" y="232" font-size="9" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">4</text>
+<text x="600" y="232" font-size="9" fill="#FBF3DF" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">4</text>
 <text x="620" y="232" font-size="11" fill="#2E5F42" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">TCP</text>
 <text x="700" y="232" font-size="10" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SYN→SYN/ACK→ACK</text>
 <circle cx="600" cy="256" r="9" fill="#6E569B" opacity="1"/>
-<text x="600" y="260" font-size="9" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">5</text>
+<text x="600" y="260" font-size="9" fill="#FBF3DF" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">5</text>
 <text x="620" y="260" font-size="11" fill="#6E569B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">TLS/MQTT</text>
 <text x="700" y="260" font-size="10" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">握手 + CONNACK</text>
-<rect x="572" y="310" width="288" height="220" fill="#F7EFDA" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<rect x="572" y="310" width="288" height="220" fill="#F7EFDA" opacity="1" rx="8" stroke="#B3392F" stroke-width="1.5"/>
 <text x="590" y="338" font-size="13" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">五个不能混为一谈</text>
-<text x="590" y="368" font-size="13" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">×</text>
+<text x="590" y="368" font-size="13" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">×</text>
 <text x="610" y="368" font-size="11" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">TCP ACK</text>
 <text x="710" y="368" font-size="10" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">≠ 业务已落盘</text>
-<text x="590" y="398" font-size="13" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">×</text>
+<text x="590" y="398" font-size="13" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">×</text>
 <text x="610" y="398" font-size="11" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">MQTT QoS1</text>
 <text x="710" y="398" font-size="10" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">至少一次，要幂等</text>
-<text x="590" y="428" font-size="13" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">×</text>
+<text x="590" y="428" font-size="13" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">×</text>
 <text x="610" y="428" font-size="11" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">ping 通</text>
 <text x="710" y="428" font-size="10" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">≠ DNS/TLS/MQTT OK</text>
-<text x="590" y="458" font-size="13" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">×</text>
+<text x="590" y="458" font-size="13" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">×</text>
 <text x="610" y="458" font-size="11" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">link up</text>
 <text x="710" y="458" font-size="10" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">≠ DMA/Cache/IP OK</text>
-<text x="590" y="488" font-size="13" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">×</text>
+<text x="590" y="488" font-size="13" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">×</text>
 <text x="610" y="488" font-size="11" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">收到一段</text>
 <text x="710" y="488" font-size="10" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">≠ 流式分帧完成</text>
 <rect x="48" y="530" width="500" height="36" fill="#F7EFDA" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
 <text x="60" y="554" font-size="12" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">分层验收：PHY → ARP/IP → TCP → TLS → MQTT → 业务语义</text>
-<line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#D8D2C0" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <text x="24" y="602" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · FA-002 · 网络分层证据链，非抓包截图</text>
 <text x="876" y="602" font-size="11" fill="#6E6B60" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识轨</text>
 </svg>

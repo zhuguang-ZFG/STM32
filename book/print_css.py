@@ -95,4 +95,47 @@ figcaption { font-size: 0.8em; color: var(--muted); margin-top: 0.35em;
 h1, h2, h3 { break-after: avoid; }
 blockquote, .quiz, figure, pre { break-inside: avoid; }
 a { color: var(--ink); text-decoration: none; }
+
+/* ------- 印刷精修（参考 yuyu_book/style_print.py）------- */
+/* 单行孤行/寡行：不让第一行落单在页尾，也不让最后一行孤悬在页首 */
+p { orphans: 2; widows: 2; }
+/* 屏幕的 padding-bottom 在纸上变成空页陷阱：最后一行离页底只剩留白，
+   下一个 break-before 又翻页——纸上的空气由 @page margin 提供 */
+section.chapter { padding-bottom: 0; }
+/* 全页表格跨过页眉带时 zebra 条纹在纸上洗掉：收回透明 */
+tbody tr:nth-child(2n) { background: transparent; }
+/* 代码高亮在纸上用暖土色调（不是屏幕上的亮蓝绿红） */
+pre { color: var(--ink); }
+pre .k, .k { color: #7A5B22; }
+pre .s, .s { color: #4F6B3A; }
+pre .m, .m { color: #8A5A2B; }
+pre .c, .c1, .c2 { color: #7A6F58; }
+pre .nt { color: #3A5F80; }
+pre .nf { color: #7A5B14; }
+pre .o, .ow { color: var(--ink); }
+/* 插图高度上限：A4 版心 257mm，一张超过 200mm 的图会把正文全推到下一页
+   留下空白纸。150mm 是大多数图仍然清晰可读、同时留在当前页的上限。 */
+figure img, figure svg { max-height: 200mm; width: auto; }
+/* 宽幅图：命名的横向页面让宽图独占一页，正文回竖版 */
+@page plate-landscape { size: A4 landscape; margin: 21mm 17mm 19mm; }
+figure.landscape { page: plate-landscape; break-before: page;
+  display: flex; flex-direction: column; justify-content: center;
+  min-height: 150mm; }
+figure.landscape figcaption { margin-top: 1.2rem; }
+/* 测验与附录块不拆页 */
+.quiz, .quiz-answer { break-inside: avoid; }
+/* 目录行不加下划线（纸上有 dotted rule 已够） */
+a.toc-row, a.toc-part { text-decoration: none; }
+/* 卷分隔页压缩：40/35mm 的留白加大三字标号把四项清单推成孤行 */
+.part-page { padding: 26mm 0 24mm; min-height: 180mm; }
+/* 屏幕上用 hover 弹出的注音，纸上静音为虚线下划线（不拆行不占额外空间） */
+.gloss { border-bottom: 1px dotted var(--rule); color: inherit; }
+.gloss-pop { display: none; }
+/* 章末不因残余 padding 空一整页 */
+section { padding-bottom: 0; }
+/* 断页后避免标题孤悬 */
+h1, h2, h3 { break-after: avoid; }
+/* 长表头在纸上按词换行而非截断 */
+th { white-space: normal; word-break: keep-all; overflow-wrap: break-word; }
+table td { overflow-wrap: break-word; }
 """

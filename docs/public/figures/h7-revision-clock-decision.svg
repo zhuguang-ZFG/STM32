@@ -1,37 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="560" viewBox="0 0 900 560" role="img" aria-label="400 MHz 还是 480 MHz，先看 silicon revision">
 
 
-<rect x="0" y="0" width="900" height="560" fill="#fbfaf7"/>
-<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
-<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#7a4e00" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">400 MHz 还是 480 MHz，先看 silicon revision</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">产品名相同不代表硅片 revision 相同；ES0392 决定 VOS0 是否存在</text>
-<rect x="738" y="15" width="140" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="808" y="33.32" font-size="12" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">25 决策 · IG-008</text>
-<rect x="330" y="88" width="240" height="58" fill="#f1f5f7" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
-<text x="450" y="113" font-size="12.5" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">读取器件丝印 / REV_ID</text>
-<text x="450" y="134" font-size="9.8" fill="#5e6872" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">DBGMCU-&gt;IDCODE + ES0392</text>
-<line x1="450" y1="150" x2="450" y2="189" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="450.00,196.00 446.50,189.00 453.50,189.00" fill="#075e84" opacity="1"/>
-<rect x="330" y="198" width="240" height="58" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="450" y="232" font-size="14" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">revision 是 V？</text>
-<line x1="450" y1="260" x2="182.877" y2="310.695" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="176.00,312.00 182.22,307.26 183.53,314.13" fill="#7a4e00" opacity="1"/>
-<rect x="42" y="320" width="268" height="112" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="176" y="349" font-size="12.5" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">否：Rev Y / W</text>
-<text x="176" y="378" font-size="10.2" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VOS1 · PLLN=400</text>
-<text x="176" y="404" font-size="9.6" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CPU 400 / HCLK 200 / PCLK 100 MHz</text>
-<line x1="450" y1="260" x2="717.123" y2="310.695" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="724.00,312.00 716.47,314.13 717.78,307.26" fill="#1b5c45" opacity="1"/>
-<rect x="590" y="320" width="268" height="112" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<text x="724" y="349" font-size="12.5" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">是：Rev V</text>
-<text x="724" y="378" font-size="10.2" fill="#17202a" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VOS1 ready → VOS0 · PLLN=480</text>
-<text x="724" y="404" font-size="9.6" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CPU 480 / HCLK 240 / PCLK 120 MHz</text>
-<rect x="246" y="458" width="408" height="54" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="450" y="480" font-size="10.3" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">任何路径：先验证供电方案，再等 VOSRDY，最后配置 PLL。</text>
-<text x="450" y="499" font-size="9.8" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">请求过的频率 ≠ 已经成立的频率。</text>
-<line x1="24" y1="518" x2="876" y2="518" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="542" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">视觉规范：FA-002 概念连续线 · IG-008 决策流程 · C-03 / C-10 / C-27 / C-31</text>
-<text x="876" y="542" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量图 · STM32 知识库</text>
+<rect x="0" y="0" width="900" height="560" fill="#FBF3DF"/>
+<rect x="0" y="0" width="900" height="58" fill="#F7EFDA" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#6E6B60" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#7A5B14" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">400 MHz 还是 480 MHz，先看 silicon revision</text>
+<text x="22" y="50" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">产品名相同不代表硅片 revision 相同；ES0392 决定 VOS0 是否存在</text>
+<rect x="738" y="15" width="140" height="28" fill="#DCE6F2" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="808" y="33.32" font-size="12" fill="#7A5B14" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">25 决策 · IG-008</text>
+<rect x="330" y="88" width="240" height="58" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
+<text x="450" y="113" font-size="12.5" fill="#1F4680" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">读取器件丝印 / REV_ID</text>
+<text x="450" y="134" font-size="9.8" fill="#6E6B60" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">DBGMCU-&gt;IDCODE + ES0392</text>
+<line x1="450" y1="150" x2="450" y2="189" stroke="#1F4680" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="450.00,196.00 446.50,189.00 453.50,189.00" fill="#1F4680" opacity="1"/>
+<rect x="330" y="198" width="240" height="58" fill="#F7EFDA" opacity="1" rx="8" stroke="#6E569B" stroke-width="1.5"/>
+<text x="450" y="232" font-size="14" fill="#6E569B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">revision 是 V？</text>
+<line x1="450" y1="260" x2="182.877" y2="310.695" stroke="#7A5B14" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="176.00,312.00 182.22,307.26 183.53,314.13" fill="#7A5B14" opacity="1"/>
+<rect x="42" y="320" width="268" height="112" fill="#F7EFDA" opacity="1" rx="8" stroke="#7A5B14" stroke-width="1.5"/>
+<text x="176" y="349" font-size="12.5" fill="#7A5B14" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">否：Rev Y / W</text>
+<text x="176" y="378" font-size="10.2" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VOS1 · PLLN=400</text>
+<text x="176" y="404" font-size="9.6" fill="#6E6B60" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CPU 400 / HCLK 200 / PCLK 100 MHz</text>
+<line x1="450" y1="260" x2="717.123" y2="310.695" stroke="#2E5F42" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="724.00,312.00 716.47,314.13 717.78,307.26" fill="#2E5F42" opacity="1"/>
+<rect x="590" y="320" width="268" height="112" fill="#F7EFDA" opacity="1" rx="8" stroke="#2E5F42" stroke-width="1.5"/>
+<text x="724" y="349" font-size="12.5" fill="#2E5F42" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="800">是：Rev V</text>
+<text x="724" y="378" font-size="10.2" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">VOS1 ready → VOS0 · PLLN=480</text>
+<text x="724" y="404" font-size="9.6" fill="#6E6B60" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">CPU 480 / HCLK 240 / PCLK 120 MHz</text>
+<rect x="246" y="458" width="408" height="54" fill="#F7EFDA" opacity="1" rx="8" stroke="#B3392F" stroke-width="1.5"/>
+<text x="450" y="480" font-size="10.3" fill="#B3392F" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">任何路径：先验证供电方案，再等 VOSRDY，最后配置 PLL。</text>
+<text x="450" y="499" font-size="9.8" fill="#6E6B60" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">请求过的频率 ≠ 已经成立的频率。</text>
+<line x1="24" y1="518" x2="876" y2="518" stroke="#D8D2C0" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="542" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">视觉规范：FA-002 概念连续线 · IG-008 决策流程 · C-03 / C-10 / C-27 / C-31</text>
+<text x="876" y="542" font-size="11" fill="#6E6B60" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量图 · STM32 知识库</text>
 </svg>

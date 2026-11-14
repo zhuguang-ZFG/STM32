@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""去 AI 味：把 SMIL 动画与自绘 SVG 的扁平 Tailwind 色板重映射为全书手绘米纸色系。
+"""去 AI 味：把 SMIL 动画与自绘 SVG 的扁平色板重映射为全书手绘米纸色系。
 
 只做纯属性值替换（fill/stroke/stop-color/font-family），不动几何与 SMIL 动画元素——
 同一映射表可重跑（幂等），映射后文件与手绘知识板（app-*/ch*-handdraw）同一视觉语言：
 米纸底、墨色字、普鲁士蓝/灰绿/砖红/拿坡里黄四色语义。
 
-用法：python tools/restyle_anims.py            # 应用到 docs/public/anim/
+覆盖 docs/public/anim/ 与 docs/public/figures/ 两个目录。
+
+用法：python tools/restyle_anims.py            # 应用到两个目录
       python tools/restyle_anims.py --dry-run  # 只统计命中，不改文件
 """
 from __future__ import annotations
@@ -16,6 +18,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 ANIM_DIR = REPO / "docs" / "public" / "anim"
+FIG_DIR = REPO / "docs" / "public" / "figures"
 
 # 旧（扁平/AI 风）→ 新（手绘米纸色系）。目标色取自 tools/handraw_track/hd.py 的
 # 色板常量与手绘板的实际用色；文本灰全部收进墨/暖灰两档。
@@ -50,6 +53,18 @@ COLOR_MAP = {
     "#e2e8f0": "#E7E2D4",
     # 紫：弱化为暮紫（少量特殊标记用）
     "#5b3a8c": "#6E569B",
+    # figures/ 根书自绘色系（与 anim/ 不同的"根书蓝"体系，同样扁平化）
+    "#fbfaf7": "#FBF3DF",
+    "#e5f3f8": "#DCE6F2",
+    "#d7dce1": "#D8D2C0",
+    "#8f2d2d": "#B3392F",
+    "#1e4d63": "#1F4680",
+    "#123a2e": "#2E5F42",
+    "#151922": "#2F2E2B",
+    "#0d2b22": "#2E5F42",
+    "#9a3412": "#B3392F",
+    "#dbeafe": "#DCE6F2",
+    "#dfe6f0": "#E7E2D4",
 }
 
 FONT_MAP = {
@@ -79,16 +94,17 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     total_files = total_hits = 0
-    for path in sorted(ANIM_DIR.glob("*.svg")):
-        original = path.read_text(encoding="utf-8")
-        restyled, hits = restyle(original)
-        if hits == 0:
-            continue
-        total_files += 1
-        total_hits += hits
-        if not args.dry_run:
-            path.write_text(restyled, encoding="utf-8", newline="\n")
-        print(f"{path.name}: {hits} replacements")
+    for directory in (ANIM_DIR, FIG_DIR):
+        for path in sorted(directory.glob("*.svg")):
+            original = path.read_text(encoding="utf-8")
+            restyled, hits = restyle(original)
+            if hits == 0:
+                continue
+            total_files += 1
+            total_hits += hits
+            if not args.dry_run:
+                path.write_text(restyled, encoding="utf-8", newline="\n")
+            print(f"{path.name}: {hits} replacements")
     print(f"files touched: {total_files}, replacements: {total_hits}")
     return 0
 

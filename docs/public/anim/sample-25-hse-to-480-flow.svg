@@ -27,13 +27,13 @@
 @media (prefers-reduced-motion: reduce){*{animation:none!important}}
 </style>
 
-<rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="620" fill="#FBF3DF"/>
 <rect x="0" y="0" width="900" height="58" fill="#F7EFDA" opacity="1"/>
 <line x1="0" y1="58" x2="900" y2="58" stroke="#6E6B60" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <rect x="0" y="0" width="4" height="58" fill="#7A5B14" opacity="1"/>
 <text x="22" y="32" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">H7：电压档就绪后再锁 480 MHz</text>
 <text x="22" y="50" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">mechanism · FA-002 continuous-line</text>
-<rect x="846" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
+<rect x="846" y="15" width="32" height="28" fill="#DCE6F2" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
 <text x="862" y="33.32" font-size="12" fill="#7A5B14" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">25</text>
 <rect x="40" y="100" width="120" height="100" fill="#F7EFDA" opacity="1" rx="8" stroke="#1F4680" stroke-width="1.5"/>
 <text x="100" y="132" font-size="13" fill="#1F4680" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">VOS</text>
@@ -88,10 +88,10 @@
 <rect x="40" y="382" width="820" height="38" fill="#F7EFDA" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
 <text x="56" y="406" font-size="13" fill="#6E569B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">CACHE</text>
 <text x="840" y="406" font-size="13" fill="#2F2E2B" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">DMA clean/invalidate is a later plate</text>
-<rect x="40" y="450" width="820" height="70" fill="#F7EFDA" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<rect x="40" y="450" width="820" height="70" fill="#F7EFDA" opacity="1" rx="8" stroke="#B3392F" stroke-width="1.5"/>
 <text x="56" y="478" font-size="13" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">Voltage-scale static plate gates this motion.</text>
 <text x="56" y="500" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">h7-clock-chain remains the long-form companion.</text>
-<line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#D8D2C0" stroke-width="1" stroke-linecap="round" opacity="1"/>
 <text x="24" y="602" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画（FA-002）· H7 HSE→480</text>
 <text x="876" y="602" font-size="11" fill="#6E6B60" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量动画 · STM32 知识库</text>
 </svg>

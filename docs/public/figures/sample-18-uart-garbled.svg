@@ -1,49 +1,49 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="串口乱码：沿时钟和 TX 信号逐段检查">
 
 
-<rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
-<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
-<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">串口乱码：沿时钟和 TX 信号逐段检查</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USART1 · PPRE2 = 1 · BRR 保持 0x271</text>
-<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">18</text>
-<text x="40" y="101" font-size="21" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先读 SWS 与 APB2 分频，得到 USART1 的 PCLK2。</text>
-<text x="40" y="141" font-size="19" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BRR raw = 0x271 = 625；USARTDIV = 39 + 1/16 = 39.0625</text>
-<text x="40" y="204" font-size="22" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PCLK2 = 72 MHz</text>
-<text x="40" y="241" font-size="19" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PCLK2 / 625 = 115200 bit/s</text>
-<line x1="178" y1="279" x2="880" y2="279" stroke="#d7dce1" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
-<line x1="178" y1="260" x2="178" y2="298" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<line x1="256" y1="260" x2="256" y2="298" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<line x1="178" y1="279" x2="249" y2="279" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="256.00,279.00 249.00,282.50 249.00,275.50" fill="#1b5c45" opacity="1"/>
-<text x="40" y="286" font-size="18" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">8.68 µs</text>
-<text x="40" y="352" font-size="22" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PCLK2 = 8 MHz</text>
-<text x="40" y="389" font-size="19" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PCLK2 / 625 = 12800 bit/s</text>
-<line x1="178" y1="427" x2="880" y2="427" stroke="#d7dce1" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
-<line x1="178" y1="408" x2="178" y2="446" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<line x1="880" y1="408" x2="880" y2="446" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<line x1="178" y1="427" x2="873" y2="427" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="880.00,427.00 873.00,430.50 873.00,423.50" fill="#8f2d2d" opacity="1"/>
-<text x="40" y="434" font-size="18" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">78.125 µs</text>
-<text x="40" y="494" font-size="18" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">两行按同一比例画单个位宽；数值为换算，不是实测波形。</text>
-<line x1="40" y1="529" x2="920" y2="529" stroke="#d7dce1" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
-<text x="40" y="571" font-size="23" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">再核对接线与主机设置</text>
-<text x="60" y="622" font-size="20" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">MCU PA9 · TX</text>
-<line x1="316" y1="615" x2="613" y2="615" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="620.00,615.00 613.00,618.50 613.00,611.50" fill="#1b5c45" opacity="1"/>
-<text x="654" y="622" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">USB-TTL · RX</text>
-<text x="60" y="669" font-size="20" fill="#075e84" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">MCU PA10 · RX</text>
-<line x1="620" y1="662" x2="323" y2="662" stroke="#075e84" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<polygon points="316.00,662.00 323.00,658.50 323.00,665.50" fill="#075e84" opacity="1"/>
-<text x="654" y="669" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">USB-TTL · TX</text>
-<text x="60" y="716" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GND</text>
-<line x1="316" y1="709" x2="620" y2="709" stroke="#5e6872" stroke-width="2" stroke-linecap="round" opacity="1"/>
-<text x="654" y="716" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GND</text>
-<text x="40" y="771" font-size="18" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">使用 3.3 V 逻辑电平；两端波特率、数据位、校验与停止位一致。</text>
-<text x="40" y="808" font-size="17" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HSE 没就绪时程序可能停在等待；当前 SYSCLK 必须从 SWS 核实。</text>
-<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量图 · RM0008 USART/RCC；波特率按 PCLK2 与完整 BRR 换算。</text>
-<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+<rect x="0" y="0" width="960" height="880" fill="#FBF3DF"/>
+<rect x="0" y="0" width="960" height="58" fill="#F7EFDA" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#6E6B60" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#1F4680" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">串口乱码：沿时钟和 TX 信号逐段检查</text>
+<text x="22" y="50" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USART1 · PPRE2 = 1 · BRR 保持 0x271</text>
+<rect x="906" y="15" width="32" height="28" fill="#DCE6F2" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#1F4680" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">18</text>
+<text x="40" y="101" font-size="21" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">先读 SWS 与 APB2 分频，得到 USART1 的 PCLK2。</text>
+<text x="40" y="141" font-size="19" fill="#1F4680" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">BRR raw = 0x271 = 625；USARTDIV = 39 + 1/16 = 39.0625</text>
+<text x="40" y="204" font-size="22" fill="#2E5F42" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PCLK2 = 72 MHz</text>
+<text x="40" y="241" font-size="19" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PCLK2 / 625 = 115200 bit/s</text>
+<line x1="178" y1="279" x2="880" y2="279" stroke="#D8D2C0" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<line x1="178" y1="260" x2="178" y2="298" stroke="#2E5F42" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="256" y1="260" x2="256" y2="298" stroke="#2E5F42" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="178" y1="279" x2="249" y2="279" stroke="#2E5F42" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="256.00,279.00 249.00,282.50 249.00,275.50" fill="#2E5F42" opacity="1"/>
+<text x="40" y="286" font-size="18" fill="#2E5F42" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">8.68 µs</text>
+<text x="40" y="352" font-size="22" fill="#B3392F" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">PCLK2 = 8 MHz</text>
+<text x="40" y="389" font-size="19" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">PCLK2 / 625 = 12800 bit/s</text>
+<line x1="178" y1="427" x2="880" y2="427" stroke="#D8D2C0" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<line x1="178" y1="408" x2="178" y2="446" stroke="#B3392F" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="880" y1="408" x2="880" y2="446" stroke="#B3392F" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<line x1="178" y1="427" x2="873" y2="427" stroke="#B3392F" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="880.00,427.00 873.00,430.50 873.00,423.50" fill="#B3392F" opacity="1"/>
+<text x="40" y="434" font-size="18" fill="#B3392F" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">78.125 µs</text>
+<text x="40" y="494" font-size="18" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">两行按同一比例画单个位宽；数值为换算，不是实测波形。</text>
+<line x1="40" y1="529" x2="920" y2="529" stroke="#D8D2C0" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<text x="40" y="571" font-size="23" fill="#1F4680" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">再核对接线与主机设置</text>
+<text x="60" y="622" font-size="20" fill="#2E5F42" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">MCU PA9 · TX</text>
+<line x1="316" y1="615" x2="613" y2="615" stroke="#2E5F42" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="620.00,615.00 613.00,618.50 613.00,611.50" fill="#2E5F42" opacity="1"/>
+<text x="654" y="622" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">USB-TTL · RX</text>
+<text x="60" y="669" font-size="20" fill="#1F4680" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">MCU PA10 · RX</text>
+<line x1="620" y1="662" x2="323" y2="662" stroke="#1F4680" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="316.00,662.00 323.00,658.50 323.00,665.50" fill="#1F4680" opacity="1"/>
+<text x="654" y="669" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">USB-TTL · TX</text>
+<text x="60" y="716" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GND</text>
+<line x1="316" y1="709" x2="620" y2="709" stroke="#6E6B60" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="654" y="716" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace">GND</text>
+<text x="40" y="771" font-size="18" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">使用 3.3 V 逻辑电平；两端波特率、数据位、校验与停止位一致。</text>
+<text x="40" y="808" font-size="17" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">HSE 没就绪时程序可能停在等待；当前 SYSCLK 必须从 SWS 核实。</text>
+<line x1="24" y1="844" x2="936" y2="844" stroke="#D8D2C0" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="864" font-size="11" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量图 · RM0008 USART/RCC；波特率按 PCLK2 与完整 BRR 换算。</text>
+<text x="936" y="864" font-size="11" fill="#6E6B60" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
 </svg>

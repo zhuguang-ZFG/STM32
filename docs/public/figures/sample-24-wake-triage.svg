@@ -1,66 +1,66 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="Stop 2 醒不来 / 乱醒 / 醒后通信失败的三岔口排错">
 
 
-<rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
-<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
-<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<rect x="0" y="0" width="4" height="58" fill="#7a4e00" opacity="1"/>
-<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Stop 2 唤醒排错：先分清三种失败</text>
-<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32L476RG · chapter 24 · RM0351 wake evidence</text>
-<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
-<text x="922" y="33.32" font-size="12" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">24</text>
-<text x="40" y="88" font-size="14" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">triage · never woke · woke too often · woke but link broken</text>
-<rect x="40" y="130" width="280" height="420" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<rect x="40" y="130" width="280" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="180" y="162" font-size="17" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">从未醒来</text>
-<text x="60" y="210" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">常见原因</text>
-<rect x="56" y="230" width="248" height="40" fill="#fbfaf7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
-<text x="180" y="255" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">唤醒源未使能</text>
-<rect x="56" y="278" width="248" height="40" fill="#fbfaf7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
-<text x="180" y="303" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">进入前 EXTI 极性错</text>
-<rect x="56" y="326" width="248" height="40" fill="#fbfaf7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
-<text x="180" y="351" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">BOOT/复位被误判</text>
-<rect x="56" y="400" width="248" height="120" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
-<text x="180" y="432" font-size="13" fill="#8f2d2d" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">第一探针</text>
-<text x="180" y="470" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">IRQ 入口读原始标志</text>
-<rect x="340" y="130" width="280" height="420" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<rect x="340" y="130" width="280" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="480" y="162" font-size="17" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">反复醒来</text>
-<text x="360" y="210" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">常见原因</text>
-<rect x="356" y="230" width="248" height="40" fill="#fbfaf7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
-<text x="480" y="255" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SysTick 未停</text>
-<rect x="356" y="278" width="248" height="40" fill="#fbfaf7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
-<text x="480" y="303" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">外设噪声打 EXTI</text>
-<rect x="356" y="326" width="248" height="40" fill="#fbfaf7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
-<text x="480" y="351" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">RTC 周期过密</text>
-<rect x="356" y="400" width="248" height="120" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
-<text x="480" y="432" font-size="13" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">第一探针</text>
-<text x="480" y="470" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">停节拍后再进 Stop</text>
-<rect x="640" y="130" width="280" height="420" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<rect x="640" y="130" width="280" height="52" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="780" y="162" font-size="17" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">醒了无业务</text>
-<text x="660" y="210" font-size="13" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">常见原因</text>
-<rect x="656" y="230" width="248" height="40" fill="#fbfaf7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
-<text x="780" y="255" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">时钟停在 MSI/HSI</text>
-<rect x="656" y="278" width="248" height="40" fill="#fbfaf7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
-<text x="780" y="303" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">GPIO 复用未恢复</text>
-<rect x="656" y="326" width="248" height="40" fill="#fbfaf7" opacity="1" rx="4" stroke="#5e6872" stroke-width="1.5"/>
-<text x="780" y="351" font-size="13" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">串口波特率漂</text>
-<rect x="656" y="400" width="248" height="120" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
-<text x="780" y="432" font-size="13" fill="#5b3a8c" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">第一探针</text>
-<text x="780" y="470" font-size="14" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">四项恢复证据清单</text>
-<rect x="40" y="580" width="880" height="160" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
-<rect x="56" y="587" width="3" height="18" fill="#1b5c45" opacity="1"/>
-<text x="68" y="600" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">四项恢复证据（醒后必须齐）</text>
-<circle cx="56" cy="650" r="6" fill="#1b5c45" opacity="1"/>
-<text x="74" y="655" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">原始唤醒位已记录</text>
-<circle cx="476" cy="650" r="6" fill="#1b5c45" opacity="1"/>
-<text x="494" y="655" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">系统时钟已回到业务源</text>
-<circle cx="56" cy="686" r="6" fill="#1b5c45" opacity="1"/>
-<text x="74" y="691" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">外设时钟与分频已复算</text>
-<circle cx="476" cy="686" r="6" fill="#1b5c45" opacity="1"/>
-<text x="494" y="691" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">通信首包有对端确认</text>
-<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
-<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · Stop2 唤醒三岔口 · 非实拍</text>
-<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+<rect x="0" y="0" width="960" height="880" fill="#FBF3DF"/>
+<rect x="0" y="0" width="960" height="58" fill="#F7EFDA" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#6E6B60" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#7A5B14" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">Stop 2 唤醒排错：先分清三种失败</text>
+<text x="22" y="50" font-size="12" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32L476RG · chapter 24 · RM0351 wake evidence</text>
+<rect x="906" y="15" width="32" height="28" fill="#DCE6F2" opacity="1" rx="8" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#7A5B14" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">24</text>
+<text x="40" y="88" font-size="14" fill="#1F4680" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">triage · never woke · woke too often · woke but link broken</text>
+<rect x="40" y="130" width="280" height="420" fill="#F7EFDA" opacity="1" rx="8" stroke="#B3392F" stroke-width="1.5"/>
+<rect x="40" y="130" width="280" height="52" fill="#F7EFDA" opacity="1" rx="8" stroke="#B3392F" stroke-width="1.5"/>
+<text x="180" y="162" font-size="17" fill="#B3392F" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">从未醒来</text>
+<text x="60" y="210" font-size="13" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">常见原因</text>
+<rect x="56" y="230" width="248" height="40" fill="#FBF3DF" opacity="1" rx="4" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="180" y="255" font-size="13" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">唤醒源未使能</text>
+<rect x="56" y="278" width="248" height="40" fill="#FBF3DF" opacity="1" rx="4" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="180" y="303" font-size="13" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">进入前 EXTI 极性错</text>
+<rect x="56" y="326" width="248" height="40" fill="#FBF3DF" opacity="1" rx="4" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="180" y="351" font-size="13" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">BOOT/复位被误判</text>
+<rect x="56" y="400" width="248" height="120" fill="#F7EFDA" opacity="1" rx="8" stroke="#B3392F" stroke-width="1.5"/>
+<text x="180" y="432" font-size="13" fill="#B3392F" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">第一探针</text>
+<text x="180" y="470" font-size="14" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">IRQ 入口读原始标志</text>
+<rect x="340" y="130" width="280" height="420" fill="#F7EFDA" opacity="1" rx="8" stroke="#7A5B14" stroke-width="1.5"/>
+<rect x="340" y="130" width="280" height="52" fill="#F7EFDA" opacity="1" rx="8" stroke="#7A5B14" stroke-width="1.5"/>
+<text x="480" y="162" font-size="17" fill="#7A5B14" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">反复醒来</text>
+<text x="360" y="210" font-size="13" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">常见原因</text>
+<rect x="356" y="230" width="248" height="40" fill="#FBF3DF" opacity="1" rx="4" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="480" y="255" font-size="13" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">SysTick 未停</text>
+<rect x="356" y="278" width="248" height="40" fill="#FBF3DF" opacity="1" rx="4" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="480" y="303" font-size="13" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">外设噪声打 EXTI</text>
+<rect x="356" y="326" width="248" height="40" fill="#FBF3DF" opacity="1" rx="4" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="480" y="351" font-size="13" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">RTC 周期过密</text>
+<rect x="356" y="400" width="248" height="120" fill="#F7EFDA" opacity="1" rx="8" stroke="#7A5B14" stroke-width="1.5"/>
+<text x="480" y="432" font-size="13" fill="#7A5B14" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">第一探针</text>
+<text x="480" y="470" font-size="14" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">停节拍后再进 Stop</text>
+<rect x="640" y="130" width="280" height="420" fill="#F7EFDA" opacity="1" rx="8" stroke="#6E569B" stroke-width="1.5"/>
+<rect x="640" y="130" width="280" height="52" fill="#F7EFDA" opacity="1" rx="8" stroke="#6E569B" stroke-width="1.5"/>
+<text x="780" y="162" font-size="17" fill="#6E569B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">醒了无业务</text>
+<text x="660" y="210" font-size="13" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">常见原因</text>
+<rect x="656" y="230" width="248" height="40" fill="#FBF3DF" opacity="1" rx="4" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="780" y="255" font-size="13" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">时钟停在 MSI/HSI</text>
+<rect x="656" y="278" width="248" height="40" fill="#FBF3DF" opacity="1" rx="4" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="780" y="303" font-size="13" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">GPIO 复用未恢复</text>
+<rect x="656" y="326" width="248" height="40" fill="#FBF3DF" opacity="1" rx="4" stroke="#6E6B60" stroke-width="1.5"/>
+<text x="780" y="351" font-size="13" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">串口波特率漂</text>
+<rect x="656" y="400" width="248" height="120" fill="#F7EFDA" opacity="1" rx="8" stroke="#6E569B" stroke-width="1.5"/>
+<text x="780" y="432" font-size="13" fill="#6E569B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">第一探针</text>
+<text x="780" y="470" font-size="14" fill="#2F2E2B" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">四项恢复证据清单</text>
+<rect x="40" y="580" width="880" height="160" fill="#F7EFDA" opacity="1" rx="8" stroke="#2E5F42" stroke-width="1.5"/>
+<rect x="56" y="587" width="3" height="18" fill="#2E5F42" opacity="1"/>
+<text x="68" y="600" font-size="14" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">四项恢复证据（醒后必须齐）</text>
+<circle cx="56" cy="650" r="6" fill="#2E5F42" opacity="1"/>
+<text x="74" y="655" font-size="14" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">原始唤醒位已记录</text>
+<circle cx="476" cy="650" r="6" fill="#2E5F42" opacity="1"/>
+<text x="494" y="655" font-size="14" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">系统时钟已回到业务源</text>
+<circle cx="56" cy="686" r="6" fill="#2E5F42" opacity="1"/>
+<text x="74" y="691" font-size="14" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">外设时钟与分频已复算</text>
+<circle cx="476" cy="686" r="6" fill="#2E5F42" opacity="1"/>
+<text x="494" y="691" font-size="14" fill="#2F2E2B" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">通信首包有对端确认</text>
+<line x1="24" y1="844" x2="936" y2="844" stroke="#D8D2C0" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="864" font-size="11" fill="#6E6B60" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · Stop2 唤醒三岔口 · 非实拍</text>
+<text x="936" y="864" font-size="11" fill="#6E6B60" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
 </svg>
