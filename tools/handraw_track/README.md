@@ -27,6 +27,17 @@ python render.py ../../assets/illustrations/handraw/ch28-*.svg
 渲染依赖本机 Playwright Chromium（与 `tools/svg2gif.py` 依赖本机 Chrome 同理）；
 PNG 已提交进 git，CI 与读者不需要这一步。
 
+## 画质契约
+
+- 画布固定 `1152×864`；纸面 `#FDF8EA`，墨色 `#2F2E2B`。
+- 中文回退 `STKaiti` / `KaiTi`，拉丁仍用 `Segoe Print`；`text()` 的
+  尺寸与 `text_w()` 估算要同时看，改字体后必须重渲染并抽查换行。
+- `rect()` / `circle()` 的填充与抖动轮廓共用同一条 `<path>`；不要再加
+  一层 `<rect>`/`<circle>` 填充，否则会露出「齐边底色 + 歪边线」的
+  剪贴画感。
+- 琥珀色描边用 `#8A6510`（米色纸上约 5:1）；`#A8801F` 只有 3.4:1，
+  小字号标签不要再用。
+
 ## 新增一章的图
 
 1. 读该章正文，选 4–6 个锚点（每张图回答一个正文问题，禁止装饰图）。

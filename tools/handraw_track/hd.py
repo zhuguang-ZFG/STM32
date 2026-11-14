@@ -28,12 +28,15 @@ BLUE = "#2B5EA7"
 BLUE_D = "#1F4680"
 RED = "#B3392F"
 AMBER_FILL = "#F6D576"
-AMBER_STROKE = "#A8801F"
+AMBER_STROKE = "#8A6510"   # 5.0:1 on paper; #A8801F was only 3.4:1
 GRAY_FILL = "#E7E4DB"
 MUTED = "#6E6B60"
 WHITE = "#FFFFFF"
 
-HAND = "'Segoe Print','Comic Sans MS','Microsoft YaHei','PingFang SC',sans-serif"
+# Keep Latin in Segoe Print; give CJK a brush/kai fallback instead of the
+# geometric YaHei sans. The PNGs are committed, so this only affects renders.
+HAND = ("'Segoe Print','STKaiti','KaiTi','Microsoft YaHei',"
+        "'PingFang SC',sans-serif")
 
 
 def esc(s: str) -> str:
@@ -113,12 +116,13 @@ class Fig:
         return d
 
     def stroke(self, pts, color=INK, sw=2.6, amp=1.6, opacity=1.0,
-               close=False, dash=None, cls=None):
+               close=False, dash=None, cls=None, fill=None):
         flat = self._poly_pts(pts, close=close, amp=amp)
         dashattr = f' stroke-dasharray="{dash}"' if dash else ""
         clsattr = f' class="{cls}"' if cls else ""
+        fillattr = f' fill="{fill}"' if fill else ' fill="none"'
         self.body.append(
-            f'<path d="{self._d(flat)}" fill="none" stroke="{color}" '
+            f'<path d="{self._d(flat)}"{fillattr} stroke="{color}" '
             f'stroke-width="{sw}" stroke-linecap="round" '
             f'stroke-linejoin="round" opacity="{opacity}"{dashattr}{clsattr}/>'
         )
@@ -128,14 +132,11 @@ class Fig:
 
     def rect(self, x, y, w, h, color=GREEN, sw=2.8, fill=None, r=6,
              amp=1.8, dash=None, opacity=1.0, double=True):
-        if fill:
-            self.body.append(
-                f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{r}" '
-                f'fill="{fill}"/>'
-            )
+        # Fill and outline share the same wobbled path. A crisp <rect> under a
+        # wobbly stroke leaves a visible ghost edge and reads as clip-art.
         pts = [(x, y), (x + w, y), (x + w, y + h), (x, y + h)]
         self.stroke(pts, color=color, sw=sw, amp=amp, close=True,
-                    dash=dash, opacity=opacity)
+                    dash=dash, opacity=opacity, fill=fill)
         if double and not dash:
             # faint second pencil pass, tiny offset
             self.stroke([(x + 2.2, y - 1.4), (x + w + 1.4, y + 2.0),
@@ -144,8 +145,6 @@ class Fig:
                         opacity=0.28)
 
     def circle(self, x, y, rr, color=INK, sw=2.6, fill=None, amp=1.6):
-        if fill:
-            self.body.append(f'<circle cx="{x}" cy="{y}" r="{rr}" fill="{fill}"/>')
         r = self.rng
         pts = []
         n = 26
@@ -154,7 +153,7 @@ class Fig:
             a = a0 + (i / n) * math.tau
             wob = 1 + r.uniform(-0.012, 0.012)
             pts.append((x + rr * wob * math.cos(a), y + rr * wob * math.sin(a)))
-        self.stroke(pts, color=color, sw=sw, amp=amp, close=False)
+        self.stroke(pts, color=color, sw=sw, amp=amp, close=True, fill=fill)
 
     def blob(self, x, y, w, h, fill, color=None, sw=0, amp=3.2):
         """Rounded hand-drawn filled blob (for highlight bars)."""
