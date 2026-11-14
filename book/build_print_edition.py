@@ -207,7 +207,7 @@ def build(out_path: Path | None = None, sample: int | None = None) -> Path:
         "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n<meta charset=\"utf-8\">\n"
         f"<title>{html_lib.escape(manifest['title'])}</title>\n"
         f"<style>{PRINT_CSS}</style>\n</head>\n<body>\n"
-        + cover + "\n".join(toc_html) + "\n" + "\n".join(sections) + "\n</body>\n</html>\n"
+        + '<main class="book">\n' + cover + "\n".join(toc_html) + "\n" + "\n".join(sections) + "\n</main>\n</body>\n</html>\n"
     )
     document = inline_assets(document)          # 封面/分隔页若有内联资源一并处理
     out_path.write_text(document, encoding="utf-8", newline="\n")
