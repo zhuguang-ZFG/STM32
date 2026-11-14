@@ -43,20 +43,22 @@ BOOKS = (
 
 NAV_CSS = """\
 body { margin: 0; padding: 0; background: #fbfaf7; color: #17202a;
-       font-family: serif; line-height: 1.6; }
+       font-family: serif; line-height: 1.7; text-align: justify; }
 main.book, section, article { display: block; }
 .kicker, .eyebrow { font-size: 0.72em; letter-spacing: 0.12em;
                     text-transform: uppercase; color: #5e6872; }
-h1 { font-size: 1.45em; line-height: 1.3; margin: 1.2em 0 0.6em; color: #17202a; }
-h2 { font-size: 1.2em; margin: 1.6em 0 0.5em; color: #075e84; }
-h3 { font-size: 1.05em; margin: 1.2em 0 0.4em; }
+h1 { font-size: 1.45em; line-height: 1.3; margin: 1.2em 0 0.6em; color: #17202a; text-align: left; }
+h2 { font-size: 1.2em; margin: 1.6em 0 0.5em; color: #075e84; text-align: left; }
+h3 { font-size: 1.05em; margin: 1.2em 0 0.4em; text-align: left; }
 p, li { orphans: 2; widows: 2; }
 p { margin: 0 0 0.7em; }
-figure { margin: 1em 0; padding: 0.5em 0.3em; border: 1px solid #d7dce1;
-         border-radius: 0.5em; text-align: center; page-break-inside: avoid; }
+p + p { text-indent: 2em; }
+p[align="center"] + p { text-indent: 0; }
+blockquote p, .quiz p { text-indent: 0; }
+figure { margin: 1em 0; text-align: center; page-break-inside: avoid; }
 figure img, p[align="center"] img, img { max-width: 100%; height: auto; }
-figcaption { font-size: 0.85em; color: #5e6872; line-height: 1.4;
-             margin-top: 0.4em; text-align: center; }
+figcaption { font-size: 0.85em; color: #5e6872; line-height: 1.5;
+             margin-top: 0.4em; text-align: center; text-indent: 0; }
 sub { font-size: 0.85em; color: #5e6872; }
 pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #f6f6f6;
       border-left: 3px solid #075e84; border-radius: 0.4em;
@@ -261,7 +263,7 @@ def _rewrite_anchors(body_html: str, id_to_file: dict[str, str],
 
 
 def render_cover_png(html_path: Path, out_png: Path) -> bool:
-    """Rasterize the #cover section of a built book HTML with Chromium.
+    """Rasterize the #cover (or print edition #front) section with Chromium.
     Optional: returns False when playwright/Chromium is unavailable."""
     try:
         from playwright.sync_api import sync_playwright
@@ -278,9 +280,18 @@ def render_cover_png(html_path: Path, out_png: Path) -> bool:
                 page.wait_for_function(
                     "Array.from(document.images).every(img => "
                     "img.complete && img.naturalWidth > 0)", timeout=30_000)
-                el = page.query_selector("#cover")
+                el = page.query_selector("#cover, #front")
                 if el is None:
                     return False
+                if el.get_attribute("id") == "front":
+                    # The print cover is A4 when paginated, but its screen
+                    # min-height is 245mm; give it the full A4 viewport so the
+                    # EPUB cover image is not a squat 1.13:1 crop.
+                    page.add_style_tag(
+                        content="#front { min-height: 1697px !important; "
+                                "box-sizing: border-box; }"
+                    )
+                    page.wait_for_timeout(50)
                 el.screenshot(path=str(out_png))
                 return out_png.exists()
             finally:

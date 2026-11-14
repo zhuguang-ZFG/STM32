@@ -10,7 +10,7 @@ XHTML 序列化带 SVG 命名空间、nav + NCX、锚点跨文件改写），输
 用法：
   python book/build_epub.py                            # 默认输入/输出
   python book/build_epub.py --html PATH --out PATH
-  可选 --cover-png PATH 附加封面图（缺省无封面资源时自动跳过）。
+  可选 --cover-png PATH 覆盖封面；缺省从印刷版 #front 自动截取 A4 封面。
 """
 
 from __future__ import annotations
@@ -48,9 +48,16 @@ def main(argv: list[str] | None = None) -> int:
                          "book/build_print_edition.py first")
     book_html = html_path.read_text(encoding="utf-8")
 
+    out_path = Path(args.out)
     cover_png = Path(args.cover_png).read_bytes() if args.cover_png else None
+    if cover_png is None:
+        cover_tmp = out_path.with_suffix(".cover.png")
+        if epub_lib.render_cover_png(html_path, cover_tmp):
+            cover_png = cover_tmp.read_bytes()
+            print(f"epub cover: {cover_tmp.name} ({len(cover_png)} bytes)")
+        cover_tmp.unlink(missing_ok=True)
     report = epub_lib.build_epub(
-        book_html, Path(args.out), language="zh-CN",
+        book_html, out_path, language="zh-CN",
         title="通往单片机之路", cover_png=cover_png)
     print(f"epub: {args.out} — spine {report.get('spine', '?')} items, "
           f"images {report.get('images', '?')}")

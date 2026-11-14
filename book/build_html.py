@@ -27,15 +27,86 @@ QUIZ_RE = re.compile(r'<QuizBank\s+chapter="([^"]+)"\s*/>')
 MD_HREF_RE = re.compile(r'href="([^"]*?)\.md(#[^"]*)?"')
 ROOT_SRC_RE = re.compile(r'(src|href)="(/[^"]*)"')
 STYLE = """
-body { max-width: 48rem; margin: 0 auto; padding: 2rem 1rem 4rem; font-family: system-ui, sans-serif; line-height: 1.75; color: #1f2328; }
-nav.book-nav { border-bottom: 1px solid #d0d7de; margin-bottom: 2rem; padding-bottom: 1rem; font-size: 0.9rem; }
-nav.book-nav ol { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; list-style: none; padding: 0; }
-pre { background: #f6f8fa; padding: 0.75rem; overflow-x: auto; }
-code { background: #f6f8fa; padding: 0.1rem 0.25rem; }
-table { border-collapse: collapse; }
-th, td { border: 1px solid #d0d7de; padding: 0.35rem 0.6rem; }
-.quiz { border: 1px solid #d0d7de; border-radius: 6px; padding: 1rem; margin: 1.5rem 0; }
-img { max-width: 100%; }
+:root {
+  --ink: #26221b;
+  --muted: #6e6b60;
+  --rule: #d8d2c0;
+  --accent: #1f4680;
+  --code-bg: #f4eee0;
+}
+html { font-size: 17px; }
+body {
+  max-width: 46rem; margin: 0 auto; padding: 2.4rem 1.2rem 5rem;
+  font-family: "Source Han Sans SC", "Noto Sans CJK SC", "Microsoft YaHei",
+               "PingFang SC", system-ui, sans-serif;
+  line-height: 1.82; color: var(--ink); text-align: justify;
+  text-justify: inter-ideograph;
+}
+nav.book-nav {
+  border-bottom: 1px solid var(--rule); margin-bottom: 2.2rem;
+  padding-bottom: 0.9rem; font-size: 0.86rem; line-height: 1.6; text-align: left;
+}
+nav.book-nav summary { cursor: pointer; font-weight: 600; color: var(--accent); list-style: none; }
+nav.book-nav summary::marker { content: ""; }
+nav.book-nav summary::before { content: "▸ "; }
+nav.book-nav[open] summary::before { content: "▾ "; }
+nav.book-nav ol { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; list-style: none; padding: 0; margin: 0.6rem 0 0; }
+nav.book-nav a[aria-current="page"] { font-weight: 700; text-decoration: none; }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+h1, h2, h3, h4 { line-height: 1.35; text-align: left; text-wrap: balance; }
+h1 { font-size: 2rem; margin: 0 0 1rem; letter-spacing: 0.01em; }
+h2 { font-size: 1.5rem; margin: 2.2em 0 0.7em; padding-bottom: 0.28em; border-bottom: 1px solid var(--rule); }
+h3 { font-size: 1.18rem; margin: 1.7em 0 0.5em; }
+p { margin: 0.7em 0; }
+p + p { text-indent: 2em; }
+p[align="center"] + p { text-indent: 0; }
+li > p, blockquote p, figure p { text-indent: 0; }
+ul, ol { padding-left: 1.55em; }
+li { margin: 0.25em 0; }
+blockquote {
+  margin: 1.4em 0; padding: 0.65em 1.1em; color: #4a4234;
+  background: #faf4e4; border-left: 3px solid var(--rule);
+}
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2rem 0; }
+pre {
+  background: var(--code-bg); border: 1px solid var(--rule); border-radius: 4px;
+  padding: 0.8rem 0.95rem; overflow-x: auto; line-height: 1.55; text-align: left;
+  font-size: 0.86rem;
+}
+code { background: var(--code-bg); padding: 0.08rem 0.28rem; border-radius: 3px; font-size: 0.9em; }
+pre code { background: transparent; padding: 0; font-size: inherit; }
+table {
+  width: 100%; border-collapse: collapse; margin: 1.4em 0;
+  font-size: 0.9rem; line-height: 1.55; text-align: left;
+}
+.table-scroll { max-width: 100%; overflow-x: auto; margin: 1.4em 0; }
+.table-scroll table { margin: 0; }
+th, td { border: 1px solid var(--rule); padding: 0.45rem 0.65rem; vertical-align: top; overflow-wrap: break-word; }
+thead th { background: #f3ecdc; font-weight: 600; }
+tbody tr:nth-child(even) { background: #fbf7ec; }
+figure.book-figure { margin: 1.9em 0; text-align: center; }
+img { max-width: 100%; height: auto; }
+a.figure-zoom { display: block; cursor: zoom-in; }
+figure.book-figure img {
+  display: block; margin: 0 auto; max-width: 100%; height: auto;
+  border-radius: 4px;
+}
+figure.book-figure figcaption {
+  max-width: 36em; margin: 0.65em auto 0; color: var(--muted);
+  font-size: 0.88rem; line-height: 1.6; text-align: center;
+}
+.quiz { border: 1px solid var(--rule); border-radius: 6px; padding: 1rem 1.15rem; margin: 1.8rem 0; }
+.quiz-q { margin-top: 0.8em; }
+.quiz-options { margin: 0.35em 0 0.7em; }
+@media (max-width: 700px) {
+  html { font-size: 16px; }
+  body { padding: 1.4rem 1rem 3.5rem; }
+  h1 { font-size: 1.7rem; }
+  h2 { font-size: 1.35rem; }
+  table { font-size: 0.84rem; }
+  th, td { padding: 0.35rem 0.45rem; }
+}
 """
 PRINT_SCRIPT = """<script>
 window.addEventListener('beforeprint', () => {
@@ -75,13 +146,63 @@ def relativize(html_text: str, depth: int) -> str:
     )
 
 
+FIGURE_P_RE = re.compile(r'<p>\s*<img\s+([^>]*?)\s*/?>\s*</p>')
+ALT_RE = re.compile(r'\balt="([^"]*)"')
+SRC_RE = re.compile(r'\bsrc="([^"]*)"')
+TABLE_RE = re.compile(r'<table>.*?</table>', re.S)
+
+
+def wrap_tables(html_text: str) -> str:
+    """Keep wide register tables inside a scroll container on small screens."""
+    return TABLE_RE.sub(
+        lambda match: f'<div class="table-scroll">{match.group(0)}</div>',
+        html_text,
+    )
+
+
+def wrap_figures(html_text: str, lazy: bool = False, zoom: bool = False) -> str:
+    """Turn a standalone Markdown image into a captioned figure.
+
+    Markdown keeps the author's alt text in the HTML but browsers never show
+    it. Lifting it into a <figcaption> gives every plate a visible caption and
+    a stable block for print/page-break rules.
+    """
+    def repl(match: re.Match[str]) -> str:
+        attrs = match.group(1).strip()
+        alt = ALT_RE.search(attrs)
+        if alt is None or not alt.group(1).strip():
+            return match.group(0)
+        if lazy and "loading=" not in attrs:
+            attrs += ' loading="lazy"'
+        image = f'<img {attrs}>'
+        src = SRC_RE.search(attrs)
+        if zoom and src:
+            image = (
+                f'<a class="figure-zoom" href="{src.group(1)}" '
+                f'target="_blank" rel="noopener">{image}</a>'
+            )
+        return (
+            f'<figure class="book-figure">{image}'
+            f'<figcaption>{alt.group(1)}</figcaption></figure>'
+        )
+
+    return FIGURE_P_RE.sub(repl, html_text)
+
+
 def nav_html(items: list[tuple[str, str, str]], current_path: str) -> str:
     current_dir = posixpath.dirname(current_path)
     links = []
     for _, title, path in items:
         href = posixpath.relpath(path, current_dir or ".")
-        links.append(f'<li><a href="{href}">{html_lib.escape(title)}</a></li>')
-    return "<ol>" + "".join(links) + "</ol>"
+        current = ' aria-current="page"' if path == current_path else ""
+        links.append(
+            f'<li><a href="{href}"{current}>{html_lib.escape(title)}</a></li>'
+        )
+    return (
+        '<details class="book-toc">'
+        f'<summary>全书目录 · {len(links)} 章</summary>'
+        "<ol>" + "".join(links) + "</ol></details>"
+    )
 
 
 def page_shell(title: str, body: str, nav: str) -> str:
@@ -143,11 +264,13 @@ def build(
         text = (docs_root / entry["file"]).read_text(encoding="utf-8")
         _, body = split_frontmatter(text)
         content = render_markdown(body, quiz_dir)
+        content = wrap_tables(content)
         content = MD_HREF_RE.sub(
             lambda match: f'href="{match.group(1)}.html{match.group(2) or ""}"', content
         )
         depth = len(Path(entry["file"]).parts) - 1
         content = relativize(content, depth)
+        content = wrap_figures(content, lazy=True, zoom=True)
         page_path = out_dir / page_paths[entry["id"]]
         page_path.parent.mkdir(parents=True, exist_ok=True)
         page_path.write_text(

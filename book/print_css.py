@@ -11,7 +11,8 @@ html { font-size: 10.5pt; }
 body {
   margin: 0; padding: 0; background: #fff;
   font-family: "Source Han Serif SC", "Noto Serif CJK SC", SimSun, Georgia, serif;
-  line-height: 1.78; color: #26221B;
+  line-height: 1.8; color: #26221B;
+  text-align: justify; text-justify: inter-ideograph;
   --ink: #26221B; --muted: #6E6B60; --rule: #D8D2C0;
   --prussian: #1F4680; --sage: #2E5F42; --brick: #9C4630; --amber: #7A5B14;
   --paper-2: #F6F0E2; --code-bg: #F8F4EA; --code-line: #E3D8C1;
@@ -53,10 +54,14 @@ a.toc-row .page-ref, a.toc-part .page-ref { /* 页码槽位：纸上不可见，
 /* 章 */
 section.chapter { break-before: page; }
 section.chapter h1 { font-size: 1.55em; line-height: 1.3; margin: 0 0 0.7em; }
-section.chapter h2 { font-size: 1.18em; margin: 1.5em 0 0.55em;
+section.chapter h2 { font-size: 1.18em; margin: 1.7em 0 0.55em;
   border-bottom: 1px solid var(--rule); padding-bottom: 0.25em; }
 section.chapter h3 { font-size: 1.02em; margin: 1.2em 0 0.45em; }
-p { margin: 0.45em 0; }
+h1, h2, h3, h4 { text-align: left; }
+p { margin: 0.55em 0; }
+p + p { text-indent: 2em; }
+p[align="center"] + p { text-indent: 0; }
+li p, blockquote p, .quiz p, figcaption { text-indent: 0; }
 blockquote { margin: 0.8em 0; padding: 0.55em 0.9em; border-left: 3px solid var(--rule);
   background: var(--paper-2); color: #4A4234; }
 blockquote p { margin: 0.25em 0; }
@@ -64,7 +69,8 @@ blockquote p { margin: 0.25em 0; }
 /* 代码：纸面换行 */
 pre { background: var(--code-bg); border: 1px solid var(--code-line);
   padding: 0.55em 0.75em; font-size: 8.6pt; line-height: 1.5;
-  white-space: pre-wrap; word-break: break-word; overflow: visible; }
+  white-space: pre-wrap; word-break: break-word; overflow: visible;
+  text-align: left; }
 code { font-family: Consolas, "Courier New", monospace; font-size: 0.88em;
   background: var(--code-bg); padding: 0.05em 0.22em; }
 pre code { background: none; padding: 0; }
@@ -72,6 +78,7 @@ pre code { background: none; padding: 0; }
 /* 表格：纸面无滚动条，表头换行按词 */
 table { width: 100%; border-collapse: collapse; font-size: 8.8pt;
   margin: 0.8em 0; break-inside: auto; }
+thead { display: table-header-group; }
 th, td { border: 1px solid var(--rule); padding: 0.3rem 0.45rem;
   text-align: left; vertical-align: top; overflow-wrap: break-word; }
 th { white-space: normal; word-break: keep-all; background: var(--paper-2); }
@@ -79,7 +86,9 @@ tr { break-inside: avoid; }
 
 /* 图与动画帧 */
 figure { margin: 0.9em 0; break-inside: avoid; text-align: center; }
+figure.book-figure { margin: 1.15em 0; }
 figure img, p img { max-width: 100%; height: auto; }
+figure.book-figure figcaption { max-width: 150mm; margin: 0.45em auto 0; }
 figcaption { font-size: 0.8em; color: var(--muted); margin-top: 0.35em;
   line-height: 1.5; }
 

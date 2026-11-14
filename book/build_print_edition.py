@@ -149,6 +149,7 @@ def chapter_section(entry: dict, docs_root: Path,
     _, body = site.split_frontmatter(text)
     content = site.render_markdown(body, QUIZ_DIR)
     content = rewrite_book_links(content, entry["file"], file_to_id)
+    content = site.wrap_figures(content)
     content = inline_assets(content)
     content = open_quiz_details(content)
     head = CHAPTER_HEAD.search(body)

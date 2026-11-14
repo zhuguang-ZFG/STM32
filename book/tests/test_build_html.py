@@ -95,9 +95,26 @@ class BuildHtmlTest(unittest.TestCase):
         self.assertIn('id="先做出来"', page)
         self.assertIn('<section class="quiz">', page)
         self.assertIn('src="../arch/demo.svg"', page)
+        self.assertIn('class="book-figure"', page)
+        self.assertIn('<figcaption>演示图</figcaption>', page)
         self.assertIn('href="./02-other.html"', page)
         self.assertTrue((out / "index.html").exists())
         self.assertTrue((out / "arch" / "demo.svg").exists())
+
+    def test_wrap_figures_only_for_standalone_captioned_images(self):
+        standalone = '<p><img alt="图注" src="/a.png" /></p>'
+        inline = '<p>看图 <img alt="图注" src="/a.png" /> 说明</p>'
+        empty = '<p><img alt="" src="/a.png" /></p>'
+        self.assertIn('<figure class="book-figure">', build_html.wrap_figures(standalone))
+        self.assertNotIn('<figure', build_html.wrap_figures(inline))
+        self.assertNotIn('<figure', build_html.wrap_figures(empty))
+
+    def test_wrap_tables_marks_scroll_container(self):
+        wrapped = build_html.wrap_tables("<table><tr><td>x</td></tr></table>")
+        self.assertEqual(
+            wrapped,
+            '<div class="table-scroll"><table><tr><td>x</td></tr></table></div>',
+        )
 
     def test_build_requires_at_least_one_chapter(self):
         (self.docs / "v0-foundations" / "01-a.md").unlink()
