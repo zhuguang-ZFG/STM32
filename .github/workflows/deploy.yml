@@ -44,12 +44,15 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: "20"
+          cache: npm
+      - name: Install site tooling (playwright)
+        run: npm ci
       # 组装 staging（根 index = 合并书首页；mcu/ 下只有存根）
       - name: 组装 Pages staging（/STM32/ 根 = 合并书）
         run: node scripts/site-assemble.mjs --dist book/dist/site --stubs book/dist/site/mcu --out .temp/pages-site
       # 挂载冒烟：按 /STM32/ 起服务，Chromium 回归 首页/深链/旧链跳转/附录/资源/quiz
       - name: 安装 Chromium（挂载冒烟用）
-        run: npx --yes playwright@1.63.0 install --with-deps chromium
+        run: npx playwright install --with-deps chromium
       - name: 挂载冒烟（/STM32/）
         run: node scripts/site-smoke.mjs --root .temp/pages-site --mount /STM32
       - uses: actions/configure-pages@v6
