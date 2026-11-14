@@ -84,7 +84,7 @@ choice 机制保证互斥；**「NimBLE 是 S3 默认」是错的**——默认�
 
 GATT 的三级容器：service → characteristic → descriptor。订阅 notify 的机制在 CCC 描述符（UUID **0x2902**）：客户端写 0x0001 开通知，服务端在值变化时推送。GAP 的广播：legacy 广播 31 字节 + scan response 31 字节（蓝牙核心规范值）；广播间隔是「省电 vs 被发现速度」的权衡。
 
-![BLE 三层与 GATT 容器：Controller/Host/HCI 与 service/characteristic/descriptor](/arch/wifi-stack.png)
+![BLE 协议栈与 GATT：S3 单模 BLE，Controller 预编译、Host 默认 Bluedroid、HCI 走 VHCI；GATT 为 service→characteristic→descriptor，CCCD 0x2902 写 0x0001 开 notify](/arch/wifi-stack.png)
 
 ### 四、ESP-NOW：旁路直连
 

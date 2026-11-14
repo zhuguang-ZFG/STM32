@@ -33,7 +33,7 @@ platforms: [f407, f103]
 
 同一句“还剩 3”，在字节宽度下是已写 61 字节，在半字宽度下是已写 122 字节。把 NDTR 当字节，后半段就会从奇数地址开始切，读出来整体错位。
 
-![DMA 转运通路：外设请求经流与通道选定路径，PAR 固定、M0AR 自增，NDTR 倒数到 0 后回装](/arch/dma-paths.png)
+![DMA 两级选路与 NDTR 计数：F407 的 USART1→DMA2→Stream5→CHSEL=4（待复核），F103 固定 CH5/CH4；PAR 固定、M0AR 递增、NDTR 按项递减；ADC 64 个半字、NDTR=3 即 122 字节；UART 64 字节环半满 32 字节约 2.78ms](/arch/dma-paths.png)
 
 押一题再往下读：F407 上把 USART1_RX 配到 DMA1 的 Stream5、Channel4，时钟开了、流也置了 EN，数据会不会来？基本不会：USART1 挂在 APB2，F4 的 APB2 请求归 DMA2，控制器选错时流配置全部正确、NDTR 也一动不动，而且不报错。同一个 USART1，在 F103 上却必须走 DMA1 通道 5，因为 C8 根本没有 DMA2。这个对照是本章的第一条主线。
 
@@ -77,7 +77,7 @@ F103 的 DMA1 请求映射（节选，完整见 RM0008 表 78）：
 
 F407 的请求表本章不整表复述。S8 与工程 `03-uart-dma/main.c` 都注明没有取得 RM0090 请求映射表的正文，USART1_RX 的 DMA2 Stream5 Channel4（也可走 Stream2 Channel4）与 USART1_TX 的 DMA2 Stream7 Channel4 是按常用映射写的，工程要求上板自检才能坐实。本章沿用这组取值，但在正文与读数来路表里都标为待复核；换芯片或换库时以 RM0090 §10.3.3 的表为准，别背编号。
 
-### 二、三地址一长度：PAR、M0AR、NDTR
+### 二、两个地址一个长度：PAR、M0AR、NDTR
 
 DMA 一次传输要告诉硬件三样东西：外设地址、内存地址、搬多少项。S8 把它叫“三个地址一个长度”，严格说前两个是地址，NDTR 是长度。F4 的寄存器名是 `PAR/M0AR/NDTR`（双缓冲再加 `M1AR`），F1 是 `CPAR/CMAR/CNDTR`。名字不同，分工相同。
 
