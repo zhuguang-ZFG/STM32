@@ -295,6 +295,20 @@ FreeRTOS 让你「编译期选一个 heap_x」；RT-Thread 的 `src/` 里同时�
 
 `RT_USING_HEAP` 关掉后，`*_create` 系列编译不进来，`*_init` 系列照常可用：对象全静态、栈全静态，固件变成「零堆」形态。与 FreeRTOS 的 `configSUPPORT_DYNAMIC_ALLOCATION=0` 是同一条路：动态分配的便利与静态分配的确定性是产品形态的二选一，不是谁永远更好。设备对象、finsh 线程与软件包各自的内存账落在哪一层，见 [第 26 章](./26-device-framework-shell.md)。
 
+## 社区开源实现
+
+本章讲的五个 heap 方案与 RT-Thread 对照表，在两个内核仓库里就是可以直接读的文件：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `portable/MemMang/heap_1.c` … `heap_5.c` | 五个方案的完整实现，每个几百行内：heap_1 只分不收、heap_2 首适应不合并、heap_4 合并相邻空闲块、heap_5 多段堆——对照本章「堆预算：从拍脑袋到工程账」的取舍论证 |
+| [FreeRTOS/FreeRTOS-Kernel-Book](https://github.com/FreeRTOS/FreeRTOS-Kernel-Book) | `ch03.md` 等 | FreeRTOS 官方伴读书稿，逐个 heap 方案讲实现与适用场景——比读裸代码多一层动机解释 |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/mem.c` + `src/slab.c` | 小内存算法与 SLAB 两种 `rt_malloc` 后端：对照本章「RT-Thread 对照：四件套」的分配策略行 |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/mempool.c` | `rt_mp_create`/`rt_mp_alloc` 的固定块池实现：空闲块单链表、摘头挂尾、timeout 排队——对照上面 rt_mp 一段的描述 |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/memheap.c` | 多段堆管理器：把几块不连续内存（如 CCM+SRAM）纳成统一堆——RT-Thread 对「heap_5 拆堆」问题的另一份答案 |
+
+对照后的共性：两个内核都把「能分」与「能收」分开评估——heap_1/静态池代表「只分不收」，heap_4/SLAB 代表「分收都做但付碎片代价」，固定块池代表「用等大前提换 O(1)」。选型问题不是「哪个最好」，而是先承认对象生命周期与大小分布，再挑对应的机制。
+
 ## 短自测
 
 1. heap_1 的 `vPortFree` 为什么还在文件里？
