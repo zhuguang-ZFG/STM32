@@ -17,7 +17,7 @@ root	docs/15-FreeRTOS入门.md	ch21;ch22	根书原章	migrated	入门→ch21，�
 root	docs/16-低功耗设计.md	ch18	根书原章	migrated	
 root	docs/17-调试与性能优化.md	ch20	根书原章	migrated	
 root	docs/18-常见问题FAQ.md	ch45	根书原章	planned	
-root	docs/19-项目实战合集.md	ch42	根书原章	planned	
+root	docs/19-项目实战合集.md	ch42	根书原章	migrated	
 root	docs/20-学习资源与工具链.md	ch46	根书原章	planned	
 root	docs/21-原理图与实物图鉴.md	ch40	根书原章	migrated	
 root	docs/22-仿真实验Wokwi与Renode.md	ch40	根书原章	migrated	
