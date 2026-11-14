@@ -164,6 +164,19 @@ Wireshark 过滤器速查（实验 A–D 用）：`arp`、`icmp`、`bootp`（DHC
 - H7 双核、cache 细节与 AMP 契约：归[第 34 章](./34-multicore-cache.md)。
 - RTOS 堆与内存池策略：归 [第 25 章](../v3-rtos/25-memory-management.md)；本章的 RAM_net 账不与 heap_x 选型混排。
 
+## 社区开源实现
+
+本章讲的 lwIP 概念（pbuf、三层 API、ethnetif 交接）在 [lwip-tcpip/lwip](https://github.com/lwip-tcpip/lwip) 上游仓库里就是主干文件——本书取证绑 ST fork 的 lwIP 2.2.1（`stm32-mw-lwip`），但机制读上游更顺，两者差异主要是适配层：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [lwip-tcpip/lwip](https://github.com/lwip-tcpip/lwip) | `src/core/pbuf.c` | pbuf 链的分片/串联/引用计数——对照本章「谁持有谁释放，恰好一次」的所有权表；pbuf_free 两次就是社区最常报的崩溃 |
+| [lwip-tcpip/lwip](https://github.com/lwip-tcpip/lwip) | `src/include/lwip/api.h` + `src/api/api_msg.c` | netconn 顺序 API 的实现：`struct netconn` 描述符、raw/netconn/socket 三层 how 它们叠起来——对照本章 API 选型的层级表 |
+| [lwip-tcpip/lwip](https://github.com/lwip-tcpip/lwip) | `src/core/tcp_out.c` | `tcp_write` 的缓冲语义（拷贝进 pbuf 队列还是引用）：为什么「IRQ 里调 tcp_write」必死、发送要等 ACK 才回收——对照失败分支"IRQ 里死锁" |
+| [lwIP 官方 wiki 与文档](https://www.nongnu.org/lwip/2_0_x/raw_api.html) | raw API 页 + [lwip-users 邮件列表](https://lists.nongnu.org/mailman/listinfo/lwip-users) | raw API 的零拷贝事件模型原文；社区问答主阵地，关于 `sys_now()` 截止点、mem_size 撞墙、PCB 缓冲上限的讨论都在这里 |
+
+ESP32 一侧，[espressif/esp-idf](https://github.com/espressif/esp-idf) 把 lwIP 封装在 `components/lwip` 里（默认 socket API），Wi-Fi eth 交接由 `esp_wifi` 的 netif glue 完成——GOT_IP 事件之后的事就是本章的内容。社区调 lwIP 的第一课与本章一致：**内存配置（MEM_SIZE/PBUF 池）先于功能配置**——先让 RAM_net 账目对上，再谈吞吐。
+
 ## 离开检查
 
 - 五路径决策表能按需求走通，「先写需求再选硬件」不是口号。
