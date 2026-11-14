@@ -124,10 +124,10 @@ mcu	mcu/docs/projects/01-f407-logger.md	ch41	项目案例	migrated
 mcu	mcu/docs/projects/02-s3-logger.md	ch41	项目案例	migrated	
 mcu	mcu/docs/ai/00-pair-not-ghost.md	ch43	AI 工程方法	migrated	
 mcu	mcu/docs/ai/01-prompt-patterns.md	ch43	AI 工程方法	migrated	
-mcu	mcu/docs/ai/02-manual-reconciliation.md	ch44	AI 工程方法	planned	
+mcu	mcu/docs/ai/02-manual-reconciliation.md	ch44	AI 工程方法	migrated	
 mcu	mcu/docs/ai/03-toolflow-mcp.md	ch43	AI 工程方法	migrated	
-mcu	mcu/docs/ai/04-hallucination-defense.md	ch44	AI 工程方法	planned	
-mcu	mcu/docs/ai/05-this-book-pipeline.md	ch44	AI 工程方法	planned	
+mcu	mcu/docs/ai/04-hallucination-defense.md	ch44	AI 工程方法	migrated	
+mcu	mcu/docs/ai/05-this-book-pipeline.md	ch44	AI 工程方法	migrated	
 mcu	mcu/mcu-book/book/A-工程深读.md	apA	附录素材	planned	
 mcu	mcu/mcu-book/book/B-例程索引.md	apB	附录素材	planned	
 mcu	mcu/mcu-book/book/C-习题答案.md	apC	附录素材	planned	
