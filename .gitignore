@@ -7,8 +7,8 @@ build/
 *.hex
 *.bin
 MDK-ARM/*/
-stm32-book/dist/
 book/dist/
+node_modules/
 .mxproject
 
 # 本地运营产物（不随仓库发布）

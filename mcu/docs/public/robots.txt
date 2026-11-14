@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://zhuguang-zfg.github.io/STM32/mcu/sitemap.xml
