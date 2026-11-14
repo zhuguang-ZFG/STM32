@@ -303,6 +303,19 @@ F103 一侧：DMA1 在 `0x4002_0000`，7 条通道；C8 只有 DMA1，没有 DMA
 
 GD32 与 ESP32 不在本章平台列表。GD32 的 DMA 控制器命名、通道数与请求映射和 STM32 不是一套，完整对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)；ESP32-S3 的 DMA 由 ESP-IDF 的驱动与描述符管理，寄存器名字一个都不要带过去，外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。多核与 Cache 一致性见[第 34 章](../v4-platforms/34-multicore-cache.md)；仪器与证据方法见[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。
 
+## 社区开源实现
+
+本章的坑（CCM 不可达、对齐、半区换算、标志清除）在开源代码里都有现成的防御写法。几个值得精读的位置：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c` | HAL 的流状态机：`HAL_DMA_Start` 先清 EN 再改 CR 的顺序、`HAL_DMA_PollForUpdate` 的标志等待——对照本章"EN=1 时不能改 CHSEL"的失败分支 |
+| [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Projects/STM32F4-Discovery/Examples/USART/USART_DMA/` | 官方 USART+DMA 收发样例：请求映射、NDTR 按项数计、TC 中断里等 USART TC——对照本章"最后一字节被截"那条 |
+| [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h` | DMA_Stream_TypeDef 结构体与各流基址宏——本章讲的 `0x18` 步进、`+0x88` 流 5 偏移可以直接在里面验证 |
+| [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c` + 各例程的缓冲区声明 | 带缓存系列（F7/H7）的传输包装如何用 `SCB_CleanDCache_by_Addr`/`InvalidateDCache_by_Addr` 包住每次搬运——ST [AN4838](https://www.st.com/resource/en/application_note/dm00272913-level-1-cache-on-stm32f7-series-and-stm32h7-series-stmicroelectronics.pdf) 的结论：缓冲区对齐到 32 字节 cache line、必要时显式维护缓存，否则就是本章说的"数据静默丢失" |
+
+F407 本身没有 D-Cache，所以本章实验踩不到 cache 一致性；但社区在 F7/H7 上踩过之后总结的规则（缓冲区 32 字节对齐、不要把 DMA 缓冲区放进栈上的局部变量、非对齐访问在地址对齐检查里直接 Fault）值得在写代码时就遵守——迁移到第 34 章的双核平台时这些规则立刻生效。另一个社区共识：读标志永远用 `ISR/HISR`，清标志永远写 `IFCR/HIFCR`——libopencm3 的 [dma.c](https://github.com/libopencm3/libopencm3) 对每个标志都有 `DMA_IFCR_Cxx` 专用宏，就是防有人直接写 ISR。
+
 ## 离开检查
 
 1. F4 的二级选择是什么？控制器、流、通道各由什么决定？
