@@ -1,4 +1,4 @@
-root	docs/00-如何学习STM32.md	ch46	根书原章	planned	
+root	docs/00-如何学习STM32.md	ch46	根书原章	migrated	
 root	docs/01-开发环境搭建.md	ch05	根书原章	migrated	
 root	docs/02-芯片选型与存储器时钟.md	ch01;ch08	根书原章	migrated	存储器→ch01，时钟→ch08
 root	docs/03-GPIO与LED.md	ch09	根书原章	migrated	
@@ -9,31 +9,31 @@ root	docs/07-I2C总线.md	ch16	根书原章	migrated
 root	docs/08-SPI总线.md	ch16	根书原章	migrated	
 root	docs/09-ADC与DAC.md	ch15	根书原章	migrated	
 root	docs/10-DMA.md	ch14	根书原章	migrated	
-root	docs/11-RTC与看门狗.md	ch11;ch19	根书原章	partial	RTC→ch11，看门狗→ch19
+root	docs/11-RTC与看门狗.md	ch11;ch19	根书原章	migrated	RTC→ch11，看门狗→ch19
 root	docs/12-Flash与IAP升级.md	ch17	根书原章	migrated	
-root	docs/13-CAN总线.md	ch35	根书原章	planned	
-root	docs/14-USB.md	ch35	根书原章	planned	
-root	docs/15-FreeRTOS入门.md	ch21;ch22	根书原章	planned	入门→ch21，任务→ch22
-root	docs/16-低功耗设计.md	ch18	根书原章	planned	
-root	docs/17-调试与性能优化.md	ch20	根书原章	planned	
-root	docs/18-常见问题FAQ.md	ch45	根书原章	planned	
-root	docs/19-项目实战合集.md	ch42	根书原章	planned	
-root	docs/20-学习资源与工具链.md	ch46	根书原章	planned	
-root	docs/21-原理图与实物图鉴.md	ch40	根书原章	planned	
-root	docs/22-仿真实验Wokwi与Renode.md	ch40	根书原章	planned	
-root	docs/23-STM32G0引脚.md	ch28	根书原章	planned	
-root	docs/24-STM32L4引脚.md	ch28	根书原章	planned	
-root	docs/25-STM32H7引脚.md	ch28;ch34	根书原章	planned	Cache→ch34
+root	docs/13-CAN总线.md	ch35	根书原章	migrated	
+root	docs/14-USB.md	ch35	根书原章	migrated	
+root	docs/15-FreeRTOS入门.md	ch21;ch22	根书原章	migrated	入门→ch21，任务→ch22
+root	docs/16-低功耗设计.md	ch18	根书原章	migrated	
+root	docs/17-调试与性能优化.md	ch20	根书原章	migrated	
+root	docs/18-常见问题FAQ.md	ch45	根书原章	migrated	
+root	docs/19-项目实战合集.md	ch42	根书原章	migrated	
+root	docs/20-学习资源与工具链.md	ch46	根书原章	migrated	
+root	docs/21-原理图与实物图鉴.md	ch40	根书原章	migrated	
+root	docs/22-仿真实验Wokwi与Renode.md	ch40	根书原章	migrated	
+root	docs/23-STM32G0引脚.md	ch28	根书原章	migrated	
+root	docs/24-STM32L4引脚.md	ch28	根书原章	migrated	
+root	docs/25-STM32H7引脚.md	ch28;ch34	根书原章	migrated	Cache→ch34
 root	docs/26-STM32F10x标准外设库SPL.md	ch07	根书原章	migrated	
-root	docs/27-网络与协议栈.md	ch33	根书原章	planned	
-root	docs/28-嵌入式系统与RTOS生态.md	ch27	根书原章	planned	
-root	stm32-book/book/A-工程深读.md	apA	根书附录素材	planned	
-root	stm32-book/book/B-例程索引.md	apB	根书附录素材	planned	
-root	stm32-book/book/C-习题答案.md	apC	根书附录素材	planned	
-root	stm32-book/book/D-术语表.md	apD	根书附录素材	planned	
-root	stm32-book/book/E-参考资料.md	apE	根书附录素材	planned	
-root	stm32-book/book/F-学习路线收束.md	apF	学习路线收束	planned	书稿专有收束页
-root	stm32-book/book/F-开源地图.md	apF	根书附录素材	planned	
+root	docs/27-网络与协议栈.md	ch33	根书原章	migrated	
+root	docs/28-嵌入式系统与RTOS生态.md	ch27	根书原章	migrated	
+root	stm32-book/book/A-工程深读.md	apA	根书附录素材	migrated	
+root	stm32-book/book/B-例程索引.md	apB	根书附录素材	migrated	
+root	stm32-book/book/C-习题答案.md	apC	根书附录素材	migrated	
+root	stm32-book/book/D-术语表.md	apD	根书附录素材	migrated	
+root	stm32-book/book/E-参考资料.md	apE	根书附录素材	migrated	
+root	stm32-book/book/F-学习路线收束.md	apF	学习路线收束	migrated	
+root	stm32-book/book/F-开源地图.md	apF	根书附录素材	migrated	
 mcu	mcu/docs/c/00-c-in-mcu.md	ch01	语言深潜	migrated	
 mcu	mcu/docs/c/01-memory-model.md	ch01	语言深潜	migrated	
 mcu	mcu/docs/c/02-pointer.md	ch01	语言深潜	migrated	
@@ -49,7 +49,7 @@ mcu	mcu/docs/build/02-elf.md	ch05	构建链深潜	migrated
 mcu	mcu/docs/build/03-linker-script.md	ch06	构建链深潜	migrated	
 mcu	mcu/docs/build/04-startup.md	ch06	构建链深潜	migrated	
 mcu	mcu/docs/build/05-map-size.md	ch06	构建链深潜	migrated	
-mcu	mcu/docs/build/06-flash-debug.md	ch20	构建链深潜	planned	
+mcu	mcu/docs/build/06-flash-debug.md	ch20	构建链深潜	migrated	
 mcu	mcu/docs/build/07-build-system.md	ch07	构建链深潜	migrated	
 mcu	mcu/docs/stm32/00-env.md	ch05	外设深潜	migrated	
 mcu	mcu/docs/stm32/01-arch.md	ch08	外设深潜	migrated	
@@ -65,77 +65,77 @@ mcu	mcu/docs/stm32/10-dac.md	ch15	外设深潜	migrated
 mcu	mcu/docs/stm32/11-i2c.md	ch16	外设深潜	migrated	
 mcu	mcu/docs/stm32/12-spi.md	ch16	外设深潜	migrated	
 mcu	mcu/docs/stm32/13-flash-iap.md	ch17	外设深潜	migrated	
-mcu	mcu/docs/stm32/14-pwr.md	ch18	外设深潜	planned	
+mcu	mcu/docs/stm32/14-pwr.md	ch18	外设深潜	migrated	
 mcu	mcu/docs/stm32/15-spl-anatomy.md	ch07	外设深潜	migrated	
-mcu	mcu/docs/stm32/16-debug-hardfault.md	ch19	外设深潜	planned	
-mcu	mcu/docs/stm32/17-watchdog-reset.md	ch19	外设深潜	planned	
-mcu	mcu/docs/rtos/freertos/00-why-rtos.md	ch21	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/freertos/01-task-tcb.md	ch22	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/freertos/02-context-switch.md	ch23	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/freertos/03-scheduler.md	ch22	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/freertos/04-queue.md	ch24	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/freertos/05-sem-mutex.md	ch24	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/freertos/06-notify-event-timer.md	ch24	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/freertos/07-heap.md	ch25	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/freertos/08-port-f407.md	ch23	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/rtthread/00-arch.md	ch23	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/rtthread/01-thread-sched.md	ch22	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/rtthread/02-ipc.md	ch24	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/rtthread/03-mem.md	ch25	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/rtthread/04-device.md	ch26	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/rtthread/05-finsh.md	ch26	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/rtthread/06-env-menuconfig.md	ch26	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/rtthread/07-port-f407.md	ch23	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/compare/00-side-by-side.md	ch27	RTOS 深潜	planned	
-mcu	mcu/docs/rtos/compare/01-choose.md	ch27	RTOS 深潜	planned	
-mcu	mcu/docs/esp32/00-env.md	ch30	平台对照（ESP32）	planned	
-mcu	mcu/docs/esp32/01-arch-boot.md	ch30	平台对照（ESP32）	planned	
-mcu	mcu/docs/esp32/02-gpio-matrix.md	ch31	平台对照（ESP32）	planned	
-mcu	mcu/docs/esp32/03-idf-anatomy.md	ch30	平台对照（ESP32）	planned	
-mcu	mcu/docs/esp32/04-irq-dualcore.md	ch10;ch34	平台对照（ESP32）	partial	双核→ch10，Cache→ch34
-mcu	mcu/docs/esp32/05-uart-driver.md	ch31	平台对照（ESP32）	planned	
-mcu	mcu/docs/esp32/06-spi-i2c-driver.md	ch31	平台对照（ESP32）	planned	
-mcu	mcu/docs/esp32/07-timer-ledc.md	ch31	平台对照（ESP32）	planned	
-mcu	mcu/docs/esp32/08-wifi.md	ch32	平台对照（ESP32）	planned	
-mcu	mcu/docs/esp32/09-bt-espnow.md	ch32	平台对照（ESP32）	planned	
+mcu	mcu/docs/stm32/16-debug-hardfault.md	ch19	外设深潜	migrated	
+mcu	mcu/docs/stm32/17-watchdog-reset.md	ch19	外设深潜	migrated	
+mcu	mcu/docs/rtos/freertos/00-why-rtos.md	ch21	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/freertos/01-task-tcb.md	ch22	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/freertos/02-context-switch.md	ch23	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/freertos/03-scheduler.md	ch22	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/freertos/04-queue.md	ch24	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/freertos/05-sem-mutex.md	ch24	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/freertos/06-notify-event-timer.md	ch24	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/freertos/07-heap.md	ch25	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/freertos/08-port-f407.md	ch23	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/rtthread/00-arch.md	ch23	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/rtthread/01-thread-sched.md	ch22	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/rtthread/02-ipc.md	ch24	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/rtthread/03-mem.md	ch25	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/rtthread/04-device.md	ch26	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/rtthread/05-finsh.md	ch26	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/rtthread/06-env-menuconfig.md	ch26	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/rtthread/07-port-f407.md	ch23	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/compare/00-side-by-side.md	ch27	RTOS 深潜	migrated	
+mcu	mcu/docs/rtos/compare/01-choose.md	ch27	RTOS 深潜	migrated	
+mcu	mcu/docs/esp32/00-env.md	ch30	平台对照（ESP32）	migrated	
+mcu	mcu/docs/esp32/01-arch-boot.md	ch30	平台对照（ESP32）	migrated	
+mcu	mcu/docs/esp32/02-gpio-matrix.md	ch31	平台对照（ESP32）	migrated	
+mcu	mcu/docs/esp32/03-idf-anatomy.md	ch30	平台对照（ESP32）	migrated	
+mcu	mcu/docs/esp32/04-irq-dualcore.md	ch10;ch34	平台对照（ESP32）	migrated	双核→ch10，Cache→ch34
+mcu	mcu/docs/esp32/05-uart-driver.md	ch31	平台对照（ESP32）	migrated	
+mcu	mcu/docs/esp32/06-spi-i2c-driver.md	ch31	平台对照（ESP32）	migrated	
+mcu	mcu/docs/esp32/07-timer-ledc.md	ch31	平台对照（ESP32）	migrated	
+mcu	mcu/docs/esp32/08-wifi.md	ch32	平台对照（ESP32）	migrated	
+mcu	mcu/docs/esp32/09-bt-espnow.md	ch32	平台对照（ESP32）	migrated	
 mcu	mcu/docs/esp32/10-flash-nvs-ota.md	ch17	平台对照（ESP32）	migrated	
-mcu	mcu/docs/esp32/11-lowpower.md	ch18	平台对照（ESP32）	planned	
-mcu	mcu/docs/esp32/12-audio-path.md	ch31	平台对照（ESP32）	planned	
-mcu	mcu/docs/esp32/13-watchdog-health.md	ch19	平台对照（ESP32）	planned	
-mcu	mcu/docs/gd32/00-env.md	ch29	平台对照（GD32）	planned	
-mcu	mcu/docs/gd32/01-rcu-clock.md	ch29	平台对照（GD32）	planned	
-mcu	mcu/docs/gd32/02-gpio-af.md	ch29	平台对照（GD32）	planned	
-mcu	mcu/docs/gd32/03-usart.md	ch29	平台对照（GD32）	planned	
-mcu	mcu/docs/gd32/04-periph-diff.md	ch28	平台对照（GD32）	planned	
-mcu	mcu/docs/gd32/05-riscv-toolchain.md	ch29	平台对照（GD32）	planned	
-mcu	mcu/docs/gd32/06-clic-irq.md	ch29	平台对照（GD32）	planned	
-mcu	mcu/docs/gd32/07-rcu-108m.md	ch29	平台对照（GD32）	planned	
-mcu	mcu/docs/gd32/08-mtime-delay.md	ch29	平台对照（GD32）	planned	
-mcu	mcu/docs/gd32/09-gpio-minimal.md	ch29	平台对照（GD32）	planned	
-mcu	mcu/docs/lab/e01-blink.md	ch09;ch40	实验方法与证据	partial	实验拆入ch09，方法→ch40
-mcu	mcu/docs/lab/e02-logic-uart.md	ch13;ch40	实验方法与证据	partial	
-mcu	mcu/docs/lab/e03-scope-pwm.md	ch12;ch40	实验方法与证据	partial	
-mcu	mcu/docs/lab/e04-priority-inversion.md	ch24;ch40	实验方法与证据	planned	
-mcu	mcu/docs/lab/e05-i2c-eeprom.md	ch16;ch40	实验方法与证据	partial	
-mcu	mcu/docs/lab/e06-lowpower-current.md	ch18;ch40	实验方法与证据	planned	
-mcu	mcu/docs/lab/e07-qmi8658.md	ch16;ch40	实验方法与证据	partial	
-mcu	mcu/docs/lab/e08-audio-play.md	ch31;ch40	实验方法与证据	planned	
-mcu	mcu/docs/projects/01-f407-logger.md	ch41	项目案例	planned	
-mcu	mcu/docs/projects/02-s3-logger.md	ch41	项目案例	planned	
-mcu	mcu/docs/ai/00-pair-not-ghost.md	ch43	AI 工程方法	planned	
-mcu	mcu/docs/ai/01-prompt-patterns.md	ch43	AI 工程方法	planned	
-mcu	mcu/docs/ai/02-manual-reconciliation.md	ch44	AI 工程方法	planned	
-mcu	mcu/docs/ai/03-toolflow-mcp.md	ch43	AI 工程方法	planned	
-mcu	mcu/docs/ai/04-hallucination-defense.md	ch44	AI 工程方法	planned	
-mcu	mcu/docs/ai/05-this-book-pipeline.md	ch44	AI 工程方法	planned	
-mcu	mcu/mcu-book/book/A-工程深读.md	apA	附录素材	planned	
-mcu	mcu/mcu-book/book/B-例程索引.md	apB	附录素材	planned	
-mcu	mcu/mcu-book/book/C-习题答案.md	apC	附录素材	planned	
-mcu	mcu/mcu-book/book/D-术语表.md	apD	附录素材	planned	
-mcu	mcu/mcu-book/book/E-参考资料.md	apE	附录素材	planned	
-mcu	mcu/mcu-book/book/F-常见问题.md	ch45	附录素材	planned	
-mcu	mcu/mcu-book/book/G-开源地图.md	apF	附录素材	planned	
-motor	plans/2026-11-11-motor-control/chapters-draft/29-电机驱动与供电.md	ch36	电机控制草稿	planned	
-motor	plans/2026-11-11-motor-control/chapters-draft/30-直流电机开环调速.md	ch37	电机控制草稿	planned	
-motor	plans/2026-11-11-motor-control/chapters-draft/31-编码器与转速测量.md	ch38	电机控制草稿	planned	
-motor	plans/2026-11-11-motor-control/chapters-draft/32-直流电机速度闭环.md	ch39	电机控制草稿	planned	
+mcu	mcu/docs/esp32/11-lowpower.md	ch18	平台对照（ESP32）	migrated	
+mcu	mcu/docs/esp32/12-audio-path.md	ch31	平台对照（ESP32）	migrated	
+mcu	mcu/docs/esp32/13-watchdog-health.md	ch19	平台对照（ESP32）	migrated	
+mcu	mcu/docs/gd32/00-env.md	ch29	平台对照（GD32）	migrated	
+mcu	mcu/docs/gd32/01-rcu-clock.md	ch29	平台对照（GD32）	migrated	
+mcu	mcu/docs/gd32/02-gpio-af.md	ch29	平台对照（GD32）	migrated	
+mcu	mcu/docs/gd32/03-usart.md	ch29	平台对照（GD32）	migrated	
+mcu	mcu/docs/gd32/04-periph-diff.md	ch28	平台对照（GD32）	migrated	
+mcu	mcu/docs/gd32/05-riscv-toolchain.md	ch29	平台对照（GD32）	migrated	
+mcu	mcu/docs/gd32/06-clic-irq.md	ch29	平台对照（GD32）	migrated	
+mcu	mcu/docs/gd32/07-rcu-108m.md	ch29	平台对照（GD32）	migrated	
+mcu	mcu/docs/gd32/08-mtime-delay.md	ch29	平台对照（GD32）	migrated	
+mcu	mcu/docs/gd32/09-gpio-minimal.md	ch29	平台对照（GD32）	migrated	
+mcu	mcu/docs/lab/e01-blink.md	ch09;ch40	实验方法与证据	migrated	实验拆入ch09，方法→ch40
+mcu	mcu/docs/lab/e02-logic-uart.md	ch13;ch40	实验方法与证据	migrated	
+mcu	mcu/docs/lab/e03-scope-pwm.md	ch12;ch40	实验方法与证据	migrated	
+mcu	mcu/docs/lab/e04-priority-inversion.md	ch24;ch40	实验方法与证据	migrated	
+mcu	mcu/docs/lab/e05-i2c-eeprom.md	ch16;ch40	实验方法与证据	migrated	
+mcu	mcu/docs/lab/e06-lowpower-current.md	ch18;ch40	实验方法与证据	migrated	
+mcu	mcu/docs/lab/e07-qmi8658.md	ch16;ch40	实验方法与证据	migrated	
+mcu	mcu/docs/lab/e08-audio-play.md	ch31;ch40	实验方法与证据	migrated	
+mcu	mcu/docs/projects/01-f407-logger.md	ch41	项目案例	migrated	
+mcu	mcu/docs/projects/02-s3-logger.md	ch41	项目案例	migrated	
+mcu	mcu/docs/ai/00-pair-not-ghost.md	ch43	AI 工程方法	migrated	
+mcu	mcu/docs/ai/01-prompt-patterns.md	ch43	AI 工程方法	migrated	
+mcu	mcu/docs/ai/02-manual-reconciliation.md	ch44	AI 工程方法	migrated	
+mcu	mcu/docs/ai/03-toolflow-mcp.md	ch43	AI 工程方法	migrated	
+mcu	mcu/docs/ai/04-hallucination-defense.md	ch44	AI 工程方法	migrated	
+mcu	mcu/docs/ai/05-this-book-pipeline.md	ch44	AI 工程方法	migrated	
+mcu	mcu/mcu-book/book/A-工程深读.md	apA	附录素材	migrated	
+mcu	mcu/mcu-book/book/B-例程索引.md	apB	附录素材	migrated	
+mcu	mcu/mcu-book/book/C-习题答案.md	apC	附录素材	migrated	
+mcu	mcu/mcu-book/book/D-术语表.md	apD	附录素材	migrated	
+mcu	mcu/mcu-book/book/E-参考资料.md	apE	附录素材	migrated	
+mcu	mcu/mcu-book/book/F-常见问题.md	ch45	附录素材	migrated	
+mcu	mcu/mcu-book/book/G-开源地图.md	apF	附录素材	migrated	
+motor	plans/2026-11-11-motor-control/chapters-draft/29-电机驱动与供电.md	ch36	电机控制草稿	migrated	
+motor	plans/2026-11-11-motor-control/chapters-draft/30-直流电机开环调速.md	ch37	电机控制草稿	migrated	
+motor	plans/2026-11-11-motor-control/chapters-draft/31-编码器与转速测量.md	ch38	电机控制草稿	migrated	
+motor	plans/2026-11-11-motor-control/chapters-draft/32-直流电机速度闭环.md	ch39	电机控制草稿	migrated	

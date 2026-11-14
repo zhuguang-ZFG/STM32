@@ -11,7 +11,7 @@ platforms: [generic]
 
 - **问题**：`arm-none-eabi-` 三段各管什么，为什么系统 `gcc` 编不了 F407？`gcc` 自己不做编译，它把活分给谁？`-E`、`-S`、`-c` 和链接各留下什么文件，报错时怎样一眼看出死在哪个阶段？ELF 头的五个字段与节表各自回答什么问题？裸机没有 Linux 系统调用，`printf` 的输出凭什么能接到串口？第一次装工具链、make、OpenOCD、ST-Link 驱动和 SWD 线，每一步验收什么？
 - **交付**：能用 build/host/target 说明“交叉”交叉在哪；能按 binutils 的分工查符号、段、体积与格式；能说清 newlib 钩子如何把 `printf` 接到串口；能用 `gcc -###` 读出 cc1、as、collect2 的调度链；能亲手跑完四步并在 `.i`、`.s`、`.o`、`.elf` 里找到对应证据；能读 ELF 头五字段与节表的 `Addr`/`Off`/`Size`/`Flg`；能按五步搭好环境，并用三条命令确认自己用的是哪套工具链。
-- **边界**：本章以 Cortex-M 裸机、F407 工程与 xPack GNU Arm Embedded GCC 15.2.1 的来源记录为证据，概念适用于没有 OS 的 ARM 嵌入式工程。链接脚本、启动文件与 map 体积审计留给[第 6 章](./06-linker-startup-map.md)；Makefile 与遗留构建栈留给[第 7 章](./07-build-systems-legacy.md)；GDB 与 SWD 调试留给[第 20 章][ch20]；寄存器与外设地址留给[第 8 章][ch08]及后续驱动章。环境五步以 Windows 10/11 为主线，Linux 与 macOS 只给对应命令名；板上烧录与点灯步骤来源没有记录本机复跑，本章明确标为未跑。
+- **边界**：本章以 Cortex-M 裸机、F407 工程与 xPack GNU Arm Embedded GCC 15.2.1 的来源记录为证据，概念适用于没有 OS 的 ARM 嵌入式工程。链接脚本、启动文件与 map 体积审计留给[第 6 章](./06-linker-startup-map.md)；Makefile 与遗留构建栈留给[第 7 章](./07-build-systems-legacy.md)；GDB 与 SWD 调试留给[第 20 章](../v2-reliability/20-debug-performance.md)；寄存器与外设地址留给[第 8 章][ch08]及后续驱动章。环境五步以 Windows 10/11 为主线，Linux 与 macOS 只给对应命令名；板上烧录与点灯步骤来源没有记录本机复跑，本章明确标为未跑。
 - **依据锚点**：B0《工具链全景：四个软件一台戏》（`mcu/docs/build/00-toolchain.md`）、B1《四步构建：从 main.c 到机器码》（`mcu/docs/build/01-four-steps.md`）、B2《ELF 解剖：把固件放上解剖台》（`mcu/docs/build/02-elf.md`）、S0《环境搭建：裸机工具链》（`mcu/docs/stm32/00-env.md`）；根书第 01 章《开发环境搭建》（`docs/01-开发环境搭建.md`）的 SWD 接线与 ST-Link 驱动部分。工具链版本、四步读数、ELF 数字均转引自上述来源。
 
 ## 先做出来
@@ -304,7 +304,7 @@ $ arm-none-eabi-nm -n blink.elf | grep -E ' (Reset_Handler|main)$'
 
 **第二步：装 make。** Windows 没有自带 make，最省心的来源是 **xPack Windows Build Tools**：下载 `xpack-windows-build-tools-*-win32-x64.zip`，解压到无中文无空格的路径（如 `D:\tools\xpack-build-tools`），把其 `bin` 目录加入系统 PATH，新开终端用 `make --version` 验证。
 
-**第三步：装 OpenOCD。** 下载 **xPack OpenOCD** 的 Windows 版 zip，解压到无中文无空格的路径，`bin` 加入 PATH，用 `openocd --version` 验证。OpenOCD 一边通过 USB 跟 ST-Link 说话，一边通过 SWD 跟芯片说话，把 `program` 命令翻译成对 Flash 的擦写。SWD 只有两根信号线：SWDIO（数据）与 SWCLK（时钟）。完整调试链在[第 20 章][ch20]。
+**第三步：装 OpenOCD。** 下载 **xPack OpenOCD** 的 Windows 版 zip，解压到无中文无空格的路径，`bin` 加入 PATH，用 `openocd --version` 验证。OpenOCD 一边通过 USB 跟 ST-Link 说话，一边通过 SWD 跟芯片说话，把 `program` 命令翻译成对 Flash 的擦写。SWD 只有两根信号线：SWDIO（数据）与 SWCLK（时钟）。完整调试链在[第 20 章](../v2-reliability/20-debug-performance.md)。
 
 **第四步：装 ST-Link 驱动。** 正版 ST-Link / ST-Link V2 装 ST 官方的 **STSW-LINK009** USB 驱动；DAPLink（CMSIS-DAP）在 Windows 10/11 上免驱。插上仿真器，设备管理器里应出现 “STM32 STLink” 或对应设备，没有黄色感叹号。固件太旧时报 DFU 相关错误，用 ST-Link Upgrade 升级后再连。
 
@@ -393,4 +393,3 @@ make
 动作验收：在自己的机器上装好五步，用 `arm-none-eabi-gcc --version`、`where arm-none-eabi-gcc`（Linux 用 `which`）、`-print-search-dirs` 三条命令写下“我用的是哪套工具链”；再拿一个现成工程跑一遍 `-E`、`-S`、`-c`、链接，把四份中间产物和一条 `readelf -h` 输出留在构建目录里。
 
 [ch08]: ../v1-drivers/08-architecture-memory-clock.md
-[ch20]: ../v2-reliability/20-debug-performance.md

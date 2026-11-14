@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="880" viewBox="0 0 960 880" role="img" aria-label="手册找错、仪器越级、固件栈选错：先 DS/RM/PM 对号，再选证据阶，最后才动栈">
+
+
+<rect x="0" y="0" width="960" height="880" fill="#fbfaf7"/>
+<rect x="0" y="0" width="960" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="960" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">证据三岔口：手册、仪器、固件栈</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">STM32 · chapter 20 · manuals &amp; evidence ladder</text>
+<rect x="906" y="15" width="32" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="922" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">20</text>
+<text x="40" y="122" font-size="15" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">卡住时先分岔：是手册拿错、仪器跳级，还是栈选错</text>
+<circle cx="80" cy="168" r="17" fill="#075e84" opacity="1" stroke="#075e84" stroke-width="1.5"/>
+<text x="80" y="174" font-size="15" fill="#fbfaf7" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">？</text>
+<text x="106" y="174" font-size="14" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">查证卡住了</text>
+<rect x="40" y="206" width="880" height="182" fill="#f1f5f7" opacity="1" rx="8" stroke="#8f2d2d" stroke-width="1.5"/>
+<text x="56" y="234" font-size="15" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口一  手册拿错：在 AN 和论坛帖里找电气上限</text>
+<text x="56" y="262" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">症状：拿 HAL 符号搜 RM；F1 的问题打开 F4 的 RM</text>
+<rect x="620" y="224" width="58" height="118" fill="#fbfaf7" opacity="1" rx="4" stroke="#075e84" stroke-width="1.5"/>
+<text x="660" y="336" font-size="15" fill="#075e84" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" transform="rotate(-90 660 336)">DS</text>
+<text x="649" y="356" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">引脚与</text>
+<text x="649" y="368" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">极限</text>
+<rect x="694" y="224" width="58" height="118" fill="#fbfaf7" opacity="1" rx="4" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="734" y="336" font-size="15" fill="#1b5c45" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" transform="rotate(-90 734 336)">RM</text>
+<text x="723" y="356" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">位域与</text>
+<text x="723" y="368" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">状态机</text>
+<rect x="768" y="224" width="58" height="118" fill="#fbfaf7" opacity="1" rx="4" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="808" y="336" font-size="15" fill="#7a4e00" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" transform="rotate(-90 808 336)">PM</text>
+<text x="797" y="356" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">内核与</text>
+<text x="797" y="368" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">向量</text>
+<rect x="842" y="224" width="58" height="118" fill="#fbfaf7" opacity="1" rx="4" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="882" y="336" font-size="15" fill="#5b3a8c" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700" transform="rotate(-90 882 336)">AN</text>
+<text x="871" y="356" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">配方与</text>
+<text x="871" y="368" font-size="9" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">做法</text>
+<text x="56" y="292" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">对号：引脚与极限 → DS；位域与状态机 → RM；启动与内核 → PM；配方 → AN</text>
+<text x="56" y="318" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先写订货号 + 手册编号 + Rev，再摘句子</text>
+<text x="56" y="344" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">F1 的问题配 F1 的手册，地址和位域才对得上</text>
+<line x1="120" y1="200" x2="120" y2="199" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="120.00,206.00 116.50,199.00 123.50,199.00" fill="#8f2d2d" opacity="1"/>
+<rect x="40" y="408" width="880" height="202" fill="#f1f5f7" opacity="1" rx="8" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="56" y="436" font-size="15" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口二  仪器越级：还没看日志就上示波器</text>
+<text x="56" y="464" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">症状：波形很漂亮，问题其实出在链接脚本或选项字节</text>
+<rect x="400" y="570" width="92" height="34" fill="#fbfaf7" opacity="1" rx="4" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="446" y="592" font-size="10" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">构建日志</text>
+<rect x="496" y="544" width="92" height="34" fill="#fbfaf7" opacity="1" rx="4" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="542" y="566" font-size="10" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">调试器</text>
+<line x1="492" y1="578" x2="492" y2="552" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="592" y="518" width="92" height="34" fill="#fbfaf7" opacity="1" rx="4" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="638" y="540" font-size="10" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">运行日志</text>
+<line x1="588" y1="552" x2="588" y2="526" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="688" y="492" width="92" height="34" fill="#fbfaf7" opacity="1" rx="4" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="734" y="514" font-size="10" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">逻辑分析仪</text>
+<line x1="684" y1="526" x2="684" y2="500" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="784" y="466" width="92" height="34" fill="#fbfaf7" opacity="1" rx="4" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="830" y="488" font-size="10" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">示波器</text>
+<line x1="780" y1="500" x2="780" y2="474" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<circle cx="446" cy="556" r="6" fill="#8f2d2d" opacity="1"/>
+<text x="56" y="544" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">从最低一级起步，</text>
+<text x="56" y="566" font-size="13" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">上一级没有结论不跳级</text>
+<text x="56" y="492" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">链接失败看 map；认不出芯片看 SWD 电压；位时序才轮到逻辑分析仪</text>
+<text x="56" y="518" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">每级留一张截图或一段日志，写进排错笔记</text>
+<line x1="120" y1="402" x2="120" y2="401" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="120.00,408.00 116.50,401.00 123.50,401.00" fill="#7a4e00" opacity="1"/>
+<rect x="40" y="630" width="880" height="164" fill="#f1f5f7" opacity="1" rx="8" stroke="#5b3a8c" stroke-width="1.5"/>
+<text x="56" y="658" font-size="15" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">岔口三  固件栈选错：新项目硬上 SPL</text>
+<text x="56" y="686" font-size="13" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">症状：教程是 SPL，芯片是 G0/H7；把 libopencm3 当 ST 官方栈</text>
+<text x="400" y="712" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">新项目</text>
+<line x1="492" y1="708" x2="534" y2="708" stroke="#1b5c45" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="540.00,708.00 534.00,711.00 534.00,705.00" fill="#1b5c45" opacity="1"/>
+<text x="552" y="712" font-size="12" fill="#1b5c45" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">HAL / LL</text>
+<text x="400" y="738" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">锁版 F1 维护</text>
+<line x1="492" y1="734" x2="534" y2="734" stroke="#7a4e00" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="540.00,734.00 534.00,737.00 534.00,731.00" fill="#7a4e00" opacity="1"/>
+<text x="552" y="738" font-size="12" fill="#7a4e00" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">继续 SPL</text>
+<text x="400" y="764" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">轻量裸机</text>
+<line x1="492" y1="760" x2="534" y2="760" stroke="#075e84" stroke-width="1.5" stroke-linecap="round" opacity="1"/>
+<polygon points="540.00,760.00 534.00,763.00 534.00,757.00" fill="#075e84" opacity="1"/>
+<text x="552" y="764" font-size="12" fill="#075e84" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">libopencm3 对照</text>
+<text x="56" y="712" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">手册冲突时以 ST 官方为准</text>
+<text x="56" y="734" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">选定后全工程统一，不混两套启动文件</text>
+<line x1="120" y1="388" x2="120" y2="389" stroke="#5b3a8c" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="120.00,396.00 116.50,389.00 123.50,389.00" fill="#5b3a8c" opacity="1"/>
+<rect x="40" y="810" width="880" height="30" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="56" y="830" font-size="12" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">底注  手册编号+Rev 是证据的身份证；没有编号的截图只算线索，不算结论。</text>
+<line x1="24" y1="844" x2="936" y2="844" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="864" font-size="11" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘。手册分工与证据阶对照本章 manual-choice-map / instrument-evidence-ladder；栈选择对照 firmware-stack-choice。</text>
+<text x="936" y="864" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘 · 静态 · CC BY 4.0</text>
+</svg>

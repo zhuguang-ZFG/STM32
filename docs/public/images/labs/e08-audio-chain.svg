@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="'Segoe UI','Microsoft YaHei',sans-serif" role="img" aria-label="E08 音频链路：PCM 样本经 ESP32-S3 I2S（MCLK GPIO38、BCLK GPIO14、WS GPIO13、DOUT GPIO45）送 ES8311，DAC 输出经功放到喇叭；I2C GPIO1/2 配置 ES8311 并通过 PCA9557 bit1 打开功放；16kHz 16bit 双槽位，BCLK 512kHz，MCLK 4.096MHz">
+  <rect width="720" height="420" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="16" font-weight="bold" fill="#3451b2">E08 一个样本怎么变成声音：数据路径 + 控制路径</text>
+  <text x="24" y="50" font-size="12" fill="#666">蓝色是 I2S 数据（ESP32 出时钟，ES8311 做从机）；橙色是 I2C 控制：配 codec、开功放</text>
+
+  <!-- 数据路径 -->
+  <rect x="24" y="72" width="90" height="94" fill="#fff" stroke="#3451b2" stroke-width="2" rx="8"/>
+  <text x="69" y="94" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">PCM 缓冲</text>
+  <text x="69" y="116" font-size="12" fill="#333" text-anchor="middle">int16 样本</text>
+  <text x="69" y="134" font-size="12" fill="#333" text-anchor="middle">16 kHz</text>
+  <text x="69" y="152" font-size="12" fill="#666" text-anchor="middle">程序生成</text>
+  <line x1="114" y1="119" x2="134" y2="119" stroke="#3451b2" stroke-width="2"/>
+  <path d="M130 114 L138 119 L130 124 Z" fill="#3451b2"/>
+
+  <rect x="138" y="72" width="104" height="94" fill="#fff" stroke="#3451b2" stroke-width="2" rx="8"/>
+  <text x="190" y="94" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">ESP32-S3</text>
+  <text x="190" y="114" font-size="12" fill="#333" text-anchor="middle">I2S TX 主机</text>
+  <text x="190" y="132" font-size="12" fill="#333" text-anchor="middle">DMA 搬运</text>
+
+  <g font-size="12" font-family="Consolas,monospace">
+    <line x1="242" y1="88" x2="410" y2="88" stroke="#3451b2" stroke-width="2"/>
+    <text x="250" y="84" fill="#3451b2">MCLK GPIO38 4.096M</text>
+    <line x1="242" y1="112" x2="410" y2="112" stroke="#3451b2" stroke-width="2"/>
+    <text x="250" y="108" fill="#3451b2">BCLK GPIO14 512k</text>
+    <line x1="242" y1="136" x2="410" y2="136" stroke="#3451b2" stroke-width="2"/>
+    <text x="250" y="132" fill="#3451b2">WS   GPIO13 16k</text>
+    <line x1="242" y1="160" x2="410" y2="160" stroke="#3451b2" stroke-width="2"/>
+    <text x="250" y="156" fill="#3451b2">DOUT GPIO45</text>
+  </g>
+
+  <rect x="410" y="72" width="104" height="94" fill="#fff" stroke="#3451b2" stroke-width="2" rx="8"/>
+  <text x="462" y="94" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">ES8311</text>
+  <text x="462" y="114" font-size="12" fill="#333" text-anchor="middle">codec 从机</text>
+  <text x="462" y="132" font-size="12" fill="#333" text-anchor="middle">DAC → 模拟</text>
+  <line x1="514" y1="119" x2="534" y2="119" stroke="#3451b2" stroke-width="2"/>
+  <path d="M530 114 L538 119 L530 124 Z" fill="#3451b2"/>
+
+  <rect x="538" y="72" width="76" height="94" fill="#fff" stroke="#3451b2" stroke-width="2" rx="8"/>
+  <text x="576" y="94" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">功放</text>
+  <text x="576" y="114" font-size="12" fill="#333" text-anchor="middle">放大</text>
+  <line x1="614" y1="119" x2="634" y2="119" stroke="#3451b2" stroke-width="2"/>
+  <path d="M630 114 L638 119 L630 124 Z" fill="#3451b2"/>
+
+  <!-- 喇叭 -->
+  <rect x="644" y="106" width="14" height="26" fill="#3451b2"/>
+  <path d="M658 106 L682 88 V150 L658 132 Z" fill="#3451b2"/>
+  <path d="M690 104 Q698 119 690 134" fill="none" stroke="#3451b2" stroke-width="2"/>
+  <text x="668" y="168" font-size="12" fill="#333" text-anchor="middle">喇叭 1W</text>
+  <!-- 控制路径 -->
+  <path d="M190 166 V204 H520" fill="none" stroke="#d97706" stroke-width="2"/>
+  <line x1="462" y1="204" x2="462" y2="166" stroke="#d97706" stroke-width="2"/>
+  <circle cx="462" cy="204" r="3.5" fill="#d97706"/>
+  <text x="200" y="198" font-size="12" fill="#a16207">I2C：SDA=GPIO1、SCL=GPIO2，两颗芯片共用</text>
+  <text x="200" y="222" font-size="12" fill="#666">配 ES8311 寄存器（时钟分频、音量）</text>
+  <rect x="520" y="184" width="130" height="44" fill="#fff" stroke="#d97706" stroke-width="2" rx="6"/>
+  <text x="585" y="202" font-size="12" font-weight="bold" fill="#a16207" text-anchor="middle">PCA9557（0x19）</text>
+  <text x="585" y="220" font-size="12" fill="#333" text-anchor="middle">bit1 = 功放使能</text>
+  <line x1="576" y1="184" x2="576" y2="172" stroke="#d97706" stroke-width="2"/>
+  <path d="M571 174 L576 166 L581 174 Z" fill="#d97706"/>
+
+  <!-- I2S 帧 -->
+  <text x="24" y="256" font-size="13" font-weight="bold" fill="#3451b2">I2S Philips 帧：左槽 16 位 + 右槽 16 位 = 32 个 BCLK</text>
+  <text x="90" y="282" font-size="12" fill="#333" text-anchor="end">BCLK</text>
+  <path d="M100 284 V270 H108.75 V284 H117.5 V270 H126.25 V284 H135 V270 H143.75 V284 H152.5 V270 H161.25 V284 H170 V270 H178.75 V284 H187.5 V270 H196.25 V284 H205 V270 H213.75 V284 H222.5 V270 H231.25 V284 H240 V270 H248.75 V284 H257.5 V270 H266.25 V284 H275 V270 H283.75 V284 H292.5 V270 H301.25 V284 H310 V270 H318.75 V284 H327.5 V270 H336.25 V284 H345 V270 H353.75 V284 H362.5 V270 H371.25 V284 H380 V270 H388.75 V284 H397.5 V270 H406.25 V284 H415 V270 H423.75 V284 H432.5 V270 H441.25 V284 H450 V270 H458.75 V284 H467.5 V270 H476.25 V284 H485 V270 H493.75 V284 H502.5 V270 H511.25 V284 H520 V270 H528.75 V284 H537.5 V270 H546.25 V284 H555 V270 H563.75 V284 H572.5 V270 H581.25 V284 H590 V270 H598.75 V284 H607.5 V270 H616.25 V284 H625 V270 H633.75 V284 H642.5 V270 H651.25 V284 H660" fill="none" stroke="#3451b2" stroke-width="1.5"/>
+  <text x="90" y="308" font-size="12" fill="#333" text-anchor="end">WS</text>
+  <path d="M100 312 H380 V296 H660" fill="none" stroke="#3451b2" stroke-width="2"/>
+  <text x="90" y="338" font-size="12" fill="#333" text-anchor="end">DATA</text>
+  <rect x="100" y="322" width="17.5" height="22" fill="#eee" stroke="#999" stroke-dasharray="3 2"/>
+  <rect x="117.5" y="322" width="280" height="22" fill="#e8edfb" stroke="#3451b2"/>
+  <text x="257" y="338" font-size="12" fill="#3451b2" text-anchor="middle">左槽：样本 s[n]，高位先出</text>
+  <rect x="397.5" y="322" width="262.5" height="22" fill="#e6f6ee" stroke="#3eaf7c"/>
+  <text x="529" y="338" font-size="12" fill="#1a7f56" text-anchor="middle">右槽：同一个 s[n]（单声道复制）</text>
+  <text x="100" y="360" font-size="12" fill="#666">↑ Philips 格式：数据比 WS 跳变晚 1 个 BCLK</text>
+
+  <rect x="24" y="368" width="672" height="44" fill="#fdf3e1" stroke="#d97706" rx="6"/>
+  <text x="360" y="386" font-size="12" fill="#a16207" text-anchor="middle">BCLK = 16 kHz × 16 位 × 2 槽 = 512 kHz；MCLK = 256 × 16 kHz = 4.096 MHz</text>
+  <text x="360" y="404" font-size="12" fill="#a16207" text-anchor="middle">没声音先查控制路径：I2C 有没有 ACK、PCA9557 bit1 是否置 1；再用示波器看 BCLK/WS</text>
+</svg>

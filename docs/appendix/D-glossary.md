@@ -1,0 +1,367 @@
+---
+title: "术语表"
+platforms: [generic]
+---
+
+# 附录 D · 术语表
+
+## 本章罗盘
+
+- **问题**：一个名词的一句话工作定义、最常见的误会、以及去哪一章深读——三件事怎么一次查到？换芯片时哪些账必须重算？
+- **交付**：能用「定领域 → 对章节 → 回正文 → 对附录 E」四步查词；能把「会上手的几笔账」「换系列之前先对的账」「通道、描述符与故障寄存器」三张账当对照实测的一页。
+- **边界**：每条只给本书语境下的一行工作定义；寄存器位、地址、时间和电气参数始终以目标型号的对应修订版手册为准，不能从邻近系列照搬。标「芯片相关」的词条只在写明的板卡上成立。
+- **依据锚点**：双源合并——根书术语表（约 130 词条，BluePill 主线）为骨干 + mcu 术语速查（约 105 词条，F407/ESP32 主线）的独有词条与新组；重复词条以更完整一方为底、另一方要点并入。三张账（BluePill 数 / 换系列 / 通道描述符故障寄存器）原样保留。抽查核对：波特率误差 0.16% 归属、FromISR `0x50`、IWDG Reload 624、LEDC 8 通道 14 位——两源一致。
+
+## 怎么用这一附录
+
+- 读正文卡住 → 先在这里找名词，看工作定义版本，再顺「深读」列跳回正文；
+- 工作定义刻意不用另一个生词解释它；还是看不懂，说明缺的是前置章，按「深读」列往回退一级；
+- 标「芯片相关」的词条与具体芯片强相关，只保证在写明的板卡（F103 BluePill / F407 霸天虎 / ESP32-S3 实战派）上的说法成立。
+
+## 时钟与复位
+
+（本组深读落点：[第 8 章](../v1-drivers/08-architecture-memory-clock.md)）
+
+| 术语 | 本书中的含义 | 常见误解 | 深读 |
+| --- | --- | --- | --- |
+| AHB / APB | 片内总线层级。CPU 和高速外设多挂在 AHB，多数外设挂在 APB，时钟从 SYSCLK 逐级分下来 | APB 分频之后，所有定时器时钟都简单等于 PCLK | [第 8 章](../v1-drivers/08-architecture-memory-clock.md) |
+| BOR | 欠压复位。电源低于阈值时让芯片复位，避免在过低电压下继续执行 | 有 BOR 就等于整板电源设计已经合格 | [第 8 章](../v1-drivers/08-architecture-memory-clock.md) |
+| CSS | 时钟安全系统。HSE 失效时切到内部高速时钟并报告故障；切到哪一个时钟、走哪一种异常，看该系列手册 | 打开 CSS 之后晶振可以不再焊接 | [第 8 章](../v1-drivers/08-architecture-memory-clock.md) |
+| Flash wait state | CPU 读 Flash 时为满足访问时间插入的等待周期，写在 `FLASH_ACR` 的 LATENCY。F103 在 2.7–3.6 V、48–72 MHz 这一档是 2；分档见文末的账 | 主频提高后不需要调整 | [第 8 章](../v1-drivers/08-architecture-memory-clock.md) |
+| HCLK | AHB 时钟。CPU 和 AHB 外设常用它，中间可能经过 AHB 预分频，所以不等于 SYSCLK | HCLK、SYSCLK 和定时器时钟是同一个数 | [第 8 章](../v1-drivers/08-architecture-memory-clock.md) |
+| HSE / HSI | 外部高速时钟 / 内部高速 RC。HSE 可以是晶体，也可以是外部时钟 | HSE 必然比 HSI 准，且板上一定焊了晶振 | [第 8 章](../v1-drivers/08-architecture-memory-clock.md) |
+| HSE bypass | 外部时钟从 OSC_IN 送入，旁路片内晶体振荡电路。用于有源时钟，而不是无源晶振的默认接法 | 焊了晶振就要打开 bypass | [第 8 章](../v1-drivers/08-architecture-memory-clock.md) |
+| LSE / LSI | 外部低速晶体 / 内部低速 RC，多供给 RTC 和独立看门狗 | LSI 精度足以直接当高精度 RTC | [第 8 章](../v1-drivers/08-architecture-memory-clock.md) |
+| MCO | 主时钟输出。把内部某路时钟分频后送到引脚，便于用仪器核对时钟树 | 任意引脚都能输出任意内部时钟 | [第 8 章](../v1-drivers/08-architecture-memory-clock.md) |
+| NRST | 外部复位脚，低电平有效。调试器和复位按键通常都接到这里 | 调试器已连接时，NRST 上的电平可以忽略 | [第 8 章](../v1-drivers/08-architecture-memory-clock.md) |
+| PCLK | APB 时钟。STM32 常分成 PCLK1 和 PCLK2，对应 APB1 与 APB2 | 所有外设的内核时钟都等于 PCLK | [第 8 章](../v1-drivers/08-architecture-memory-clock.md) |
+| PLL | 对参考时钟倍频、分频的锁相环。USB、特定主频往往还要满足额外的频率约束 | 任意倍频组合都满足芯片和 USB 约束 | [第 8 章](../v1-drivers/08-architecture-memory-clock.md) |
+| SYSCLK | 系统时钟，通常在 HSI、HSE 和 PLL 之间选择，再分给 AHB | 复位后的 SYSCLK 已经是手册里的最高主频 | [第 8 章](../v1-drivers/08-architecture-memory-clock.md) |
+| TIMCLK | 定时器计数用的输入时钟。F1/F4 一类常见规则是：APB 预分频为 1 时等于 PCLK，否则为 PCLK 的 2 倍；H7 等系列要看各自的时钟树 | 把 PCLK 代进公式就得到所有系列的 PWM 频率 | [第 8 章](../v1-drivers/08-architecture-memory-clock.md) |
+| VOS | H743 的电压档。Rev Y/W 没有 VOS0，CPU 上限是 400 MHz。Rev V 要先等到 VOS1 就绪，再进入 VOS0，才谈 480 MHz | 封面写的最高主频在每一片硅上都能直接用 | [第 28 章](../v4-platforms/28-chip-migration-differences.md) |
+
+## 引脚、GPIO 与复用
+
+（本组深读落点：[第 9 章](../v1-drivers/09-gpio.md)）
+
+| 术语 | 本书中的含义 | 常见误解 | 深读 |
+| --- | --- | --- | --- |
+| 5 V tolerant | 部分引脚在数据手册允许的条件下可以承受 5 V 输入。不是所有脚，也不能当成 5 V 推挽输出 | 标成 FT 的脚就可以直接驱动 5 V 器件的电源轨 | [第 9 章](../v1-drivers/09-gpio.md) |
+| AF | 复用功能。把引脚交给某个外设，而不是交给 GPIO 的输出数据位。编号以该封装的复用表为准 | 同一个 AF 编号在 F1、G0、H7 上表示同一个外设 | [第 9 章](../v1-drivers/09-gpio.md) |
+| Analog mode | GPIO 的模拟模式，供 ADC、DAC 或比较器使用，数字输入缓冲不再表示引脚逻辑电平 | 模拟模式下读 IDR 仍然是可靠的数字采样 | [第 9 章](../v1-drivers/09-gpio.md) |
+| BSRR | 置位/复位寄存器。被写 1 的位会置位或清零，写 0 的位保持不变，避免读改写互相踩踏 | 要改一个脚必须先读 ODR 再写回 | [第 9 章](../v1-drivers/09-gpio.md) |
+| GPIO | 通用输入输出。模式、上下拉、速度和复用都按具体引脚配置 | 复位后的默认模式在所有系列上都是推挽输出 | [第 9 章](../v1-drivers/09-gpio.md) |
+| GPIO speed | 输出驱动斜率的档位，影响边沿和噪声。它不是“把这只脚变成那个频率的时钟” | 选了 50 MHz 档，翻脚频率就会达到 50 MHz | [第 9 章](../v1-drivers/09-gpio.md) |
+| Open-drain | 开漏：只能主动拉低，释放后靠上拉变高 | 写 1 会主动输出高电平 | [第 9 章](../v1-drivers/09-gpio.md) |
+| Pull-up / Pull-down | 片内弱上拉或弱下拉。能稳定悬空输入，不能代替 I2C 所需的外部上拉电阻 | 打开片内上拉之后，I2C 就可以不焊电阻 | [第 9 章](../v1-drivers/09-gpio.md) |
+| Push-pull | 推挽：高电平和低电平都由输出级主动驱动 | 推挽可以接在多主机共用的开漏总线上 | [第 9 章](../v1-drivers/09-gpio.md) |
+| Remap | F1 用 AFIO 重映射把外设改到另一组脚。F4 及以后多数字列改为 AF 编号，没有同一套 remap 寄存器 | F1 的重映射代码可以原样写进 G0 或 H7 | [第 9 章](../v1-drivers/09-gpio.md) |
+
+## 中断与内核异常
+
+（本组深读落点：[第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)）
+
+| 术语 | 本书中的含义 | 常见误解 | 深读 |
+| --- | --- | --- | --- |
+| BASEPRI | 只屏蔽优先级数值不低于阈值的可配置异常。写 0 表示不按这个阈值屏蔽 | BASEPRI 会挡住 NMI 和 HardFault | [第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) |
+| EXTI | 把 GPIO 或内部事件接到中断/事件线的控制器。同一条线往往由同一编号的多个端口脚共享 | 每个 GPIO 都有独立的 EXTI 编号 | [第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) |
+| ISR | 中断服务例程。应尽快清源并退出，把耗时工作留给主循环或任务 | ISR 里可以阻塞等待，只要平均时间不长 | [第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) |
+| NVIC | Cortex-M 嵌套向量中断控制器。STM32 上数值越小，逻辑优先级越高 | 数值越大，逻辑优先级越高 | [第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) |
+| PendSV | 可挂起的系统服务异常。RTOS 通常在这里做上下文切换，避免在高优先级中断里直接切换 | 任何中断返回时都会自动切换任务 | [第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) |
+| Preemption | 抢占优先级。更高的抢占优先级可以打断正在执行的低优先级 ISR | 子优先级不同的中断也会互相抢占 | [第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) |
+| PRIMASK | 置 1 后屏蔽可配置优先级的中断。NMI 和 HardFault 仍然可以进入 | 关总中断等于芯片上一切异常都停了 | [第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) |
+| Priority grouping | 把优先级字段拆成抢占位和子优先级位。改变分组会改变已有数值的含义 | 分组只影响新写的优先级，旧值自动保持原意 | [第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) |
+| Subpriority | 子优先级。抢占级相同时，只决定谁先被响应，不能互相打断 | 子优先级可以用来让某个 ISR 打断另一个 | [第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) |
+| SVC | 系统调用异常。常用于从线程进入受控的内核服务，而不是普通 GPIO 中断 | SVC 和普通外设中断的优先级规则不同，所以可以在 ISR 里随便调用 | [第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) |
+| SysTick | 内核系统节拍定时器。HAL 常用它做毫秒时基，RTOS 也常用它或别的定时器做 tick | HAL 时基和 RTOS tick 可以各自把 SysTick 初始化一次而互不影响 | [第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) |
+| Tail-chaining | 异常退出时若已有挂起异常，硬件可省略一部分压栈。它减少开销，不改变谁有权抢占 | 尾链打开后，低优先级中断也能插入高优先级 | [第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) |
+| Vector table | 异常入口表，开头是初始栈顶和复位向量。应用程序若不住在默认地址，入口表也要跟着走 | 跳到应用的 Reset_Handler 之后，向量表仍然留在 bootloader | [第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) |
+| VTOR | 向量表偏移寄存器。重定位时要满足编程手册的对齐要求，不能任意字节偏移 | 只要修改链接脚本里的 Flash 起始地址，VTOR 会自动正确 | [第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) |
+
+## 定时器与 PWM
+
+（本组深读落点：[第 12 章](../v1-drivers/12-timers-pwm.md)）
+
+| 术语 | 本书中的含义 | 常见误解 | 深读 |
+| --- | --- | --- | --- |
+| ARR | 自动重装值，决定计数周期的上界。它和输入时钟、PSC 一起才得到频率 | ARR 就是频率 | [第 12 章](../v1-drivers/12-timers-pwm.md) |
+| CCR | 捕获/比较寄存器。比较模式里决定占空比，捕获模式里锁存边沿时刻的计数值 | 只用于 PWM，不能做输入捕获 | [第 12 章](../v1-drivers/12-timers-pwm.md) |
+| Dead time | 互补输出之间插入的死区，用来降低桥臂直通的可能。只有带互补输出的定时器才有 | 任意通用定时器都有互补 PWM 和死区 | [第 12 章](../v1-drivers/12-timers-pwm.md) |
+| Encoder mode | 用两路正交输入计数位置。两相接反时计数方向相反 | 编码器模式输出的是已换算好的机械角度 | [第 12 章](../v1-drivers/12-timers-pwm.md) |
+| Input capture | 在输入边沿把计数器锁进 CCR，用来量脉宽或周期 | 捕获值直接就是微秒，与定时器时钟无关 | [第 12 章](../v1-drivers/12-timers-pwm.md) |
+| MOE | 主输出使能。高级定时器的互补输出在 MOE 关闭时不向外输出，刹车可以清掉它 | 置了 CCER 使能位，互补 PWM 就一定出现在引脚上 | [第 12 章](../v1-drivers/12-timers-pwm.md) |
+| PSC | 预分频。计数时钟大约是定时器输入时钟除以 (PSC+1)。新的 PSC 通常在更新事件才装载 | PSC 写成目标分频比，而且写完立即生效 | [第 12 章](../v1-drivers/12-timers-pwm.md) |
+| PWM | 用周期和占空比表达平均能量或控制量。负载是否线性还要看滤波器和功率级 | 占空比与所有负载的物理输出都成正比 | [第 12 章](../v1-drivers/12-timers-pwm.md) |
+| TRGO | 定时器发给 ADC、DAC 或其他定时器的触发输出。连接哪一个外设要看该芯片的触发表 | 任何更新事件都会自动连到任何 ADC | [第 12 章](../v1-drivers/12-timers-pwm.md) |
+| Update event | 溢出、下溢或软件触发产生的更新。影子寄存器在这时装载，也可作为 TRGO 的来源 | 更新中断频率永远等于 PWM 引脚上看到的频率 | [第 12 章](../v1-drivers/12-timers-pwm.md) |
+
+## UART、I2C、SPI、CAN 与 USB
+
+（本组深读落点：[第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 16 章](../v1-drivers/16-i2c-spi.md)、[第 35 章](../v4-platforms/35-can-usb-fieldbus.md)）
+
+| 术语 | 本书中的含义 | 常见误解 | 深读 |
+| --- | --- | --- | --- |
+| 7-bit address | I2C 常见的 7 位从机地址。线上的第一个字节是这 7 位加上读/写位。HAL 的 DevAddress 要左移 1 位：SSD1306 的 `0x3C` 写成 `0x78` | 扫描器显示的 7 位地址就是总线上的 8 位帧 | [第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 16 章](../v1-drivers/16-i2c-spi.md)、[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| ACK / NACK | I2C 第 9 个时钟由接收方决定是否拉低确认。NACK 表示这一字节不被确认 | 收到 ACK 就证明寄存器地址和数据语义都正确 | [第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 16 章](../v1-drivers/16-i2c-spi.md)、[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| bxCAN | F1 一类芯片上的经典 CAN 控制器 | 与 H7 的 FDCAN 寄存器兼容 | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| BS1 / BS2 | CAN 位段 1 和位段 2。一个位时间还要加上固定的 1 个同步段。采样点是 (1+BS1) 除以全部时间份额 | 预分频可以写小数，控制器会按心里那个数去跑 | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| TEC | 发送错误计数。计到 256 时节点进入总线关闭，不再发送 | 没有别的节点应答，只说明收发器坏了 | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| Clock stretching | I2C 从机拉住 SCL，让主机等待。主机是否允许、等多久，要单独看控制器和从机手册 | 所有 STM32 主机都会无限等待从机拉钟 | [第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 16 章](../v1-drivers/16-i2c-spi.md)、[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| CPHA / CPOL | SPI 的采样相位与空闲时钟极性。必须和从机器件时序图一致 | 只要时钟频率一样，四种模式可以随便选 | [第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 16 章](../v1-drivers/16-i2c-spi.md)、[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| CRC | 检测意外改动的循环冗余校验 | CRC 能证明来源身份或抵抗恶意篡改 | [第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 16 章](../v1-drivers/16-i2c-spi.md)、[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| FDCAN | 支持 CAN FD 的控制器。帧格式和寄存器都不同于 bxCAN | 只是 bxCAN 改了个名字 | [第 28 章](../v4-platforms/28-chip-migration-differences.md) |
+| FE / NE | UART 帧错误 / 噪声错误。说明线上电平时序异常，不自动等于丢弃了哪一个应用层字段 | 没看到 ORE 就表示每一帧都完整 | [第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 16 章](../v1-drivers/16-i2c-spi.md)、[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| Full duplex | SPI 在每个时钟沿同时移出和移入一位。主机要读数据，就必须提供时钟 | 读寄存器时可以把 MOSI 悬空，从机仍会吐出数据 | [第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 16 章](../v1-drivers/16-i2c-spi.md)、[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| IDLE | UART 接收线保持一个帧时间以上的空闲 | IDLE 天然等于协议帧结束 | [第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 16 章](../v1-drivers/16-i2c-spi.md)、[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| NSS | SPI 片选。许多器件在 NSS 上升沿才执行命令；硬件 NSS 和软件拉脚不是同一件事 | 片选可以一直拉低，事务边界不影响命令 | [第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 16 章](../v1-drivers/16-i2c-spi.md)、[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| ORE | UART 接收溢出。新字节到来时上一字节还没取走 | 只要开了 DMA 就不可能出现 ORE | [第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 16 章](../v1-drivers/16-i2c-spi.md)、[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| Repeated START | 不释放总线的再次起始。读寄存器时常是“写指针 + 重复起始 + 读数据” | 两次传输之间必须先 STOP，否则从机不认 | [第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 16 章](../v1-drivers/16-i2c-spi.md)、[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| TC / TXE | 发送完成 / 发送数据寄存器空。TXE 表示可以写入下一字节，TC 表示移位寄存器里的最后一位也已离开引脚 | TXE=1 表示线上最后一位已经发送完 | [第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 16 章](../v1-drivers/16-i2c-spi.md)、[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| UART 8N1 | 8 个数据位、无校验、1 个停止位。帧的两端还有起始位和停止位 | 8N1 的“8”已经包含起始位 | [第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 16 章](../v1-drivers/16-i2c-spi.md)、[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| USARTDIV / BRR | F1 在 16 倍过采样下 `USARTDIV = fPCLK / (16 × 波特率)`。BRR 高位是整数，低 4 位是小数。USART1 挂在 APB2：72 MHz、115200 得到 39.0625，BRR 为 `0x271`，分频误差为 0 | 表上同一行的 0.16% 就是已经写进 BRR 的误差 | [第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 16 章](../v1-drivers/16-i2c-spi.md)、[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| USB CDC / HID | USB 通信设备类（虚拟串口）/ 人机接口类 | 枚举成功就代表所有主机和所有应用软件都兼容 | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+
+## ADC、DAC 与 DMA
+
+（本组深读落点：[第 14 章](../v1-drivers/14-dma.md)、[第 15 章](../v1-drivers/15-adc-dac-sampling.md)、[第 34 章](../v4-platforms/34-multicore-cache.md)）
+
+| 术语 | 本书中的含义 | 常见误解 | 深读 |
+| --- | --- | --- | --- |
+| ADCCLK | F103 上 ADC 的时钟，从 APB2 再分频，RM0008 规定不得超过 14 MHz。72 MHz 的 APB2 取 ÷6 得到 12 MHz。12 位转换在采样时间之外再加 12.5 个该时钟周期 | ADC 时钟等于 SYSCLK，分频可以随便取 ÷2 或 ÷4 | [第 14 章](../v1-drivers/14-dma.md)、[第 15 章](../v1-drivers/15-adc-dac-sampling.md)、[第 34 章](../v4-platforms/34-multicore-cache.md) |
+| Cache coherency | CPU Cache 与 DMA 看到的内存副本一致。带 D-Cache 的内核上要按缓存行做清洁或无效化。H7 的 D-Cache 行长是 32 字节，区间和缓冲区都按这个长度对齐 | DMA 完成中断会自动刷新 D-Cache | [第 34 章](../v4-platforms/34-multicore-cache.md) |
+| Calibration | ADC 校准。许多系列在上电或改变时钟后要求先校准，完成前的码值不能当结果 | 校准是出厂一次完成的，用户代码不用管 | [第 14 章](../v1-drivers/14-dma.md)、[第 15 章](../v1-drivers/15-adc-dac-sampling.md)、[第 34 章](../v4-platforms/34-multicore-cache.md) |
+| Circular mode | DMA 循环模式：传输计数耗尽后自动重装并继续。它不定义业务上的一帧从哪到哪 | 循环 DMA 的每次中断都是一整帧新数据 | [第 14 章](../v1-drivers/14-dma.md)、[第 15 章](../v1-drivers/15-adc-dac-sampling.md)、[第 34 章](../v4-platforms/34-multicore-cache.md) |
+| D-Cache | Cortex-M7 一类内核上的数据缓存。M4 没有同名的 D-Cache 维护问题 | 所有 STM32 都要在每次 DMA 后清洁 D-Cache | [第 34 章](../v4-platforms/34-multicore-cache.md) |
+| DMA | 在外设与内存、或内存与内存之间搬运数据的硬件控制器 | DMA 不占 CPU 就等于不会丢数据 | [第 14 章](../v1-drivers/14-dma.md)、[第 15 章](../v1-drivers/15-adc-dac-sampling.md)、[第 34 章](../v4-platforms/34-multicore-cache.md) |
+| DTCM | 与 Cortex-M7 紧耦合的数据内存 | 所有 DMA 控制器都能访问 DTCM | [第 34 章](../v4-platforms/34-multicore-cache.md) |
+| HT / TC | DMA 半传输 / 传输完成事件 | HT 和 TC 在所有模式下都代表一帧业务数据 | [第 14 章](../v1-drivers/14-dma.md)、[第 15 章](../v1-drivers/15-adc-dac-sampling.md)、[第 34 章](../v4-platforms/34-multicore-cache.md) |
+| Memory-to-memory | 由软件触发的存储器到存储器搬运，不使用外设请求。不是每个 DMA 控制器都有这种模式 | 打开之后外设请求仍按原通道正常工作 | [第 14 章](../v1-drivers/14-dma.md)、[第 15 章](../v1-drivers/15-adc-dac-sampling.md)、[第 34 章](../v4-platforms/34-multicore-cache.md) |
+| NDTR / CNDTR | DMA 剩余传输项数。单位是数据项，不是字节；宽度为半字或字时更不能当成字节数 | 读到的剩余量永远是字节数 | [第 14 章](../v1-drivers/14-dma.md)、[第 15 章](../v1-drivers/15-adc-dac-sampling.md)、[第 34 章](../v4-platforms/34-multicore-cache.md) |
+| Regular / Injected | 规则组按设定顺序转换。具备注入组的型号可以插入更高优先级的转换；不是每颗 STM32 都有注入组 | 注入通道在所有系列上都存在，而且结果寄存器与规则组相同 | [第 14 章](../v1-drivers/14-dma.md)、[第 15 章](../v1-drivers/15-adc-dac-sampling.md)、[第 34 章](../v4-platforms/34-multicore-cache.md) |
+| Sampling time | 采样开关闭合、向采样电容充电的时间。源阻抗高时要加长 | 采样时间只影响转换速度，不影响码值对不对 | [第 14 章](../v1-drivers/14-dma.md)、[第 15 章](../v1-drivers/15-adc-dac-sampling.md)、[第 34 章](../v4-platforms/34-multicore-cache.md) |
+| SAR ADC | 逐次逼近型模数转换器。有效位数还受参考、源阻抗、噪声和校准影响 | 转换位数越高，实际精度必然等于这个位数 | [第 14 章](../v1-drivers/14-dma.md)、[第 15 章](../v1-drivers/15-adc-dac-sampling.md)、[第 34 章](../v4-platforms/34-multicore-cache.md) |
+| SRAM domain | 不同 SRAM 区域对 DMA 的可达性不同，H7 上尤其明显 | 只要是 RAM，任意 DMA 都能读写 | [第 34 章](../v4-platforms/34-multicore-cache.md) |
+| VDDA / VREF | 模拟电源和转换参考。把码值换算成电压时要用实际参考，而不是名义上的 3.3 V | VDDA 一定等于数字 VDD，参考也一定是 3.3 V | [第 14 章](../v1-drivers/14-dma.md)、[第 15 章](../v1-drivers/15-adc-dac-sampling.md)、[第 34 章](../v4-platforms/34-multicore-cache.md) |
+
+## Flash、启动与低功耗
+
+（本组深读落点：[第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](../v2-reliability/18-low-power.md)、[第 28 章](../v4-platforms/28-chip-migration-differences.md)）
+
+| 术语 | 本书中的含义 | 常见误解 | 深读 |
+| --- | --- | --- | --- |
+| Backup domain | 备份域，通常包含 RTC、备份寄存器和 LSE。写之前一般要打开电源接口时钟并解除写保护 | 主电源在，备份域就可以直接写 | [第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](../v2-reliability/18-low-power.md)、[第 28 章](../v4-platforms/28-chip-migration-differences.md) |
+| BOOT0 | 启动选择脚。它和 BOOT1 或选项字节的组合决定从 Flash、系统存储器还是 SRAM 启动，组合因系列而异 | BOOT0 悬空时启动模式是确定的 | [第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](../v2-reliability/18-low-power.md)、[第 28 章](../v4-platforms/28-chip-migration-differences.md) |
+| Dual bank | 部分型号把 Flash 分成两个 bank，可以一边执行一边擦写另一边。没有双 bank 就不能照搬交换流程 | 所有 STM32 都能做银行交换升级 | [第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](../v2-reliability/18-low-power.md)、[第 28 章](../v4-platforms/28-chip-migration-differences.md) |
+| IAP | 应用内编程：由已经运行的程序接收新镜像并写入 Flash。能跳转不等于升级安全 | 能写 Flash 并跳转就等于安全升级 | [第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](../v2-reliability/18-low-power.md)、[第 28 章](../v4-platforms/28-chip-migration-differences.md) |
+| FLASH_KEYR | F1 的 Flash 解锁寄存器。先写 `0x45670123`，再写 `0xCDEF89AB`，LOCK 才解除 | 两把钥匙可以交换，或者写过一次就一直开着 | [第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](../v2-reliability/18-low-power.md)、[第 28 章](../v4-platforms/28-chip-migration-differences.md) |
+| IWDG / WWDG | 独立看门狗多用 LSI；窗口看门狗用 APB 时钟，喂得太早也会复位 | 两个看门狗都只是“超时就复位”，提前喂总是安全的 | [第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) |
+| Option bytes | 选项字节，存放读保护、写保护、BOR 和启动相关配置。改写通常要解锁，并可能在复位后才生效 | 选项字节和普通 Flash 变量一样，随手写完立即生效 | [第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](../v2-reliability/18-low-power.md)、[第 28 章](../v4-platforms/28-chip-migration-differences.md) |
+| Page / Sector | Flash 的擦除单位。F1 常用页，F4 和 H7 常用扇区，大小都要查该型号 | 擦除粒度在所有系列上都是 1 KB 或 2 KB | [第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](../v2-reliability/18-low-power.md)、[第 28 章](../v4-platforms/28-chip-migration-differences.md) |
+| RDP | 读保护级别。升高后会限制调试器读 Flash；退回级别 0 往往伴随整片擦除，级别 2 在多数型号上不能再退回 | 提高级别不影响 Flash 内容，也总能无损恢复 | [第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](../v2-reliability/18-low-power.md)、[第 28 章](../v4-platforms/28-chip-migration-differences.md) |
+| RTC | 实时时钟，位于备份域。改日历前要进入它要求的初始化模式 | RTC 使用 SYSCLK，主电源一断时间就丢 | [第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](../v2-reliability/18-low-power.md)、[第 28 章](../v4-platforms/28-chip-migration-differences.md) |
+| Sleep / Stop / Standby | 由浅到深的低功耗模式。Sleep 多停 CPU 时钟；Stop 多停高速时钟并保持 SRAM；Standby 更接近掉电复位，SRAM 通常丢失。保持项和唤醒后的时钟以该系列手册为准 | 三种模式只是电流数字不同，唤醒后代码从停下的地方照常运行 | [第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](../v2-reliability/18-low-power.md)、[第 28 章](../v4-platforms/28-chip-migration-differences.md) |
+| System memory | 出厂引导程序所在的系统存储区，不在用户 Flash 里。常用于串口或 USB 下载 | 系统存储器里的 bootloader 就是用户 IAP 工程 | [第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](../v2-reliability/18-low-power.md)、[第 28 章](../v4-platforms/28-chip-migration-differences.md) |
+| VBAT | 备份域供电脚。主电源掉电时由电池或后备电路给 RTC 供电 | VBAT 可以替代整板 3.3 V 电源 | [第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](../v2-reliability/18-low-power.md)、[第 28 章](../v4-platforms/28-chip-migration-differences.md) |
+| Watchdog | 用独立或窗口计数器监督软件是否还在规定时间内表达“健康” | 在固定中断里无条件喂狗就能证明系统健康 | [第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](../v2-reliability/18-low-power.md)、[第 28 章](../v4-platforms/28-chip-migration-differences.md) |
+| WFI / WFE | 等待中断 / 等待事件。能唤醒它们的条件不同，事件不一定进入 ISR | WFI 和一句空循环的功耗相同 | [第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](../v2-reliability/18-low-power.md)、[第 28 章](../v4-platforms/28-chip-migration-differences.md) |
+
+## RTOS 与并发
+
+（本组深读落点：[第 21–24 章](../v3-rtos/21-why-rtos.md)、[第 25 章](../v3-rtos/25-memory-management.md)）
+
+| 术语 | 本书中的含义 | 常见误解 | 深读 |
+| --- | --- | --- | --- |
+| Binary semaphore | 取值为 0 或 1 的信号量，常用于“事情发生了”的同步。它不带优先级继承 | 二值信号量和互斥量可以互换着保护同一资源 | [第 21–24 章](../v3-rtos/21-why-rtos.md)、[第 25 章](../v3-rtos/25-memory-management.md) |
+| CMSIS | Arm 的内核与设备软件接口标准，包括内核头文件和启动约定 | CMSIS 等于某一家的 HAL | [第 21–24 章](../v3-rtos/21-why-rtos.md)、[第 25 章](../v3-rtos/25-memory-management.md) |
+| CMSIS-RTOS2 | 盖在具体内核上的一套 RTOS API。接口相同不等于底下的 FreeRTOS、RT-Thread 或别的实现行为相同 | 换成 CMSIS-RTOS2 之后就不必再看具体内核的版本和配置 | [第 21–24 章](../v3-rtos/21-why-rtos.md)、[第 25 章](../v3-rtos/25-memory-management.md) |
+| Context switch | 保存一个执行流的寄存器、恢复另一个。RTOS 常把这件事放在 PendSV | 每次中断返回都会切换到另一个任务 | [第 21–24 章](../v3-rtos/21-why-rtos.md)、[第 25 章](../v3-rtos/25-memory-management.md) |
+| Critical section | 短暂关中断或进调度锁的区域。里面不能阻塞，也不能做耗时工作 | 临界区越长，系统越安全 | [第 21–24 章](../v3-rtos/21-why-rtos.md)、[第 25 章](../v3-rtos/25-memory-management.md) |
+| FromISR | 中断里可调用的那一组内核 API。调用者的 NVIC 优先级必须符合该内核的阈值 | ISR 里调用普通的延时或获取互斥量也是安全的 | [第 21–24 章](../v3-rtos/21-why-rtos.md)、[第 25 章](../v3-rtos/25-memory-management.md) |
+| Heap | 这里多指内核自己的堆。任务栈、内核堆、C 库堆和 DMA 缓冲区不是同一块内存 | 一个 malloc 成功就说明四个堆都还有空间 | [第 21–24 章](../v3-rtos/21-why-rtos.md)、[第 25 章](../v3-rtos/25-memory-management.md) |
+| Idle task | 没有其他就绪任务时运行的空闲任务。它的钩子里不能阻塞 | 空闲任务占用率高，说明实时性一定很好 | [第 21–24 章](../v3-rtos/21-why-rtos.md)、[第 25 章](../v3-rtos/25-memory-management.md) |
+| MSP / PSP | 主栈指针 / 进程栈指针。异常常用 MSP，RTOS 任务常用 PSP | 任务和异常始终共用同一个栈 | [第 21–24 章](../v3-rtos/21-why-rtos.md)、[第 25 章](../v3-rtos/25-memory-management.md) |
+| Mutex | 带所有权、通常带优先级继承的互斥量，用来保护共享资源。不能在 ISR 中获取 | 互斥量可以在中断里拿来防止重入 | [第 21–24 章](../v3-rtos/21-why-rtos.md)、[第 25 章](../v3-rtos/25-memory-management.md) |
+| Priority inversion | 低优先级持有资源、高优先级因此等待。优先级继承只缓解互斥量协议覆盖的那一种情形 | 只要用了 RTOS，优先级反转就不会发生 | [第 21–24 章](../v3-rtos/21-why-rtos.md)、[第 25 章](../v3-rtos/25-memory-management.md) |
+| Queue | 任务之间传递有长度上限的数据。队满或队空时线程可以阻塞；ISR 必须用非阻塞的 FromISR 版本 | 队列是无限长的，写失败只会发生在没用 RTOS 的时候 | [第 21–24 章](../v3-rtos/21-why-rtos.md)、[第 25 章](../v3-rtos/25-memory-management.md) |
+| RTOS tick | 内核的时间节拍。它决定延时分辨率，也带来周期开销 | tick 越快，实时性必然越好，而且没有成本 | [第 21–24 章](../v3-rtos/21-why-rtos.md)、[第 25 章](../v3-rtos/25-memory-management.md) |
+| Task | 有独立栈和优先级的执行流。阻塞时让出 CPU | 任务就是一个 while 循环，栈和优先级可以以后再补 | [第 21–24 章](../v3-rtos/21-why-rtos.md)、[第 25 章](../v3-rtos/25-memory-management.md) |
+| WCET | 最坏执行时间。调度预算要按上界，而不是按几次运行的平均值 | 多次平均运行时间可以代替最坏时间 | [第 21–24 章](../v3-rtos/21-why-rtos.md)、[第 25 章](../v3-rtos/25-memory-management.md) |
+
+## 以太网、lwIP 与 MQTT
+
+（本组深读落点：[第 33 章](../v4-platforms/33-network-protocol-stack.md)）
+
+| 术语 | 本书中的含义 | 常见误解 | 深读 |
+| --- | --- | --- | --- |
+| DHCP | 自动取得 IPv4 地址的协议。地址还没租到时，业务连接不该算作已配置完成 | 网线一插，IP 就已经可用 | [第 33 章](../v4-platforms/33-network-protocol-stack.md) |
+| DNS | 把名字解析成地址。解析失败和随后的 TCP 连接失败不是同一层问题 | ping 的是 IP 地址，所以 DNS 与连通性无关 | [第 33 章](../v4-platforms/33-network-protocol-stack.md) |
+| ICMP | 网络层的控制报文。ping 使用其中的回声请求；ping 通只说明当时这条回声走通了 | ping 通就表示 TCP 端口、MQTT 和 TLS 都可用 | [第 33 章](../v4-platforms/33-network-protocol-stack.md) |
+| lwIP | 面向小型系统的 TCP/IP 实现。raw、netconn 和 socket 的线程模型由移植和 NO_SYS 决定，回调里不能假设可以阻塞等待同一条线程 | lwIP 的 API 和 POSIX socket 在任何配置下都可以混用 | [第 33 章](../v4-platforms/33-network-protocol-stack.md) |
+| MAC | MCU 里的以太网媒体访问控制器。它不含板子上那颗 PHY 的模拟前端 | 芯片手册里的以太网章节已经包含网口变压器和 PHY 寄存器 | [第 33 章](../v4-platforms/33-network-protocol-stack.md) |
+| MDIO | 管理 PHY 寄存器的串行接口。链路是否起来，先看 PHY 状态，而不是只看协议栈的网口标志 | 协议栈显示接口 up，物理链路就一定已经连通 | [第 33 章](../v4-platforms/33-network-protocol-stack.md) |
+| MQTT | 跑在 TCP 上的发布/订阅应用协议。会话、主题和报文标识都在 TCP 已经连通之后才有意义 | MQTT 连上就表示业务数据已经写入非易失存储 | [第 33 章](../v4-platforms/33-network-protocol-stack.md) |
+| MQTT QoS | 协议规定的交接等级。QoS 1 是至少一次，应用层仍可能看到重复消息 | QoS 数字越大，业务就一定只被处理一次 | [第 33 章](../v4-platforms/33-network-protocol-stack.md) |
+| PHY | 网口侧的物理层收发器，多数设计里是片外芯片，经 RMII/MII 和 MDIO 与 MAC 相连 | PHY 地址和寄存器在所有板上都是 0 | [第 33 章](../v4-platforms/33-network-protocol-stack.md) |
+| RMII | MAC 与 PHY 之间的简化媒体接口，100 Mbit/s 时参考时钟是 50 MHz。MII 使用更多并行线 | RMII 和 MII 只是连接器名字不同，时钟可以随便接 | [第 33 章](../v4-platforms/33-network-protocol-stack.md) |
+| TCP | 可靠的字节流。对端的 ACK 只说明 TCP 收到了字节，不说明应用程序已经处理 | 收到 ACK 就可以删除本地的业务记录 | [第 33 章](../v4-platforms/33-network-protocol-stack.md) |
+| TLS | 传输层安全。握手成功说明当时按配置验证了证书链；设备时间不对时，证书有效期判断会错 | 打开 TLS 就等于身份、时间和业务数据都已经可信 | [第 33 章](../v4-platforms/33-network-protocol-stack.md) |
+
+## 调试
+
+（本组深读落点：[第 20 章](../v2-reliability/20-debug-performance.md)、[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)）
+
+| 术语 | 本书中的含义 | 常见误解 | 深读 |
+| --- | --- | --- | --- |
+| BFAR / MMFAR | 总线故障地址 / 存储器管理故障地址。只有对应的“地址有效”标志置位时，这个地址才有意义 | HardFault 一发生，这两个寄存器里就是肇事地址 | [第 20 章](../v2-reliability/20-debug-performance.md)、[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) |
+| Breakpoint | 让内核在某条指令停下。外设、DMA 和看门狗是否一起停，取决于调试停机配置 | 断点住了，板上的电机、总线和看门狗也都冻结了 | [第 20 章](../v2-reliability/20-debug-performance.md)、[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) |
+| CFSR | 可配置故障状态寄存器，含用法、总线和存储器管理故障的标志 | 只看 HardFault 这个名字就能知道是空指针还是除零 | [第 20 章](../v2-reliability/20-debug-performance.md)、[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) |
+| DBGMCU | 调试时的低功耗控制。打开对应位后，Sleep、Stop 或 Standby 期间调试器才容易留住内核 | 进了低功耗仍然能单步，是调试器的默认行为 | [第 20 章](../v2-reliability/20-debug-performance.md)、[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) |
+| DWT | 数据观察点与跟踪单元，其中的周期计数器可用来量间隔。使用前通常要打开跟踪使能 | DWT 周期数不打开任何控制位就会自己累加 | [第 20 章](../v2-reliability/20-debug-performance.md)、[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) |
+| HardFault | 优先级最高的一类故障异常，或其他故障升级后的落点。原因要结合 HFSR、CFSR 和压栈的 PC | 看到 HardFault 就只需要复位，不必记录寄存器 | [第 20 章](../v2-reliability/20-debug-performance.md)、[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) |
+| JTAG | 多线调试接口，通常占 TMS、TCK、TDI、TDO。这些脚要当 GPIO 时，必须先确认调试口已释放 | JTAG 和 SWD 占用的引脚完全相同 | [第 20 章](../v2-reliability/20-debug-performance.md)、[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) |
+| SCB | 系统控制块，含故障状态、向量表偏移和部分系统控制寄存器 | HardFault 只看 HFSR 就能找到根因 | [第 20 章](../v2-reliability/20-debug-performance.md)、[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) |
+| SWD / SWO | 两线调试接口 / 单线跟踪输出。SWO 是否引到封装上，要看具体型号和封装 | SWO 在所有封装上都默认可用，而且不占复用脚 | [第 20 章](../v2-reliability/20-debug-performance.md)、[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) |
+| SWDIO / SWCLK | SWD 的数据脚和时钟脚。部分 G0 上 SWCLK 与 BOOT0 是同一只脚，接调试器会影响启动采样 | 调试器只在下载的那一瞬间占用这两个脚 | [第 20 章](../v2-reliability/20-debug-performance.md)、[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) |
+
+## 工程习惯
+
+（本组深读落点：[第 5–7 章](../v0-foundations/05-toolchain-four-steps.md)）
+
+| 术语 | 本书中的含义 | 常见误解 | 深读 |
+| --- | --- | --- | --- |
+| CubeMX | ST 的图形配置工具，用来生成时钟、引脚和初始化代码。生成结果仍要对照数据手册的复用表 | 图形界面保存之后，引脚冲突和时钟超限都不可能再出现 | [第 5–7 章](../v0-foundations/05-toolchain-four-steps.md) |
+| HAL | ST 的硬件抽象层。它减少直接碰寄存器的次数，但不消除型号、电气和时序差异 | HAL 写完就可以不看参考手册 | [第 5–7 章](../v0-foundations/05-toolchain-four-steps.md) |
+| Linker script | 规定 Flash、RAM 的地址范围和段如何放置。IAP 改变应用起始地址时，链接脚本和向量表要一起改 | 链接脚本只影响变量名，不影响程序跑在哪一段地址 | [第 5–7 章](../v0-foundations/05-toolchain-four-steps.md) |
+| MPU | 内存保护单元，也可配置访问权限和缓存属性。它不是带虚拟内存的 MMU | MPU 能做虚拟地址分页，所以野指针会被自动映射走 | [第 5–7 章](../v0-foundations/05-toolchain-four-steps.md) |
+| Ring buffer | 读写位置绕回的有界队列。容量、满和空的判定要在设计里写明 | 加上 volatile 之后就自动线程安全，而且不会溢出 | [第 5–7 章](../v0-foundations/05-toolchain-four-steps.md) |
+| SPL | F1 常用的标准外设库，对寄存器做薄封装。函数名和 HAL 不是同一套 | SPL 例程可以和 Cube 生成的 HAL 工程无缝混编 | [第 5–7 章](../v0-foundations/05-toolchain-four-steps.md) |
+| `volatile` | 要求编译器按抽象机规则保留对易变对象的访问 | 它同时提供原子性、互斥、内存屏障和队列容量保证 | [第 5–7 章](../v0-foundations/05-toolchain-four-steps.md) |
+
+## 语言与构建
+
+（mcu 侧独有词条并入，深读落点：[第 1–7 章](../v0-foundations/01-c-memory-model.md)）
+
+| 术语 | 本书中的含义 | 常见误解 | 深读 |
+| --- | --- | --- | --- |
+| MMIO（内存映射外设） | 外设寄存器被编进地址空间，读写一个地址就是读写硬件 | 不是"内存"，地址后面没有存储单元，是外设引脚/状态机 | 第 1 章 |
+| 位域 / 掩码 | 一个 32 位寄存器里塞好几个字段，用移位+按位与各自取用 | 字段位置各芯片不同，别拿别家手册的偏移往这里套 | 第 3 章 |
+| ABI / 调用约定 | 函数怎么传参、谁清栈、返回时哪些寄存器必须原样还回来的"合同" | 不是某个库的 API，是编译器与汇编都要共同遵守的接口规则 | 第 3 章 |
+| 栈帧 | 一次函数调用在栈上划出的私有区域：局部变量、保存的寄存器、返回地址 | 栈溢出不是"变量太多"这么简单，中断嵌套也会吃栈 | 第 3 章 |
+| UB（未定义行为） | 标准不管的行为，编译器有权假设它不发生——于是优化出你看不懂的代码 | 不是"结果随机"，是"任何结果都可能，包括看起来对的结果" | 第 2 章 |
+| 预处理 / 编译 / 汇编 / 链接 | 四步构建：展开替换 → C 转汇编 → 汇编成目标文件 → 多目标文件按地址拼成可执行镜像 | "编译报错"和"链接报错"是两类问题，后者多是符号/地址/段 | 第 5 章 |
+| ELF / HEX / BIN | ELF 带符号和段信息给调试器；BIN 是纯二进制按地址烧；HEX 是带地址文本封装 | 烧录用 BIN/HEX，调试用 ELF，别拿 BIN 去看函数名 | 第 6 章 |
+| 链接脚本 | 规定各段放到哪块地址、栈从哪里开始的地图 | 段属性字母有限集，抄来的老写法可能在新 binutils 上报错 | 第 6 章 |
+| 启动文件 | 从复位向量到 `main` 之间那段汇编/C：填向量表、配栈、搬 .data、清 .bss | 不是"厂家加的胶水"，它决定你的全局变量凭什么有初值 | 第 6 章 |
+| map 文件 | 链接器输出的地址账本：每个符号落在哪个地址、哪个段占多大 | 体积优化第一步是读懂它，不是猜 | 第 6 章 |
+
+## ESP32-S3 与 ESP-IDF
+
+（mcu 侧独有词条，深读落点：[第 30–32 章](../v4-platforms/30-esp32s3-architecture-boot.md)；标「芯片相关」的词条只在写明的板卡上成立）
+
+| 术语 | 本书中的含义 | 常见误解 | 深读 |
+| --- | --- | --- | --- |
+| IDF | Espressif 官方开发框架：FreeRTOS + 协议栈 + 驱动全家桶 | 不是"只能 ESP32 用"，它是框架名，芯片是芯片 | 第 30 章 |
+| menuconfig | IDF 的图形化配置工具，生成 sdkconfig 头文件 | 不是"改完就生效"，要重新 build 才编进固件 | 第 30 章 |
+| GPIO 矩阵 （芯片相关） | 把任意 GPIO 路由到任意外设的信号交换矩阵 | 不是"引脚随便选"，高速信号仍走 IO_MUX 专线；strapping/Flash/USB 引脚是禁区 | 第 31 章 |
+| strapping 引脚 | 上电瞬间被采样以决定启动模式的引脚 | 把它们当普通输出口用，可能让芯片进不了下载模式 | 第 31 章 |
+| IRAM | 指令 RAM：Cache 关闭时仍能执行的代码所在 | 不是"所有代码都能放"，ISR 必须进 IRAM | 第 10 章、第 34 章 |
+| 中断与双核 | 中断可绑到指定核，跨核要软中断 | "关中断"只关当前核，另一核照跑 | 第 10 章、第 34 章 |
+| LEDC | LED Controller：硬件 PWM 发生器，支持渐变；也是"产生 PWM 的专用外设" | 通道数、位宽、高/低速模式各型号不同，S3 是 8 通道/14 位/仅低速 | 第 31 章 |
+| I2S | Inter-IC Sound：串行音频总线 | 不是"只能传声音"，高速同步数据也能用 | 第 31 章 |
+| 分区表 | 把 Flash 划成 app / nvs / otadata 等各用途区间 | 改分区会动到 OTA 双槽逻辑，改前先备份当前映射 | 第 17 章 |
+| NVS | Non-Volatile Storage：Flash 分区里的键值存储，配磨损均衡 | 不是文件系统，也不是"随便写 Flash"；存大块数据要用别的方案 | 第 17 章 |
+| OTA | 把新固件写进另一个 app 槽，校验通过再切换启动；断电安全靠回滚/标记 | 不是"写完再跳"；默认配置不开回滚时坏固件照样坐庄 | 第 17 章 |
+| ESP-NOW | 不需配网的设备间点对点无线帧 | 默认不加密，要保密得自己配密钥或在上层加一层 | 第 32 章 |
+| 深度睡眠 | 关掉大部分逻辑与时钟，靠唤醒源重启 | 唤醒后 RAM 内容未必还在，"睡前的变量"不能假设自动复原 | 第 18 章 |
+| TWDT | Task Watchdog Timer：内核级任务看门狗 | 不是"软件喂狗"，是硬件监控每个 CPU 核心 | 第 32 章 |
+| ULP | Ultra Low Power：独立低功耗协处理器 | 不是"主核休眠就行"，ULP 能在主核休眠时跑简单任务 | 第 18 章 |
+
+## GD32 与 RISC-V
+
+（mcu 侧独有词条，深读落点：[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)）
+
+| 术语 | 本书中的含义 | 常见误解 | 深读 |
+| --- | --- | --- | --- |
+| RCU | Reset and Clock Unit：GD32 的时钟控制单元，岗位等于 STM32 的 RCC | 不是"换个名字而已"，寄存器位域和切换流程有差异，逐字段对账才算读完 | 第 29 章 |
+| CK_SYS / CK_AHB / CK_APBx | 从源时钟逐级分频下来的实际频率账 | "主频 200MHz"不等于每个外设都吃到 200MHz | 第 29 章 |
+| IRC16M | GD32 的内部 16MHz RC 振荡器，对应 STM32 的 HSI 岗位 | 精度与温漂不如晶振，做时间基准要心里有数 | 第 29 章 |
+| RISC-V | 开源指令集架构；V 篇的 GD32VF103 用它而非 ARM Cortex-M | 指令集不同意味着工具链、启动与中断控制器全都要换一套 | 第 29 章 |
+| Bumblebee 内核 | 芯来科技为 GD32VF103 实现的 RISC-V 内核 | 它不是标准 RISC-V 的全部，CLIC 等部分是厂商扩展；也不是开源核，是商业核但文档公开 | 第 29 章 |
+| CLIC / ECLIC | Enhanced Core-Local Interrupt Controller：Bumblebee 的中断控制器 | 不是"RISC-V 版 NVIC"，入口、优先级模型、压栈都和 NVIC 不同，别照搬 NVIC 代码 | 第 29 章 |
+| MTIME / MTIMECMP | RISC-V 标准的 64 位机器定时器与比较寄存器，裸机延时的时间基准 | 它不属于某个外设总线，是内核级时间源；读写要分高低 32 位防撕裂 | 第 29 章 |
+
+## 项目系统与实物仪器
+
+（mcu 侧独有词条，深读落点：[第 40、41 章](../v6-labs-projects/40-lab-method-instruments.md)）
+
+| 术语 | 本书中的含义 | 常见误解 | 深读 |
+| --- | --- | --- | --- |
+| 四层架构 | 外设适配 / 公共核心 / RTOS 运行层 / 主机的分层设计 | 不是"层越多越好"，是为跨平台复用和可测试性 | 第 41 章 |
+| 影子拷贝 | 保存配置时先 memcpy 到临时缓冲区再释放锁写慢速外设 | 不是"多此一举"，是避免慢存储阻塞实时采样 | 第 41 章 |
+| 期限监控 | 要求任务在固定窗口内完成固定工作，否则视为卡死 | 不是"心跳包"，能检测到"活着但停滞"的隐性故障 | 第 41 章 |
+| 配置代次 | 用有界模序号区分新旧配置，防止回退到旧版本 | 不是"时间戳"，模序号能处理回绕 | 第 41 章 |
+| 双槽轮转 | EEPROM 配置保存用两个槽交替写入，保证断电安全 | 不是"备份"，是原子切换机制 | 第 41 章 |
+| 逻辑分析仪 | 只看高低电平，按通道抓时间序列，擅长解协议 | 它不看电压值，模拟量分不清 1.8V 还是 3.3V | 第 40 章 |
+| 示波器 | 看真实电压波形、边沿与幅值 | 探头衰减比设错，读数会整倍偏掉 | 第 40 章 |
+| 共阳 / 共阴 LED | 决定点亮是"输出低"还是"输出高" | 接反了灯不亮不代表 GPIO 坏 | 第 40 章 |
+
+## 会上手的几笔账（三张账，原样保留）
+
+
+前面每一行只给工作定义。这张表收的是在 BluePill 上会反复手算的数，每个数都按订货号 STM32F103C8T6 和对应手册算。换封装或换系列，整行数字都要回到那颗芯片的手册重算。算式都来自v1 第 8、9、13、16、15、11 章与本附录已经写下的数，这里只把它们收成可以对照实测的一页。
+
+| 账 | 钉在哪 | 数 | 写错时长什么样 |
+| --- | --- | --- | --- |
+| 这颗料 | 丝印 STM32F103C8T6，LQFP48。第 40 章：micro-USB 5 V 经 RT9193-33 到 3.3 V，PC13 灯低电平亮。容量在 `0x1FFFF7E0` 的低 16 位，单位 KB。中容量 DevID 是 `0x410`。DS5319 | 手册写 Flash 64 KB、SRAM 20 KB。读出来不是 64，就不要按 C8 的手册往下算 | 丝印或卖家写着 128 KB，链接脚本就把 128 KB 都用满 |
+| 时钟树 | 板载 HSE 8 MHz，PLL ×9。RM0008 时钟树；第 02 章那张表 | SYSCLK = HCLK = 72 MHz。APB1 ÷2，PCLK1 = 36 MHz；APB2 ÷1，PCLK2 = 72 MHz。APB 预分频不是 1 时，这条总线上的定时器时钟再 ×2，所以 TIM2–TIM7 仍是 72 MHz。TIM1 在 APB2，预分频为 1，不再 ×2 | 用 36 MHz 去除 PSC、ARR，PWM 频率偏一倍 |
+| Flash 等待 | `FLASH_ACR` 的 LATENCY。RM0008 的访问表，电压按 2.7–3.6 V。第 02 章 | 0–24 MHz 为 0 个等待，24–48 MHz 为 1，48–72 MHz 为 2。72 MHz 的例子写 2 | 只把 PLL 改成 ×9，LATENCY 还是 0，一跑就取指错 |
+| 115200 | 第 06 章的 BRR 公式。USART1 在 APB2，fPCLK = 72 MHz，16 倍过采样 | `72e6 / (16 × 115200) = 39.0625`。小数 `0.0625 × 16 = 1`，BRR = `0x271`。`72e6 / (16 × 39.0625) = 115200`，分频误差是 0。USART2 在 APB1，fPCLK = 36 MHz，同一章给出的 BRR `0x138` 才大约偏 0.16%。把 72 MHz 那一格的小数位丢掉、只用 39，也会得到大约 0.16% | 把表上的 0.16% 当成 USART1 已经偏了，或者把 USART2 的时钟当成 72 MHz |
+| 一位和一帧 | 第 06 章：115200 时一位约 8.68 µs。8N1 是起始位 + 8 个数据位 + 停止位，共 10 位。RM0008：RX 空闲满一个帧时间才置 IDLE | 一帧约 86.8 µs。这是线路空闲，不是协议里的长度字段 | 把 IDLE 中断当成对方的一包已经按协议结束 |
+| ADC | 第 02 章：APB2 72 MHz 再 ÷6。RM0008：ADC 时钟不得超过 14 MHz。第 09 章：12 位转换另加 12.5 个周期，采样档从 1.5 到 239.5 | ADCCLK = 12 MHz。最长一档 `239.5 + 12.5 = 252` 个周期，`252 / 12e6 = 21 µs`。÷4 会得到 18 MHz，越过 14 MHz | 用主频去除采样周期，或为了更快把预分频设成 ÷2、÷4 |
+| I2C 地址和上拉 | 第 07 章的地址和上拉表。第 03 章：F1 片内上下拉约 30–50 kΩ | SSD1306 的 7 位地址 `0x3C`，HAL 的 DevAddress 填 `0x78`。短总线外接 4.7 kΩ 到 3.3 V | 扫描器看到 `0x3C` 就原样填进 `HAL_I2C_Mem_Read`，或只开片内上拉就跑 400 kHz |
+| IWDG 1 秒 | 第 11 章：`T = 预分频 / f_LSI × (Reload + 1)`。LSI 典型 40 kHz，手册范围大约 30–60 kHz | 预分频 64 时，名义计数频率 625 Hz。1 秒要把 Reload 写成 624；写成 625 会多一个计数。同一套预分频和重载，LSI 若是 60 kHz，秒数大约只有 30 kHz 时的一半。名义最长一档大约 26 s | 把 40 kHz 算出来的秒数写成保证值，调试时又不冻住 IWDG |
+
+## 换系列之前先对的账
+
+上一张表只算 STM32F103C8T6。下面这些数已经写在第 04、05、12、13、15、16、23、24、25、27 章里，这里收成换芯片时要重算的一页。换订货号或换时钟，这一行就要重算。
+
+> [!WARNING]
+> 预分频、页大小和电压档看起来像可以照搬的整数。换系列之前，先把这一页的算式在新的时钟上重算一遍。7.2 这种除不尽的预分频，写进寄存器的是旁边那个整数。
+
+| 账 | 钉在哪 | 数 | 写错时长什么样 |
+| --- | --- | --- | --- |
+| 1 kHz | 第 05 章。挂在 APB1 的通用定时器，输入时钟按 72 MHz 算。向上计数 | PSC = 71，ARR = 999。`72e6 / ((71+1) × (999+1)) = 72e6 / (72 × 1000) = 1000 Hz`。同一组 PSC、ARR 用 36 MHz 去除，算式给出 500 Hz。1 秒若写成 PSC 71、ARR 999999，16 位计数器装不下。能装下的一行是 PSC 7199、ARR 9999：`72e6 / (7200 × 10000) = 1 Hz` | 示波器上是 500 Hz 或 2 kHz，或者 1 秒的 ARR 被截成 16 位 |
+| 入栈 | 第 04 章，PM0056。硬件入栈 8 个寄存器：xPSR、PC、LR、R12、R3、R2、R1、R0 | 大约 12 个 HCLK。72 MHz 时 `12 / 72e6 ≈ 167 ns`。这只计硬件入栈。HAL 默认 `NVIC_PRIORITYGROUP_4`：4 位抢占、0 位子优先级。数值越小，逻辑优先级越高 | 把 167 ns 当成 ISR 正文的预算，或把分组改掉之后仍用原来的抢占级比较谁能嵌套 |
+| FromISR | 第 15 章。FreeRTOS 要求分组 GROUP_4。4 位优先级时，`configMAX_SYSCALL_INTERRUPT_PRIORITY` 常写成 `5 << (8-4)` | `5 << 4 = 0x50`。能调用 `FromISR` 的中断，优先级数值要大于等于 5。数值 0 是逻辑最高优先级，调用会停在 `configASSERT`。任务优先级方向相反：空闲任务是 0，数值越大任务越优先 | 断言停在调度器里，调用栈落在 `xQueueSendFromISR` 或同类函数 |
+| 500 kbit/s | 第 13 章，bxCAN，APB1 = 36 MHz。`Baud = fAPB1 / (Prescaler × (1 + BS1 + BS2))`。采样点 = `(1 + BS1) / (1 + BS1 + BS2)` | 预分频 9，BS1 = 5，BS2 = 2，SJW = 1 个 Tq。一共 8 个时间份额。`36e6 / (9 × 8) = 500000`。采样点 `(1+5)/8 = 75%`。想要 70%（BS1 = 6，BS2 = 3，共 10 个 Tq）时，预分频是 `36e6 / (500e3 × 10) = 7.2`。第 13 章把这组除不尽的结果记成 450 kbit/s，对应预分频写成 8：`36e6 / (8 × 10) = 450000`。TEC 到 256，节点进入总线关闭 | 分析仪上是 450 kbit/s，或单节点正常模式里错误计数一直涨到闭嘴。回环收到自己的帧，只说明控制器接受了这组位时间 |
+| Flash 页 | 第 12 章，RM0008。中容量 F103（C8，64 KB）和小容量一样按 1 KB 页擦除；大容量才是 2 KB/页。编程单位是半字。同一章所引的 RM0090：F407VG 扇区是 S0–S3 = 16 KB、S4 = 64 KB、S5–S7 = 128 KB | 解锁 `FLASH_KEYR`：先写 `0x45670123`，再写 `0xCDEF89AB`。地址按 2 字节对齐 | 按 1 KB 去擦 F4，参数区和 Bootloader 落在同一扇区，一次擦除把两边一起擦掉。钥匙顺序写反，LOCK 不解除 |
+| Stop 之后的时钟 | 第 16 章：F103 在 3.3 V、25°C 下 Stop 低功耗稳压器典型 14 µA，主稳压器那一格是 24 µA，两格都不含独立看门狗，是芯片在该条件下的数。醒来回到 HSI。第 02 章：F1 上电默认的 HSI 是 8 MHz。第 24 章：L476 封面 Stop 2 为 1.1 µA，带 RTC 为 1.4 µA，从 Stop 唤醒 4 µs | F103 要把 PLL 重新装回 72 MHz。L476 的 Stop 2 醒来由 `STOPWUCK` 选择 MSI 或 HSI16，此时还没有 80 MHz 的 PLL。SysTick 若仍每 1 ms 中断，测到的是反复唤醒。1.1 µA 要和该 revision 的 ES0250 一起读，再和拔掉调试器、LED 之后的板级电流对照 | 醒后第一帧串口乱码，或电流停在毫安。封面 1.1 µA 被写成整板验收上限 |
+
+### 四颗料各有一行不能共用
+
+脚号来自第 23、24 章和附录 C 已经核对过的封装。时钟树只在写明的 HSE 和分频上成立。
+
+| 项 | STM32F103C8T6 | STM32G071RB | STM32L476RG | STM32H743ZI |
+| --- | --- | --- | --- | --- |
+| 这一页用的封装 | LQFP48。容量和 DevID 见上一张表 | LQFP64，第 1 脚 PC11 | LQFP64，第 1 脚 VBAT | LQFP144，第 1 脚 PE2 |
+| 主频 | 8 MHz HSE ×9 = 72 MHz | 家族最高 64 MHz，Cortex-M0+，供电 1.7–3.6 V。封面 64 MHz 是上限，复位后的 SYSCLK 仍要读 RCC | 最高 80 MHz，Cortex-M4F，供电 1.71–3.6 V | Rev Y/W：VOS1，400 MHz。Rev V：VOS0 路径 480 MHz |
+| 启动或电压档 | BOOT0 与选项字节，组合见 RM0008 | 复位释放后，启动配置在第四个 SYSCLK 上升沿锁存。PA14 同时是启动输入和 SWCLK。锁存之后 SWCLK 翻转不会改掉这次的启动目标。`BOOT_LOCK=1` 且 RDP Level 1 时调试停住，`FLASH_ACR.DBG_SWEN` 复位值为 0 | Stop 2 之后的临时时钟是 MSI 或 HSI16 | 先开 SYSCFG 时钟。VOS1 的 `VOSRDY` 到了，才请求 VOS0，再等一次 `VOSRDY`。从 VOS0 进 Stop 或 Standby 之前，先回到 VOS1 并再等一次就绪。官方 400 MHz 示例的 Flash 等待参数是 4。第 25 章的 480 MHz 路径把同一个 HAL 参数传了进去，这一档的访问时间仍要对照 DS12110 |
+| 时钟算式 | 见上一张表 | 见第 23 章的启动真值表，不把 F1 的 AFIO 重映射抄过来 | 醒后 CPU 已经继续执行时，PLL 仍可能关着 | 8 MHz HSE bypass，`PLLM=4`，PLL 输入 2 MHz。`PLLN=400`、`PLLP=2`：SYSCLK 400 MHz，HCLK 200 MHz，PCLK 100 MHz，APB 定时器时钟 200 MHz，MCO2÷5 期望 80 MHz。`PLLN=480`：VCO 960 MHz，SYSCLK 480 MHz，HCLK 240 MHz，PCLK 120 MHz，定时器时钟 240 MHz，MCO2÷5 期望 96 MHz。`PLL1Q = 960/4 = 240 MHz`。USB 要的 48 MHz 另选 PLL 和分频。MCO 是计算预期 |
+| 内存 | SRAM 20 KB。DMA 按 RM0008 的通道表 | 见第 23 章，按该封装重核复用 | 唤醒证据放在 Stop 2 仍保持的 SRAM | 第 27 章：Ethernet DMA 不能访问 `0x20000000` 的 DTCM。描述符放在它能到达的 D1 或 D2 SRAM，并按 32 字节缓存行对齐 |
+
+## 通道、描述符与故障寄存器
+
+前两张表管的是时钟、位时间和换系列。下面这些数已经写在第 08、10、14、15、17、27、28 章和本仓库例程里，这里收成还能手算的一页。换订货号、换 DMA 请求表或换描述符，整行都要重算。
+
+| 账 | 钉在哪 | 数 | 写错时长什么样 |
+| --- | --- | --- | --- |
+| SPI 9 MHz | 第 08 章。SPI1 在 APB2，72 MHz。`BR[2:0]` 只有 2/4/8/16/32/64/128/256 | `BR = 010` 是 ÷8，SCK = 9 MHz。`BR = 001` 是 18 MHz。JEDEC 命令 `0x9F`。`spi-flash` 期待厂商 `0xEF`、类型 `0x40`、容量 `0x17`，常写成 `0xEF4017`。页 256 字节 | 把 `0x40` 当成容量，或用 ÷3 这种不存在的分频 |
+| DMA 通道 | 第 10 章，RM0008。F103C8 只有 DMA1，7 条通道。F4 见 RM0090 | USART1_TX = Channel 4，USART1_RX = Channel 5，ADC1 = Channel 1。长度 8 个半字、`CNDTR = 3`：已写 `8 − 3 = 5` 个采样，即 10 字节。F4 的 USART1_RX 是 DMA2 Stream 5、Channel 4。FIFO 是 4×32 位 | 把 F4 的 Stream 号写进 F1，或把半字 NDTR 当成字节。半传输是 4 个采样、8 字节，不是 4 字节 |
+| USB 67 字节 | 第 14 章与 `examples/usb-cdc`。RM0008 的 USB 预分频 | PLL 72 MHz 且 `USBPRE = 0` 时，`72 / 1.5 = 48` MHz。设备描述符 18 字节，`bMaxPacketSize0 = 64`。本例 VID/PID 是 `0x1209/0x0001`。`wTotalLength = 0x0043 = 67`。`bMaxPower` 的 `0x32` 是 100 mA。全速批量和中断最大都是 64 字节；1023 只属于全速等时 | 把 ST 例程的 `0x0483/0x5740` 写进这份描述符，或把全速中断包长写成 1023 |
+| 栈的单位 | 第 15 章与 `freertos-task`。`xTaskCreate` 的深度是字 | LED 128 字 = 512 字节，KEY 192 字 = 768 字节，UART 256 字 = 1024 字节。`configTICK_RATE_HZ = 1000` 时 1 tick = 1 ms | 把 128 当成 128 字节。第一次 `printf` 就溢出。短于 1 ms 的期限被写成内核保证 |
+| 故障寄存器 | 第 17 章，PM0056 | `CFSR` `0xE000ED28`，`HFSR` `0xE000ED2C`，`MMFAR` `0xE000ED34`，`BFAR` `0xE000ED38`。`FORCED` 是 HFSR bit 30，值 `0x40000000`。`BFARVALID` 是 CFSR bit 15。先置 `DEMCR` `0xE000EDFC` 的 bit 24，再读 `DWT_CYCCNT` `0xE0001004`。72 MHz 时 72 周期 = 1 µs。SWO 在 PB3。M3/M4 硬件断点 6 个，M7 为 8 个 | `BFARVALID` 为 0 时仍把 `BFAR` 里的旧值当成这次的地址 |
+| 17.2% | 第 28 章的示例预算，不是测量 | `80/1000 = 8%`，`420/10000 = 4.2%`，`70/2000 = 3.5%`，`1500/100000 = 1.5%`，合计 17.2% | 把 17.2% 写成这块板已经满足截止时间 |
+| RMII 与 MSS | 第 27 章。`REF_CLK`。DHCP/DNS 端口。IPv4 无选项 | `REF_CLK = 50 MHz`。DHCP 是 UDP 67/68，DNS 是端口 53。MTU 1500 时 MSS 上限 `1500 − 20 − 20 = 1460`。对端 SYN 里更小的 MSS 优先。DTCM 仍是 `0x20000000`，行长 32 字节 | 用 25 MHz 的 MII 时钟去对 RMII，或把 1460 当成对端已经同意的 MSS |
+
+
+> 词条不够用？本书的原则是每个名词第一次出现都配「类比 + 精确定义」双轨；缺哪个词，去仓库开 Issue 点名。

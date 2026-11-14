@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>RTOS 上下文切换：PendSV 的偷梁换柱</title>
+  <desc>RTOS 上下文切换：PendSV 的偷梁换柱。硬件存一半（r0–r3/r12/lr/pc/xPSR）· 软件存一半（r4–r11）· 栈顶指针藏进 TCB · 下次原样取回。图里有一个真的在跑的栈顶指针：压硬件帧时沿 A 的栈往下走，压 r4–r11 继续下移，换栈时横向跳到 B 留好的栈顶，弹栈时再一路走回栈顶；两条虚线是被逐点画出来的（存进去/取回来），pc 那一格每秒一亮、PendSV 那两段停亮，表示切换本身不干活。</desc>
+  <rect width="720" height="460" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">RTOS 上下文切换：PendSV 的偷梁换柱</text>
+  <text x="24" y="50" font-size="12" fill="#666">硬件存一半（r0–r3/r12/lr/pc/xPSR）· 软件存一半（r4–r11）· 栈顶指针藏进 TCB · 下次原样取回</text>
+
+  <!-- TaskA 栈 -->
+  <rect x="30" y="70" width="180" height="330" fill="#fff" stroke="#cbd5e1" rx="8"/>
+  <text x="44" y="92" font-size="13" font-weight="bold" fill="#3451b2">TaskA 的栈</text>
+  <rect x="44" y="102" width="152" height="28" fill="#dbe7ff" stroke="#3451b2" rx="3"/>
+  <text x="120" y="121" font-size="11" fill="#3451b2" text-anchor="middle">A 的运行栈帧</text>
+  <g font-size="11" font-family="Consolas,monospace">
+    <rect x="44" y="130" width="152" height="56" fill="none" stroke="#94a3b8" stroke-dasharray="3 3" rx="3"/>
+    <!-- 灰色占位字在琥珀帧压进来的那一刻整行让位：琥珀框是从帧顶长下来的，
+         边长在字上就地啃出半截字。0.25/0.5 是各自那格琥珀组的开场，0.75 收摊。 -->
+    <text x="120" y="152" fill="#94a3b8" text-anchor="middle">硬件帧：xPSR/pc/lr/<animate attributeName="opacity" calcMode="discrete" values="1;0;1;1" keyTimes="0;0.25;0.75;1" dur="12s" repeatCount="indefinite"/></text>
+    <text x="120" y="166" fill="#94a3b8" text-anchor="middle">r12/r3/r2/r1/r0<animate attributeName="opacity" calcMode="discrete" values="1;0;1;1" keyTimes="0;0.25;0.75;1" dur="12s" repeatCount="indefinite"/></text>
+    <rect x="44" y="186" width="152" height="40" fill="none" stroke="#94a3b8" stroke-dasharray="3 3" rx="3"/>
+    <text x="120" y="204" fill="#94a3b8" text-anchor="middle">软件帧：<animate attributeName="opacity" calcMode="discrete" values="1;0;1;1" keyTimes="0;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></text>
+    <text x="120" y="218" fill="#94a3b8" text-anchor="middle">r4–r11<animate attributeName="opacity" calcMode="discrete" values="1;0;1;1" keyTimes="0;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></text>
+  </g>
+  <text x="120" y="248" font-size="11" fill="#aaa" text-anchor="middle">（A 被切走时，现场就躺在这）</text>
+
+  <!-- TaskB 栈 -->
+  <rect x="240" y="70" width="180" height="330" fill="#fff" stroke="#cbd5e1" rx="8"/>
+  <text x="254" y="92" font-size="13" font-weight="bold" fill="#1a7f56">TaskB 的栈</text>
+  <rect x="254" y="102" width="152" height="28" fill="#d8f3e5" stroke="#3eaf7c" rx="3"/>
+  <text x="330" y="121" font-size="11" fill="#1a7f56" text-anchor="middle">B 的运行栈帧</text>
+  <g font-size="11" font-family="Consolas,monospace">
+    <rect x="254" y="130" width="152" height="56" fill="#eef7f1" stroke="#3eaf7c" rx="3"/>
+    <text x="330" y="152" fill="#1a7f56" text-anchor="middle">硬件帧（上次存的）</text>
+    <text x="330" y="166" fill="#1a7f56" text-anchor="middle">xPSR/pc/lr/r12/r3–r0</text>
+    <rect x="254" y="186" width="152" height="40" fill="#eef7f1" stroke="#3eaf7c" rx="3"/>
+    <text x="330" y="204" fill="#1a7f56" text-anchor="middle">软件帧（上次存的）</text>
+    <text x="330" y="218" fill="#1a7f56" text-anchor="middle">r4–r11</text>
+  </g>
+  <text x="330" y="248" font-size="11" fill="#aaa" text-anchor="middle">B 上次被切走时留好的现场</text>
+
+  <!-- CPU -->
+  <rect x="450" y="70" width="120" height="330" fill="#fff" stroke="#cbd5e1" rx="8"/>
+  <text x="464" y="92" font-size="13" font-weight="bold" fill="#3451b2">CPU</text>
+  <g font-family="Consolas,monospace" font-size="11">
+    <rect x="462" y="102" width="96" height="26" fill="#f1f5f9" stroke="#94a3b8" rx="3"/>
+    <text x="510" y="119" text-anchor="middle" fill="#64748b">r0–r3,r12</text>
+    <rect x="462" y="134" width="96" height="26" fill="#f1f5f9" stroke="#94a3b8" rx="3"/>
+    <text x="510" y="151" text-anchor="middle" fill="#64748b">r4–r11</text>
+    <rect x="462" y="166" width="96" height="26" fill="#f1f5f9" stroke="#94a3b8" rx="3"/>
+    <text x="510" y="183" text-anchor="middle" fill="#64748b">psp</text>
+    <rect x="462" y="198" width="96" height="26" fill="#f1f5f9" stroke="#94a3b8" rx="3"/>
+    <text x="510" y="215" text-anchor="middle" fill="#64748b">pc</text>
+  </g>
+  <text x="510" y="248" font-size="11" fill="#888" text-anchor="middle">PendSV 优先级</text>
+  <text x="510" y="262" font-size="11" fill="#888" text-anchor="middle">= 全系统最低，</text>
+  <text x="510" y="276" font-size="11" fill="#888" text-anchor="middle">等中断都服完</text>
+  <text x="510" y="290" font-size="11" fill="#888" text-anchor="middle">才切换</text>
+
+  <!-- TCB -->
+  <rect x="600" y="70" width="104" height="330" fill="#fff" stroke="#cbd5e1" rx="8"/>
+  <text x="612" y="92" font-size="13" font-weight="bold" fill="#3451b2">TCB</text>
+  <rect x="610" y="102" width="84" height="44" fill="#dbe7ff" stroke="#3451b2" rx="4"/>
+  <text x="652" y="120" font-size="11" fill="#3451b2" text-anchor="middle">TCB_A</text>
+  <text x="652" y="136" font-size="11" fill="#3451b2" text-anchor="middle" font-family="Consolas,monospace">pxTopOfStack</text>
+  <rect x="610" y="156" width="84" height="44" fill="#d8f3e5" stroke="#3eaf7c" rx="4"/>
+  <text x="652" y="174" font-size="11" fill="#1a7f56" text-anchor="middle">TCB_B</text>
+  <text x="652" y="190" font-size="11" fill="#1a7f56" text-anchor="middle" font-family="Consolas,monospace">pxTopOfStack</text>
+  <text x="652" y="224" font-size="11" fill="#888" text-anchor="middle">每个任务的家底：</text>
+  <text x="652" y="238" font-size="11" fill="#888" text-anchor="middle">栈顶指针藏在</text>
+  <text x="652" y="252" font-size="11" fill="#888" text-anchor="middle">自己的 TCB 里</text>
+
+  <!-- ===== 阶段 0：A 运行 ===== -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <g font-size="11" font-family="Consolas,monospace">
+      <text x="462" y="330" fill="#3451b2">pc → TaskA 代码</text>
+      <text x="462" y="348" fill="#3451b2">psp → A 栈帧顶</text>
+    </g>
+    <text x="30" y="432" font-size="14" font-family="Consolas,monospace" fill="#333">▶ TaskA 运行中；TaskB 的现场静静躺在它自己的栈里</text>
+  </g>
+
+  <!-- ===== 阶段 1：硬件存一半 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="44" y="130" width="152" height="56" fill="#fdf0d5" stroke="#d97706" rx="3">
+      <!-- 8 个字是一个字一个字压下去的：琥珀底纹从帧顶长到帧底 -->
+      <animate attributeName="height" values="0;0;56;56" keyTimes="0;0.25;0.47;1" dur="12s" repeatCount="indefinite"/>
+    </rect>
+    <!-- 字等底纹漫到自己脚下再亮：开门时刻按上面 height 的 keyTimes 反算
+         （行1 墨迹底 152 → h≥22 → 0.25+0.22×22/56；行2 墨迹底 166 → h≥36）。
+         原来两行一上来就整行亮着，t=3~4.7s 期间整行挂在半截的框外面。 -->
+    <text x="120" y="152" font-size="11" fill="#a16207" text-anchor="middle" font-family="Consolas,monospace">硬件帧：xPSR/pc/lr/<animate attributeName="opacity" calcMode="discrete" values="0;1;1" keyTimes="0;0.337;1" dur="12s" repeatCount="indefinite"/></text>
+    <text x="120" y="166" font-size="11" fill="#a16207" text-anchor="middle" font-family="Consolas,monospace">r12/r3/r2/r1/r0<animate attributeName="opacity" calcMode="discrete" values="0;1;1" keyTimes="0;0.392;1" dur="12s" repeatCount="indefinite"/></text>
+    <text x="462" y="330" font-size="11" font-family="Consolas,monospace" fill="#d97706">PendSV 触发！</text>
+    <text x="30" y="432" font-size="14" font-family="Consolas,monospace" fill="#333">▶ PendSV 触发：<tspan fill="#d97706" font-weight="bold">硬件自动把 8 个字压到 TaskA 的栈</tspan>（与中断入场同款）</text>
+  </g>
+
+  <!-- ===== 阶段 2：软件存一半 + 换栈 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="44" y="130" width="152" height="56" fill="#fdf0d5" stroke="#d97706" rx="3"/>
+    <text x="120" y="140" font-size="11" fill="#a16207" text-anchor="middle" font-family="Consolas,monospace">硬件帧已就位</text>
+    <rect x="44" y="186" width="152" height="40" fill="#fdf0d5" stroke="#d97706" rx="3">
+      <!-- 软件再压 r4–r11：这一段同样是压进去的 -->
+      <animate attributeName="height" values="0;0;40;40" keyTimes="0;0.50;0.60;1" dur="12s" repeatCount="indefinite"/>
+    </rect>
+    <text x="120" y="195" font-size="11" fill="#a16207" text-anchor="middle" font-family="Consolas,monospace">软件帧：r4–r11<animate attributeName="opacity" calcMode="discrete" values="0;1;1" keyTimes="0;0.523;1" dur="12s" repeatCount="indefinite"/></text>
+    <line x1="196" y1="206" x2="608" y2="128" stroke="#d97706" stroke-width="2" stroke-dasharray="6 4">
+      <!-- 生长：psp 沿这条虚线一路写进 TCB_A -->
+      <animate attributeName="x2" values="196;196;608;608" keyTimes="0;0.60;0.70;1" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="y2" values="206;206;128;128" keyTimes="0;0.60;0.70;1" dur="12s" repeatCount="indefinite"/>
+    </line>
+    <text x="434" y="150" font-size="11" fill="#d97706" text-anchor="middle">psp 存进</text>
+    <text x="434" y="176" font-size="11" fill="#d97706" text-anchor="middle" font-family="Consolas,monospace">TCB_A</text>
+    <line x1="608" y1="176" x2="330" y2="226" stroke="#3eaf7c" stroke-width="2" stroke-dasharray="6 4">
+      <!-- 生长：B 的栈顶从 TCB_B 被取回来 -->
+      <animate attributeName="x2" values="608;608;330;330" keyTimes="0;0.64;0.74;1" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="y2" values="176;176;226;226" keyTimes="0;0.64;0.74;1" dur="12s" repeatCount="indefinite"/>
+    </line>
+    <text x="480" y="232" font-size="11" fill="#1a7f56" text-anchor="middle">从 TCB_B 取出 B 的栈顶</text>
+    <text x="30" y="432" font-size="14" font-family="Consolas,monospace" fill="#333">▶ PendSV 软件再存 <tspan fill="#d97706" font-weight="bold">r4–r11</tspan> → 栈顶藏进 TCB_A；<tspan fill="#1a7f56" font-weight="bold">从 TCB_B 取回 TaskB 的栈顶</tspan></text>
+  </g>
+
+  <!-- ===== 阶段 3：B 运行 ===== -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="254" y="130" width="152" height="56" fill="none" stroke="#94a3b8" stroke-dasharray="3 3" rx="3"/>
+    <rect x="254" y="186" width="152" height="40" fill="none" stroke="#94a3b8" stroke-dasharray="3 3" rx="3"/>
+    <text x="330" y="180" font-size="11" fill="#94a3b8" text-anchor="middle" font-family="Consolas,monospace">（现场已弹回 CPU）</text>
+    <g font-size="11" font-family="Consolas,monospace">
+      <text x="462" y="330" fill="#1a7f56">pc → TaskB 代码</text>
+      <text x="462" y="348" fill="#1a7f56">psp → B 栈帧顶</text>
+    </g>
+    <text x="30" y="432" font-size="14" font-family="Consolas,monospace" fill="#333">▶ 弹回 TaskB 的 r4–r11 + 硬件帧 → <tspan fill="#1a7f56" font-weight="bold">CPU 无缝开始跑 TaskB</tspan>（A 的现场已安睡）</text>
+  </g>
+
+  <!-- 跑动的栈顶指针：压 A 的栈时一路往下，换栈时横向跳到 B 的栈顶，弹栈时再往上走 -->
+  <g transform="translate(204,130)">
+    <animateTransform attributeName="transform" type="translate" values="204 130;204 130;204 186;204 186;204 226;204 226;413 226;413 130;413 130" keyTimes="0;0.25;0.47;0.50;0.60;0.70;0.76;0.94;1" dur="12s" repeatCount="indefinite"/>
+    <polygon points="6,-5 -4,0 6,5" fill="#3451b2"/>
+  </g>
+  <!-- CPU 真在取指：pc 那一格每秒一亮；PendSV 那两段不亮 = 切换本身不干活 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="462" y="198" width="96" height="26" fill="none" stroke="#3451b2" stroke-width="2" rx="3">
+      <animate attributeName="opacity" values="0.2;1;0.2" dur="1s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,428)" fill="#3451b2">
+    <circle cx="0"  cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

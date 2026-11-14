@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>MCP 工具流：模型读手册、跑构建、看串口</title>
+  <desc>MCP 工具流架构与三个嵌入式场景。1 架构：Host（你的编辑器或 agent）为每个 Server 建一个 Client，一个 Server 一个连接；Server 向 Client 暴露 Resources（数据）、Prompts（提示模板）、Tools（可执行能力）三类原语；协议现版本 2026-07-28，JSON-RPC 2.0。2 三场景：Fetch 读手册——模型查 RM0090 对应章节而不是靠记忆；Shell 跑构建——模型自己执行交叉编译并读错误输出；日志回喂——串口日志文件喂回去，模型对着现象写证据三元组。3 安全边界：官方 reference servers 仅 7 个教学示例；工具调用等于任意代码执行，规范要求用户明示同意；Cursor Run Modes 明示 Auto-review 不是安全边界。</desc>
+  <rect width="720" height="440" fill="#f6f8fa"/>
+  <defs>
+    <marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#333"/>
+    </marker>
+  </defs>
+
+  <text x="360" y="34" text-anchor="middle" font-size="20" font-weight="bold" fill="#24292f">MCP 工具流：手册、构建、串口都进上下文</text>
+  <text x="360" y="54" text-anchor="middle" font-size="11.5" fill="#57606a">协议 2026-07-28 · JSON-RPC 2.0 · 一 server 一 client</text>
+
+  <!-- Host/Client -->
+  <rect x="40" y="150" width="150" height="130" rx="12" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  <text x="115" y="174" text-anchor="middle" font-size="14" font-weight="bold" fill="#24292f">Host</text>
+  <text x="115" y="192" text-anchor="middle" font-size="11" fill="#57606a">你的编辑器 / agent</text>
+  <rect x="58" y="202" width="114" height="30" rx="6" fill="#eef2ff" stroke="#3451b2" stroke-width="1.6"/>
+  <text x="115" y="222" text-anchor="middle" font-size="12" fill="#3451b2">Client（每 server 一个）</text>
+  <text x="115" y="254" text-anchor="middle" font-size="11" fill="#92400e">调用任何工具前：</text>
+  <text x="115" y="268" text-anchor="middle" font-size="11" fill="#92400e">用户明示同意</text>
+
+  <!-- 三个 Server -->
+  <rect x="270" y="80" width="180" height="86" rx="10" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  <text x="360" y="102" text-anchor="middle" font-size="13" font-weight="bold" fill="#24292f">Fetch 服务器</text>
+  <text x="360" y="120" text-anchor="middle" font-size="12" fill="#57606a">模型查 RM0090 对应章节</text>
+  <rect x="300" y="130" width="120" height="24" rx="12" fill="#eef7f1" stroke="#1a7f56" stroke-width="1.4"/>
+  <text x="360" y="146" text-anchor="middle" font-size="11" fill="#1a7f56">不再凭记忆编页码</text>
+
+  <rect x="270" y="178" width="180" height="86" rx="10" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  <text x="360" y="200" text-anchor="middle" font-size="13" font-weight="bold" fill="#24292f">Shell 服务器</text>
+  <text x="360" y="218" text-anchor="middle" font-size="12" fill="#57606a">跑 arm-none-eabi-gcc</text>
+  <rect x="300" y="228" width="120" height="24" rx="12" fill="#eef2ff" stroke="#3451b2" stroke-width="1.4"/>
+  <text x="360" y="244" text-anchor="middle" font-size="11" fill="#3451b2">自己读错误输出</text>
+
+  <rect x="270" y="276" width="180" height="86" rx="10" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  <text x="360" y="298" text-anchor="middle" font-size="13" font-weight="bold" fill="#24292f">日志服务器</text>
+  <text x="360" y="316" text-anchor="middle" font-size="12" fill="#57606a">串口日志文件回喂</text>
+  <rect x="300" y="326" width="120" height="24" rx="12" fill="#fdf0d5" stroke="#d97706" stroke-width="1.4"/>
+  <text x="360" y="342" text-anchor="middle" font-size="11" fill="#92400e">对着现象写三元组</text>
+
+  <!-- 连线 -->
+  <path d="M190 210 H262" fill="none" stroke="#333" stroke-width="2.2" marker-end="url(#ah4)"/>
+  <path d="M190 240 H262" fill="none" stroke="#333" stroke-width="2.2" marker-end="url(#ah4)"/>
+  <path d="M190 270 H262" fill="none" stroke="#333" stroke-width="2.2" marker-end="url(#ah4)"/>
+  <text x="226" y="128" text-anchor="middle" font-size="11" fill="#94a3b8">Tools 原语</text>
+
+  <!-- 右侧警示板 -->
+  <rect x="492" y="150" width="190" height="130" rx="10" fill="#ffffff" stroke="#cf222e" stroke-width="2"/>
+  <text x="587" y="174" text-anchor="middle" font-size="13" font-weight="bold" fill="#cf222e">安全边界</text>
+  <text x="587" y="196" text-anchor="middle" font-size="11" fill="#24292f">工具 = 任意代码执行</text>
+  <text x="587" y="214" text-anchor="middle" font-size="11" fill="#24292f">reference servers 仅 7 个</text>
+  <text x="587" y="232" text-anchor="middle" font-size="11" fill="#24292f">教学示例，非生产方案</text>
+  <text x="587" y="252" text-anchor="middle" font-size="11" fill="#cf222e">Run Modes 明示：</text>
+  <text x="587" y="268" text-anchor="middle" font-size="11" fill="#cf222e">不是安全边界</text>
+  <path d="M450 210 H484" fill="none" stroke="#94a3b8" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#ah4)"/>
+
+  <!-- 底部结论 -->
+  <rect x="120" y="384" width="480" height="34" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <text x="360" y="406" text-anchor="middle" font-size="11" fill="#57606a">工具流放大产能也放大破坏面：验收与对账（A2/A1）一道都不能省</text>
+
+  <!-- 流动令牌：请求右行 / 响应左行 -->
+  <circle r="5" fill="#3451b2" cx="190" cy="210">
+    <animate attributeName="cx" values="190;262" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="5" fill="#3eaf7c" cx="262" cy="240">
+    <animate attributeName="cx" values="262;190" dur="4s" begin="1s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="5" fill="#d97706" cx="190" cy="270">
+    <animate attributeName="cx" values="190;262" dur="4s" begin="2s" repeatCount="indefinite"/>
+  </circle>
+</svg>

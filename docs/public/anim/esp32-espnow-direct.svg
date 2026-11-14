@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 470" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>ESP-NOW 三步：init → add_peer → send</title>
+  <desc>五阶段动画：ESP-NOW 是乐鑫自研的无连接 Wi-Fi 协议，把应用数据塞进 802.11 的 vendor action frame 直发——不要路由器、不要握手、加电即通。① 三步铁律：esp_now_init 开启协议栈并建好 peer 列表，esp_now_add_peer 把对板 MAC 登记进列表（带信道/接口/加密参数），esp_now_send 只发给列表里的 peer——漏了 add_peer 直接 send 返回 ESP_ERR_ESPNOW_NOT_FOUND，顺序倒了返回 NOT_INIT；ESP-NOW 认 MAC 不认网，没有 DHCP 自动发现，必须先登记。② 无连接直发：单包 250 字节（v2.0 提到 1470），大文件要应用层自分片重组——它定位是"小数据快通道"不是流；加密 peer 上限 6、总 peer 上限 20。③ 收发回调：recv_cb 只 memcpy + 入队，处理交给自己的任务——回调不办事；esp_now_recv_info_t 是栈上临时变量，回调返回即失效，要存数据 memcpy 走、别存指针。④ 发送回执：send_cb 给 SUCCESS/FAIL——比"发了就忘"的 UDP 多一份链路质量手感，边走边看丢包率就靠回执失败计数。⑤ 共存铁律：ESP-NOW 不另起射频，复用 Wi-Fi 的 PHY/MAC——同信道是共存前提；A 板连路由器被锁在信道 6、B 板停在信道 1，互相发不出去（ESP_ERR_ESPNOW_CHAN）；排查用 esp_wifi_get_channel 打印两板对比；初始化顺序是 wifi_init/start 在前、esp_now_init 在后。图中数据包持续从 A 板飞向 B 板、回执包反向飞回，表示"直发 + 回执"这对组合一直在跑。</desc>
+  <rect width="720" height="470" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">ESP-NOW 三步：init → add_peer → send</text>
+  <text x="24" y="50" font-size="12" fill="#666">无路由器、无配对——vendor action frame 直发对板 MAC，250 字节小数据快通道</text>
+
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#666"/>
+    </marker>
+  </defs>
+
+  <!-- A 板 -->
+  <rect x="48" y="60" width="190" height="120" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="50" y="62" width="186" height="4" rx="2" fill="#3451b2"/>
+  <rect x="50" y="66" width="186" height="112" rx="6" fill="#dbe7ff">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="62" y="84" font-size="13" font-weight="bold" fill="#3451b2">A 板（发送方）</text>
+  <text x="62" y="104" font-size="11.5" fill="#333">按键 → GPIO 中断（P4 范式）</text>
+  <text x="62" y="122" font-size="11.5" fill="#333">中断里发任务通知</text>
+  <text x="62" y="140" font-size="11.5" font-family="Consolas,monospace" fill="#333">任务里 esp_now_send()</text>
+  <text x="62" y="158" font-size="11.5" fill="#333">send_cb 记回执计数</text>
+
+  <!-- 无线区：波纹 + 双向包 -->
+  <path d="M 250 96 a 20 20 0 0 1 0 40" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <path d="M 250 84 a 32 32 0 0 1 0 64" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <path d="M 250 72 a 44 44 0 0 1 0 88" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <path d="M 466 96 a 20 20 0 0 0 0 40" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <path d="M 466 84 a 32 32 0 0 0 0 64" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <path d="M 466 72 a 44 44 0 0 0 0 88" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="358" y="80" font-size="11" fill="#666" text-anchor="middle">动作帧 ≤ 250B（v2.0 提到 1470B）</text>
+  <rect x="247" y="107" width="26" height="18" rx="3" fill="#dbe7ff" stroke="#3451b2">
+    <animateTransform attributeName="transform" type="translate" values="0 0;196 0" dur="3s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="443" y="139" width="26" height="18" rx="3" fill="#d8f3e5" stroke="#3eaf7c">
+    <animateTransform attributeName="transform" type="translate" values="0 0;-196 0" dur="3s" begin="-1.5s" repeatCount="indefinite"/>
+  </rect>
+  <text x="358" y="176" font-size="11.5" font-weight="bold" fill="#1a7f56" text-anchor="middle">无路由器 · 无握手 · 加电即通</text>
+
+  <!-- B 板 -->
+  <rect x="478" y="60" width="190" height="120" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <rect x="480" y="62" width="186" height="4" rx="2" fill="#3eaf7c"/>
+  <rect x="480" y="66" width="186" height="112" rx="6" fill="#d8f3e5">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="492" y="84" font-size="13" font-weight="bold" fill="#1a7f56">B 板（接收方）</text>
+  <text x="492" y="104" font-size="11.5" fill="#333">recv_cb 收到 1 字节</text>
+  <text x="492" y="122" font-size="11.5" fill="#333">memcpy 进队列（F4）</text>
+  <text x="492" y="140" font-size="11.5" fill="#333">任务出队翻转 GPIO</text>
+  <text x="492" y="158" font-size="11.5" fill="#333">对板灯亮 = 隔空点灯</text>
+
+  <!-- 三步卡 -->
+  <rect x="48" y="192" width="196" height="66" rx="6" fill="#dbe7ff">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="48" y="192" width="196" height="66" rx="6" fill="#ffffff" stroke="#3451b2"/>
+  <text x="146" y="214" font-size="12" font-weight="bold" font-family="Consolas,monospace" fill="#3451b2" text-anchor="middle">① esp_now_init()</text>
+  <text x="146" y="232" font-size="11" fill="#666" text-anchor="middle">开启协议栈 + 建 peer 列表</text>
+  <text x="146" y="248" font-size="11" fill="#666" text-anchor="middle">注册 recv_cb / send_cb</text>
+
+  <rect x="272" y="192" width="180" height="66" rx="6" fill="#dbe7ff">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="272" y="192" width="180" height="66" rx="6" fill="#ffffff" stroke="#3451b2"/>
+  <text x="362" y="214" font-size="12" font-weight="bold" font-family="Consolas,monospace" fill="#3451b2" text-anchor="middle">② add_peer</text>
+  <text x="362" y="232" font-size="11" fill="#666" text-anchor="middle">把对板 MAC 登记进列表</text>
+  <text x="362" y="248" font-size="11" fill="#dc2626" text-anchor="middle">不登记 send → NOT_FOUND</text>
+
+  <rect x="480" y="192" width="188" height="66" rx="6" fill="#dbe7ff">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="480" y="192" width="188" height="66" rx="6" fill="#ffffff" stroke="#3451b2"/>
+  <text x="574" y="214" font-size="12" font-weight="bold" font-family="Consolas,monospace" fill="#3451b2" text-anchor="middle">③ esp_now_send</text>
+  <text x="574" y="232" font-size="11" fill="#666" text-anchor="middle">数据塞进 802.11 动作帧</text>
+  <text x="574" y="248" font-size="11" fill="#666" text-anchor="middle">直发对板 MAC（≤250B）</text>
+
+  <line x1="244" y1="225" x2="268" y2="225" stroke="#666" marker-end="url(#arr)"/>
+  <line x1="452" y1="225" x2="476" y2="225" stroke="#666" marker-end="url(#arr)"/>
+
+  <!-- 三条路对比 -->
+  <text x="48" y="278" font-size="11.5" font-weight="bold" fill="#666">三条路对比：谁要基础设施，谁加电即通</text>
+  <rect x="48" y="284" width="196" height="46" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="146" y="302" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">Wi-Fi：要路由器</text>
+  <text x="146" y="320" font-size="11" fill="#666" text-anchor="middle">扫描 → 关联 → DHCP → IP</text>
+
+  <rect x="272" y="284" width="180" height="46" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="362" y="302" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">BLE：要 GATT 订阅</text>
+  <text x="362" y="320" font-size="11" fill="#666" text-anchor="middle">广播 → 连接 → CCC 订阅</text>
+
+  <rect x="480" y="284" width="188" height="46" rx="6" fill="#d8f3e5" stroke="#3eaf7c"/>
+  <rect x="482" y="286" width="184" height="42" rx="5" fill="#fdf0d5">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+  </rect>
+  <text x="574" y="302" font-size="12" font-weight="bold" fill="#1a7f56" text-anchor="middle">ESP-NOW：认 MAC 直发</text>
+  <text x="574" y="320" font-size="11" fill="#666" text-anchor="middle">同信道才通 · 250B 上限</text>
+
+  <!-- 阶段一 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#3451b2">① 三步铁律：init 开协议栈 → add_peer 登记 MAC → send 发给列表里的 peer</text>
+    <text x="56" y="380" font-size="12" fill="#333">漏了 add_peer 直接 send：返回 ESP_ERR_ESPNOW_NOT_FOUND；顺序倒了：NOT_INIT</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">ESP-NOW 认 MAC 不认网——没有 DHCP 自动发现，必须先把对板 MAC 登记进 peer 列表</text>
+  </g>
+
+  <!-- 阶段二 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#3451b2">② 无连接直发：数据塞进 802.11 vendor action frame——加电即通</text>
+    <text x="56" y="380" font-size="12" fill="#333">单包 250B（v2.0 提到 1470B）：大文件要应用层自分片 + 序号 + 重组</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">定位是"小数据快通道"不是流——加密 peer 上限 6 个、总 peer 上限 20 个</text>
+  </g>
+
+  <!-- 阶段三 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#1a7f56">③ 收发回调：recv_cb 只 memcpy + 入队，处理交给自己的任务</text>
+    <text x="56" y="380" font-size="12" fill="#333">esp_now_recv_info_t 是栈上临时变量，回调返回即失效——要存数据 memcpy 走</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">回调跑在系统任务上下文，直接 vTaskDelay 或长操作会堵住后续收包（P5/F4 范式）</text>
+  </g>
+
+  <!-- 阶段四 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#1a7f56">④ 发送回执：send_cb 给 SUCCESS / FAIL——比"发了就忘"的 UDP 多一份手感</text>
+    <text x="56" y="380" font-size="12" fill="#333">回执失败计数 = 链路质量的第一手感：边走边看丢包率就靠它</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">双板互传 100 行内写完：按键 → 中断 → 任务 send → 对板 recv → 队列 → 点灯</text>
+  </g>
+
+  <!-- 阶段五 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+    <rect x="40" y="336" width="640" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="358" font-size="13" font-weight="bold" fill="#d97706">⑤ 共存铁律：ESP-NOW 复用 Wi-Fi 射频——同信道是共存前提</text>
+    <text x="56" y="380" font-size="12" fill="#333">A 板连路由器锁信道 6、B 板停信道 1 → 互相发不出去（ESP_ERR_ESPNOW_CHAN）</text>
+    <text x="56" y="402" font-size="11.5" fill="#666">排查：esp_wifi_get_channel 打印两板对比；初始化顺序 wifi 在前、esp_now 在后</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0;1" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">① 三步铁律：init → add_peer → send，漏登记 NOT_FOUND</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">② 无连接直发：动作帧 ≤250B，加电即通不挑网络</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">③ 回调不办事：recv_cb 只 memcpy 入队，处理交任务</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">④ 发送回执：SUCCESS/FAIL 计数 = 链路质量手感</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;0;1;0" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/>
+      <text x="36" y="438">⑤ 共存铁律：复用 Wi-Fi 射频，同信道才通</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(612,460)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+    <circle cx="72" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;0.2;1;0.2" keyTimes="0;0.2;0.4;0.6;0.8;1" dur="15s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

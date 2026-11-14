@@ -12,7 +12,7 @@ platforms: [f407, f103, esp32]
 - **问题**：F407 的 1 MB 为什么要切成 12 个大小不等的扇区，扇区 11 从哪个地址开始，参数区为什么不能塞进代码扇区的空隙？F103C8 的 64 KB 为什么是 1 KB 一页、共 64 页，末页地址怎么算，换成大容量型号后 2 KB 一页会改掉哪几个数？两把钥匙 `0x45670123` 与 `0xCDEF89AB` 为什么必须按顺序写，写反了为什么只能等复位？F4 的 PSIZE 为什么不能超过供电电压允许的最高档、又必须和写入宽度配对，F407 上为什么不能选 x64，F103 又为什么只认半字？擦写寿命的 1 万次与 20 年是谁的承诺，参数区怎样做才能在擦到一半断电时仍然读得回旧值？IAP 跳转前为什么要关中断、设 MSP、改 VTOR，跳复位入口而不是 `main` 的理由是什么，App 一侧为什么还要再写一次 VTOR？单槽升级为什么没有回头路，双槽的 A/B 记录、CRC 校验、原子切换与回滚各自管哪一段？ESP32 的分区表、NVS 与 OTA 状态机在来源里是怎么写的，哪些只是来源说法？三个来源里哪些数字是手册规则、哪些是本章的算术、哪些还没有人上板量过？
 - **交付**：能按 1 MB 总和复算 F407 的 12 个扇区，按 64 页复算 F103C8 的页边界；能说出两把钥匙的顺序、F4 的 PSIZE 三档与电压、F1 的半字粒度；能写出 F4 的解锁→扇区擦除→字写入→等 BSY→清 EOP→上锁序列，也能写出 F1 的解锁→页擦除→半字写入序列；能设计一个带魔数、版本、CRC 与默认回退的参数快照，并说清 A/B 两份为什么必须落在不同的擦除单位；能写出 IAP 跳转函数，按向量表第 0 字设 MSP、第 1 字跳复位入口，把 VTOR 指向 App 基址，并解释 PRIMASK 由谁打开；能按 F407 的 480 KB 槽与 F103C8 的 22 KB 槽各画一张双槽表，写出“先写备槽、校验、追加记录、下次启动确认”的切换顺序；能按现象把 LOCK、PSIZE、对齐、WRP、VTOR、MSP、PRIMASK、看门狗与半擦状态分到不同的检查动作；能读懂 ESP32 的分区表字段、NVS 追加写与 OTA 状态表，并指出它们只是 P10 的来源事实。
 - **边界**：两平台 STM32 章加 ESP32 对照。F407 的扇区表、PSIZE、CR/SR 位号、参数区与 IAP 双固件布局来自 S13《S13 内部 Flash 与 IAP》；F103C8 的 1 KB 页、64 页、16 KB Bootloader + 2 KB 参数区 + 46 KB APP 布局、半字编程、两把钥匙与 RDP `0xA5` 来自根书第 12 章；ESP32 的分区表、NVS、OTA 五步与回滚状态机只转写 P10《P10 Flash、分区表、NVS 与 OTA》，不往 STM32 上外推。三个来源都没有本章的上板读数：S13 没有独立工程，根书第 12 章的动手实验是待做清单，P10 的 boot_count 1→5 与回滚日志是 P10 的实物实验自述（声称日志存档，本仓库未见原始日志文件）。S13 正文写“11 个扇区”，同节表格却列出扇区 0–11 共 12 行，本章按 1 MB 总和复算后采用 12 个；根书表把 F4 的编程粒度写成“字节/半字/字/双字”，双字 x64 只在 F42x/F43x 上成立，F407 只有 x8/x16/x32；S13 说擦 128 KB 扇区“最坏几百毫秒”，根书表写 0.4–4 s，两处都未核数据手册原表；F1 的 CR/SR 位号两个来源都没有逐位列出，本章按 RM0008 语义标注为待复核；STM32 的双槽布局与记录格式是本章按扇区/页尺寸做的设计，不是来源里现成的实现；ESP32 的小节只写来源事实，没有核 IDF 原文。GD32 不在本章平台列表，只在跨平台边界里指一句。F407 的 512 KB 型号只用到扇区 7，扇区 8–11 是 1 MB 型号的版图，换芯片先查数据手册。
-- **依据锚点**：S13（`mcu/docs/stm32/13-flash-iap.md`）、根书第 12 章（`docs/12-Flash与IAP升级.md`）、P10（`mcu/docs/esp32/10-flash-nvs-ota.md`）；[第 6 章](../v0-foundations/06-linker-startup-map.md)的链接脚本与启动、[第 8 章](./08-architecture-memory-clock.md)的存储器地图与时钟、[第 16 章](./16-i2c-spi.md)的 W25Q 外部 Flash、[第 19 章][ch19]的看门狗与复位、[第 18 章][ch18]的低功耗。RM0008 第 3 章、RM0090 第 3 章、DS5319、PM0056 与 ESP-IDF 文档均转引自上述来源；本章没有取到这些手册与文档的原件，逐处标注“来源说法”或“待复核”。
+- **依据锚点**：S13（`mcu/docs/stm32/13-flash-iap.md`）、根书第 12 章（`docs/12-Flash与IAP升级.md`）、P10（`mcu/docs/esp32/10-flash-nvs-ota.md`）；[第 6 章](../v0-foundations/06-linker-startup-map.md)的链接脚本与启动、[第 8 章](./08-architecture-memory-clock.md)的存储器地图与时钟、[第 16 章](./16-i2c-spi.md)的 W25Q 外部 Flash、[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)的看门狗与复位、[第 18 章](../v2-reliability/18-low-power.md)的低功耗。RM0008 第 3 章、RM0090 第 3 章、DS5319、PM0056 与 ESP-IDF 文档均转引自上述来源；本章没有取到这些手册与文档的原件，逐处标注“来源说法”或“待复核”。
 
 ## 先做出来
 
@@ -653,9 +653,9 @@ F407 一侧：1 MB 主 Flash 从 `0x08000000` 起，12 个扇区按 16/64/128 KB
 
 F103 一侧：C8 是 64 KB、中容量、1 KB 一页、64 页，页 63 在 `0x0800FC00`；高密度型号是 2 KB 一页，地址按 `n×0x800` 重算。Flash 控制器基址 `0x40022000`，CR 的 PG/PER/STRT/LOCK 与 SR 的 BSY/PGERR/WRPRTERR/EOP 位号和 F4 不同；编程粒度是半字，没有 PSIZE 与按字节编程。本书布局是 Bootloader 16 KB、参数区 2 KB、App 46 KB；双槽把 App 区切成 22 KB+22 KB+2 KB。IAP 的 App 起点是 `0x08004800`，VTOR 同样要在 App 里写。读保护 `0xA5` 是不保护，其他值启用保护，没有 Level 2；解除保护会整片擦除主 Flash。F103C8 只有 20 KB SRAM，向量表第 0 字的 MSP 检查要用 `0x20000000`–`0x20005000`，不要照抄 F407 的 `0x20020000`。GD32 的 Flash 控制器是另一套寄存器，本章不展开。
 
-ESP32 只划边界。ESP32-S3 没有 STM32 的 FLASH_KEYR/CR/SR，也没有扇区 11 或页 63 这套地址；它的版图由 CSV 分区表管，参数由 NVS 管，升级由 `esp_ota_*` 管。P10 的 16 MB 示例表里，`0x8000` 放分区表，`0x9000` 起放 nvs，`0xE000` 放 otadata，两个 3 MB 的 ota_0/ota_1 轮流坐庄；NVS 按 4096 字节页追加写；OTA 的 NEW/PENDING_VERIFY/VALID/ABORTED 状态机只在 `CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 打开后存在，默认不开时 NEW 与 PENDING_VERIFY 不被使用。这些是 P10 的来源说法，本章没有核 IDF 原文，也没有在 ESP32 上复跑；P10 声称 OTA 回滚做过实物实验并日志存档，但本仓库未见原始日志文件。ESP32 的启动、外设与驱动框架在[第 31 章][ch31]；低功耗与看门狗分别在[第 18 章][ch18]与[第 19 章][ch19]。
+ESP32 只划边界。ESP32-S3 没有 STM32 的 FLASH_KEYR/CR/SR，也没有扇区 11 或页 63 这套地址；它的版图由 CSV 分区表管，参数由 NVS 管，升级由 `esp_ota_*` 管。P10 的 16 MB 示例表里，`0x8000` 放分区表，`0x9000` 起放 nvs，`0xE000` 放 otadata，两个 3 MB 的 ota_0/ota_1 轮流坐庄；NVS 按 4096 字节页追加写；OTA 的 NEW/PENDING_VERIFY/VALID/ABORTED 状态机只在 `CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 打开后存在，默认不开时 NEW 与 PENDING_VERIFY 不被使用。这些是 P10 的来源说法，本章没有核 IDF 原文，也没有在 ESP32 上复跑；P10 声称 OTA 回滚做过实物实验并日志存档，但本仓库未见原始日志文件。ESP32 的启动、外设与驱动框架在[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)；低功耗与看门狗分别在[第 18 章](../v2-reliability/18-low-power.md)与[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。
 
-其它分工：W25Q 外部 Flash 的 SPI 读写在[第 16 章](./16-i2c-spi.md)；存储器地图与时钟树在[第 8 章](./08-architecture-memory-clock.md)；链接脚本、VMA/LMA 与启动序列在[第 6 章](../v0-foundations/06-linker-startup-map.md)；长擦除期间的看门狗与复位原因在[第 19 章][ch19]；低功耗下的 Flash 掉电与唤醒在[第 18 章][ch18]。
+其它分工：W25Q 外部 Flash 的 SPI 读写在[第 16 章](./16-i2c-spi.md)；存储器地图与时钟树在[第 8 章](./08-architecture-memory-clock.md)；链接脚本、VMA/LMA 与启动序列在[第 6 章](../v0-foundations/06-linker-startup-map.md)；长擦除期间的看门狗与复位原因在[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)；低功耗下的 Flash 掉电与唤醒在[第 18 章](../v2-reliability/18-low-power.md)。
 
 ## 离开检查
 
@@ -682,6 +682,3 @@ ESP32 只划边界。ESP32-S3 没有 STM32 的 FLASH_KEYR/CR/SR，也没有扇�
 
 </details>
 
-[ch18]: ../v2-reliability/18-low-power.md
-[ch19]: ../v2-reliability/19-watchdog-reset-hardfault.md
-[ch31]: ../v4-platforms/31-esp32-drivers-audio.md

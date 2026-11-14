@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>GD32 AF 复用：每脚 4 位的选择器，16 选 1 过门</title>
+  <desc>GD32 的引脚复用（AF）机制四阶段。① 一个引脚就是一根物理线，同一时刻只能输出一个信号；AF0~AF15 都在门口排队，谁过门由寄存器字段说了算。② AFSEL0（偏移 0x20）管脚 0~7、AFSEL1（偏移 0x24）管脚 8~15——每脚 4 位正好编码 16 个复用号；改名 AFRL/AFRH → AFSEL0/1，偏移与位布局与 STM32F4 完全一致（G2 点名表：GD32F4 每 12 个 GPIO 寄存器里前 10 个与 STM32 逐偏移对齐）。③ 实例：PA8 写 AF0，CK_OUT0 过门——gpio_af_set(GPIOA, GPIO_AF_0, GPIO_PIN_8) 写的是 AFSEL1 的 PA8 字段；官方 example_ckout_main.c 核验：PA8/AF0 与 STM32 MCO1 同脚同号，是 G1 的量频点。④ 写别的 AF 号就换一根功能过门（哪个号是什么功能查 GD32F4 datasheet 复用表）；复用输出别忘了 CTL 配 AF 模式——门开了路没铺也白搭；LOCK 键序列可锁配置防误改。</desc>
+  <rect width="720" height="440" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">GD32 AF 复用：每脚 4 位的选择器，16 选 1 过门</text>
+  <text x="24" y="50" font-size="12" fill="#666">AFSEL0/1 与 STM32 AFRL/AFRH 同岗同布局（0x20/0x24）；PA8 写 AF0，CK_OUT0 过门</text>
+
+  <defs>
+    <marker id="afArwG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3eaf7c"/></marker>
+    <marker id="afArwB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#3451b2"/></marker>
+  </defs>
+
+  <!-- 复用功能候选 -->
+  <rect x="48" y="90" width="190" height="54" rx="8" fill="#d8f3e5" stroke="#3eaf7c"/>
+  <text x="58" y="112" font-family="Consolas,monospace" font-size="13" font-weight="bold" fill="#1a7f56">AF0 · CK_OUT0</text>
+  <text x="58" y="130" font-size="11" fill="#333">官方例程核验（example_ckout）</text>
+  <rect x="48" y="170" width="190" height="54" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="58" y="192" font-family="Consolas,monospace" font-size="13" font-weight="bold" fill="#666">AF1 ~ AF15</text>
+  <text x="58" y="210" font-size="11" fill="#666">其它候选：以 datasheet 复用表为准</text>
+
+  <!-- 16:1 选择器 -->
+  <polygon points="280,74 350,102 350,238 280,266" fill="#ffffff" stroke="#3451b2" stroke-width="2"/>
+  <text x="315" y="158" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">16:1</text>
+  <text x="315" y="176" font-size="11.5" fill="#666" text-anchor="middle">选择器</text>
+
+  <!-- 4 位字段输入 -->
+  <line x1="315" y1="272" x2="315" y2="252" stroke="#3451b2" stroke-width="2" marker-end="url(#afArwB)"/>
+  <text x="326" y="276" font-family="Consolas,monospace" font-size="12" fill="#24292f">AFSEL1.PA8 = 0b0000 → 选 AF0</text>
+
+  <!-- 阶段二注释：寄存器布局 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <text x="380" y="96" font-size="12" fill="#666">AFSEL0 @0x20：管脚 0~7（每脚 4 位）</text>
+    <text x="380" y="116" font-size="12" fill="#666">AFSEL1 @0x24：管脚 8~15</text>
+    <text x="380" y="140" font-size="12" fill="#3451b2">与 STM32 AFRL/AFRH 同岗同布局</text>
+  </g>
+
+  <!-- 输出通路 + 信号点（阶段 3 起亮） -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <path d="M 350 170 L 536 170" stroke="#3eaf7c" stroke-width="3" fill="none" marker-end="url(#afArwG)" pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000">
+      <animate attributeName="stroke-dashoffset" values="1000;0;0" keyTimes="0;0.5;1" dur="3s" repeatCount="indefinite"/>
+    </path>
+    <circle r="4" fill="#3eaf7c">
+      <animateMotion dur="2s" repeatCount="indefinite" path="M 238 117 C 265 128, 290 148, 315 168 L 536 170"/>
+    </circle>
+    <text x="420" y="160" font-size="11.5" fill="#1a7f56" text-anchor="middle">CK_OUT0 过门 → PA8 输出</text>
+  </g>
+
+  <!-- 物理引脚 -->
+  <line x1="536" y1="170" x2="596" y2="170" stroke="#333" stroke-width="3"/>
+  <circle cx="608" cy="170" r="8" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  <text x="608" y="200" font-size="14" font-weight="bold" fill="#24292f" text-anchor="middle">PA8</text>
+  <text x="608" y="216" font-size="11" fill="#666" text-anchor="middle">物理引脚</text>
+
+  <!-- 阶段四：换号 = 换接线 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <path d="M 238 197 C 268 202, 288 194, 313 178 L 536 174" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4" fill="none"/>
+    <text x="420" y="196" font-size="12" fill="#666" text-anchor="middle">写别的 AF 号 = 换一根过门</text>
+  </g>
+
+  <!-- 阶段一 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="300" width="640" height="84" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="322" font-size="13.5" font-weight="bold" fill="#3451b2">① 一根物理线，功能排队过门</text>
+    <text x="56" y="344" font-size="12" fill="#333">一个引脚就是一根物理线：同一时刻只能输出一个信号</text>
+    <text x="56" y="364" font-size="12" fill="#333">AF0~AF15 都在门口排队，谁过门由 AFSEL 寄存器的 4 位字段说了算</text>
+  </g>
+
+  <!-- 阶段二 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="300" width="640" height="84" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="322" font-size="13.5" font-weight="bold" fill="#3451b2">② AFSEL0/1：16 选 1 的门</text>
+    <text x="56" y="344" font-size="12" fill="#333">AFSEL0（0x20）管脚 0~7、AFSEL1（0x24）管脚 8~15——每脚 4 位，正好编码 16 个复用号</text>
+    <text x="56" y="364" font-size="12" fill="#333">改名 AFRL/AFRH → AFSEL0/1，偏移与位布局与 STM32F4 完全一致（G2 点名表）</text>
+  </g>
+
+  <!-- 阶段三 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="300" width="640" height="84" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="322" font-size="13.5" font-weight="bold" fill="#1a7f56">③ 例：PA8 写 AF0，CK_OUT0 过门</text>
+    <text x="56" y="344" font-size="12" fill="#333">gpio_af_set(GPIOA, GPIO_AF_0, GPIO_PIN_8)：写 AFSEL1 的 PA8 字段 = 0</text>
+    <text x="56" y="364" font-size="12" fill="#333">官方 example_ckout_main.c 核验：PA8/AF0 与 STM32 MCO1 同脚同号——G1 的量频点</text>
+  </g>
+
+  <!-- 阶段四 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="300" width="640" height="84" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="322" font-size="13.5" font-weight="bold" fill="#d97706">④ 换号换接线，CTL 也要跟上</text>
+    <text x="56" y="344" font-size="12" fill="#333">写别的 AF 号就换一根功能过门：哪个号是什么功能，查 GD32F4 datasheet 复用表</text>
+    <text x="56" y="364" font-size="12" fill="#d97706">复用输出别忘了 CTL 配 AF 模式——门开了路没铺也白搭；LOCK 键序列可锁配置防误改</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">① 一根线一个时刻一个功能：AF 排队过门</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">② AFSEL0/1 每脚 4 位：与 AFRL/AFRH 同岗同布局</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">③ PA8 写 AF0 → CK_OUT0 过门（官方例程核验）</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="412">④ 换号换接线：CTL 配 AF 模式才能上路</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,430)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

@@ -11,7 +11,7 @@ platforms: [f407, f103, gd32, esp32]
 
 - **问题**：按一下 PF6 的按键，为什么要在 SYSCFG、EXTI、NVIC 和 ISR 里各过一道门？`IRQn = 6` 怎样变成向量槽 22、`ISER[0]` 的 bit6 与 IP 字节 `0xE000E406`？逻辑优先级 5 为什么存成 `0x50`，写成 16 又为什么静默变成最高优先级 0？写 `SCB->AIRCR` 为什么必须带 `0x5FA`？把 `EXTI0_IRQHandler` 名字拼错，为什么中断会永远停在死循环里？ESP32-S3 的中断为什么不是固定向量，`IRAM_ATTR` 与双核分工又在守什么边界？
 - **交付**：能从 `IRQn` 推出 ISER 下标、位号与 IP 字节地址；能按 PRIGROUP 表说清抢占与子优先级的切分，并写出带 `0x5FA` 的 AIRCR 值；能用槽号 `IRQn + 16` 与 weak 顶替的 objdump 证据解释 ISR 的落点；能照六步清单配通一条外部中断；能读懂 `esp_intr_alloc` 的源、级、核与 IRAM 标志，并在双核共享数据时选对锁。
-- **边界**：四平台章。F407 的地址、位段、probe 读数来自 S4《NVIC 与 EXTI》与 RM0090、PM0214；F103 的 AFIO、HAL 分组与三把总闸来自根书第 04 章与 RM0008、PM0056；ESP32-S3 的中断分配器、IRAM 纪律与双核分工来自 P4《中断与双核》，Cache 一致性与多核内存模型留给[第 34 章][ch34]；GD32 只写边界，CLIC/ECLIC 的完整对照见[第 29 章][ch29]。SysTick 时基留给[第 11 章](./11-systick-timebase-rtc.md)，UART 中断留给[第 13 章](./13-uart-framed-protocol.md)，RTOS 上下文切换与 FromISR 约束留给[第 23 章][ch23]、[第 24 章][ch24]，HardFault 现场留给[第 19 章][ch19]。来源没有记录本章的上板读数，本章不把实验步骤写成已经量到的结果。
+- **边界**：四平台章。F407 的地址、位段、probe 读数来自 S4《NVIC 与 EXTI》与 RM0090、PM0214；F103 的 AFIO、HAL 分组与三把总闸来自根书第 04 章与 RM0008、PM0056；ESP32-S3 的中断分配器、IRAM 纪律与双核分工来自 P4《中断与双核》，Cache 一致性与多核内存模型留给[第 34 章](../v4-platforms/34-multicore-cache.md)；GD32 只写边界，CLIC/ECLIC 的完整对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。SysTick 时基留给[第 11 章](./11-systick-timebase-rtc.md)，UART 中断留给[第 13 章](./13-uart-framed-protocol.md)，RTOS 上下文切换与 FromISR 约束留给[第 23 章](../v3-rtos/23-context-switch-porting.md)、[第 24 章](../v3-rtos/24-queue-semaphore-notification.md)，HardFault 现场留给[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。来源没有记录本章的上板读数，本章不把实验步骤写成已经量到的结果。
 - **依据锚点**：S4《S4 NVIC 与 EXTI：打断的艺术》（`mcu/docs/stm32/04-nvic-exti.md`）、根书第 04 章《中断与 NVIC》（`docs/04-中断与NVIC.md`）、P4《P4 中断与双核：IRAM 纪律与核间分工》（`mcu/docs/esp32/04-irq-dualcore.md`）；[第 8 章](./08-architecture-memory-clock.md)的 PPB 与时钟门控、[第 9 章](./09-gpio.md)的引脚配置、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体、[第 4 章](../v0-foundations/04-function-pointer-state-machine.md)的函数指针数组。PM0214、RM0090、RM0008、PM0056 与 ESP-IDF v5.5.2 的条文均转引自上述来源。
 
 ## 先做出来
@@ -264,7 +264,7 @@ F103 的 EXTI 同样按脚号分 16 条线：PA0、PB0、PC0 共用 EXTI0，不�
 
 尾链（tail-chaining）在退出时若已有挂起异常，可以省掉一部分出栈再入栈，但它不改变谁有权抢占。低优先级不会因为尾链插进高优先级的 ISR；PM0056 第 2.3.7 节没有给出尾链省下多少周期，本章也不给具体数字。入栈约 12 个 HCLK，72MHz 下约 167ns，不含 ISR 正文。
 
-`HAL_Delay()` 依赖 SysTick 中断。若在 ISR 里调用它，而该 ISR 的优先级又高于 SysTick，计数不前进，就会死等。ISR 里只置标志或塞缓冲区，慢活交回主循环。FreeRTOS 的 FromISR 优先级数值约束另有一套，见[第 24 章][ch24]。
+`HAL_Delay()` 依赖 SysTick 中断。若在 ISR 里调用它，而该 ISR 的优先级又高于 SysTick，计数不前进，就会死等。ISR 里只置标志或塞缓冲区，慢活交回主循环。FreeRTOS 的 FromISR 优先级数值约束另有一套，见[第 24 章](../v3-rtos/24-queue-semaphore-notification.md)。
 
 根书给的按键实验是 PA0 下降沿进 EXTI0，ISR 里只置 `volatile` 标志，主循环消抖后翻转 PC13；连续按 10 次，记录 10 次有效翻转，并在调试器里确认 `EXTI_PR` 已清零。来源只给了步骤与判据，没有记录读数，本章照录为实验设计。
 
@@ -304,11 +304,11 @@ P4 的探针记录：
 
 `isr_leaky` 的每一条指令都在 IRAM，可它 `callx8` 过去的 `helper_far` 落在 Flash 映射段 `0x42008f1c`；Cache 一关，取指就断在半路。`isr_tight` 的 `call8` 目标 `helper_near` 还在 IRAM 区间内，这才是真的 IRAM-safe。esp32s3 的 IRAM 取指窗口起点是 `0x40374000`，Flash 映射是 `0x42xxxxxx`，常量映射是 `0x3Cxxxxxx`；初代 ESP32 是 `0x400xxxxx` 一片，两代数字不能互抄。P4 还记了一个链接器的坑：IDF 默认带 `-Wl,--gc-sections`，没人引用的 ISR 会被整段收掉，第一版探针的 nm 里只剩 `app_main` 和 `g_hits`，后来用 `g_isr_table` 钉住符号才保住七个。
 
-Cache 关闭窗口的完整机制与多核 Cache 一致性属于[第 34 章][ch34]；本章只记落址判据：ISR 要么整条链进 IRAM，要么老实被推迟。
+Cache 关闭窗口的完整机制与多核 Cache 一致性属于[第 34 章](../v4-platforms/34-multicore-cache.md)；本章只记落址判据：ISR 要么整条链进 IRAM，要么老实被推迟。
 
 双核一侧，S3 的 `SOC_CPU_CORES_NUM = 2`，FreeRTOS 跑 SMP，任务默认可以调度到任意核。需要控制核归属时用 `xTaskCreatePinnedToCore(..., xCoreID)`：`0`/`1` 钉到 PRO_CPU/APP_CPU，`tskNO_AFFINITY` 不钉核。`tskNO_AFFINITY` 实测是 `0x7FFFFFFF`，不是 -1；`xTaskCreate` 的函数体只是转调钉核版。能不钉就不钉，钉核会降低调度器灵活性。
 
-双核与中断共享数据时，`volatile` 只阻止编译器优化掉访问，保证不了原子性，也保证不了核间可见性。读-改-写要用 `portMUX` 自旋锁或临界区，临界区要尽可能短；ISR 到任务用队列/通知的 `...FromISR` 版本。线程与锁的细节见[第 23 章][ch23]与[第 24 章][ch24]。
+双核与中断共享数据时，`volatile` 只阻止编译器优化掉访问，保证不了原子性，也保证不了核间可见性。读-改-写要用 `portMUX` 自旋锁或临界区，临界区要尽可能短；ISR 到任务用队列/通知的 `...FromISR` 版本。线程与锁的细节见[第 23 章](../v3-rtos/23-context-switch-porting.md)与[第 24 章](../v3-rtos/24-queue-semaphore-notification.md)。
 
 ## 测量与证据
 
@@ -358,7 +358,7 @@ sh probe.sh          # 构建后用 nm/.map 给七条链归类（需 ESP-IDF v5.
 | 换了端口，按键还是旧端口触发 | 同一编号引脚共用一条 EXTI 线，PA6 与 PB6 抢 EXTI6 | 改 EXTICR 后旧端口仍触发 | 换一个脚号，或只保留一个端口 |
 | 中断进不了内核 | NVIC 没使能，或优先级分组与预期不符 | `ISER` 对应位为 0；AIRCR PRIGROUP 被别处改过 | 用 `NVIC_EnableIRQ` 并核对分组 |
 | 想把 16 当最低优先级，结果它最横 | `(priority << 4) & 0xFF` 在本字节截断，16→`0x00` | 读回 IP 字节是 `0x00` | 逻辑优先级限制在 0~15 |
-| 调 HardFault 优先级没有效果 | HardFault 优先级硬件固定，`IRQn` 枚举里 -13 被跳过 | `IRQn_Type` 中没有 `HardFault_IRQn` | 不设；查 HardFault 现场见[第 19 章][ch19] |
+| 调 HardFault 优先级没有效果 | HardFault 优先级硬件固定，`IRQn` 枚举里 -13 被跳过 | `IRQn_Type` 中没有 `HardFault_IRQn` | 不设；查 HardFault 现场见[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) |
 | 中断永远停在死循环 | ISR 函数名拼错，weak 默认 `Default_Handler` 没被顶替 | objdump 的槽内容仍指向默认处理函数 | 对照启动文件的 `.word` 行核对函数名 |
 | EXTI9_5 里分不清是谁触发 | 5~9 号线共用向量，ISR 没查 PR | PR 的 bit5~9 哪一个为 1 | ISR 里按 PR 位分支，再逐位清 |
 | 尾链打开后低优先级插进了高优先级 | 尾链不改变谁有权抢占 | 抢占级数值没有变小 | 改抢占级，不要指望尾链 |
@@ -376,9 +376,9 @@ F407 这一侧，`IRQn / 32`、`IRQn % 32`、`IP 字节 = 0xE000E400 + IRQn` 与
 
 F103 一侧，NVIC 与向量表的结构相同，差异在“选门”的位置：F1 用 AFIO 的 `EXTICR`，F4/L4/H7 用 SYSCFG 的 `SYSCFG_EXTICR`，G0 用 EXTI 自己的 `EXTI_EXTICR`。分组还要认准 API 的编号体系：HAL 的 `NVIC_PRIORITYGROUP_x` 按抢占位数命名，SCB 的 PRIGROUP 按 0~7 的值命名，两套名字不能互相套。F103 的入栈开销按 PM0056 的 12 HCLK 计，尾链的具体周期数手册没有给，本章不补。
 
-GD32 只划边界。GD32 的 ARM 型号沿用 Cortex-M 的 NVIC 体系；RISC-V 型号（如 GD32VF103）改用 ECLIC/CLIC，术语、优先级模型与向量方式都换了名字，本章不把 NVIC 的寄存器名带过去。CLIC/ECLIC 的完整对照、中断号地图与向量直跳见[第 29 章][ch29]；芯片迁移的通用检查表见[第 28 章][ch28]。
+GD32 只划边界。GD32 的 ARM 型号沿用 Cortex-M 的 NVIC 体系；RISC-V 型号（如 GD32VF103）改用 ECLIC/CLIC，术语、优先级模型与向量方式都换了名字，本章不把 NVIC 的寄存器名带过去。CLIC/ECLIC 的完整对照、中断号地图与向量直跳见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)；芯片迁移的通用检查表见[第 28 章](../v4-platforms/28-chip-migration-differences.md)。
 
-ESP32 这一侧，没有 NVIC 与固定向量表，中断由分配器在运行时绑定到核与级。P4 的 99 个源编号与 7 级是 ESP32-S3 的具体账，换型号要按对应的 `soc/interrupts.h` 与 `soc_caps.h` 重查；IRAM 取指窗口两代也不同（S3 是 `0x40374000` 起，初代 ESP32 是 `0x400xxxxx` 起）。Cache 映射、Cache 关闭窗口与多核一致性见[第 34 章][ch34]；架构与启动见[第 30 章][ch30]；外设驱动框架见[第 31 章][ch31]。
+ESP32 这一侧，没有 NVIC 与固定向量表，中断由分配器在运行时绑定到核与级。P4 的 99 个源编号与 7 级是 ESP32-S3 的具体账，换型号要按对应的 `soc/interrupts.h` 与 `soc_caps.h` 重查；IRAM 取指窗口两代也不同（S3 是 `0x40374000` 起，初代 ESP32 是 `0x400xxxxx` 起）。Cache 映射、Cache 关闭窗口与多核一致性见[第 34 章](../v4-platforms/34-multicore-cache.md)；架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)；外设驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。
 
 ## 离开检查
 
@@ -405,11 +405,3 @@ ESP32 这一侧，没有 NVIC 与固定向量表，中断由分配器在运行�
 
 </details>
 
-[ch19]: ../v2-reliability/19-watchdog-reset-hardfault.md
-[ch23]: ../v3-rtos/23-context-switch-porting.md
-[ch24]: ../v3-rtos/24-queue-semaphore-notification.md
-[ch28]: ../v4-platforms/28-chip-migration-differences.md
-[ch29]: ../v4-platforms/29-gd32-arm-riscv.md
-[ch30]: ../v4-platforms/30-esp32s3-architecture-boot.md
-[ch31]: ../v4-platforms/31-esp32-drivers-audio.md
-[ch34]: ../v4-platforms/34-multicore-cache.md

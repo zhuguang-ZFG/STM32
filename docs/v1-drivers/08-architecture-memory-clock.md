@@ -11,7 +11,7 @@ platforms: [f407, f103, gd32]
 
 - **问题**：为什么 GPIOA 住在 `0x4002_0000`，而不是别的数？一次取指、一次外设寄存器读、一次 DMA 搬运，在总线矩阵上各走哪条线，为什么 CCM 那条路走不通？位带为什么能把一个位变成一个字的原子写？HSI、HSE、LSI、LSE 四个时钟源各管什么？8MHz 晶振怎样手算出 M/N/P/Q 并落到 168MHz？提频六步为什么顺序就是正确性？F103 的 8MHz 到 72MHz 又为什么是另一套乘法？
 - **交付**：能从段基址推出任意外设地址并说出它挂在哪条总线；能用公式算出任意位的位带别名；能为一颗晶振手算一组合法 M/N/P/Q，并用回读与 MCO 两条证据对账；能按六步顺序配置 F407 时钟并说出每步失败的样子；能读 F103 的 `RCC_CFGR` 复算 72MHz、36MHz 与定时器时钟。
-- **边界**：三平台章。F407 的地址、寄存器位、探针读数来自 S1、S2 与 RM0090 Rev 18；F103 的 72MHz 账来自根书第 02 章与 RM0008 Rev 21；GD32 只在“跨平台边界”里指路，不写未经来源支持的差异。DMA 通道与数据搬运留给[第 14 章](./14-dma.md)，GPIO 寄存器逐位拆解留给[第 9 章](./09-gpio.md)，定时器与 PWM 留给[第 12 章](./12-timers-pwm.md)，UART 波特率留给[第 13 章](./13-uart-framed-protocol.md)，HardFault 现场留给[第 19 章][ch19]，低功耗与时钟门控留给[第 18 章][ch18]，SWD 与性能测量留给[第 20 章][ch20]。来源没有记录作者上板复跑 HSE 与 MCO，本章把板上读数标为未跑。
+- **边界**：三平台章。F407 的地址、寄存器位、探针读数来自 S1、S2 与 RM0090 Rev 18；F103 的 72MHz 账来自根书第 02 章与 RM0008 Rev 21；GD32 只在“跨平台边界”里指路，不写未经来源支持的差异。DMA 通道与数据搬运留给[第 14 章](./14-dma.md)，GPIO 寄存器逐位拆解留给[第 9 章](./09-gpio.md)，定时器与 PWM 留给[第 12 章](./12-timers-pwm.md)，UART 波特率留给[第 13 章](./13-uart-framed-protocol.md)，HardFault 现场留给[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，低功耗与时钟门控留给[第 18 章](../v2-reliability/18-low-power.md)，SWD 与性能测量留给[第 20 章](../v2-reliability/20-debug-performance.md)。来源没有记录作者上板复跑 HSE 与 MCO，本章把板上读数标为未跑。
 - **依据锚点**：S1《F407 架构总览：地址背后的故事》（`mcu/docs/stm32/01-arch.md`）、S2《RCC 时钟树：168MHz 是怎么算出来的》（`mcu/docs/stm32/02-rcc-clock.md`）；根书第 02 章《芯片选型与存储器时钟》的时钟树、Flash 等待与 CSS/MCO 段（`docs/02-芯片选型与存储器时钟.md` 第 6、7、10 节）；[第 6 章](../v0-foundations/06-linker-startup-map.md)的 CCM 与启动映射、[第 1 章](../v0-foundations/01-c-memory-model.md)的统一编址。RM0090、RM0008、PM0214 与 DS8626 的条文均转引自上述来源。
 
 ## 先做出来
@@ -304,7 +304,7 @@ F407 与 F405 共享本章的 RCC 位定义与 VOS 天花板，但 F405/407 没�
 
 F103 一侧，4GB 地图与统一编址同样成立，但时钟树是“HSE 或 HSI/2 再乘 N”的结构：没有 PLLM/PLLN/PLLP，PLLMUL 只有 ×2~×16，SYSCLK 上限 72MHz；APB1 上限 36MHz、APB2 上限 72MHz；Flash 等待按 0/1/2 三档；MCO 可用 PLL÷2 送出 36MHz；CSS 走 NMI，要写 CSSC。F103 的外设基址也与 F407 不同（例如 GPIOA 在 `0x4001_0800`、RCC 在 `0x4002_1000`），地址不能跨系列照抄。F1 的 `RCC_CFGR` 还要认准中密度第 7.3.2 节，互联型第 8.3.2 节的编码不适用。
 
-GD32 只划边界。来源在延伸里留的指针是“GD32 的 RCU 与 RCC 对照”，本章不展开它的时钟源、PLL 字段与寄存器布局，也不把 F407 的位段名当成 GD32 的名字。芯片迁移的方法论与引脚/外设差异见[第 28 章][ch28]，GD32 系列（ARM 与 RISC-V）的对照见[第 29 章][ch29]。ESP32 不在本章平台范围内，其架构与启动见[第 30 章][ch30]。
+GD32 只划边界。来源在延伸里留的指针是“GD32 的 RCU 与 RCC 对照”，本章不展开它的时钟源、PLL 字段与寄存器布局，也不把 F407 的位段名当成 GD32 的名字。芯片迁移的方法论与引脚/外设差异见[第 28 章](../v4-platforms/28-chip-migration-differences.md)，GD32 系列（ARM 与 RISC-V）的对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。ESP32 不在本章平台范围内，其架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)。
 
 ## 离开检查
 
@@ -331,9 +331,3 @@ GD32 只划边界。来源在延伸里留的指针是“GD32 的 RCU 与 RCC 对
 
 </details>
 
-[ch18]: ../v2-reliability/18-low-power.md
-[ch19]: ../v2-reliability/19-watchdog-reset-hardfault.md
-[ch20]: ../v2-reliability/20-debug-performance.md
-[ch28]: ../v4-platforms/28-chip-migration-differences.md
-[ch29]: ../v4-platforms/29-gd32-arm-riscv.md
-[ch30]: ../v4-platforms/30-esp32s3-architecture-boot.md

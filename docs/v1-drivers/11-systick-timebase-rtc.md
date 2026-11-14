@@ -5,13 +5,13 @@ platforms: [f407, f103]
 
 # SysTick 与时基（含 RTC）
 
-> 芯片里有两颗心跳。一颗是内核的 SysTick：24 位倒数秒表，LOAD 定周期、VAL 看进度、CTRL 管开关，归零时置一个读过就清的标志。另一颗是备份域的 RTC：主电源断了，只要 VBAT 上还有电，秒计数器照样走。前者回答“过了多久”，后者回答“现在几点”。这一章把 SysTick 的四个寄存器拆成可复算的周期账，把 167999 的来历、忘减一的相位差、24 位上限与回绕安全的超时写法排成一列，再把 RTC 的备份域、LSE 与时间戳边界划清楚。看门狗不在本章，留给[第 19 章][ch19]。
+> 芯片里有两颗心跳。一颗是内核的 SysTick：24 位倒数秒表，LOAD 定周期、VAL 看进度、CTRL 管开关，归零时置一个读过就清的标志。另一颗是备份域的 RTC：主电源断了，只要 VBAT 上还有电，秒计数器照样走。前者回答“过了多久”，后者回答“现在几点”。这一章把 SysTick 的四个寄存器拆成可复算的周期账，把 167999 的来历、忘减一的相位差、24 位上限与回绕安全的超时写法排成一列，再把 RTC 的备份域、LSE 与时间戳边界划清楚。看门狗不在本章，留给[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。
 
 ## 本章罗盘
 
 - **问题**：168MHz 下要 1ms，为什么 LOAD 填 167999 而不是 168000？忘减一为什么“次数不变、相位变慢”，5.95ppm 与日漂移 514ms 是怎么算出来的？为什么“先读一次 CTRL 打印、再读一次判断”的查询式延时会死等？`SysTick_Config(168000)` 之后 CTRL 为什么是 `0x00000007`，SHP[11] 为什么是 `0xF0`？168MHz 下 24 位计数器单次最长能撑多久，请求 100ms 为什么被拒、强行截断为什么会 737 倍速？49.7 天回绕时，哪种超时写法仍然正确？主电源拔掉后 RTC 靠什么继续走，F1 与 F4 各保存了什么，时间戳又落在哪一边？
 - **交付**：能按“时钟频率 ÷ 每秒 tick 数 − 1”算任意 LOAD，并先判断它是否超过 24 位；能说出 `SysTick_Config` 的三写一设与返回值含义；会把 COUNTFLAG 读一次存进变量再判断；会写 `(uint32_t)(now - then) >= timeout` 的回绕安全超时；能解释 SysTick 优先级为什么落在最低档；能按“电源、复位、写门”三道边界检查 RTC，会选 LSE 或 LSI、写 PRL = 32767、用 BKP 魔数判断首次上电，并分清 F1 的秒计数器与 F4 的 BCD 日历、时间戳。
-- **边界**：两平台章。F407 的地址、位段、probe 读数来自 S5《SysTick：内核的心跳》与 `core_cm4.h`、`stm32f407xx.h`；F103 的 72MHz 分母来自根书第 05 章与[第 8 章](./08-architecture-memory-clock.md)，RTC 的备份域、LSE、BKP 与时间戳边界来自根书第 11 章与 RM0008、DS5319。来源没有记录本章的上板读数（PF6 翻转、调试器偷看 CTRL、LSE 起振时间），本章把它们写成实验设计与判据。定时器 TIM 与 PWM 留给[第 12 章](./12-timers-pwm.md)，看门狗留给[第 19 章][ch19]，低功耗唤醒留给[第 18 章][ch18]，RTOS 的 tick 与上下文切换留给[第 21 章][ch21]、[第 23 章][ch23]，NVIC 的优先级分组与 EXTI 留给[第 10 章](./10-interrupts-nvic-exti.md)。
+- **边界**：两平台章。F407 的地址、位段、probe 读数来自 S5《SysTick：内核的心跳》与 `core_cm4.h`、`stm32f407xx.h`；F103 的 72MHz 分母来自根书第 05 章与[第 8 章](./08-architecture-memory-clock.md)，RTC 的备份域、LSE、BKP 与时间戳边界来自根书第 11 章与 RM0008、DS5319。来源没有记录本章的上板读数（PF6 翻转、调试器偷看 CTRL、LSE 起振时间），本章把它们写成实验设计与判据。定时器 TIM 与 PWM 留给[第 12 章](./12-timers-pwm.md)，看门狗留给[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，低功耗唤醒留给[第 18 章](../v2-reliability/18-low-power.md)，RTOS 的 tick 与上下文切换留给[第 21 章](../v3-rtos/21-why-rtos.md)、[第 23 章](../v3-rtos/23-context-switch-porting.md)，NVIC 的优先级分组与 EXTI 留给[第 10 章](./10-interrupts-nvic-exti.md)。
 - **依据锚点**：S5《S5 SysTick：内核的心跳》（`mcu/docs/stm32/05-systick.md`）、根书第 05 章《定时器与 PWM》（`docs/05-定时器与PWM.md`）的时基部分、根书第 11 章《RTC 与看门狗》（`docs/11-RTC与看门狗.md`）的 RTC 部分；[第 8 章](./08-architecture-memory-clock.md)的 168MHz 与 72MHz 账、[第 10 章](./10-interrupts-nvic-exti.md)的 SHP 与中断约束、[第 9 章](./09-gpio.md)的 PC13 灌电流规则、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体。PM0214、RM0090、RM0008、DS5319 的条文均转引自上述来源。
 
 ## 先做出来
@@ -197,7 +197,7 @@ return 0;
 - `CTRL = 0x00000007`：ENABLE | TICKINT | CLKSOURCE 三位全置：内核时钟、开中断、开跑。
 - 优先级怎么算：F407 的 `__NVIC_PRIO_BITS = 4`（`stm32f407xx.h:49`），`SysTick_IRQn = -1`（`:75`）；`__NVIC_SetPriority` 对负数 IRQn 走 `SCB->SHP[((IRQn)&0xF)-4]`（`core_cm4.h:1814-1824`），写入字节 = priority << (8 - 4)。(1 << 4) - 1 = 15，15 << 4 = `0xF0` → SHP[11] = `0xF0`，4 位优先级里的最低档。[第 10 章](./10-interrupts-nvic-exti.md)的七中断表把 SysTick 的 SHP 字节写成 `0xE000ED23`，与下标 11 对得上。
 
-为什么 RTOS 要它最低：tick 中断里跑的是调度器，而调度必须给一切外设中断让路：串口字节不等人的，高优先级 tick 会把 RXNE 中断顶飞。RTOS 的 tick 设计与上下文切换见[第 21 章][ch21]、[第 23 章][ch23]。
+为什么 RTOS 要它最低：tick 中断里跑的是调度器，而调度必须给一切外设中断让路：串口字节不等人的，高优先级 tick 会把 RXNE 中断顶飞。RTOS 的 tick 设计与上下文切换见[第 21 章](../v3-rtos/21-why-rtos.md)、[第 23 章](../v3-rtos/23-context-switch-porting.md)。
 
 ### F103：同一个内核秒表，换一个分母
 
@@ -260,7 +260,7 @@ LSE 起振慢，初始化超时给得太短会误判失败；真的不起振，�
 
 不要用 SysTick 冒充日历，也不要用 RTC 做毫秒延时：前者的 24 位上限与回绕、后者的 1 秒分辨率，各自划定了能力边界。需要两者配合时（例如数据记录器给每行打时间戳），让 SysTick 管采样间隔、RTC 管墙上时间，两边各自守自己的回绕与锁存规则。
 
-RTOS 的 tick 就建在 SysTick 上：调度器在 tick 中断里决定要不要换任务，所以这颗中断的优先级必须最低。低功耗模式下的时基与 RTC 唤醒见[第 18 章][ch18]。
+RTOS 的 tick 就建在 SysTick 上：调度器在 tick 中断里决定要不要换任务，所以这颗中断的优先级必须最低。低功耗模式下的时基与 RTC 唤醒见[第 18 章](../v2-reliability/18-low-power.md)。
 
 ## 测量与证据
 
@@ -323,7 +323,7 @@ F103 一侧，内核计数器同名同址，分母换成 72MHz：1ms 是 71999�
 
 RTC 一侧，F1 是 32 位秒计数器加 10 个 16 位备份寄存器；F4 是 BCD 日历 `TR`/`DR`、20 个 32 位备份寄存器，还多了周期唤醒与硬件时间戳。LSE 的引脚、VBAT 的脚位、备份寄存器的个数与宽度都随封装与系列变，换芯片先查数据手册的引脚表与备份域章节。LSE 占用的 PC14/PC15 不能再当 GPIO，PC13 的灌电流限制见[第 9 章](./09-gpio.md)。
 
-GD32 的 ARM 型号沿用 Cortex-M 的 SysTick，RISC-V 型号改用 MTIME 一类机器定时器，名字与编程模型都换了；对照见[第 29 章][ch29]。ESP32 不在本章平台范围，其架构与启动见[第 30 章][ch30]。定时器 TIM 与 PWM 见[第 12 章](./12-timers-pwm.md)，看门狗见[第 19 章][ch19]，低功耗唤醒见[第 18 章][ch18]。
+GD32 的 ARM 型号沿用 Cortex-M 的 SysTick，RISC-V 型号改用 MTIME 一类机器定时器，名字与编程模型都换了；对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。ESP32 不在本章平台范围，其架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)。定时器 TIM 与 PWM 见[第 12 章](./12-timers-pwm.md)，看门狗见[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，低功耗唤醒见[第 18 章](../v2-reliability/18-low-power.md)。
 
 ## 离开检查
 
@@ -350,9 +350,3 @@ GD32 的 ARM 型号沿用 Cortex-M 的 SysTick，RISC-V 型号改用 MTIME 一�
 
 </details>
 
-[ch18]: ../v2-reliability/18-low-power.md
-[ch19]: ../v2-reliability/19-watchdog-reset-hardfault.md
-[ch21]: ../v3-rtos/21-why-rtos.md
-[ch23]: ../v3-rtos/23-context-switch-porting.md
-[ch29]: ../v4-platforms/29-gd32-arm-riscv.md
-[ch30]: ../v4-platforms/30-esp32s3-architecture-boot.md

@@ -350,7 +350,7 @@ I2C 与 SPI 的分工可以压成一张表：
 
 ### 台架二：E07，ESP32-S3 板载 QMI8658（边界实验，记录待做）
 
-E07 是 ESP32-S3 的板载传感器实验，不属于 STM32 的 I2C 外设章，但它把“任何 I2C 传感器都有的 ID→配置→连读→换算”套路走了一遍，所以放在证据节当边界例子，驱动细节归[第 31 章][ch31]。
+E07 是 ESP32-S3 的板载传感器实验，不属于 STM32 的 I2C 外设章，但它把“任何 I2C 传感器都有的 ID→配置→连读→换算”套路走了一遍，所以放在证据节当边界例子，驱动细节归[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。
 
 1. 接线：零接线，QMI8658 板载；SDA=GPIO1、SCL=GPIO2，7 位地址 0x6A，上拉在板上（阻值查板卡原理图，待复核）。
 2. 链路自检：读 WHO_AM_I（寄存器 0x00），预期 0x05；读不到或读到 0xFF/0x00，先查地址、引脚和上拉。
@@ -436,9 +436,9 @@ F407 一侧：I2C1/2/3 都在 APB1，基址 `0x40005400`/`0x40005800`/`0x40005C0
 
 F103 一侧：I2C1/2 在 APB1，I2C1 基址 `0x40005400`，72 MHz 主频下 PCLK1=36 MHz，100 kHz 用 0x00B4（CCR=180、TRISE=37），400 kHz 用 0x801E（CCR=30、F/S=1、DUTY=0）；PB6/PB7 是复位默认，重映射到 PB8/PB9 要先开 AFIO 时钟。F1 的 GPIO 配置走 CRL/CRH，没有 AFR；事件寄存器同样是 SR1/SR2。根书把 F1 硬件 I2C 在从机拉住 SDA 时的卡忙列为经验现象，属于来源说法，待复核。SPI1 在 APB2，72 MHz 下 BR=010 是 9 MHz、BR=000 是 36 MHz；PA4~PA7 是复位默认，SPI1 的 DMA 请求在 DMA1。F103C8 的 SPI/I2C 数量与引脚以 DS5319 为准，本章没有取到原表。
 
-ESP32 只划边界。ESP32-S3 没有 STM32 的 I2C/SPI 寄存器，I2C 走 ESP-IDF 的 `i2c_master` 驱动，SPI 走 `spi_master`；START/STOP/ACK、7 位地址、重复起始这些线上规则仍然成立，但 SR1/SR2、CCR/TRISE、CPOL/CPHA 的寄存器名一个都不要带过去。E07 的 QMI8658 是板载 I2C 器件，SDA=GPIO1、SCL=GPIO2、7 位地址 0x6A，读 WHO_AM_I 0x00 预期 0x05，从 0x35 连读 12 字节；这套配置是那一块板子的具体值，不是 ESP32 系列通用常数。ESP32-S3 的外设与驱动框架见[第 31 章][ch31]，架构与启动不在本章展开。
+ESP32 只划边界。ESP32-S3 没有 STM32 的 I2C/SPI 寄存器，I2C 走 ESP-IDF 的 `i2c_master` 驱动，SPI 走 `spi_master`；START/STOP/ACK、7 位地址、重复起始这些线上规则仍然成立，但 SR1/SR2、CCR/TRISE、CPOL/CPHA 的寄存器名一个都不要带过去。E07 的 QMI8658 是板载 I2C 器件，SDA=GPIO1、SCL=GPIO2、7 位地址 0x6A，读 WHO_AM_I 0x00 预期 0x05，从 0x35 连读 12 字节；这套配置是那一块板子的具体值，不是 ESP32 系列通用常数。ESP32-S3 的外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)，架构与启动不在本章展开。
 
-其它分工：DMA 的请求映射与 NDTR/半字账在[第 14 章](./14-dma.md)；GPIO 的开漏、复用与 BSRR 在[第 9 章](./09-gpio.md)；PCLK1/PCLK2 的时钟树在[第 8 章](./08-architecture-memory-clock.md)；抓包与仪器方法在[第 40 章][ch40]；Flash 与 IAP 的页/扇区账在[第 17 章](./17-flash-iap-ota.md)；低功耗下外设关断在[第 18 章][ch18]。
+其它分工：DMA 的请求映射与 NDTR/半字账在[第 14 章](./14-dma.md)；GPIO 的开漏、复用与 BSRR 在[第 9 章](./09-gpio.md)；PCLK1/PCLK2 的时钟树在[第 8 章](./08-architecture-memory-clock.md)；抓包与仪器方法在[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)；Flash 与 IAP 的页/扇区账在[第 17 章](./17-flash-iap-ota.md)；低功耗下外设关断在[第 18 章](../v2-reliability/18-low-power.md)。
 
 ## 离开检查
 
@@ -467,6 +467,3 @@ ESP32 只划边界。ESP32-S3 没有 STM32 的 I2C/SPI 寄存器，I2C 走 ESP-I
 
 </details>
 
-[ch18]: ../v2-reliability/18-low-power.md
-[ch31]: ../v4-platforms/31-esp32-drivers-audio.md
-[ch40]: ../v6-labs-projects/40-lab-method-instruments.md

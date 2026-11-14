@@ -356,15 +356,15 @@ void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef *init)
 
 ## 跨平台边界
 
-构建系统这一层与芯片无关，但“两平台共用同一副骨架”要按维度拆开说。依赖图这一维确实共用：一张图按 mtime 决定重建，Make 的三要素、缺头文件边与 `-MMD -MP` 的补法，在 F103 与 ESP32 的工程里都按同一套问题去读。生成器这一维只对 CMake/IDF 成立：CMake 先产出构建文件再构建，ESP-IDF 在 CMake 之上用 `idf_component_register` 圈组件，这些事实都来自 B7 对 CMake 与 IDF 的记录，本章没有把它们写成 F103 一侧的机制。配置层这一维按平台各算各的：F103 的 SPL 工程用 `stm32f10x_conf.h` 选择包含哪些驱动头文件，用 `STM32F10X_MD` 与 `USE_STDPERIPH_DRIVER` 两个宏进入真实编译命令；ESP32 的 IDF 工程用 Kconfig 菜单把选择写进 `sdkconfig`，构建时生成 `sdkconfig.h`。同样是“配置决定编什么”，两套机制不同，不能互相搬。两条栈的所有权也不同。F103 侧的遗留栈是 SPL V3.5.0：版本、`STM32F10X_MD`、`USE_STDPERIPH_DRIVER`、启动文件、链接脚本和 `system_stm32f10x.c` 必须成套；ESP32 侧的工程单位是 ESP-IDF 组件，配置走 Kconfig 与 `sdkconfig`，调度入口是 `idf.py`。把 `stm32f10x_*` 文件搬到 ESP32，或把 ESP-IDF 的组件宏搬到 F1，都不是移植，只是把两套所有权混在一起。`GPIO_Init` 的逐行解剖也必须按版本读：S15 的取证对象是 F4 V1.8.0，寄存器是 `MODER/OTYPER/OSPEEDR/PUPDR`；F103 的 V3.5.0 走同一套“结构体 + 移位 + 断言”的方法，但落点是 `GPIOx_CRL/CRH`。方法可以带走，寄存器名、位段和时钟使能寄存器不能跨版本搬运。生成器与配置机制之外还有别的平台差异，本章没有逐项取证，留给卷 4 的[第 28 章][ch28]与[第 29 章][ch29]。
+构建系统这一层与芯片无关，但“两平台共用同一副骨架”要按维度拆开说。依赖图这一维确实共用：一张图按 mtime 决定重建，Make 的三要素、缺头文件边与 `-MMD -MP` 的补法，在 F103 与 ESP32 的工程里都按同一套问题去读。生成器这一维只对 CMake/IDF 成立：CMake 先产出构建文件再构建，ESP-IDF 在 CMake 之上用 `idf_component_register` 圈组件，这些事实都来自 B7 对 CMake 与 IDF 的记录，本章没有把它们写成 F103 一侧的机制。配置层这一维按平台各算各的：F103 的 SPL 工程用 `stm32f10x_conf.h` 选择包含哪些驱动头文件，用 `STM32F10X_MD` 与 `USE_STDPERIPH_DRIVER` 两个宏进入真实编译命令；ESP32 的 IDF 工程用 Kconfig 菜单把选择写进 `sdkconfig`，构建时生成 `sdkconfig.h`。同样是“配置决定编什么”，两套机制不同，不能互相搬。两条栈的所有权也不同。F103 侧的遗留栈是 SPL V3.5.0：版本、`STM32F10X_MD`、`USE_STDPERIPH_DRIVER`、启动文件、链接脚本和 `system_stm32f10x.c` 必须成套；ESP32 侧的工程单位是 ESP-IDF 组件，配置走 Kconfig 与 `sdkconfig`，调度入口是 `idf.py`。把 `stm32f10x_*` 文件搬到 ESP32，或把 ESP-IDF 的组件宏搬到 F1，都不是移植，只是把两套所有权混在一起。`GPIO_Init` 的逐行解剖也必须按版本读：S15 的取证对象是 F4 V1.8.0，寄存器是 `MODER/OTYPER/OSPEEDR/PUPDR`；F103 的 V3.5.0 走同一套“结构体 + 移位 + 断言”的方法，但落点是 `GPIOx_CRL/CRH`。方法可以带走，寄存器名、位段和时钟使能寄存器不能跨版本搬运。生成器与配置机制之外还有别的平台差异，本章没有逐项取证，留给卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。
 
 | 事项 | 本章的证据范围 | 跨平台时的处理 |
 | --- | --- | --- |
 | 依赖图、生成器、配置层 | 依赖图来自 B7 且与芯片无关；生成器记录属 CMake/IDF；配置层 F103 为 `stm32f10x_conf.h` + `STM32F10X_MD`/`USE_STDPERIPH_DRIVER`，ESP32 为 Kconfig → `sdkconfig` | 依赖图共用同一套读法；生成器只按 CMake/IDF 读，不外推到 F103；配置机制各按各的读，不互相搬 |
-| ESP-IDF 工作流 | B7 记录的组件、Kconfig、`idf.py` | ESP32 侧按此读工程；ESP32-S3 的地址、启动与分区见[第 30 章][ch30] |
+| ESP-IDF 工作流 | B7 记录的组件、Kconfig、`idf.py` | ESP32 侧按此读工程；ESP32-S3 的地址、启动与分区见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md) |
 | SPL 版本与宏 | 仅 STM32F10x V3.5.0 | 不复制到其它系列；ESP32 没有 SPL |
 | GPIO 解剖 | S15 的 F4 V1.8.0；F1 的落点是 `GPIOx_CRL/CRH` | 方法复用，寄存器名逐版本对账 |
-| 时钟、引脚、DMA 通道 | 本章不展开 | 见第 8、10、14 章；系列差异与迁移检查表见[第 28 章][ch28]与[第 29 章][ch29] |
+| 时钟、引脚、DMA 通道 | 本章不展开 | 见第 8、10、14 章；系列差异与迁移检查表见[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md) |
 | 板级行为 | 来源要求真板复核，本机未接板 | 两平台都只到构建闭合，烧录与波形待上板 |
 
 ## 离开检查
@@ -394,6 +394,3 @@ void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef *init)
 [ch10]: ../v1-drivers/10-interrupts-nvic-exti.md
 [ch13]: ../v1-drivers/13-uart-framed-protocol.md
 [ch14]: ../v1-drivers/14-dma.md
-[ch28]: ../v4-platforms/28-chip-migration-differences.md
-[ch29]: ../v4-platforms/29-gd32-arm-riscv.md
-[ch30]: ../v4-platforms/30-esp32s3-architecture-boot.md

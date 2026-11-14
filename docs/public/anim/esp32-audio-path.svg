@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <title>实战派音频全链路：控制走 I2C，声音走 I2S</title>
+  <desc>实战派 ESP32-S3 板的音频通路四阶段。① 控制面与数据面分离：I2C 是控制面，配 codec 的音量/格式/使能（低频小数据）；I2S 是数据面，音频样本按 BCK 节拍逐 bit 移位高速流转——"配置走 I2C，声音走 I2S"，codec 是哑巴工人，S3 是大脑。② 采集链：双麦模拟信号 → ES7210 ADC 采样量化 → I2S RX 三线（BCK/WS/DATA）进 S3 → DMA 搬进 PSRAM 环形缓冲——CPU 只管消费不管搬运，16kHz×16bit 单声道每秒 32KB。③ 播放链：PSRAM 缓冲 → DMA → I2S TX → ES8311 DAC 还原模拟 → NS4150B D 类功放 → 喇叭；stereo 帧的左右槽填同一份单声道样本；PA_EN 在 I2C 扩展器上而不在 S3 GPIO——上电时序防"噗"声。④ 时钟与带宽账：S3 是 I2S 主机，MCLK=256×fs、BCK=fs×位宽×声道、WS=fs；16kHz×16bit×2ch=512kHz BCK、MCLK=4.096MHz——动任何一项都要重配 codec。</desc>
+  <rect width="720" height="440" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="17" font-weight="bold" fill="#3451b2">实战派音频全链路：控制走 I2C，声音走 I2S</text>
+  <text x="24" y="50" font-size="12" fill="#666">麦 → ES7210 → I2S RX → S3（DMA→PSRAM）→ I2S TX → ES8311 → NS4150B → 喇叭</text>
+
+  <defs>
+    <marker id="audArwG" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5 Z" fill="#3eaf7c"/></marker>
+    <marker id="audArwB" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5 Z" fill="#3451b2"/></marker>
+    <marker id="audArwGray" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5 Z" fill="#888"/></marker>
+  </defs>
+
+  <!-- 双麦 -->
+  <circle cx="52" cy="142" r="10" fill="#ffffff" stroke="#333" stroke-width="1.5"/>
+  <circle cx="52" cy="168" r="10" fill="#ffffff" stroke="#333" stroke-width="1.5"/>
+  <text x="52" y="204" font-size="12" fill="#666" text-anchor="middle">双麦（模拟）</text>
+
+  <!-- ES7210 -->
+  <rect x="84" y="130" width="92" height="64" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="130" y="154" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">ES7210</text>
+  <text x="130" y="170" font-size="11" fill="#666" text-anchor="middle">ADC ×4</text>
+  <text x="130" y="186" font-size="11" fill="#666" text-anchor="middle">采集 codec</text>
+
+  <!-- I2S RX 三线 + 数据令牌 -->
+  <text x="207" y="140" font-size="11.5" font-weight="bold" fill="#1a7f56" text-anchor="middle">I2S RX</text>
+  <line x1="176" y1="148" x2="238" y2="148" stroke="#3eaf7c" stroke-width="2" marker-end="url(#audArwG)"/>
+  <line x1="176" y1="162" x2="238" y2="162" stroke="#3eaf7c" stroke-width="2" marker-end="url(#audArwG)"/>
+  <line x1="176" y1="176" x2="238" y2="176" stroke="#3eaf7c" stroke-width="2" marker-end="url(#audArwG)"/>
+  <circle cx="180" cy="162" r="4" fill="#3eaf7c">
+    <animate attributeName="cx" values="180;234" dur="2s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- S3 主控块 -->
+  <rect x="240" y="124" width="170" height="96" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="252" y="144" font-size="14" font-weight="bold" fill="#3451b2">ESP32-S3</text>
+  <rect x="252" y="152" width="146" height="17" rx="3" fill="#dbe7ff"/>
+  <text x="258" y="164" font-size="11" fill="#24292f">I2S 外设（全双工）</text>
+  <rect x="252" y="173" width="146" height="17" rx="3" fill="#dbe7ff"/>
+  <text x="258" y="185" font-size="11" fill="#24292f">DMA 通道</text>
+  <rect x="252" y="194" width="146" height="17" rx="3" fill="#d8f3e5"/>
+  <text x="258" y="206" font-size="11" fill="#1a7f56">PSRAM 环形缓冲</text>
+
+  <!-- I2S TX 三线 + 数据令牌 -->
+  <text x="431" y="140" font-size="11.5" font-weight="bold" fill="#3451b2" text-anchor="middle">I2S TX</text>
+  <line x1="410" y1="148" x2="452" y2="148" stroke="#3451b2" stroke-width="2" marker-end="url(#audArwB)"/>
+  <line x1="410" y1="162" x2="452" y2="162" stroke="#3451b2" stroke-width="2" marker-end="url(#audArwB)"/>
+  <line x1="410" y1="176" x2="452" y2="176" stroke="#3451b2" stroke-width="2" marker-end="url(#audArwB)"/>
+  <circle cx="414" cy="162" r="4" fill="#3451b2">
+    <animate attributeName="cx" values="414;448" dur="2s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- ES8311 -->
+  <rect x="454" y="130" width="88" height="64" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="498" y="154" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">ES8311</text>
+  <text x="498" y="170" font-size="11" fill="#666" text-anchor="middle">DAC</text>
+  <text x="498" y="186" font-size="11" fill="#666" text-anchor="middle">播放 codec</text>
+
+  <!-- NS4150B -->
+  <rect x="556" y="130" width="88" height="64" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="600" y="154" font-size="12.5" font-weight="bold" fill="#3451b2" text-anchor="middle">NS4150B</text>
+  <text x="600" y="170" font-size="11" fill="#666" text-anchor="middle">D 类功放</text>
+  <text x="600" y="186" font-size="11" fill="#666" text-anchor="middle">PA_EN（I2C）</text>
+
+  <!-- 喇叭 -->
+  <rect x="658" y="150" width="12" height="24" fill="#57606a"/>
+  <polygon points="670,150 684,138 684,186 670,174" fill="#57606a"/>
+  <path d="M 688 148 C 696 158, 696 166, 688 176" stroke="#d97706" stroke-width="2" fill="none"/>
+  <path d="M 694 142 C 706 156, 706 168, 694 182" stroke="#d97706" stroke-width="2" fill="none"/>
+  <text x="676" y="206" font-size="11.5" fill="#666" text-anchor="middle">喇叭</text>
+
+  <!-- I2C 控制面（虚线，从 S3 底部走到两颗 codec 底部） -->
+  <path d="M 325 220 L 325 246 L 130 246 L 130 198" stroke="#888" stroke-width="1.5" stroke-dasharray="4 3" fill="none" marker-end="url(#audArwGray)"/>
+  <path d="M 325 220 L 325 246 L 498 246 L 498 198" stroke="#888" stroke-width="1.5" stroke-dasharray="4 3" fill="none" marker-end="url(#audArwGray)"/>
+  <text x="136" y="242" font-size="11.5" fill="#666">I2C 控制面（音量 / 格式 / 使能）</text>
+
+  <!-- 阶段二高亮：采集链 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="36" y="118" width="382" height="100" fill="#d8f3e5" opacity="0.35"/>
+    <text x="60" y="112" font-size="13" font-weight="bold" fill="#1a7f56">采集链</text>
+  </g>
+
+  <!-- 阶段三高亮：播放链 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="408" y="118" width="292" height="100" fill="#dbe7ff" opacity="0.35"/>
+    <text x="430" y="112" font-size="13" font-weight="bold" fill="#3451b2">播放链</text>
+  </g>
+
+  <!-- 阶段一 -->
+  <g opacity="1">
+    <animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="268" width="640" height="100" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="290" font-size="13.5" font-weight="bold" fill="#3451b2">① 控制面与数据面分离</text>
+    <text x="56" y="312" font-size="12" fill="#333">I2C 控制面：配 codec 寄存器（音量 / 格式 / 使能 / PA_EN）——低频小数据，闲时才用</text>
+    <text x="56" y="332" font-size="12" fill="#333">I2S 数据面：音频样本按 BCK 节拍逐 bit 移位——高速持续流转</text>
+    <text x="56" y="352" font-size="12" fill="#1a7f56">一句话：配置走 I2C，声音走 I2S；codec 是哑巴工人，S3 是大脑</text>
+  </g>
+
+  <!-- 阶段二 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="268" width="640" height="100" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="290" font-size="13.5" font-weight="bold" fill="#1a7f56">② 采集链：麦 → ADC → I2S RX → DMA → PSRAM</text>
+    <text x="56" y="312" font-size="12" fill="#333">双麦模拟信号 → ES7210 采样量化 → I2S RX 三线进 S3 → DMA 搬进 PSRAM 环形缓冲</text>
+    <text x="56" y="332" font-size="12" fill="#333">CPU 只管消费不管搬运：DMA 在后台按节拍送样本</text>
+    <text x="56" y="352" font-size="12" fill="#333">16kHz × 16bit 单声道 = 每秒 32KB——DMA 悄悄搬完</text>
+  </g>
+
+  <!-- 阶段三 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="268" width="640" height="100" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="290" font-size="13.5" font-weight="bold" fill="#3451b2">③ 播放链：PSRAM → DMA → I2S TX → DAC → 功放 → 喇叭</text>
+    <text x="56" y="312" font-size="12" fill="#333">PSRAM 缓冲 → DMA → I2S TX → ES8311 还原模拟 → NS4150B 放大 → 喇叭发声</text>
+    <text x="56" y="332" font-size="12" fill="#333">stereo 帧的左右两个槽填同一份单声道样本——I2S 帧格式的要求</text>
+    <text x="56" y="352" font-size="12" fill="#d97706">PA_EN 在 I2C 扩展器上而不在 S3 GPIO：上电时序防"噗"声</text>
+  </g>
+
+  <!-- 阶段四 -->
+  <g opacity="0">
+    <animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+    <rect x="40" y="268" width="640" height="100" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="56" y="290" font-size="13.5" font-weight="bold" fill="#d97706">④ 时钟与带宽账</text>
+    <text x="56" y="312" font-size="12" fill="#333">S3 是 I2S 主机：MCLK = 256×fs、BCK = fs×位宽×声道、WS = fs</text>
+    <text x="56" y="332" font-size="12" fill="#333">16kHz × 16bit × 2ch = 512kHz BCK；MCLK = 4.096MHz</text>
+    <text x="56" y="352" font-size="12" fill="#333">带宽 = 采样率 × 位宽 × 声道数：动任何一项，codec 的时钟配置都要跟着重配</text>
+  </g>
+
+  <!-- 阶段字幕 -->
+  <g font-size="13" font-weight="bold" fill="#3451b2">
+    <g opacity="1"><animate attributeName="opacity" calcMode="discrete" values="1;0;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="398">① 配置走 I2C，声音走 I2S</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;1;0;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="398">② 采集：麦 → ES7210 → I2S RX → DMA → PSRAM</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="398">③ 播放：PSRAM → DMA → I2S TX → ES8311 → 功放 → 喇叭</text></g>
+    <g opacity="0"><animate attributeName="opacity" calcMode="discrete" values="0;0;0;1;0" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/>
+      <text x="36" y="398">④ S3 掌时钟：MCLK=256×fs，BCK=512kHz @16k/16b/2ch</text></g>
+  </g>
+
+  <!-- 阶段指示点 -->
+  <g transform="translate(630,420)" fill="#3451b2">
+    <circle cx="0" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="1;0.2;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="18" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;1;0.2;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="36" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;1;0.2;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+    <circle cx="54" cy="0" r="5"><animate attributeName="opacity" calcMode="discrete" values="0.2;0.2;0.2;1;0.2" keyTimes="0;0.25;0.5;0.75;1" dur="12s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="Wi-Fi 重连退避：DISCONNECTED 后 1s→2s→4s→…→60s 封顶，重连外置到 esp_timer 不堵事件任务"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="8" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">DISCONNECTED 指数退避</text>
+<rect x="8" y="22" width="44" height="16" rx="3" stroke-width="1.4"/> <text x="12" y="33" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">1s</text>
+<rect x="58" y="22" width="44" height="16" rx="3" stroke-width="1.4"/> <text x="62" y="33" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">2s</text>
+<rect x="108" y="22" width="44" height="16" rx="3" stroke-width="1.4"/> <text x="112" y="33" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">4s</text>
+<rect x="158" y="22" width="44" height="16" rx="3" stroke-width="1.4"/> <text x="162" y="33" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">8s</text>
+<rect x="208" y="22" width="52" height="16" rx="3" stroke-width="1.4"/> <text x="212" y="33" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">…→60s</text>
+<path d="M52 30 L58 30" stroke-width="2.2"/> <path d="M102 30 L108 30" stroke-width="2.2"/>
+<path d="M152 30 L158 30" stroke-width="2.2"/> <path d="M202 30 L208 30" stroke-width="2.2"/>
+<text x="8" y="54" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">delay_ms = (retry&lt;6) ? 1000&lt;&lt;retry : 60000</text>
+<path d="M8 60 L312 60" stroke-width="1.2" stroke-dasharray="3 2"/>
+<rect x="8" y="66" width="132" height="16" rx="3" stroke-width="1.4"/> <text x="12" y="77" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">handler 里只记账</text>
+<path d="M140 74 C 160 74, 170 74, 186 74" stroke-width="2.2"/>
+<rect x="186" y="66" width="126" height="16" rx="3" stroke-width="1.4"/> <text x="190" y="77" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">esp_timer 延迟重连</text>
+</g></svg>

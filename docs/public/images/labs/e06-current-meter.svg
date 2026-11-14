@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" font-family="'Segoe UI','Microsoft YaHei',sans-serif" role="img" aria-label="E06 测电流接法：万用表电流档串在电源正极与板子供电输入之间，拔掉仿真器与外接模块；平均电流等于工作占比乘工作电流加睡眠占比乘睡眠电流">
+  <rect width="720" height="420" fill="#f6f8fa"/>
+  <text x="24" y="30" font-size="16" font-weight="bold" fill="#3451b2">E06 测电流：把回路断开，让电流"穿过"表</text>
+  <text x="24" y="50" font-size="12" fill="#666">电流档内阻很小，并在电源两端等于短路；必须串联。先 mA 档起步，读数稳定后再换 µA 档</text>
+
+  <!-- 电源 -->
+  <rect x="30" y="78" width="130" height="110" fill="#fff" stroke="#d97706" stroke-width="2" rx="8"/>
+  <text x="95" y="98" font-size="13" font-weight="bold" fill="#a16207" text-anchor="middle">电池/稳压电源</text>
+  <text x="150" y="124" font-size="12" fill="#c0392b" text-anchor="end">+</text>
+  <text x="150" y="176" font-size="12" fill="#333" text-anchor="end">−</text>
+
+  <!-- 万用表 -->
+  <rect x="220" y="70" width="150" height="80" fill="#fff" stroke="#3451b2" stroke-width="2" rx="8"/>
+  <text x="295" y="90" font-size="13" font-weight="bold" fill="#3451b2" text-anchor="middle">万用表（电流档）</text>
+  <circle cx="250" cy="120" r="7" fill="#fff" stroke="#c0392b" stroke-width="2"/>
+  <text x="250" y="142" font-size="12" fill="#c0392b" text-anchor="middle">µA/mA</text>
+  <circle cx="340" cy="120" r="7" fill="#fff" stroke="#333" stroke-width="2"/>
+  <text x="340" y="142" font-size="12" fill="#333" text-anchor="middle">COM</text>
+
+  <!-- 开发板 -->
+  <rect x="430" y="78" width="130" height="110" fill="#fff" stroke="#3eaf7c" stroke-width="2" rx="8"/>
+  <text x="495" y="98" font-size="13" font-weight="bold" fill="#1a7f56" text-anchor="middle">开发板</text>
+  <text x="440" y="124" font-size="12" fill="#333">VIN</text>
+  <text x="440" y="176" font-size="12" fill="#333">GND</text>
+  <text x="495" y="150" font-size="12" fill="#666" text-anchor="middle">LDO＋MCU＋外设</text>
+
+  <!-- 回路 -->
+  <path d="M160 120 H243" fill="none" stroke="#c0392b" stroke-width="2"/>
+  <text x="200" y="112" font-size="12" fill="#c0392b" text-anchor="middle">红笔</text>
+  <path d="M347 120 H430" fill="none" stroke="#333" stroke-width="2"/>
+  <text x="390" y="112" font-size="12" fill="#333" text-anchor="middle">黑笔</text>
+  <path d="M160 172 H430" fill="none" stroke="#333" stroke-width="2" stroke-dasharray="6 3"/>
+  <text x="295" y="166" font-size="12" fill="#666" text-anchor="middle">GND 直连，不经过表</text>
+
+  <!-- 拔掉 -->
+  <rect x="590" y="78" width="110" height="110" fill="#fff" stroke="#c0392b" stroke-width="2" stroke-dasharray="6 3" rx="8"/>
+  <text x="645" y="98" font-size="13" font-weight="bold" fill="#c0392b" text-anchor="middle">测前拔掉</text>
+  <text x="645" y="124" font-size="12" fill="#333" text-anchor="middle">ST-Link/J-Link</text>
+  <text x="645" y="146" font-size="12" fill="#333" text-anchor="middle">USB 线/模块</text>
+  <text x="645" y="168" font-size="12" fill="#666" text-anchor="middle">它们也在吃电</text>
+  <line x1="560" y1="133" x2="590" y2="133" stroke="#c0392b" stroke-width="2"/>
+  <line x1="568" y1="125" x2="582" y2="141" stroke="#c0392b" stroke-width="2"/>
+  <line x1="582" y1="125" x2="568" y2="141" stroke="#c0392b" stroke-width="2"/>
+  <!-- 电流波形（示意） -->
+  <text x="30" y="222" font-size="13" font-weight="bold" fill="#3451b2">电流随时间（示意，数值为假设，不是实测）</text>
+  <line x1="80" y1="320" x2="690" y2="320" stroke="#999" stroke-width="1"/>
+  <line x1="80" y1="236" x2="80" y2="320" stroke="#999" stroke-width="1"/>
+  <text x="74" y="256" font-size="12" fill="#666" text-anchor="end">工作</text>
+  <text x="74" y="314" font-size="12" fill="#666" text-anchor="end">睡眠</text>
+  <path d="M80 310 H130 V252 H160 V310 H330 V252 H360 V310 H530 V252 H560 V310 H690" fill="none" stroke="#3451b2" stroke-width="2"/>
+  <line x1="80" y1="300" x2="690" y2="300" stroke="#d97706" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="686" y="294" font-size="12" fill="#a16207" text-anchor="end">平均电流</text>
+  <text x="145" y="246" font-size="12" fill="#3451b2" text-anchor="middle">t工作</text>
+  <line x1="130" y1="334" x2="330" y2="334" stroke="#666" stroke-width="1"/>
+  <line x1="130" y1="328" x2="130" y2="340" stroke="#666" stroke-width="1"/>
+  <line x1="330" y1="328" x2="330" y2="340" stroke="#666" stroke-width="1"/>
+  <text x="230" y="350" font-size="12" fill="#666" text-anchor="middle">唤醒周期 T</text>
+  <text x="370" y="350" font-size="12" fill="#c0392b">µA 档内阻大：唤醒瞬间压降可能让板子复位</text>
+
+  <!-- 公式 -->
+  <rect x="30" y="362" width="660" height="48" fill="#fdf3e1" stroke="#d97706" rx="6"/>
+  <text x="360" y="381" font-size="12" fill="#a16207" text-anchor="middle">I平均 = (t工作 × I工作 + t睡眠 × I睡眠) ÷ T；续航(h) ≈ 容量(mAh) ÷ I平均(mA)</text>
+  <text x="360" y="399" font-size="12" fill="#a16207" text-anchor="middle">假设 每秒醒 10ms、10mA，睡眠 20µA：I平均 ≈ 120µA → CR2032 220mAh ≈ 1800h ≈ 76 天</text>
+</svg>
