@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import base64
 import html as html_lib
+import posixpath
 import re
 import sys
 from pathlib import Path
@@ -116,14 +117,38 @@ def open_quiz_details(html: str) -> str:
     return html.replace("<details", "<details open")
 
 
-def chapter_section(entry: dict, docs_root: Path) -> str:
+def rewrite_book_links(content: str, current_file: str,
+                       file_to_id: dict[str, str]) -> str:
+    """把跨章 `.md` 链接改成书内锚点，同章链接保留小节 fragment。"""
+    current_file = posixpath.normpath(current_file)
+
+    def replace(match: re.Match[str]) -> str:
+        target, frag = match.group(1), match.group(2) or ""
+        if target.startswith(("http://", "https://", "mailto:")):
+            return match.group(0)
+        target_file = f"{target}.md"
+        if target_file.startswith("/"):
+            normalized = posixpath.normpath(target_file.lstrip("/"))
+        else:
+            normalized = posixpath.normpath(
+                posixpath.join(posixpath.dirname(current_file), target_file))
+        anchor = file_to_id.get(normalized)
+        if not anchor:
+            return f'href="{target}.html{frag}"'
+        if normalized == current_file:
+            return f'href="{frag}"' if frag and frag != "#" else f'href="#{anchor}"'
+        return f'href="#{anchor}"'
+
+    return site.MD_HREF_RE.sub(replace, content)
+
+
+def chapter_section(entry: dict, docs_root: Path,
+                    file_to_id: dict[str, str]) -> str:
     """一章 → <section id=…>。返回 (html, 标题)。"""
     text = (docs_root / entry["file"]).read_text(encoding="utf-8")
     _, body = site.split_frontmatter(text)
     content = site.render_markdown(body, QUIZ_DIR)
-    content = site.MD_HREF_RE.sub(
-        lambda match: f'href="{match.group(1)}.html{match.group(2) or ""}"', content
-    )
+    content = rewrite_book_links(content, entry["file"], file_to_id)
     content = inline_assets(content)
     content = open_quiz_details(content)
     head = CHAPTER_HEAD.search(body)
@@ -140,6 +165,14 @@ def build(out_path: Path | None = None, sample: int | None = None) -> Path:
 
     # 章清单：卷 → 章
     parts = manifest["parts"]
+    file_to_id = {
+        posixpath.normpath(entry["file"]): entry["id"]
+        for part in parts for entry in part["chapters"]
+    }
+    file_to_id.update({
+        posixpath.normpath(entry["file"]): entry["id"]
+        for entry in manifest["appendices"]
+    })
     flat = []
     for part in parts:
         for chapter in part["chapters"]:
@@ -178,14 +211,14 @@ def build(out_path: Path | None = None, sample: int | None = None) -> Path:
         sections.append(parts_html)
         toc_rows.append((f"part-{part['id']}", part["title"]))
         for _, chapter in in_part:
-            html, _title = chapter_section(chapter, DOCS)
+            html, _title = chapter_section(chapter, DOCS, file_to_id)
             sections.append(html)
             heads.append((chapter["id"], chapter["title"]))
             outline.append((2, chapter["title"], chapter["id"]))
             toc_rows.append((chapter["id"], chapter["title"]))
     for appendix in manifest["appendices"]:
         if (DOCS / appendix["file"]).exists():
-            html, _title = chapter_section(appendix, DOCS)
+            html, _title = chapter_section(appendix, DOCS, file_to_id)
             sections.append(html)
             heads.append((appendix["id"], appendix["title"]))
             outline.append((1, appendix["title"], appendix["id"]))
