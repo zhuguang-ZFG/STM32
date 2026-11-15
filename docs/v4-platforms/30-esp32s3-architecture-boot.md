@@ -7,7 +7,9 @@ platforms: [esp32]
 
 ESP32-S3 上电之后发生的事，是三棒接力：ROM 交给 bootloader，bootloader 交给 app，app 里 FreeRTOS 先起、main task 再调你写的 `app_main`。与 STM32「复位向量直接进 app」的世界观比，多了两级接力，也多了两处最容易卡住的位置。日志前缀（`rst:`/`boot:`/`app_start:`）就是分诊单。工程侧，ESP-IDF 把「构建」换成「组件化 + Kconfig 菜单」：CMake 是引擎，`idf.py` 是调度员。这一章把两件事拆到源码行。
 
-这一章没有板级实测。上游核对以 **ESP-IDF v5.5.2** 实取，`soc_caps.h:145`、`app_startup.c:83,158,206-210`、`esp_system/Kconfig:225-227`、`partitions_singleapp.csv`、`project.cmake:21,29,464-465`、`component.cmake:443-449`、`kconfig.cmake:208-216` 全部逐字命中。启动 banner 的日志属于「待上板回填」；IRAM/DIRAM size 账可复算，但原始读数是来源说法（未复核）；「890 个 CONFIG_」因 `sdkconfig` 是构建产物、未入库，同样是来源说法。立创实战派 S3 的板卡细节（WROOM-1-N16R8、CH340K）来自立创 wiki，逐项标待核。
+这一章没有板级实测。上游核对以 **ESP-IDF v5.5.2** 实取，`soc_caps.h:145`、`app_startup.c:83,158,206-210`、`esp_system/Kconfig:225-227`、`partitions_singleapp.csv`、`project.cmake:21,29,464-465`、`component.cmake:443-449`、`kconfig.cmake:208-216` 全部逐字命中。
+
+启动 banner 的日志属于「待上板回填」；IRAM/DIRAM size 账可复算，但原始读数是来源说法（未复核）；「890 个 CONFIG_」因 `sdkconfig` 是构建产物、未入库，同样是来源说法。立创实战派 S3 的板卡细节（WROOM-1-N16R8、CH340K）来自立创 wiki，逐项标待核。
 
 > 版本口径：ESP-IDF **v5.5.2**（`esp_idf_version.h:14-18` tag 5/5/2）；板卡立创实战派 S3（ESP32-S3-WROOM-1-N16R8：16 MB Flash + 8 MB PSRAM，LX7 双核 240 MHz）。引用行号只写 v5.5.2 实取命中的；换版本按 E4 的提醒重核。
 
@@ -36,7 +38,7 @@ ESP32-S3 上电之后发生的事，是三棒接力：ROM 交给 bootloader，bo
 
 ![ESP32-S3 启动三棒接力动画：ROM → bootloader → app，每棒一条卡点判据](/anim/esp32-boot-relay.svg)
 
-![手绘板：三棒接力与分诊口诀，`rst:` 归 ROM、`boot:` 归引导、`app_start:` 之后才怪软件；XIP 是最容易踩的架构差（原理示意）](/images/mc30-s3-boot-chain.png)
+![手绘板：三棒接力与分诊口诀，`rst:` 归 ROM、`boot:` 归引导、`app_start:` 之后才怪软件；XIP 是最容易踩的架构差（原理示意，非实拍）](/images/mc30-s3-boot-chain.png)
 
 ### 2. 一条三行的 CMakeLists 与一个目标守卫
 

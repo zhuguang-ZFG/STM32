@@ -10,10 +10,10 @@ platforms: [generic]
 - **问题**：串口接收链路的每一段（DMA 缓冲/字节队列/帧协议）各签了什么「合同」，违反后的典型症状是什么？IDLE 为什么不是帧边界？环形缓冲免锁的前提是什么？帧协议为什么选 COBS+CRC-16，「从任意字节流再同步」怎么实现？慢消费者的失败怎么变成可读计数？F1 与 F4 的 DMA 通道/流怎么对照，NDTR 与 BRR 的账怎么算？
 - **交付**：能按五契约走读一条完整接收链路；能写出契约 A/B 两种实现并说清各自空窗与禁项；能用 `tot_len`/不变式与 COBS+CRC 检查串验证实现；能把 NDTR/BRR/H7 32 字节四笔账当场复算。
 - **边界**：本附录是工程深读层；UART/DMA 机制归 [v1 第 13、14 章](../v1-drivers/13-uart-framed-protocol.md)，Cache 一致性归 [第 34 章](../v4-platforms/34-multicore-cache.md)，队列语义归 [第 24 章](../v3-rtos/24-queue-semaphore-notification.md)。寄存器名按平台分列，禁混写。
-- **依据锚点**：双源合并——五契约骨架（`mcu/code/stm32/03-uart-dma`、`05-framed-protocol`、`code/common/reliability`）与 F103 双契约（根书附录 A）；出处登记见[附录 E](./E-sources-version-license.md) 注册表，账表见[附录 D](./D-glossary.md) 文末的账。
+- **依据锚点**：双源合并：五契约骨架（`mcu/code/stm32/03-uart-dma`、`05-framed-protocol`、`code/common/reliability`）与 F103 双契约（根书附录 A）；出处登记见[附录 E](./E-sources-version-license.md) 注册表，账表见[附录 D](./D-glossary.md) 文末的账。
 
 
-本附录把 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[v1 第 14 章](../v1-drivers/14-dma.md)、[v0 第 4 章](../v0-foundations/04-function-pointer-state-machine.md) 与 [第 41 章](../v6-labs-projects/41-dual-board-logger-project.md) 各讲一段的串口接收链路，接成**一条完整的字节旅程**：从线路上的电平跳变到业务层手里的一帧数据，每一段都签着一份「合同」——违反任何一条，链路会以典型症状死给你看，而症状往往出现在离违约现场很远的地方。
+本附录把 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[v1 第 14 章](../v1-drivers/14-dma.md)、[v0 第 4 章](../v0-foundations/04-function-pointer-state-machine.md) 与 [第 41 章](../v6-labs-projects/41-dual-board-logger-project.md) 各讲一段的串口接收链路，接成**一条完整的字节旅程**：从线路上的电平跳变到业务层手里的一帧数据，每一段都签着一份「合同」。违反任何一条，链路会以典型症状死给你看，而症状往往出现在离违约现场很远的地方。
 
 两份来源并陈：**五契约骨架**（F407 线，三份配套工程为证据源：`mcu/code/stm32/03-uart-dma`、`mcu/code/stm32/05-framed-protocol`、`mcu/code/common/reliability`，测试在 `tests.c`）承载主线；**F103 双契约**（BluePill 线，Normal/Circular 两类缓冲区所有权契约）并入契约一/三的展开位。寄存器名按平台分开写，禁混写。
 
@@ -43,11 +43,11 @@ platforms: [generic]
 
 ## 契约一：DMA 只认地址，不认语义
 
-DMA 是「给地址就搬」的传送带——不知道什么是「一帧」。F4 流版的四条纪律（`DMA_S5_NDTR`/HISR/HIFCR 口径）：
+DMA 是「给地址就搬」的传送带，不知道什么是「一帧」。F4 流版的四条纪律（`DMA_S5_NDTR`/HISR/HIFCR 口径）：
 
 1. **改配置必须先停流**：`CHSEL`/`DIR`/`CIRC` 只在 `EN=0` 时可改（RM0090 硬性规定）；初始化顺序「关流 → 配 PAR/M0AR/NDTR → 配控制位 → 最后置 EN」。
-2. **写位置从 NDTR 减出来**：环形模式 `pos = (RX_BUF_LEN − DMA_S5_NDTR) % RX_BUF_LEN`——NDTR 是剩余量不是已写量，跑满一圈回装原值，要取模；先读 NDTR 再读标志位，采样间隙跨回绕时标志能提示。
-3. **清标志写 HIFCR，不碰 HISR**（只读）——「标志永不清、IRQ 风暴」的第一根因。
+2. **写位置从 NDTR 减出来**：环形模式 `pos = (RX_BUF_LEN − DMA_S5_NDTR) % RX_BUF_LEN`。NDTR 是剩余量不是已写量，跑满一圈回装原值，要取模；先读 NDTR 再读标志位，采样间隙跨回绕时标志能提示。
+3. **清标志写 HIFCR，不碰 HISR**（只读）。漏做这一步是「标志永不清、IRQ 风暴」的第一根因。
 4. **「DMA 完成」≠「CPU 看见」**：传送完成只证明 DMA 做完了请求；CPU 与数据的距离还隔着所有权（契约三）与 cache 一致性（[第 34 章](../v4-platforms/34-multicore-cache.md)）。
 
 | 违约方式 | 症状 | 指向 |
@@ -56,7 +56,7 @@ DMA 是「给地址就搬」的传送带——不知道什么是「一帧」。F
 | 忘掉 `% RX_BUF_LEN` | 一圈后 pos 越界，读走别人的内存 | 同上 |
 | 往 HISR 写 1 清标志 | 标志永不清，IRQ 风暴 | [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) |
 
-**F103 版展开（双契约 A/B）**。C8 是中容量、只有 DMA1 七通道——把大容量的 DMA2 通道号抄过来计数器不会动：
+**F103 版展开（双契约 A/B）**。C8 是中容量、只有 DMA1 七通道：把大容量的 DMA2 通道号抄过来计数器不会动：
 
 | 请求 | F103C8（RM0008） | F4（RM0090） |
 | --- | --- | --- |
@@ -64,8 +64,8 @@ DMA 是「给地址就搬」的传送带——不知道什么是「一帧」。F
 | USART1_RX | Channel 5 | DMA2 Stream 5, Channel 4 |
 | ADC1 | Channel 1 | DMA2 Stream 0 或 4, Channel 0 |
 
-- **契约 A：Normal DMA 每次重新武装**——适合命令行、低中吞吐、每次 IDLE 要一块连续数据。关键决定：**关闭 HT 中断，且每次重新武装后再关一次**（否则半缓冲事件提前终止本轮）。方案有明确空窗：回调复制与重新武装期间新字节到达会触发 ORE；高吞吐场景改契约 B，不要靠加大缓冲掩盖。
-- **契约 B：Circular DMA 启动一次按位置取增量**——`Size > old_pos` 连续；`Size < old_pos` 处理尾段+头段；**禁止每次回调重新 `ReceiveToIdle_DMA`**（会重置位置破坏 old_pos）；`pos == old_pos` 去重必须存在（HT 与 IDLE 相近时刻连发）。
+- **契约 A：Normal DMA 每次重新武装**：适合命令行、低中吞吐、每次 IDLE 要一块连续数据。关键决定：**关闭 HT 中断，且每次重新武装后再关一次**（否则半缓冲事件提前终止本轮）。方案有明确空窗：回调复制与重新武装期间新字节到达会触发 ORE；高吞吐场景改契约 B，不要靠加大缓冲掩盖。
+- **契约 B：Circular DMA 启动一次按位置取增量**：`Size > old_pos` 连续；`Size < old_pos` 处理尾段+头段；**禁止每次回调重新 `ReceiveToIdle_DMA`**（会重置位置破坏 old_pos）；`pos == old_pos` 去重必须存在（HT 与 IDLE 相近时刻连发）。
 
 ![手绘板：契约 A 与空窗（原理示意，非实拍）](/images/app-a-contract-a.png)
 
@@ -73,7 +73,7 @@ DMA 是「给地址就搬」的传送带——不知道什么是「一帧」。F
 
 ## 契约二：IDLE 是「该搬积压了」，不是帧边界
 
-IDLE 的含义只有一个：**线路静默了一个帧时间**。它不携带「这是一帧」的承诺——`g_frames` 观测量的诚实注释是「IDLE 通知次数」，不是协议帧数。错误标志的清除口径：ORE/FE/NE 按「读 SR 后读 DR」应答清除；IDLE 同法，但**不是**协议边界。
+IDLE 的含义只有一个：**线路静默了一个帧时间**。它不携带「这是一帧」的承诺：`g_frames` 观测量的诚实注释是「IDLE 通知次数」，不是协议帧数。错误标志的清除口径：ORE/FE/NE 按「读 SR 后读 DR」应答清除；IDLE 同法，但**不是**协议边界。
 
 | 事件 | 硬件语义 | 应用该做什么 | 错误用法 |
 | --- | --- | --- | --- |
@@ -81,20 +81,20 @@ IDLE 的含义只有一个：**线路静默了一个帧时间**。它不携带�
 | ORE | RX 未读走时来了新字节 | 记数、读 DR 清除、考虑加大搬运频率 | 静默丢弃不计数 |
 | FE/NE | 帧错误/噪声 | 记数；连续出现先查波特率与时钟源 | 只清不查根因 |
 
-ORE 的处理要点：**计数比恢复更重要**——丢的字节找不回来，能留下的是「链路在什么速率下开始丢」的证据。
+ORE 的处理要点是**计数比恢复更重要**：丢的字节找不回来，能留下的是「链路在什么速率下开始丢」的证据。
 
-![手绘板：ISR 与业务边界——ISR 只做有界拷贝与计数（原理示意，非实拍）](/images/app-a-isr-boundary.png)
+![手绘板：ISR 与业务边界，ISR 只做有界拷贝与计数（原理示意，非实拍）](/images/app-a-isr-boundary.png)
 
 ## 契约三：环形缓冲的所有权与有序性
 
-免锁的前提是**所有权分离**，四条不变量：写指针只有生产者（ISR）改、读指针只有消费者改；各自改自己那一个（单生产者单消费者不需要临界区）；判空判满先声明容量口径——留一格的 A 派（物理 N 格可用 N−1）或计数的 B 派（可用 N），**两派混用是「时好时坏」bug 的经典来源**；`atomic_signal_fence` 只挡编译器重排，不解决多核可见性（那是 [第 34 章](../v4-platforms/34-multicore-cache.md) 的领地）。第二个生产者出现，免锁立即失效——回到关中断或 RTOS 队列（[第 24 章](../v3-rtos/24-queue-semaphore-notification.md)）。
+免锁的前提是**所有权分离**，四条不变量：写指针只有生产者（ISR）改、读指针只有消费者改；各自改自己那一个（单生产者单消费者不需要临界区）；判空判满先声明容量口径：留一格的 A 派（物理 N 格可用 N−1）或计数的 B 派（可用 N），**两派混用是「时好时坏」bug 的经典来源**；`atomic_signal_fence` 只挡编译器重排，不解决多核可见性（那是 [第 34 章](../v4-platforms/34-multicore-cache.md) 的领地）。第二个生产者出现，免锁立即失效，回到关中断或 RTOS 队列（[第 24 章](../v3-rtos/24-queue-semaphore-notification.md)）。
 
 ```c
 /* 队列满时禁止静默覆盖：宁可丢、必须数。（code/common/logger/logger.c） */
 if (q->count == Q_SLOTS) { q->dropped = sat_add(q->dropped, 1); return; }
 ```
 
-连**计数本身都用饱和加法**（`sat_add`）——溢出场景下计数器自己先溢出归零，是最讽刺的翻车方式。
+连**计数本身都用饱和加法**（`sat_add`），溢出场景下计数器自己先溢出归零，是最讽刺的翻车方式。
 
 ## 契约四：帧协议要能从任意字节流再同步
 
@@ -108,7 +108,7 @@ CRC-16/CCITT-FALSE（poly 0x1021，init 0xffff，不反射）
 检查串 "123456789" → 0x29B1
 ```
 
-三个设计决定各对应一条纪律：**`0x00` 只当帧尾**（COBS 保证 raw 无 0x00，分隔符无歧义；损坏后下一个 0x00 就是重同步点——选 COBS 而非转义/长度前缀的核心理由）；**CRC-16/CCITT-FALSE**（检错表现有据可查——出处条目见附录 E；0x29B1 检查串可独立验证实现）；**sequence 回显配对**（防旧响应当新答案的最后一道闸）。解析器三状态 `EMPTY → COLLECT → DISCARD`：DMA/UART 错误或队列溢出都推入 DISCARD——**可疑就整段丢弃，比「试着抢救」永远便宜**。
+三个设计决定各对应一条纪律：**`0x00` 只当帧尾**（COBS 保证 raw 无 0x00，分隔符无歧义；损坏后下一个 0x00 就是重同步点，选 COBS 而非转义/长度前缀的核心理由）；**CRC-16/CCITT-FALSE**（检错表现有据可查，出处条目见附录 E；0x29B1 检查串可独立验证实现）；**sequence 回显配对**（防旧响应当新答案的最后一道闸）。解析器三状态 `EMPTY → COLLECT → DISCARD`：DMA/UART 错误或队列溢出都推入 DISCARD。**可疑就整段丢弃，比「试着抢救」永远便宜**。
 
 ## 契约五：慢消费者必须可见地失败
 
@@ -122,9 +122,9 @@ CRC-16/CCITT-FALSE（poly 0x1021，init 0xffff，不反射）
 | 记录器槽位（[第 41 章](../v6-labs-projects/41-dual-board-logger-project.md) 的 16 槽） | 丢新样本，保住历史 | `dropped`（饱和加法） |
 | 配置代次（双槽） | 代次失配的旧读数不进记录 | 按代次分账 |
 
-「丢新还是丢旧」是每个系统的显式决定：TX 队列**保旧弃新**（发送中的帧不能撕）、记录器**保历史弃新样**（故障时刻的数据最值钱）——没有对错，但**必须写下来**。健康监督的底座就在这：监督的不是「任务活着」，是「每一层的失败计数没有增长」（[v1 第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)）。
+「丢新还是丢旧」是每个系统的显式决定：TX 队列**保旧弃新**（发送中的帧不能撕）、记录器**保历史弃新样**（故障时刻的数据最值钱）。没有对错，但**必须写下来**。健康监督的底座就在这：监督的不是「任务活着」，是「每一层的失败计数没有增长」（[v1 第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)）。
 
-![手绘板：验证矩阵——刺激、可见结果、不证明什么（原理示意，非实拍）](/images/app-a-verify.png)
+![手绘板：验证矩阵，刺激、可见结果、不证明什么（原理示意，非实拍）](/images/app-a-verify.png)
 
 ## 六、跨到 ESP32-S3：同一 codec，换一副骨架
 
@@ -134,9 +134,9 @@ CRC-16/CCITT-FALSE（poly 0x1021，init 0xffff，不反射）
 
 分档与 BRR 算式见 附录 D 文末的账。四笔：
 
-- **一位与 IDLE**：一位约 8.68 µs；8N1 一帧 10 位约 86.8 µs；IDLE 置位 = RX 空闲满一个帧时间——它不表示协议长度字段已到。
+- **一位与 IDLE**：一位约 8.68 µs；8N1 一帧 10 位约 86.8 µs；IDLE 置位 = RX 空闲满一个帧时间，它不表示协议长度字段已到。
 - **NDTR 不是字节进度条**：普通模式字节宽 128 缓冲读到 NDTR=100，已写 128−100=28 字节；循环模式不要用这一减（NDTR 会重装）；半字宽度的单位是半字不是字节。
-- **BRR 的小数位**：USART1 在 APB2（72 MHz）：`USARTDIV = 72e6/(16×115200) = 39.0625`，低 4 位收成 1 → BRR=`0x271`，结果正好 115200；丢掉这 1 个小数位才有约 0.16% 误差——0.16% 属于 USART2@36 MHz 的 `0x138`，记账写清是哪个 USART。
+- **BRR 的小数位**：USART1 在 APB2（72 MHz）：`USARTDIV = 72e6/(16×115200) = 39.0625`，低 4 位收成 1 → BRR=`0x271`，结果正好 115200；丢掉这 1 个小数位才有约 0.16% 误差。0.16% 属于 USART2@36 MHz 的 `0x138`，记账写清是哪个 USART。
 - **H7 的 32 字节**：D-Cache 行长 32 字节，clean/invalidate 按 32 B 对齐整行做；只对刚写的几字节 invalidate 会连累同行其余字节（[第 34 章](../v4-platforms/34-multicore-cache.md)）；内存能否被所选 DMA 访问是另一件事。
 
 ## 八、最小验证矩阵
@@ -153,7 +153,7 @@ CRC-16/CCITT-FALSE（poly 0x1021，init 0xffff，不反射）
 | seq 乱序 / 旧响应 | 拒绝配对 | seq 回显核对 |
 | H7 Cache 开/关对照 | 数据一致或明确失败 | 内存段、Cache 操作、字节对比 |
 
-`code/common/reliability/tests.c` 把这些场景做成可跑的 C 断言（全切分点、时间回绕、背压、饱和计数、守护式模糊），`sh probe.sh` 一条命令全绿——上板之前，协议层的正确性已在宿主机上钉死过一遍。
+`code/common/reliability/tests.c` 把这些场景做成可跑的 C 断言（全切分点、时间回绕、背压、饱和计数、守护式模糊），`sh probe.sh` 一条命令全绿；上板之前，协议层的正确性已在宿主机上钉死过一遍。
 
 ## 九、一页总图
 

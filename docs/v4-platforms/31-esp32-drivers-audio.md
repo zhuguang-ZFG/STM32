@@ -7,7 +7,9 @@ platforms: [esp32]
 
 ESP32 的外设 API 与 STM32 最大的差别不在功能，在**形态**：驱动是事件驱动的框架层（UART 的事件队列、SPI 的事务队列、I2C 的句柄模型），GPIO 有两条路由（IO_MUX 专线与 GPIO Matrix 总机），LEDC 是两级配置的 PWM 专职外设。本章按「GPIO→UART→SPI/I2C→LEDC→音频链路」的顺序拆，每个驱动给「三层缓冲/事务队列/句柄」这类结构性的东西，板级常数（引脚号、器件地址）全部标注来源。
 
-这一章没有板级实测。上游核对按 **ESP-IDF v5.5.2** 实取：`uart.h:71-95,121`、`spi_master.h:42,75,82,84`、`spi_common.h:78`、`i2c_master.h:31,50,118,131,208`、`ledc.h:181,295,480,494,520`、`hal/ledc_types.h:139-142`、`soc_caps.h:177,242-248,425` 全部命中；工程实例 `mcu/code/esp32` 的 `04main`/`05main` 行号逐字核对，QMI8658 六轴链路与 I2S 音频链路的行号都精确命中。器件细节（ES7210 通道占用、ST7789 引脚、esp_codec_dev 1.3.4）来自立创 wiki 与 managed component 注册表，逐项标待核。`hardware_status` 仍是 `pending`，实验全部未实测。
+这一章没有板级实测。上游核对按 **ESP-IDF v5.5.2** 实取：`uart.h:71-95,121`、`spi_master.h:42,75,82,84`、`spi_common.h:78`、`i2c_master.h:31,50,118,131,208`、`ledc.h:181,295,480,494,520`、`hal/ledc_types.h:139-142`、`soc_caps.h:177,242-248,425` 全部命中；工程实例 `mcu/code/esp32` 的 `04main`/`05main` 行号逐字核对，QMI8658 六轴链路与 I2S 音频链路的行号都精确命中。
+
+器件细节（ES7210 通道占用、ST7789 引脚、esp_codec_dev 1.3.4）来自立创 wiki 与 managed component 注册表，逐项标待核。`hardware_status` 仍是 `pending`，实验全部未实测。
 
 > 版本口径：ESP-IDF **v5.5.2**；板卡立创实战派 S3（扩展口、SDA=GPIO1/SCL=GPIO2 等以工程代码为准）；esp_codec_dev 是 managed component，版本钉 1.3.4（构建期自动下载，来源待核）。
 
@@ -15,7 +17,7 @@ ESP32 的外设 API 与 STM32 最大的差别不在功能，在**形态**：驱�
 
 - **问题**：IO_MUX 与 GPIO Matrix 的分工，「任意引脚」的四个前提，45=22+23 与 `SOC_GPIO_PIN_COUNT=49` 的口径差，以及 PSRAM 与 strapping 占用的脚。UART 事件驱动的三层缓冲与三个溢出点，事件与数据的边界，`timeout_flag` 的判帧作用。SPI 两级模型与事务队列，异步事务的 buffer 生命周期；I2C 新驱动的句柄模型，`transmit_receive` 末参单位与 7 位地址是否左移。LEDC 两级配置，S3 的通道数/位宽/模式边界，改占空比为何要 update；音频的控制面与数据面，MCLK=256×fs 的算法，码率/MCLK/信封三笔账与缓冲容量。
 - **交付**：能用「有效焊盘+能力+未占用+板卡引出」判断一个脚能不能用；能背 S3 的占用脚清单；能按 v5.5.2 签名写出 `uart_driver_install` 六参数并解释事件≠数据；能写出 SPI 总线/设备两级配置与 I2C 句柄三步；能算 LEDC 的分辨率×频率跷跷板并指出 S3 的 8 通道/14 位/仅低速边界；能复算音频三笔账（512 kbps、4.096 MHz、10 ms）并给出缓冲容量算法；能把「学时序手写、做产品用框架」落到一个对照表上。
-- **边界**：单平台 ESP32-S3；UART 的协议帧设计归 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)，SPI/I2C 的时序原理归 [v1 第 16 章](../v1-drivers/16-i2c-spi.md)，PWM 的占空比语义归 [v1 第 12 章](../v1-drivers/12-timers-pwm.md)。本章只讲 ESP32 驱动框架与它们的差异。器件级常数（屏/六轴/编解码器）都是「那块板+那颗器件」的具体值，不是通用常数。启动与工程归 [第 30 章](./30-esp32s3-architecture-boot.md)；无线归第 32 章。
+- **边界**：单平台 ESP32-S3；UART 的协议帧设计归 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)，SPI/I2C 的时序原理归 [v1 第 16 章](../v1-drivers/16-i2c-spi.md)，PWM 的占空比语义归 [v1 第 12 章](../v1-drivers/12-timers-pwm.md)。本章只讲 ESP32 驱动框架与它们的差异。器件级常数（屏/六轴/编解码器）都是「那块板+那颗器件」的具体值，不是通用常数。启动与工程归 [第 30 章](./30-esp32s3-architecture-boot.md)；无线归[第 32 章](./32-esp32-wifi-ble-espnow.md)。
 - **依据锚点**：E2《GPIO 矩阵》（`mcu/docs/esp32/02-gpio-matrix.md`）、E5《UART 驱动》（`.../05-uart-driver.md`）、E6《SPI/I2C 驱动》（`.../06-spi-i2c-driver.md`）、E7《Timer 与 LEDC》（`.../07-timer-ledc.md`）、E12《音频链路》（`.../12-audio-path.md`）、LAB8《音频播放》（`mcu/docs/lab/e08-audio-play.md`）。上游对账：ESP-IDF v5.5.2 的 [uart.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_driver_uart/include/driver/uart.h)、[spi_master.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_driver_spi/include/driver/spi_master.h)、[spi_common.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_driver_spi/include/driver/spi_common.h)、[i2c_master.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_driver_i2c/include/driver/i2c_master.h)、[ledc.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_driver_ledc/include/driver/ledc.h)、[i2s_std.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_driver_i2s/include/driver/i2s_std.h)、[soc_caps.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/soc/esp32s3/include/soc/soc_caps.h)。工程实例：`mcu/code/esp32` 的 `04main`（QMI8658）、`05main`（音频：`:18` SAMPLE_RATE 16000、`:19` BLOCK_FRAMES 160、`:92` 引脚、`:95` MCLK 多倍、`:126` MCLK 值）。
 
 ## 先做出来
@@ -126,9 +128,9 @@ S3 的边界（`soc_caps.h:242-248` 实取）：**8 通道、4 定时器、14 �
 
 ![I2S 时钟账：MCLK/BCLK/LRCLK 的倍数关系](/figures/esp32-12-i2s-clock.svg)
 
-![手绘板：音频双面范式，含控制面 I2C、数据面 I2S、三笔账一起算、先静音再发声后放开 PA（原理示意）](/images/mc31-matrix-audio.png)
+![手绘板：音频双面范式，含控制面 I2C、数据面 I2S、三笔账一起算、先静音再发声后放开 PA（原理示意，非实拍）](/images/mc31-matrix-audio.png)
 
-E08 的完整播放链（1 kHz 滴声 + 八音符、缓冲减小出现断音）代码就绪（`code_status: ready`），板上现象待实测（`hardware_status: pending`）。测量与证据的完整登记归第 40 章的实验方法（B4 卷 6，此处只挂账不占位）。
+E08 的完整播放链（1 kHz 滴声 + 八音符、缓冲减小出现断音）代码就绪（`code_status: ready`），板上现象待实测（`hardware_status: pending`）。测量与证据的完整登记归[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)的实验方法（B4 卷 6，此处只挂账不占位）。
 
 ![E08 音频链路：扩展板上的器件与接法](/images/labs/e08-audio-chain.svg)
 

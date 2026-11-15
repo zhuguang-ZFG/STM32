@@ -28,7 +28,7 @@ touch main.c && make -n     # 只动 main.c，再干跑
 
 干跑输出要按“出现了哪些目标”读，而不是按行数读：`build/main.o` 因 `main.c` 变新而重建，`build/blink.elf` 与由它派生的 `build/blink.bin`、`build/blink.hex` 沿依赖边跟着重建，启动文件对应的 `build/startup_stm32f407xx.o` 不再重新编译；`all` 是伪目标，末尾那条 `$(SIZE)` 每次都会打印。如果改一个文件后所有 `.o` 都重新出现，说明依赖写成了“所有目标依赖所有源文件”，局部重建已经失效。
 
-`make -n` 不执行命令，只按同一套 mtime 比对把将执行的命令打印出来；`touch` 只改时间、不改内容，Make 仍然认为文件变了——它不读源码，只比较时间。这个观察留下一条判断标准：**构建系统不是“猜你改了什么”，而是“沿图上写明的边，比较两边的时间”。** 后面 CMake、IDF 与 scons 再花哨，也都在维护同一张图。
+`make -n` 不执行命令，只按同一套 mtime 比对把将执行的命令打印出来；`touch` 只改时间、不改内容，Make 仍然认为文件变了。它不读源码，只比较时间。这个观察留下一条判断标准：**构建系统不是“猜你改了什么”，而是“沿图上写明的边，比较两边的时间”。** 后面 CMake、IDF 与 scons 再花哨，也都在维护同一张图。
 
 ## 机制
 
@@ -41,7 +41,11 @@ blink.elf: main.o startup.o
 	$(CC) $(LDFLAGS) -o $@ $^
 ```
 
-第二行开头必须是一个 Tab。自动变量 `$@` 是目标名，`$^` 是所有依赖，`$<` 是第一个依赖；模式规则 `%.o: %.c` 让每个 `.c` 自动对应一个 `.o`，不必逐文件手写。Make 的核心算法只有一条：目标比所有依赖都新就不重建，有任何依赖比目标新就重建。`00-blink` 的 Makefile 把这张图画成五个节点：`blink.elf` 依赖 `main.o`、`startup_stm32f407xx.o` 与 `linker.ld`，`blink.bin` 依赖 `blink.elf`，`flash`、`debug`、`gdb` 是伪目标。伪目标用 `.PHONY` 声明，不产出文件，不参与 mtime 比对；`linker.ld` 直接喂给 `ld`，它的入口、`KEEP` 与 `.data` 双地址在第 6 章拆过，这里只把它当成图上一份输入。
+第二行开头必须是一个 Tab。自动变量 `$@` 是目标名，`$^` 是所有依赖，`$<` 是第一个依赖；模式规则 `%.o: %.c` 让每个 `.c` 自动对应一个 `.o`，不必逐文件手写。
+
+Make 的核心算法只有一条：目标比所有依赖都新就不重建，有任何依赖比目标新就重建。`00-blink` 的 Makefile 把这张图画成五个节点：`blink.elf` 依赖 `main.o`、`startup_stm32f407xx.o` 与 `linker.ld`，`blink.bin` 依赖 `blink.elf`，`flash`、`debug`、`gdb` 是伪目标。伪目标用 `.PHONY` 声明，不产出文件，不参与 mtime 比对。
+
+`linker.ld` 直接喂给 `ld`，它的入口、`KEEP` 与 `.data` 双地址在第 6 章拆过，这里只把它当成图上一份输入。
 
 ![构建系统依赖图：变化沿图上的边传播，局部重建由此发生](/anim/build-dep-graph.svg)
 
@@ -213,7 +217,9 @@ int main(void)
 }
 ```
 
-这段代码已用冻结 commit 的真实 CMSIS 设备头、RCC/GPIO 驱动、medium-density 启动文件和 F103C8 链接脚本完成编译链接，可复验工程在 `examples/spl-f1-blink/`。GNU Arm 10.3.1 的实测 ELF 是 text 1976 B、data 20 B、bss 1028 B，符号表里只有一个 `SysTick_Handler`。一个容易踩的坑：V3.5.0 模板的 `stm32f10x_it.c` 已经定义了非 weak 的空 `SysTick_Handler`，必须把这个文件替换成上面的计数实现，不能在 `main.c` 再定义一个同名函数，否则链接报重复定义。链接通过只证明接口和链接闭合，不证明板级行为；验收仍是下载后 PC13 约 1 Hz 闪烁，调试器里的 `SystemCoreClock` 等于真实主频。
+这段代码已用冻结 commit 的真实 CMSIS 设备头、RCC/GPIO 驱动、medium-density 启动文件和 F103C8 链接脚本完成编译链接，可复验工程在 `examples/spl-f1-blink/`。GNU Arm 10.3.1 的实测 ELF 是 text 1976 B、data 20 B、bss 1028 B，符号表里只有一个 `SysTick_Handler`。
+
+一个容易踩的坑：V3.5.0 模板的 `stm32f10x_it.c` 已经定义了非 weak 的空 `SysTick_Handler`，必须把这个文件替换成上面的计数实现，不能在 `main.c` 再定义一个同名函数，否则链接报重复定义。链接通过只证明接口和链接闭合，不证明板级行为；验收仍是下载后 PC13 约 1 Hz 闪烁，调试器里的 `SystemCoreClock` 等于真实主频。
 
 ### 中断与 DMA：SPL 不替你分发
 
@@ -318,11 +324,15 @@ void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef *init)
 
 库没有魔法，只有更周全的边界处理：循环多引脚、清旧值、断言。手写版是 `GPIOA->MODER |= (0x01 << (5 * 2))` 这样一行；库版把同一件事包进函数，代价是循环与分支。
 
-时钟使能也有一个容易被当成“就一句 `|=`”的细节。`RCC_AHB1PeriphClockCmd()` 在写 `AHB1ENR` 之后还补了一句 `(void)RCC->AHB1ENR;` 的读回。RM0090 有一条“外设时钟使能后，访问外设寄存器前需等几个时钟周期生效”。刚 `|=` 完立刻访问外设，可能在时钟还没真正喂到外设的那几个周期里读/写落空，现象是“配置了但没生效”。读回 `RCC->AHB1ENR` 强制一次总线往返，等流水线把写落地再继续；手写时要自己补 `(void)RCC->AHB1ENR;` 或 `__DSB();`。`assert_param` 则是 Debug 版的参数体检：打开 `USE_FULL_ASSERT` 时参数错误进入 `assert_failed()`，关闭时展开为 `((void)0)`，编译期完全消失。看到程序“卡死”在 `assert_failed` 的死循环，不是硬件挂了，是库在喊参数错了，看调用栈找传错的调用方。
+时钟使能也有一个容易被当成“就一句 `|=`”的细节。`RCC_AHB1PeriphClockCmd()` 在写 `AHB1ENR` 之后还补了一句 `(void)RCC->AHB1ENR;` 的读回。RM0090 有一条“外设时钟使能后，访问外设寄存器前需等几个时钟周期生效”。刚 `|=` 完立刻访问外设，可能在时钟还没真正喂到外设的那几个周期里读/写落空，现象是“配置了但没生效”。读回 `RCC->AHB1ENR` 强制一次总线往返，等流水线把写落地再继续；手写时要自己补 `(void)RCC->AHB1ENR;` 或 `__DSB();`。
 
-把“GPIO_Init 反推法”带到别的函数上，方法不变：列结构体字段，查手册每个字段对应哪个寄存器位，再对照库源码核对翻译逻辑。`USART_Init` 的 `USART_BaudRate` 落 BRR，`WordLength` 落 CR1.M，`StopBits` 落 CR2.STOP，`Parity` 落 CR1.PCE 与 PS，`Mode` 落 CR1.TE/RE，`HardwareFlowControl` 落 CR3 的 CTSE/RTSE。HAL、LL、RT-Thread 驱动只是换皮，结构体字段名变了、断言宏变了，“结构体打包 + 位操作翻译 + 断言”这三板斧不变。至于什么时候用库、什么时候手写：初始化代码启动时跑一次，用库换可读性与防错；中断与性能热路径直接位操作；量产可以混合，配 `-ffunction-sections -fdata-sections` 与 `--gc-sections` 把没用到的库函数在链接时剔除（第 6 章）。
+`assert_param` 则是 Debug 版的参数体检：打开 `USE_FULL_ASSERT` 时参数错误进入 `assert_failed()`，关闭时展开为 `((void)0)`，编译期完全消失。看到程序“卡死”在 `assert_failed` 的死循环，不是硬件挂了，是库在喊参数错了，看调用栈找传错的调用方。
 
-![手绘板：Make 依赖边决定谁重来，SPL 把时钟、字段与位掩码翻译成寄存器写（原理示意）](/images/v0-07-build-map.png)
+把“GPIO_Init 反推法”带到别的函数上，方法不变：列结构体字段，查手册每个字段对应哪个寄存器位，再对照库源码核对翻译逻辑。`USART_Init` 的 `USART_BaudRate` 落 BRR，`WordLength` 落 CR1.M，`StopBits` 落 CR2.STOP，`Parity` 落 CR1.PCE 与 PS，`Mode` 落 CR1.TE/RE，`HardwareFlowControl` 落 CR3 的 CTSE/RTSE。HAL、LL、RT-Thread 驱动只是换皮，结构体字段名变了、断言宏变了，“结构体打包 + 位操作翻译 + 断言”这三板斧不变。
+
+至于什么时候用库、什么时候手写：初始化代码启动时跑一次，用库换可读性与防错；中断与性能热路径直接位操作；量产可以混合，配 `-ffunction-sections -fdata-sections` 与 `--gc-sections` 把没用到的库函数在链接时剔除（第 6 章）。
+
+![手绘板：Make 依赖边决定谁重来，SPL 把时钟、字段与位掩码翻译成寄存器写（原理示意，非实拍）](/images/v0-07-build-map.png)
 
 ## 测量与证据
 

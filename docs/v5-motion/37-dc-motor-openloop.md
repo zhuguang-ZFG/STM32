@@ -15,7 +15,7 @@ platforms: [f103]
 
 - **问题**：占空比不等于转速的原因，开环「开」的是什么。ARR=3599 的复算，CCR=ARR 只到 99.97% 的差一格语义，满压写 CCR=3600 的理由。带符号占空比（−1000…+1000 ‰）单点映射的必要性，方向与幅值分离防的两类 bug。安全边界一组：输出限幅 900‰ 与积分限幅 500‰ 的分工，`params_valid` 拒 ≥1000 的依据，斜坡 ±50‰/10 ms 的作用，命令一跳变不可接受的原因，500 ms 租约如何保证「断串口必停机」，STOP 豁免会话检查的理由。换向与带宽：REVERSING 合同四阶段与 3 s 超时，直翻换向产生回流尖峰的原因，协议 v1 带宽算到 37.3% 的步骤。最后是控制时基必须用 TIM4 硬件心跳的原因。
 - **交付**：能复算 PWM 四数并说清换时钟树的三条重算理由；能区分 CCR=0/CCR=ARR/CCR>ARR 三种端点语义并写出满压写法；能把带符号占空比映射到 `motor_bridge.c` 的单点；能配双限幅与参数校验；能实现斜坡与租约；能走 REVERSING 四阶段合同；能三步复算带宽账并给出「扩遥测先算总线」的判据；能把控制时基与串口任务的所有权分开。
-- **边界**：本章讲开环与安全边界；驱动桥的真值表与供电归 [第 36 章](./36-motor-driver-power.md)；编码器测量与转速口径归第 38 章（本章的 REVERSING 停稳判据 |rpm|≤5 消费它的量化知识）；PI 闭环归第 39 章（均在本卷内）；UART 协议帧格式与判帧归 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)；FreeRTOS 任务的节拍与队列归 [v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md)。全部实验待执行。
+- **边界**：本章讲开环与安全边界；驱动桥的真值表与供电归 [第 36 章](./36-motor-driver-power.md)；编码器测量与转速口径归[第 38 章](./38-encoder-speed-measurement.md)（本章的 REVERSING 停稳判据 |rpm|≤5 消费它的量化知识）；PI 闭环归[第 39 章](./39-speed-closed-loop-pi.md)（均在本卷内）；UART 协议帧格式与判帧归 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)；FreeRTOS 任务的节拍与队列归 [v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md)。全部实验待执行。
 - **依据锚点**：M30 草稿（`plans/2026-11-11-motor-control/chapters-draft/30-直流电机开环调速.md`）、HF v1.2、DESIGN 合同（`plans/2026-11-11-motor-control/design.md` 的 `N=P×Q×G`、F01、REVERSING 段）、数值断言测试 `book/tests/test_motor_numbers.py`（本章新增）。上游对账：RM0008（TIM1 PWM 段，[v1 第 12 章](../v1-drivers/12-timers-pwm.md) 已核）；TB6612 datasheet（[Pololu 0J86](https://www.pololu.com/file/0j86/tb6612fng.pdf)）。
 
 ## 先做出来
@@ -43,9 +43,9 @@ PWM1 是「CNT<CCR 有效」：CCR=0 恒无效；**CCR=ARR 时有效格数 3599/
 控制量统一表示为 **−1000…+1000 ‰**：符号是方向、绝对值是幅值；映射到 AIN1/AIN2/PWM 引脚只有 `motor_bridge.c` 一处。好处：方向寄存器与幅值寄存器不在两处维护。两处状态漂移（方向翻过来、幅值没翻）这类 bug 在结构上不可能发生。占空比进桥之前先过双限幅：
 
 - **输出限幅** |u| ≤ 900‰：`params_valid` 拒绝 ≥1000 的配置（限幅与满压端点天然对齐：900‰→CCR 3240 < 3599，永远够不到 CCR=ARR 的差一格区，更到不了 CCR>ARR）。
-- **积分限幅** |I| ≤ 500‰：给第 39 章的抗饱和埋线。
+- **积分限幅** |I| ≤ 500‰：给[第 39 章](./39-speed-closed-loop-pi.md)的抗饱和埋线。
 
-![手绘板：带符号占空比到引脚的单点映射，符号是方向、幅值进桥（原理示意）](/images/ch30-signed-duty.png)
+![手绘板：带符号占空比到引脚的单点映射，符号是方向、幅值进桥（原理示意，非实拍）](/images/ch30-signed-duty.png)
 
 ### 二、斜坡：±50‰/10 ms
 
@@ -57,18 +57,18 @@ PWM1 是「CNT<CCR 有效」：CCR=0 恒无效；**CCR=ARR 时有效格数 3599/
 
 命令流中断 **500 ms**（故障位 F01）锁存故障停机，串口拔掉不会留下一只转动的电机。心跳由上位机的 100 Hz 帧流维持；租约到期即锁存，恢复须重新 ARM。**STOP 豁免会话检查**：无论租约状态，STOP 命令永远执行。安全命令不能因为「会话已失效」被拒。
 
-![手绘板：PWM 数学与限幅，ARR 3599、CCR=ARR 差一格、900‰→CCR 3240（原理示意）](/images/ch30-pwm-math.png)
+![手绘板：PWM 数学与限幅，ARR 3599、CCR=ARR 差一格、900‰→CCR 3240（原理示意，非实拍）](/images/ch30-pwm-math.png)
 
 ### 四、REVERSING 合同：四阶段与 3 s 超时
 
 直接翻转方向 = 回流尖峰来源（[第 36 章](./36-motor-driver-power.md) 的再生段），桥在换向瞬间同时承受两个方向的电流。换向走四阶段合同，全程 **3 s 超时**：
 
 1. 占空比斜坡降到 0；
-2. 撤销驱动（IN1=IN2=L），等停稳（|rpm| ≤ 5，判据由 第 38 章 的量化口径支持）；
+2. 撤销驱动（IN1=IN2=L），等停稳（|rpm| ≤ 5，判据由[第 38 章](./38-encoder-speed-measurement.md)的量化口径支持）；
 3. 保持 100 ms；
 4. 才允许反向。
 
-![手绘板：换向四阶段，斜坡归零、撤销驱动、等停稳、再反向（原理示意）](/images/ch30-stop-triage.png)
+![手绘板：换向四阶段，斜坡归零、撤销驱动、等停稳、再反向（原理示意，非实拍）](/images/ch30-stop-triage.png)
 
 ### 五、协议 v1 与带宽账
 
@@ -89,7 +89,7 @@ PWM1 是「CNT<CCR 有效」：CCR=0 恒无效；**CCR=ARR 时有效格数 3599/
 
 上 RTOS 后的同一纪律：控制任务唯一拥有输出、截止期 10 ms 进任务配置（回链 [v3-rtos 22/24](../v3-rtos/22-tasks-tcb-scheduler.md)，不重教）。
 
-![手绘板：电机不转的排查阶梯，STBY/VM/方向/占空比四查（原理示意）](/images/ch30-no-spin-triage.png)
+![手绘板：电机不转的排查阶梯，STBY/VM/方向/占空比四查（原理示意，非实拍）](/images/ch30-no-spin-triage.png)
 
 ### 七、数值断言测试
 

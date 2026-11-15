@@ -54,7 +54,7 @@ u      = clamp(u_try, ±duty_limit)
 
 积分项另有 ±500‰ 自限幅。DESIGN:132 的原话是「抗饱和必须用最终执行区间，不能只检查对称幅值限幅」。
 
-![手绘板：PI 一步手算与条件积分四规则，负输出有方向语义，饱和时拒绝加深（原理示意）](/images/ch32-pi-step.png)
+![手绘板：PI 一步手算与条件积分四规则，负输出有方向语义，饱和时拒绝加深（原理示意，非实拍）](/images/ch32-pi-step.png)
 
 ### 二、目标斜坡与滤波
 
@@ -70,7 +70,7 @@ DISABLED → (HEARTBEAT 会话) → ARMED → RUN_OPEN / RUN_SPEED → REVERSING
 
 F04 的截止期目标 ≤2 ms、周期偏差 ≤1 ms（DESIGN:85），与 [v1 第 20 章](../v2-reliability/20-debug-performance.md) 的 DWT 测量法衔接。
 
-![手绘板：闭环状态机，五态、事件优先级、故障锁存与恢复链（原理示意）](/images/ch32-state-machine.png)
+![手绘板：闭环状态机，五态、事件优先级、故障锁存与恢复链（原理示意，非实拍）](/images/ch32-state-machine.png)
 
 ### 四、控制节拍与串口任务的分离
 
@@ -91,7 +91,7 @@ F04 的截止期目标 ≤2 ms、周期偏差 ≤1 ms（DESIGN:85），与 [v1 �
 
 参数只适用于记录的装置：换电机、换电压或换负载特性，六步从头走。
 
-![手绘板：调参阶梯，先 P 后 I、每步只动一个参数、带回退（原理示意）](/images/ch32-tuning-ladder.png)
+![手绘板：调参阶梯，先 P 后 I、每步只动一个参数、带回退（原理示意，非实拍）](/images/ch32-tuning-ladder.png)
 
 ### 六、验收指标与数据要求
 
@@ -103,7 +103,7 @@ F04 的截止期目标 ≤2 ms、周期偏差 ≤1 ms（DESIGN:85），与 [v1 �
 
 编码器转速的量化噪声（[第 38 章](./38-encoder-speed-measurement.md) 的 13.6 rpm 逐格跳）会被 D 项放大，所以 V1 不实现 D。等上了位置环或更高分辨率的反馈再评估。故障注入与 24 h 长跑的完整闭环实验（M32-E/F）挂 BLK-P0-4 热预算与实物门，待执行。
 
-![手绘板：闭环故障分诊，不振/不振荡但慢/超调/抖动四象限的第一查点（原理示意）](/images/ch32-loop-fault-triage.png)
+![手绘板：闭环故障分诊，不振/不振荡但慢/超调/抖动四象限的第一查点（原理示意，非实拍）](/images/ch32-loop-fault-triage.png)
 
 ## 测量与证据
 

@@ -38,7 +38,7 @@ ARM 线的「零增量」：`-mcpu/-mthumb/-mfpu/-mfloat-abi` 四旗与 F407 逐
 - **USART 偏移表**：旧材料的「CTL0@0x00…DATA@0x18」整体错位。上游 `gd32f4xx_usart.h:51-60` 实际是 **STAT0@0x00、DATA@0x04、BAUD@0x08、CTL0@0x0C、CTL1@0x10、CTL2@0x14、GP@0x18**（另有 STAT1@0x88）。这些偏移与 STM32 的 SR/DR/BRR/CR1–3/GTPR 逐项相同（0x00–0x18）。错的是旧表把 GD32 名称按到别的位置，别误读成 GD32 挪了寄存器。随文的「0x00 永远是主控制寄存器、0x0C 永远是波特率」一并废弃不用。
 - **USART0 基址**：旧材料写「USART0 = APB1+0x4400」。上游 `gd32f4xx.h:326` 的 `USART_BASE=APB1+0x4400`（0x40004400）是 **USART1**（=STM32 的 USART2）；**USART0 = 0x40011000（APB2，`gd32f4xx_usart.h:47`）**。它与 STM32 USART1 的老地址相同，也和它自己「USART0 中断号挂 APB2」的中断地图一致。
 
-v1 第 13 章已把旧表标为「待复核」，本章按上游版替换。
+[v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)已把旧表标为「待复核」，本章按上游版替换。
 
 ## 机制
 
@@ -66,7 +66,7 @@ GD32F4xx 的 GPIO 十二枚寄存器偏移与 F4 相同（CTL/OMODE/OSPD/PUD/IST
 
 ![GD32 GPIO 复用动画：AF 编号与引脚矩阵](/anim/gd32-af-mux.svg)
 
-![手绘板：GD32 与 STM32 的时钟树与 USART 落点对照，含 PLL1/PLL2 配而不用、168M 默认档、USART0 落在 APB2 老地址（原理示意）](/images/mc29-gd32-contrast.png)
+![手绘板：GD32 与 STM32 的时钟树与 USART 落点对照，含 PLL1/PLL2 配而不用、168M 默认档、USART0 落在 APB2 老地址（原理示意，非实拍）](/images/mc29-gd32-contrast.png)
 
 ### 三、USART：8 个、0 起编号、上游修正版偏移表
 
@@ -76,7 +76,9 @@ GD32F4xx 的 GPIO 十二枚寄存器偏移与 F4 相同（CTL/OMODE/OSPD/PUD/IST
 
 ### 四、VF103：外设像 F1，内核换魂
 
-GD32VF103 的外设地址与 F103 老地址逐条一致：AFIO@0x40010000、EXTI@0x40010400、GPIOA@0x40010800、RCU@0x40021000、FLASH=0x08000000、SRAM=0x20000000（`gd32vf103.h:196-229`）。迁移免改地盘。但 RCU 是**隔代布局**：0x04 是 CFG0 不是 PLL（F4xx 的 `RCU_PLL` 宏在 VF103 头文件根本不存在），PLL 参数拆进 CFG0（PLLMF）+ CFG1（PREDV0）；无电压三件套，只有 DSV（`gd32vf103_rcu.h:45-57`）。照搬 F4xx 的 RCU 宏，第一笔就写错地方。GPIO 也隔代：CTL0/CTL1 每脚 4 位、只有 7 枚寄存器（CTL0/CTL1、ISTAT、OCTL、BOP、BC、LOCK），**没有 TG**（`gd32vf103_gpio.h:53-59`）。
+GD32VF103 的外设地址与 F103 老地址逐条一致：AFIO@0x40010000、EXTI@0x40010400、GPIOA@0x40010800、RCU@0x40021000、FLASH=0x08000000、SRAM=0x20000000（`gd32vf103.h:196-229`）。迁移免改地盘。但 RCU 是**隔代布局**：0x04 是 CFG0 不是 PLL（F4xx 的 `RCU_PLL` 宏在 VF103 头文件根本不存在），PLL 参数拆进 CFG0（PLLMF）+ CFG1（PREDV0）；无电压三件套，只有 DSV（`gd32vf103_rcu.h:45-57`）。照搬 F4xx 的 RCU 宏，第一笔就写错地方。
+
+GPIO 也隔代：CTL0/CTL1 每脚 4 位、只有 7 枚寄存器（CTL0/CTL1、ISTAT、OCTL、BOP、BC、LOCK），**没有 TG**（`gd32vf103_gpio.h:53-59`）。
 
 **108 MHz 的性质**：手册标称上限，不是超频。这是它与 F407 168M/官方 H7 480M 争议的本质区别。预设阶梯 24/36/48/56/72/96/108 MHz，全部压在 4 MHz PLL 输入上（4M×{6,9,12,14,18,24,27}，`system_gd32vf103.c:47-61`）；默认档 `__SYSTEM_CLOCK_108M_PLL_HXTAL`（`:61`）；108M 链 = 8M÷2×27（PREDV0_DIV2 `rcu.h:541`、MUL27 `:505`，分频乘法在 `sys.c:750-830`）；25M 板绕道 PLL1（÷5×8÷10，`:785`）。
 

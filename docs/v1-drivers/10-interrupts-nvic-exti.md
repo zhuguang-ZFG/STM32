@@ -302,7 +302,9 @@ P4 的探针记录：
 0x3c028810  k_table      → drom0_0_seg     # 常量还在 Flash
 ```
 
-`isr_leaky` 的每一条指令都在 IRAM，可它 `callx8` 过去的 `helper_far` 落在 Flash 映射段 `0x42008f1c`；Cache 一关，取指就断在半路。`isr_tight` 的 `call8` 目标 `helper_near` 还在 IRAM 区间内，这才是真的 IRAM-safe。esp32s3 的 IRAM 取指窗口起点是 `0x40374000`，Flash 映射是 `0x42xxxxxx`，常量映射是 `0x3Cxxxxxx`；初代 ESP32 是 `0x400xxxxx` 一片，两代数字不能互抄。P4 还记了一个链接器的坑：IDF 默认带 `-Wl,--gc-sections`，没人引用的 ISR 会被整段收掉，第一版探针的 nm 里只剩 `app_main` 和 `g_hits`，后来用 `g_isr_table` 钉住符号才保住七个。
+`isr_leaky` 的每一条指令都在 IRAM，可它 `callx8` 过去的 `helper_far` 落在 Flash 映射段 `0x42008f1c`；Cache 一关，取指就断在半路。`isr_tight` 的 `call8` 目标 `helper_near` 还在 IRAM 区间内，这才是真的 IRAM-safe。esp32s3 的 IRAM 取指窗口起点是 `0x40374000`，Flash 映射是 `0x42xxxxxx`，常量映射是 `0x3Cxxxxxx`；初代 ESP32 是 `0x400xxxxx` 一片，两代数字不能互抄。
+
+P4 还记了一个链接器的坑：IDF 默认带 `-Wl,--gc-sections`，没人引用的 ISR 会被整段收掉，第一版探针的 nm 里只剩 `app_main` 和 `g_hits`，后来用 `g_isr_table` 钉住符号才保住七个。
 
 Cache 关闭窗口的完整机制与多核 Cache 一致性属于[第 34 章](../v4-platforms/34-multicore-cache.md)；本章只记落址判据：ISR 要么整条链进 IRAM，要么老实被推迟。
 
@@ -378,7 +380,9 @@ F103 一侧，NVIC 与向量表的结构相同，差异在“选门”的位置�
 
 GD32 只划边界。GD32 的 ARM 型号沿用 Cortex-M 的 NVIC 体系；RISC-V 型号（如 GD32VF103）改用 ECLIC/CLIC，术语、优先级模型与向量方式都换了名字，本章不把 NVIC 的寄存器名带过去。CLIC/ECLIC 的完整对照、中断号地图与向量直跳见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)；芯片迁移的通用检查表见[第 28 章](../v4-platforms/28-chip-migration-differences.md)。
 
-ESP32 这一侧，没有 NVIC 与固定向量表，中断由分配器在运行时绑定到核与级。P4 的 99 个源编号与 7 级是 ESP32-S3 的具体账，换型号要按对应的 `soc/interrupts.h` 与 `soc_caps.h` 重查；IRAM 取指窗口两代也不同（S3 是 `0x40374000` 起，初代 ESP32 是 `0x400xxxxx` 起）。Cache 映射、Cache 关闭窗口与多核一致性见[第 34 章](../v4-platforms/34-multicore-cache.md)；架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)；外设驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。
+ESP32 这一侧，没有 NVIC 与固定向量表，中断由分配器在运行时绑定到核与级。P4 的 99 个源编号与 7 级是 ESP32-S3 的具体账，换型号要按对应的 `soc/interrupts.h` 与 `soc_caps.h` 重查；IRAM 取指窗口两代也不同（S3 是 `0x40374000` 起，初代 ESP32 是 `0x400xxxxx` 起）。
+
+Cache 映射、Cache 关闭窗口与多核一致性见[第 34 章](../v4-platforms/34-multicore-cache.md)；架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)；外设驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。
 
 ## 离开检查
 

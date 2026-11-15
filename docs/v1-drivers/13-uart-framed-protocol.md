@@ -73,7 +73,9 @@ print(hex(crc16_ccitt_false(b"123456789")))   # 0x29b1
 
 ### 波特率：BRR 的整数值就是分母
 
-把 BRR 拆成两个字段看，`DIV_Mantissa[15:4]` 是整数部分，`DIV_Fraction[3:0]` 是小数部分，手册写的是 `USARTDIV = Mantissa + Fraction/16`、`baud = PCLK/(16 × USARTDIV)`。把 16 乘进去：`16 × USARTDIV = 16 × Mantissa + Fraction`，右边正好是寄存器里那 16 位。所以固件直接写一个整数（625 = `0x271`，Mantissa 39、Fraction 1），不需要先算小数再拼字段；`baud = PCLK / BRR` 里的 BRR 就是这个整数值。字段定义见 RM0008 27.3.4（BRR 寄存器描述 27.6.3）与 RM0090 30.3.4，仓库的寄存器速查表也按同一拆法登记；本章按这个定义复算了下面每一行。
+把 BRR 拆成两个字段看，`DIV_Mantissa[15:4]` 是整数部分，`DIV_Fraction[3:0]` 是小数部分，手册写的是 `USARTDIV = Mantissa + Fraction/16`、`baud = PCLK/(16 × USARTDIV)`。把 16 乘进去：`16 × USARTDIV = 16 × Mantissa + Fraction`，右边正好是寄存器里那 16 位。所以固件直接写一个整数（625 = `0x271`，Mantissa 39、Fraction 1），不需要先算小数再拼字段；`baud = PCLK / BRR` 里的 BRR 就是这个整数值。
+
+字段定义见 RM0008 27.3.4（BRR 寄存器描述 27.6.3）与 RM0090 30.3.4，仓库的寄存器速查表也按同一拆法登记；本章按这个定义复算了下面每一行。
 
 ![BRR 的来历：PCLK 与 baud 相除后拆成整数 Mantissa 与小数 Fraction 两个字段](/figures/stm32-07-usart-brr.svg)
 
@@ -98,7 +100,9 @@ S7 给过一张八行误差表，说明同一组公式在不同 PCLK 下的结�
 
 拿这套预算看 1MHz 配 115200：BRR 只能取 9，实际 111111，误差 -3.549%，一项就吃掉 5.882% 的六成；余下 2.333% 由两端分，每端 1.166%，刚够 HSI 的 ±1%，没有余量留给第二项误差。S7 把这个数写成“实测误差”，但同一节说明八行是宿主脚本打印的；本章按算术结果使用，不称它为板上测量。16MHz 配 921600 同样卡在量化上：BRR=17 得 941176，+2.124%，超过每端 2.941% 的一半，余下不到 0.82% 留给两端时钟源。
 
-F407 多一个 OVER8 位（CR1 bit15），置 1 后过采样从 16 倍降到 8 倍，小数部分收窄为 3 位。S7 正文说 16MHz 下改 OVER8=1 可以“等价于把时钟当 32MHz 算，BRR=35，误差回到 -0.794%”，并按它注里的 `baud = 2 × f_PCLK / BRR` 代出这个数。按 RM0090 30.3.4 的字段定义复算，OVER8=1 时 BRR=35 解出 Mantissa=2、Fraction=3、USARTDIV=2.375，实际约 842105 波特，误差约 -8.6%；`2 × f_PCLK / BRR` 把 BRR=35 当成 USARTDIV=2.1875（16 倍口径）来除，只在 Fraction=0 时才与字段定义重合。两个结果对不上，本章不给结论，把它列进读数来路表标为待复核；要落定这件事，得在 F4 上置 OVER8 后读回 BRR 并用仪器量线上位宽。
+F407 多一个 OVER8 位（CR1 bit15），置 1 后过采样从 16 倍降到 8 倍，小数部分收窄为 3 位。S7 正文说 16MHz 下改 OVER8=1 可以“等价于把时钟当 32MHz 算，BRR=35，误差回到 -0.794%”，并按它注里的 `baud = 2 × f_PCLK / BRR` 代出这个数。按 RM0090 30.3.4 的字段定义复算，OVER8=1 时 BRR=35 解出 Mantissa=2、Fraction=3、USARTDIV=2.375，实际约 842105 波特，误差约 -8.6%；`2 × f_PCLK / BRR` 把 BRR=35 当成 USARTDIV=2.1875（16 倍口径）来除，只在 Fraction=0 时才与字段定义重合。
+
+两个结果对不上，本章不给结论，把它列进读数来路表标为待复核；要落定这件事，得在 F4 上置 OVER8 后读回 BRR 并用仪器量线上位宽。
 
 ### 发送：TXE 说“可写”，TC 说“发完”
 
@@ -385,11 +389,17 @@ CRC 的边界要说清：它能检出随机损坏，比如单比特错与突发�
 
 ## 跨平台边界
 
-F407 一侧：USART1 在 APB2，168MHz 主频、APB2=/2 时 PCLK2=84MHz，115200 用 BRR=729；PA9=TX、PA10=RX，AF7。寄存器偏移按 RM0090 的 USART 布局：SR `0x00`、DR `0x04`、BRR `0x08`、CR1 `0x0C`、CR2 `0x10`、CR3 `0x14`。CR1 的 bit15 是 OVER8，复位值 0；本章的公式只在 OVER8=0 时成立。USART2/3 与 UART4/5 挂在 APB1，USART1/6 挂在 APB2（USART6 基址 `0x4001_1400`）；F103 只有 USART1 在 APB2、USART2/3 在 APB1；本章的 F103C8 没有 UART4/5（高密度 F103xC/D/E 才有）。换串口先换总线再换 PCLK。HAL 行号与 MspInit 行为绑定 F4 HAL 的 1f6451c 版本，换库先核对。
+F407 一侧：USART1 在 APB2，168MHz 主频、APB2=/2 时 PCLK2=84MHz，115200 用 BRR=729；PA9=TX、PA10=RX，AF7。寄存器偏移按 RM0090 的 USART 布局：SR `0x00`、DR `0x04`、BRR `0x08`、CR1 `0x0C`、CR2 `0x10`、CR3 `0x14`。CR1 的 bit15 是 OVER8，复位值 0；本章的公式只在 OVER8=0 时成立。
 
-F103 一侧：USART1 同样在 APB2，72MHz 主频时 PCLK2=72MHz，115200 用 `0x271`；PA9 是 LQFP48 第 30 脚、PA10 第 31 脚，要换到 PB6/PB7 得先开 AFIO 时钟再配重映射。F103 的 CR1 没有 OVER8 位，只有 16 倍过采样，别把 F4 的 8 倍写法搬过去。USART1 的时钟门是 `RCC_APB2ENR` bit14；USART2/3 在 `RCC_APB1ENR` 的 bit17/18，PCLK1=36MHz 时同样 115200 要 `0x138`，误差 +0.16%。接收 DMA 用 DMA1 Channel5，发送用 DMA1 Channel4；SPL 的 `USART_Init()` 与 HAL 落位相同，但一手源码仍缺。
+USART2/3 与 UART4/5 挂在 APB1，USART1/6 挂在 APB2（USART6 基址 `0x4001_1400`）；F103 只有 USART1 在 APB2、USART2/3 在 APB1；本章的 F103C8 没有 UART4/5（高密度 F103xC/D/E 才有）。换串口先换总线再换 PCLK。HAL 行号与 MspInit 行为绑定 F4 HAL 的 1f6451c 版本，换库先核对。
 
-GD32 只划边界。G3《USART 增强点》记录了两条可用的差异：GD32F4xx 的串口从 0 起编号，寄存器名从 CR1/CR2/CR3、BRR、SR、DR 换成 CTL0/CTL1/CTL2、BAUD、STAT、DATA，动作位加 EN 后缀（UEN/REN/TEN），状态位用 B 替代 X（RBNE/TBE）。G3 还给过一张偏移表，把 CR1 写成 `0x00`、SR 写成 `0x14`，这和 RM0090 与仓库速查表的 USART 布局（SR `0x00`、DR `0x04`、BRR `0x08`、CR1 `0x0C`）对不上；本章不复述那张表，偏移一项标为待复核，完整对照与 ARM/RISC-V 两条线见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。在 GD32 上照抄 STM32 的 CR1 名字编不过，这是确定的；按偏移迁移之前先对一遍手册。
+F103 一侧：USART1 同样在 APB2，72MHz 主频时 PCLK2=72MHz，115200 用 `0x271`；PA9 是 LQFP48 第 30 脚、PA10 第 31 脚，要换到 PB6/PB7 得先开 AFIO 时钟再配重映射。F103 的 CR1 没有 OVER8 位，只有 16 倍过采样，别把 F4 的 8 倍写法搬过去。
+
+USART1 的时钟门是 `RCC_APB2ENR` bit14；USART2/3 在 `RCC_APB1ENR` 的 bit17/18，PCLK1=36MHz 时同样 115200 要 `0x138`，误差 +0.16%。接收 DMA 用 DMA1 Channel5，发送用 DMA1 Channel4；SPL 的 `USART_Init()` 与 HAL 落位相同，但一手源码仍缺。
+
+GD32 只划边界。G3《USART 增强点》记录了两条可用的差异：GD32F4xx 的串口从 0 起编号，寄存器名从 CR1/CR2/CR3、BRR、SR、DR 换成 CTL0/CTL1/CTL2、BAUD、STAT、DATA，动作位加 EN 后缀（UEN/REN/TEN），状态位用 B 替代 X（RBNE/TBE）。
+
+G3 还给过一张偏移表，把 CR1 写成 `0x00`、SR 写成 `0x14`，这和 RM0090 与仓库速查表的 USART 布局（SR `0x00`、DR `0x04`、BRR `0x08`、CR1 `0x0C`）对不上；本章不复述那张表，偏移一项标为待复核，完整对照与 ARM/RISC-V 两条线见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。在 GD32 上照抄 STM32 的 CR1 名字编不过，这是确定的；按偏移迁移之前先对一遍手册。
 
 ESP32 只划边界。ESP32-S3 没有 STM32 的 USART 寄存器，串口走 ESP-IDF 的 UART 驱动，环形缓冲、事件队列与超时语义都由驱动定义；本章的 BRR、TXE/TC、IDLE 名字一个都不要带过去。C8 在 S3 上用的是 UART1、GPIO10=TX、GPIO11=RX、驱动 RX 环形区 1024 字节、每轮最多取 512 字节、事件最多等 5ms，这些是那一份工程的具体配置，不是系列通用常数。外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)，架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)。
 

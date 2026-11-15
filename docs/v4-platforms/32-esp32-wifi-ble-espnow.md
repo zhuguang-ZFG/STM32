@@ -114,7 +114,7 @@ esp_now_send(peer.peer_addr, data, len);
 
 ![ESP-NOW 直连旁路：peer 互发与 Wi-Fi 共存](/anim/esp32-espnow-direct.svg)
 
-![手绘板：Wi-Fi 六步骨架与退避刻度、ESP-NOW 旁路对照（原理示意）](/images/mc32-wifi-espnow.png)
+![手绘板：Wi-Fi 六步骨架与退避刻度、ESP-NOW 旁路对照（原理示意，非实拍）](/images/mc32-wifi-espnow.png)
 
 ## 测量与证据
 

@@ -65,7 +65,7 @@ F407@42 MHz 的对应表本章新增（500k 两解见先做出来；其余档位
 
 **标准 ID 左移 5 位**：32 位掩码模式下 `FilterIdHigh = ID << 5`（STID[10:0] 落在寄存器高半的 bit[15:5]），不左移，邮箱永远空；复算 0x123<<5=0x2460、掩码 0x7FF<<5=0xFFE0。
 
-![CAN 位时序手绘板：SYNC/BS1/BS2 三段与采样点（原理示意）](/images/ch13-can-bit.png)
+![手绘板：CAN 位时序，SYNC/BS1/BS2 三段与采样点（原理示意，非实拍）](/images/ch13-can-bit.png)
 
 ![CAN 位时序图：Tq 分段与采样点位置](/figures/sample-13-can-bit.svg)
 
@@ -81,11 +81,11 @@ F407@42 MHz 的对应表本章新增（500k 两解见先做出来；其余档位
 
 回环模式只证明 bxCAN 的收发路径、位时序与过滤器配置；**不证明**收发器（TJA1050/SN65HVD230）、120 Ω 终端电阻、差分总线布线。上真总线的验收清单：两端各 120 Ω（并联 60 Ω 是直流负载，**60 Ω 不是电缆特性阻抗**）、共地、收发器电平（3.3 V 与 5 V 器件混接要查）。回环→双节点→多节点的递进是源章的教学设计，逐级扩权。
 
-![位时序档位手绘板：五档工作点与采样点（原理示意）](/images/ch13-bit-quanta.png)
+![手绘板：位时序档位，五档工作点与采样点（原理示意，非实拍）](/images/ch13-bit-quanta.png)
 
 ![过滤器 FIFO 分配图：组数、掩码与列表模式](/figures/sample-13-filter-fifo.svg)
 
-![手绘板：过滤器组的 FIFO 分配与掩码/列表选择（原理示意）](/images/ch13-filter-fifo.png)
+![手绘板：过滤器组的 FIFO 分配与掩码/列表选择（原理示意，非实拍）](/images/ch13-filter-fifo.png)
 
 ### 五、USB 48 MHz：两个分母两种来路
 
@@ -107,7 +107,7 @@ F407 侧是**专用时钟线**（PLL48CLK），不随 SYSCLK 走，与时钟树�
 
 PMA 与端点（RM0008 §23）：F1 全速设备 **8 个双向端点**（EP0–EP7）共享 **512 B PMA**，BTABLE 手工分配；F103 USB 是纯设备，做不了主机。
 
-![USB 枚举手绘板：从插入到配置就绪的清单（原理示意）](/images/ch14-usb-enum.png)
+![手绘板：USB 枚举，从插入到配置就绪的清单（原理示意，非实拍）](/images/ch14-usb-enum.png)
 
 ![USB 枚举流程图：七步与卡点](/figures/sample-14-usb-enum.svg)
 
@@ -121,7 +121,7 @@ PMA 与端点（RM0008 §23）：F1 全速设备 **8 个双向端点**（EP0–E
 
 CDC 与 HID 一句话选型：CDC=字节流（批量 IN/OUT + 通知中断 IN），HID=固定格式报告（系统原生驱动，免驱动安装）。
 
-![USB 48 MHz 手绘板：F1 的 USBPRE 与 F4 的 PLLQ 两条来路（原理示意）](/images/ch14-usbpre-48.png)
+![手绘板：USB 48 MHz，F1 的 USBPRE 与 F4 的 PLLQ 两条来路（原理示意，非实拍）](/images/ch14-usbpre-48.png)
 
 ### 八、PA11/PA12：一条向量两个主人（F103 历史包袱）
 
@@ -131,7 +131,7 @@ F103 上 CAN1 与 USB 共用 PA11/PA12，**还共用一条向量**（中容量 `
 
 F407 上 OTG_FS 与 bxCAN 是独立外设，冲突消失。[第 28 章](./28-chip-migration-differences.md) 的抢脚表把三家族的解法收在同一页。
 
-![手绘板：CAN 与 USB 在 F103 上的引脚与向量冲突、重映射出口（原理示意）](/images/ch14-usb-can-conflict.png)
+![手绘板：CAN 与 USB 在 F103 上的引脚与向量冲突、重映射出口（原理示意，非实拍）](/images/ch14-usb-can-conflict.png)
 
 ## 测量与证据
 

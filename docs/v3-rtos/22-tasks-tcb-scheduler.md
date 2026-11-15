@@ -33,7 +33,7 @@ F1 的 GDB 首帧、F3 的七步 probe、F1 的串口日志和 R1 的 `list_thre
 
    `configMINIMAL_STACK_SIZE = 128` 字 = 512 B，是空闲任务/最小任务的栈下限，不是这三个业务任务的栈（`FreeRTOSConfig.h:27`）。`configTOTAL_HEAP_SIZE = 16 * 1024 = 16384 B`（`:36`），要同时覆盖这三个栈、三个 TCB、定时器任务，以及工程里其它队列、信号量；池尽时 `xTaskCreate` 返回负的错误码，不是静默截断。
 
-   ![栈向下生长：水位线量余量，钩子抓现场（根书 F103 原理示意）](/images/ch15-stack-watermark.png)
+   ![手绘板：栈向下生长（根书 F103），水位线量余量，钩子抓现场（原理示意，非实拍）](/images/ch15-stack-watermark.png)
 
    图是根书 F103/M3 的原理示意，讲的是读法：栈按字算、深水位看历史最深处、溢出用钩子抓现场；图中的 128 字与 F407 lab 的 256/256/320 字不是同一组数字，不能直接搬。运行期看水位用 `uxTaskGetStackHighWaterMark()`，读的是历史最低剩余字；lab 把 `configCHECK_FOR_STACK_OVERFLOW = 2`（`FreeRTOSConfig.h:31`）开满，切换时检查栈末尾的 `0xA5` 填充，命中就进 `vApplicationStackOverflowHook`。
 

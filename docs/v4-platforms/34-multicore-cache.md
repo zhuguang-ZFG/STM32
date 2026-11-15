@@ -49,7 +49,7 @@ M7 的 cache 行是 **32 字节**，clean/invalidate **按整行生效**：地�
 
 ESP32 侧同一条纪律以运行期 API 存在：`Cache_Get_ICache_Line_Size()`/`Cache_Get_DCache_Line_Size()`（`cache_ll.h:501,514` 实取）；「S3 cache 行 32 B」本身属 TRM 层，标待核。
 
-![手绘板：Cache 与 DMA 的所有权交接，TX clean、RX invalidate、32 B 行对齐独占（原理示意）](/images/ch27-cache-dma.png)
+![手绘板：Cache 与 DMA 的所有权交接，TX clean、RX invalidate、32 B 行对齐独占（原理示意，非实拍）](/images/ch27-cache-dma.png)
 
 ### 二、核与域：cache 在核内，不在域上
 
@@ -57,7 +57,7 @@ ESP32 侧同一条纪律以运行期 API 存在：`Cache_Get_ICache_Line_Size()`
 
 域断电与 cache 维护是两件事：域断了，cache 维护无从谈起；域没断，跨 DMA 的维护照样要做。
 
-![手绘板：H7 电源域 D1/D2/D3 与核的归属（原理示意）](/images/ch25-power-domains.png)
+![手绘板：H7 电源域 D1/D2/D3 与核的归属（原理示意，非实拍）](/images/ch25-power-domains.png)
 
 ### 三、可达性矩阵：DTCM 与 CCM 不是一回事
 
@@ -100,7 +100,7 @@ HSEM 只提供两件事：**原子占用/释放**与**给另一核发中断通�
 | 消息协议 | magic/版本/长度/序号/兼容规则（共享 C 结构体也算线上协议） | 注入未知版本/截断长度/重复序号，接收端给出可区分拒绝 |
 | 启动与恢复 | 哪核先初始化共享区、ready/代际号、心跳、单核复位后的重同步 | 分别冻结 M7/M4，存活核进预定降级态，不无限等待 |
 
-![手绘板：H745 双核五层契约，每层冻结什么、注入什么，HSEM 只管「谁先来」不管「货到没到」（原理示意）](/images/ch28-h745-contracts.png)
+![手绘板：H745 双核五层契约，每层冻结什么、注入什么，HSEM 只管「谁先来」不管「货到没到」（原理示意，非实拍）](/images/ch28-h745-contracts.png)
 
 ### 七、S3 的 writeback：纠正一个流行说法
 

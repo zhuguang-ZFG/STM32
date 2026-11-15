@@ -515,7 +515,11 @@ P10 强调两个设计：`esp_ota_get_next_update_partition()` 从当前运行�
 
 开了回滚后，P10 的完整生命周期是：`esp_ota_set_boot_partition()` 把新镜像标 NEW → 重启后 bootloader 把 NEW 改写为 PENDING_VERIFY 并启动新固件 → 新固件自检通过就调 `esp_ota_mark_app_valid_cancel_rollback()` 转 VALID，失败就调 `esp_ota_mark_app_invalid_rollback_and_reboot()` 转 INVALID 并立即回旧槽；如果 PENDING_VERIFY 没确认就断电、崩溃或看门狗复位，下次启动 bootloader 把它改写为 ABORTED、弃用，自动回旧槽。只要不重启，PENDING_VERIFY 可以一直挂着；回滚永远发生在下次启动。
 
-默认不开回滚时，P10 说 NEW 与 PENDING_VERIFY 两个状态根本不会被使用，`esp_ota_set_boot_partition()` 设的是 UNDEFINED，bootloader 直接启动新槽、立即视为有效，坏固件也照样坐庄，不会自动回滚。P10 还给了三个附带事实：回滚状态记在 otadata 分区里，不在固件镜像里；只有 ota 槽会回滚，factory 槽不参与；当前固件还停在 PENDING_VERIFY 时就发起下一次 OTA，`esp_ota_begin()` 会报 `ESP_ERR_OTA_ROLLBACK_INVALID_STATE`。最后一条工具链事实是：这个选项编译在 bootloader 里，menuconfig 改完必须 `idf.py flash` 连 bootloader 一起重烧，只烧 app 不生效。
+默认不开回滚时，P10 说 NEW 与 PENDING_VERIFY 两个状态根本不会被使用，`esp_ota_set_boot_partition()` 设的是 UNDEFINED，bootloader 直接启动新槽、立即视为有效，坏固件也照样坐庄，不会自动回滚。
+
+P10 还给了三个附带事实：回滚状态记在 otadata 分区里，不在固件镜像里；只有 ota 槽会回滚，factory 槽不参与；当前固件还停在 PENDING_VERIFY 时就发起下一次 OTA，`esp_ota_begin()` 会报 `ESP_ERR_OTA_ROLLBACK_INVALID_STATE`。
+
+最后一条工具链事实是：这个选项编译在 bootloader 里，menuconfig 改完必须 `idf.py flash` 连 bootloader 一起重烧，只烧 app 不生效。
 
 ![OTA 双槽轮流坐庄：下载、切槽、自检、回滚](/anim/esp32-ota-rollback.svg)
 
@@ -663,7 +667,11 @@ Flash 控制器基址 `0x40023C00`（AHB1 `0x40020000`+`0x3C00`），CR 的 PG/S
 
 512 KB 的 F407xE 只用到扇区 7，扇区 8–11 是 1 MB 型号的版图。F42x/F43x 才有 x64 与双字编程，换系列先查数据手册，不要把 F407 的配置直接搬过去。
 
-F103 一侧：C8 是 64 KB、中容量、1 KB 一页、64 页，页 63 在 `0x0800FC00`；高密度型号是 2 KB 一页，地址按 `n×0x800` 重算。Flash 控制器基址 `0x40022000`，CR 的 PG/PER/STRT/LOCK 与 SR 的 BSY/PGERR/WRPRTERR/EOP 位号和 F4 不同；编程粒度是半字，没有 PSIZE 与按字节编程。本书布局是 Bootloader 16 KB、参数区 2 KB、App 46 KB；双槽把 App 区切成 22 KB+22 KB+2 KB。IAP 的 App 起点是 `0x08004800`，VTOR 同样要在 App 里写。读保护 `0xA5` 是不保护，其他值启用保护，没有 Level 2；解除保护会整片擦除主 Flash。F103C8 只有 20 KB SRAM，向量表第 0 字的 MSP 检查要用 `0x20000000`–`0x20005000`，不要照抄 F407 的 `0x20020000`。GD32 的 Flash 控制器是另一套寄存器，本章不展开。
+F103 一侧：C8 是 64 KB、中容量、1 KB 一页、64 页，页 63 在 `0x0800FC00`；高密度型号是 2 KB 一页，地址按 `n×0x800` 重算。
+
+Flash 控制器基址 `0x40022000`，CR 的 PG/PER/STRT/LOCK 与 SR 的 BSY/PGERR/WRPRTERR/EOP 位号和 F4 不同；编程粒度是半字，没有 PSIZE 与按字节编程。本书布局是 Bootloader 16 KB、参数区 2 KB、App 46 KB；双槽把 App 区切成 22 KB+22 KB+2 KB。IAP 的 App 起点是 `0x08004800`，VTOR 同样要在 App 里写。读保护 `0xA5` 是不保护，其他值启用保护，没有 Level 2；解除保护会整片擦除主 Flash。
+
+F103C8 只有 20 KB SRAM，向量表第 0 字的 MSP 检查要用 `0x20000000`–`0x20005000`，不要照抄 F407 的 `0x20020000`。GD32 的 Flash 控制器是另一套寄存器，本章不展开。
 
 ESP32 只划边界。ESP32-S3 没有 STM32 的 FLASH_KEYR/CR/SR，也没有扇区 11 或页 63 这套地址；它的版图由 CSV 分区表管，参数由 NVS 管，升级由 `esp_ota_*` 管。P10 的 16 MB 示例表里，`0x8000` 放分区表，`0x9000` 起放 nvs，`0xE000` 放 otadata，两个 3 MB 的 ota_0/ota_1 轮流坐庄；NVS 按 4096 字节页追加写；OTA 的 NEW/PENDING_VERIFY/VALID/ABORTED 状态机只在 `CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 打开后存在，默认不开时 NEW 与 PENDING_VERIFY 不被使用。
 

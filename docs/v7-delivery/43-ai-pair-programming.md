@@ -24,7 +24,7 @@ AI 结对的第一课不是提示词技巧，是**分工**：模型擅长生成�
 
 互不可见的三个会话，同一道题：「STM32F407 的 GPIOF 挂哪条总线，使能位是哪个？」三次回答里 GPIOF 基地址 0x40021400、AHB1、`RCC_AHB1ENR` bit5（GPIOFEN）是稳定的，因为这是高频训练语料；换一道低频题（某颗冷门芯片的某个寄存器位），分布就散开了。
 
-**模型输出是分布，不是事实**。这个实验的全部价值是让你亲手看到这一点。实验纪律：会话互不可见、语料密度决定稳定性、三次不一致的地方必须人工查手册（第 44 章的对账流程）。
+**模型输出是分布，不是事实**。这个实验的全部价值是让你亲手看到这一点。实验纪律：会话互不可见、语料密度决定稳定性、三次不一致的地方必须人工查手册（[第 44 章](./44-manual-reconciliation-hallucination.md)的对账流程）。
 
 ### 2. 一条真提示词的解剖
 
@@ -60,15 +60,19 @@ AI 结对的第一课不是提示词技巧，是**分工**：模型擅长生成�
 
 ### 三、工具地图与 MCP
 
-2026-10-27 快照的四格：VS Code（代理模式 + Chat）、GitHub Copilot（agent loop：推理→行动→验证；cloud agent 59 分钟/单仓库单分支；CCR 覆盖逾 90% C/C++ 文件类型）、Claude Code（`edits files, runs commands`；CLAUDE.md 是 context not enforced configuration；可管道 `tail -200 app.log | claude -p`）、Cursor（Agent=Instructions+Tools+Model；Checkpoints 归 Git；Run Modes 三档；「Auto-review is not a security boundary」）。**界面会变，方法论不变**。每格事实挂来源卡，版本化行为带「截至 2026-10-27」。
+2026-10-27 快照的四格：VS Code（代理模式 + Chat）、GitHub Copilot（agent loop：推理→行动→验证；cloud agent 59 分钟/单仓库单分支；CCR 覆盖逾 90% C/C++ 文件类型）、Claude Code（`edits files, runs commands`；CLAUDE.md 是 context not enforced configuration；可管道 `tail -200 app.log | claude -p`）、Cursor（Agent=Instructions+Tools+Model；Checkpoints 归 Git；Run Modes 三档；「Auto-review is not a security boundary」）。
 
-MCP 是协议，不是第四个工具：**三方**（Hosts/Clients/Servers）+ **三类原语**（Resources/Prompts/Tools）+ 一拓扑；Sampling/Logging 在快照版本已 deprecated（时效注记）；官方 reference servers 快照时 7 个（Everything/Fetch/Filesystem/Git/Memory/Sequential Thinking/Time，生态数字带日期）。关键安全语义：**「一 server 一 client」的授权颗粒度**：每个 server 的权限单独授予，不给全局代理权；官方安全三句（Users must explicitly consent… / Hosts must obtain… / Tools represent arbitrary code execution…）按快照转写。
+**界面会变，方法论不变**。每格事实挂来源卡，版本化行为带「截至 2026-10-27」。
+
+MCP 是协议，不是第四个工具：**三方**（Hosts/Clients/Servers）+ **三类原语**（Resources/Prompts/Tools）+ 一拓扑；Sampling/Logging 在快照版本已 deprecated（时效注记）；官方 reference servers 快照时 7 个（Everything/Fetch/Filesystem/Git/Memory/Sequential Thinking/Time，生态数字带日期）。
+
+关键安全语义是**「一 server 一 client」的授权颗粒度**：每个 server 的权限单独授予，不给全局代理权；官方安全三句（Users must explicitly consent… / Hosts must obtain… / Tools represent arbitrary code execution…）按快照转写。
 
 ![AI 工具地图动画：四格与 MCP 协议位](/anim/ai-tool-map.svg)
 
 ### 四、工具流 vs 搬运工
 
-把手册塞给模型的三个损耗：**切片**（长文档被切碎，引用错位）、**时效**（模型训练截止后的修订版它不知道）、**语境**（你的板卡事实它没有）。MCP 工具流的解法：L2 手册快照工作流。datasheets/ 目录放冻结版手册、Filesystem server 只读授权、引用必须带原文行号（第 44 章的对账三问接手验证）。
+把手册塞给模型的三个损耗：**切片**（长文档被切碎，引用错位）、**时效**（模型训练截止后的修订版它不知道）、**语境**（你的板卡事实它没有）。MCP 工具流的解法：L2 手册快照工作流。datasheets/ 目录放冻结版手册、Filesystem server 只读授权、引用必须带原文行号（[第 44 章](./44-manual-reconciliation-hallucination.md)的对账三问接手验证）。
 
 三场景实录：读手册三级（L0 概念/L1 章节/L2 逐行）、跑构建四步验收（配置/编译/烧录/读回）、看串口切片三招（时间戳对齐/帧边界/异常字节）。E08 音频案例（MCLK=4096000、PCA9557 bit1@0x19）是现成的验证样本。
 

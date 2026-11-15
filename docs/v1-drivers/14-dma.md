@@ -176,7 +176,11 @@ F103 没有 `DBM`，只能用“半区所有权”模拟乒乓：DMA 填前半�
 
 `CHSEL`、`CIRC`、`MINC`、`DIR`、`PSIZE`、`MSIZE` 这些流属性只在 `EN=0` 时可写；`EN=1` 时写入不生效，硬件也不会替你停流。`NDTR/PAR/M0AR/FCR` 同样在写保护范围内，改传输参数也要先关 EN。要改配置，先清 `EN`，再轮询读回 0，等当前这一拍真正结束；然后落位，最后把 `EN` 置 1。这个“EN 可改窗口”是 DMA 初始化顺序的硬约束，和 USART 先关 `UE` 再改 `BRR` 是同一类规矩。
 
-HAL 把同一组动作拆成两段。`HAL_DMA_Init()` 管流属性：先 `__HAL_DMA_DISABLE()` 并轮询 `CR.EN`，等不到就按 `HAL_GetTick` 超时返回；再把 `CHSEL`、优先级、宽度、增量、循环、方向、`CT`、`DBM` 等配置位清掉，按 `Init` 各字段拼成一笔写回 `CR`，FIFO 的 `DMDIS/FTH` 另写 `FCR`。`HAL_DMA_Start()` 管本次传输参数：调用 `DMA_SetConfig()` 先清 `DBM`，再写 `NDTR`，按方向写 `PAR` 与 `M0AR`，最后开 `EN`；双缓冲不走这条路径，要用 `stm32f4xx_hal_dma_ex.c` 里的 `HAL_DMAEx_MultiBufferStart()`（或手写 `M1AR` 与 `DBM`）。中断版 `HAL_DMA_Start_IT()` 打开 TC/TE/DME，有半传输回调时再加 HT，不打开 FE。行号来自 S8 对 ST 官方 `stm32f4xx_hal_driver` master@1f6451c 的记录；`DMA_SetConfig()` 与 `HAL_DMA_Start_IT()` 的行为已按 1f6451c 原文核对，行号未逐条复核：
+HAL 把同一组动作拆成两段。`HAL_DMA_Init()` 管流属性：先 `__HAL_DMA_DISABLE()` 并轮询 `CR.EN`，等不到就按 `HAL_GetTick` 超时返回；再把 `CHSEL`、优先级、宽度、增量、循环、方向、`CT`、`DBM` 等配置位清掉，按 `Init` 各字段拼成一笔写回 `CR`，FIFO 的 `DMDIS/FTH` 另写 `FCR`。
+
+`HAL_DMA_Start()` 管本次传输参数：调用 `DMA_SetConfig()` 先清 `DBM`，再写 `NDTR`，按方向写 `PAR` 与 `M0AR`，最后开 `EN`；双缓冲不走这条路径，要用 `stm32f4xx_hal_dma_ex.c` 里的 `HAL_DMAEx_MultiBufferStart()`（或手写 `M1AR` 与 `DBM`）。
+
+中断版 `HAL_DMA_Start_IT()` 打开 TC/TE/DME，有半传输回调时再加 HT，不打开 FE。行号来自 S8 对 ST 官方 `stm32f4xx_hal_driver` master@1f6451c 的记录；`DMA_SetConfig()` 与 `HAL_DMA_Start_IT()` 的行为已按 1f6451c 原文核对，行号未逐条复核：
 
 | 手写落位（`03-uart-dma/main.c`） | HAL 对应（`stm32f4xx_hal_dma.c` @ 1f6451c） | 对照结论 |
 | --- | --- | --- |
@@ -309,9 +313,13 @@ F407 有一块 DMA 够不着的地方：CCM 在 `0x1000_0000`，64KB，只挂 CP
 
 ## 跨平台边界
 
-F407 一侧：DMA1 与 DMA2 都挂在 AHB1，基址分别是 `0x4002_6000` 与 `0x4002_6400`；每个控制器 8 条流，流 0 的寄存器从 `0x10` 开始，每条流隔 `0x18`，流 5 的基址是 `+0x88`。公共寄存器是 `LISR 0x00`、`HISR 0x04`、`LIFCR 0x08`、`HIFCR 0x0C`。时钟门是 `RCC_AHB1ENR` 的 bit21/22。每条流有 4×32 位 FIFO，支持双缓冲 `DBM/M1AR/CT`；内存到内存只有 DMA2 能做。USART1 在 APB2，请求归 DMA2，RX 常用 Stream5 Channel4（或 Stream2 Channel4），TX 常用 Stream7 Channel4，这两个编号待复核。CCM 在 `0x1000_0000`，DMA 无路可达。F4 没有 D-Cache；HAL 行号与行为绑定 `1f6451c` 版本，换库先核对。
+F407 一侧：DMA1 与 DMA2 都挂在 AHB1，基址分别是 `0x4002_6000` 与 `0x4002_6400`；每个控制器 8 条流，流 0 的寄存器从 `0x10` 开始，每条流隔 `0x18`，流 5 的基址是 `+0x88`。公共寄存器是 `LISR 0x00`、`HISR 0x04`、`LIFCR 0x08`、`HIFCR 0x0C`。时钟门是 `RCC_AHB1ENR` 的 bit21/22。
 
-F103 一侧：DMA1 在 `0x4002_0000`，7 条通道；C8 只有 DMA1，没有 DMA2。通道寄存器从 `0x08` 开始，每条隔 `0x14`，顺序是 `CCR/CNDTR/CPAR/CMAR`；公共寄存器是 `ISR 0x00`、`IFCR 0x04`。时钟门是 `RCC_AHBENR` bit0。通道与外设请求固定绑定：ADC1→CH1、USART1_TX→CH4、USART1_RX→CH5，其余查 RM0008 表 78。`CCR` 的 `MEM2MEM`（bit14）支持内存到内存，`PSIZE/MSIZE` 与 `PINC/MINC` 位号都和 F4 不同；没有 FIFO、没有 DBM，乒乓只能用 HT/TC 半区模拟。DMA1 是 AHB 主设备，外设寄存器在 APB 上，搬运要过桥。F103 没有 CCM，也没有 D-Cache；4KB 内存搬运实验能放进 20KB SRAM。
+每条流有 4×32 位 FIFO，支持双缓冲 `DBM/M1AR/CT`；内存到内存只有 DMA2 能做。USART1 在 APB2，请求归 DMA2，RX 常用 Stream5 Channel4（或 Stream2 Channel4），TX 常用 Stream7 Channel4，这两个编号待复核。CCM 在 `0x1000_0000`，DMA 无路可达。F4 没有 D-Cache；HAL 行号与行为绑定 `1f6451c` 版本，换库先核对。
+
+F103 一侧：DMA1 在 `0x4002_0000`，7 条通道；C8 只有 DMA1，没有 DMA2。通道寄存器从 `0x08` 开始，每条隔 `0x14`，顺序是 `CCR/CNDTR/CPAR/CMAR`；公共寄存器是 `ISR 0x00`、`IFCR 0x04`。时钟门是 `RCC_AHBENR` bit0。
+
+通道与外设请求固定绑定：ADC1→CH1、USART1_TX→CH4、USART1_RX→CH5，其余查 RM0008 表 78。`CCR` 的 `MEM2MEM`（bit14）支持内存到内存，`PSIZE/MSIZE` 与 `PINC/MINC` 位号都和 F4 不同；没有 FIFO、没有 DBM，乒乓只能用 HT/TC 半区模拟。DMA1 是 AHB 主设备，外设寄存器在 APB 上，搬运要过桥。F103 没有 CCM，也没有 D-Cache；4KB 内存搬运实验能放进 20KB SRAM。
 
 GD32 与 ESP32 不在本章平台列表。GD32 的 DMA 控制器命名、通道数与请求映射和 STM32 不是一套，完整对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)；ESP32-S3 的 DMA 由 ESP-IDF 的驱动与描述符管理，寄存器名字一个都不要带过去，外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。多核与 Cache 一致性见[第 34 章](../v4-platforms/34-multicore-cache.md)；仪器与证据方法见[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。
 

@@ -280,7 +280,9 @@ ESP32 这一侧，本章没有取证来源，不写寄存器差异。ESP32-S3 �
 | [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c` | HAL 怎么包装同一组寄存器：`HAL_GPIO_WritePin` 调 BSRR、`HAL_GPIO_TogglePin` 用 ODR 异或；同一功能的两种抽象层级 |
 | [STMicroelectronics/cmsis-device-f4](https://github.com/STMicroelectronics/cmsis-device-f4) | `Include/stm32f407xx.h` | 寄存器结构体与位域定义；本章讲的所有地址与偏移都在这一个头文件里 |
 
-社区讨论最集中的两点：BSRR 优于 ODR 的原子性论证（中断上下文防踩踏），以及 F1 的 AFIO 重映射与 F4 的 AFR 逐脚编号在移植时的坑。入门级步骤教程（如 [Controllers Tech 的 GPIO 寄存器教程](https://controllerstech.com/stm32-gpio-output-configuration-register/)）可以当快查用，但最可靠的参考仍然是 [RM0090 §8.4 GPIO 寄存器](https://www.st.com/resource/en/reference_manual/rm0090-stm32f405415-stm32f407417-stm32f427437-and-stm32f429439-advanced-armbased-32bit-mcus-stmicroelectronics.pdf) 与 datasheet 的复用表。
+社区讨论最集中的两点：BSRR 优于 ODR 的原子性论证（中断上下文防踩踏），以及 F1 的 AFIO 重映射与 F4 的 AFR 逐脚编号在移植时的坑。
+
+入门级步骤教程（如 [Controllers Tech 的 GPIO 寄存器教程](https://controllerstech.com/stm32-gpio-output-configuration-register/)）可以当快查用，但最可靠的参考仍然是 [RM0090 §8.4 GPIO 寄存器](https://www.st.com/resource/en/reference_manual/rm0090-stm32f405415-stm32f407417-stm32f427437-and-stm32f429439-advanced-armbased-32bit-mcus-stmicroelectronics.pdf) 与 datasheet 的复用表。
 
 ## 离开检查
 

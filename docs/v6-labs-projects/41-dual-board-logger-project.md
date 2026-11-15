@@ -61,7 +61,7 @@ sequence u32 + timestamp_ms u32 + generation u32
 | 传感器输入 | 电位器 → ADC PA0 + TIM2 TRGO 触发 + DMA2 搬运 | 板载 QMI8658（I2C，GPIO1/2） |
 | 采样节奏 | TIM2 TRGO 硬件触发（周期与控制环解耦） | `xTaskDelayUntil` 软件节拍 |
 | 配置存储 | EEPROM AT24C02 **双槽**（2×128 B，8 B 页边界写前 127 字节，最后写提交标记，启动挑最新有效 generation） | NVS **单 blob**（128 字节配置 + commit） |
-| 看门狗 | 硬件 IWDG（喂狗点在监督任务） | **TWDT**（任务级订阅 + 进展上报；S3 无外部看门狗芯片——PRJ2 健康段旧稿照抄 F407 的「硬件 watchdog 名义 2s」是错的，已按 PRJ2:83 改写） |
+| 看门狗 | 硬件 IWDG（喂狗点在监督任务） | **TWDT**（任务级订阅 + 进展上报；S3 无外部看门狗芯片。PRJ2 健康段旧稿照抄 F407 的「硬件 watchdog 名义 2s」是错的，已按 PRJ2:83 改写） |
 | 控制台 | USART1 PA9/PA10 | UART1 GPIO10/11（USB 口只做烧录与日志） |
 
 EEPROM 双槽与 NVS 单 blob 的取舍：双槽能在断电时回退到上一份有效配置（提交标记未写完就选中旧槽）；NVS 单 blob 靠自身的事务性保证不写坏，但回退语义弱：押注实验（[第 40 章](./40-lab-method-instruments.md) 教法）在两板上各做一次断电恢复。
@@ -78,7 +78,7 @@ EEPROM 双槽与 NVS 单 blob 的取舍：双槽能在断电时回退到上一�
 
 ![队列溢出动画：满则丢新与计数上报](/anim/logger-queue-overflow.svg)
 
-![手绘板：64 B 载荷、74 B 线上帧与 16 槽队列的字节账（原理示意）](/images/v6-41-logger-budget.png)
+![手绘板：64 B 载荷、74 B 线上帧与 16 槽队列的字节账（原理示意，非实拍）](/images/v6-41-logger-budget.png)
 
 ### 四、期限监督 vs 心跳
 

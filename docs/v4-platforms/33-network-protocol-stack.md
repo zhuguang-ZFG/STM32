@@ -7,7 +7,11 @@ platforms: [f407, esp32]
 
 MCU 上网络的第一课不是 API，是**边界**：DMA 看见的内存与 CPU 看见的内存不同；lwIP 的 pbuf 是所有权不是指针；TCP 是字节流，帧边界要自己定义；三个平台的 DMA 禁区同名不同址不同原因。这一章把 F407 的以太网 + lwIP 与 ESP32 的 esp_netif→lwIP 摆在同一张解剖台上，按「先写需求、再选硬件」的顺序讲五条路径，把协议栈拆到 pbuf 不变式与 core-locking 边界。
 
-这一章没有板级实测。lwIP 按 **2.2.1**（RELEASE）实取核对：`pbuf.h:186-203` 的结构体与 `tot_len` 不变式逐字命中，`opt.h:190,2168,2086` 确认 core-locking 默认开、`LWIP_SOCKET_SELECT=1`、`LWIP_SO_SNDTIMEO=0`，`init.h:53-61` 是版本三段号；lwIP 子模块 commit `07680c81…` 属于 **ST fork `stm32-mw-lwip`**（lwip-tcpip/lwip 同 commit 是 404，curl 实取）。H7 的 DTCM 禁区按 AN4891 口径；F407 的 CCM 禁区沿 [v1 第 14 章](../v1-drivers/14-dma.md) 已冻结口径。四个递进实验（A–D）与 `labs/ethernet-24h` 的 localhost smoke 全部未实测，不冒充真板记录。ESP32 半场的 esp_netif 是 IDF 文档口径（来源说法待核）；六步骨架已在 [第 32 章](./32-esp32-wifi-ble-espnow.md) 教过，本章只接手。
+这一章没有板级实测。lwIP 按 **2.2.1**（RELEASE）实取核对：`pbuf.h:186-203` 的结构体与 `tot_len` 不变式逐字命中，`opt.h:190,2168,2086` 确认 core-locking 默认开、`LWIP_SOCKET_SELECT=1`、`LWIP_SO_SNDTIMEO=0`，`init.h:53-61` 是版本三段号。
+
+lwIP 子模块 commit `07680c81…` 属于 **ST fork `stm32-mw-lwip`**（lwip-tcpip/lwip 同 commit 是 404，curl 实取）。H7 的 DTCM 禁区按 AN4891 口径；F407 的 CCM 禁区沿 [v1 第 14 章](../v1-drivers/14-dma.md) 已冻结口径。
+
+四个递进实验（A–D）与 `labs/ethernet-24h` 的 localhost smoke 全部未实测，不冒充真板记录。ESP32 半场的 esp_netif 是 IDF 文档口径（来源说法待核）；六步骨架已在 [第 32 章](./32-esp32-wifi-ble-espnow.md) 教过，本章只接手。
 
 > 版本口径：lwIP **2.2.1**（STM32CubeH7 冻结 commit 的 LwIP 子模块，位于 ST fork `stm32-mw-lwip`，commit `07680c81…`；引用行号写 `LWIP@07680c81:文件:行`，禁写 `lwip-tcpip/lwip@07680c81`）；CubeH7 顶层 commit `8ec3113d…`；Mbed TLS 子模块 `cdadeb9b…`（本轮未核，来源说法未复核）。H7 侧按 AN4891/RM0433；F407 侧按 RM0090 与 [v1 第 14 章](../v1-drivers/14-dma.md)。
 
@@ -76,7 +80,7 @@ struct pbuf {
 
 三条推论：**pbuf 可能是链**，一次收到的包不保证连续，跨段要自己拼；**所有权唯一**，谁持有谁释放，`pbuf_free()` 恰好一次，多 free 是 use-after-free，漏 free 是泄漏；**zero-copy RX 的代价**，DMA 直接写进 pbuf，CPU 处理期间缓冲被驱动复用，想留数据就得 memcpy 走。
 
-![pbuf 链拆图：HELLO/WORLD/123 三段与 tot_len 不变式](/images/ch27-pbuf-chain.png)
+![手绘板：pbuf 链拆图：HELLO/WORLD/123 三段与 tot_len 不变式（原理示意，非实拍）](/images/ch27-pbuf-chain.png)
 
 ![网络包的旅程：从网卡到 socket 的分层](/anim/network-packet-journey.svg)
 
@@ -109,9 +113,9 @@ while (sent < total) {
 
 所有重试共享同一个 `sys_now()` 单调截止点。每层各设一个超时的系统，端到端叠加远超预期（[第 27 章](../v3-rtos/27-rtos-comparison-selection.md) 的 R=B+C+S 口径）。帧图与 sendall 循环的手绘板：
 
-![TCP 帧格式手绘板：magic/ver/len/seq/CRC 字段排布（原理示意）](/images/ch27-tcp-framing.png)
+![手绘板：TCP 帧格式，magic/ver/len/seq/CRC 字段排布（原理示意，非实拍）](/images/ch27-tcp-framing.png)
 
-![手绘板：send_all 的单截止点循环（原理示意）](/images/ch27-sendall-loop.png)
+![手绘板：send_all 的单截止点循环（原理示意，非实拍）](/images/ch27-sendall-loop.png)
 
 ![TCP 字节流示意：两段应用消息在流里连排](/figures/tcp-byte-stream.svg)
 
@@ -119,7 +123,7 @@ while (sent < total) {
 
 网络内存是 MCU 上最容易漏算的一块，七项一起列（各项数值留待工程实测）：描述符 + RX 池 + TX 池 + lwIP 堆 + socket 缓冲 + TLS 峰值 + 应用离线队列。运行期三本账：goodput（有效吞吐，不是链路速率）、丢包/重试率、故障恢复时间。**峰值不报平均值**（[第 27 章](../v3-rtos/27-rtos-comparison-selection.md) 的定量口径）。TLS 的内存峰值经常是七项里最大的一块，按固定配置实测后冻结。
 
-![手绘板：网络系统四本账，含内存、吞吐、丢包、恢复，各自记什么（原理示意）](/images/ch27-four-ledgers.png)
+![手绘板：网络系统四本账，含内存、吞吐、丢包、恢复，各自记什么（原理示意，非实拍）](/images/ch27-four-ledgers.png)
 
 ### 七、ESP32 半场：esp_netif 与 GOT_IP
 
@@ -127,7 +131,7 @@ ESP32 上 WiFi 的连接层归 [第 32 章](./32-esp32-wifi-ble-espnow.md)；从
 
 AT 模组的半场（offload 路径）：TCP/IP 移进模组后，MCU 端的 transaction id、deadline、URC 交错、离线队列上限一样不少。协议栈搬走了，状态机没有。
 
-![API 上下文手绘板：raw/netconn/socket 各自的调用上下文与 IRQ 禁令（原理示意）](/images/ch27-api-context.png)
+![手绘板：API 上下文，raw/netconn/socket 各自的调用上下文与 IRQ 禁令（原理示意，非实拍）](/images/ch27-api-context.png)
 
 ## 测量与证据
 

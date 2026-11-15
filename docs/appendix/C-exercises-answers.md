@@ -17,8 +17,8 @@ platforms: [generic]
 
 
 <p align="center">
-  <img src="/images/app-c-discipline.png" width="760" alt="Handraw：答案怎么用（原理示意）">
-  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。先自做再对照；禁背答案替实验。非实拍。</sub>
+  <img src="/images/app-c-discipline.png" width="760" alt="手绘板：答案怎么用（原理示意，非实拍）">
+  <br><sub>▲ 知识轨（手绘板 · 原理示意/非实拍）。先自做再对照；禁背答案替实验。</sub>
 </p>
 1. BOOT0 拉低时从主 Flash 启动。
 2. HAL 在寄存器之上提供句柄、状态机、参数检查和跨系列较统一的 API；它没有消除底层时钟、引脚和寄存器约束。
@@ -30,7 +30,7 @@ platforms: [generic]
 2. 第 1 个字是 `Reset_Handler` 的入口地址，最低位用于表示 Thumb 状态。
 3. SWD 使用 PA13/SWDIO 与 PA14/SWCLK，并要共地和供电参考。
 
-## 根书 02 芯片选型与存储器时钟 → 第 1 章与第 8 章
+## 根书 02 芯片选型与存储器时钟 → [第 1 章](../v0-foundations/01-c-memory-model.md)与[第 8 章](../v1-drivers/08-architecture-memory-clock.md)
 
 1. F103 在 72 MHz 条件下需要按电压范围配置相应 Flash 等待周期；本书示例使用 2 WS，最终以 RM0008 的 Flash 表为准。
 2. AHB/HCLK 高于 APB1；典型 72 MHz 配置中 APB1 为 36 MHz。
@@ -40,20 +40,20 @@ platforms: [generic]
 
 
 <p align="center">
-  <img src="/images/app-c-early-checks.png" width="760" alt="Handraw：前几章自测焦点（原理示意）">
-  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。极性、EXTI、1 kHz 算术是早期核对轴。非实拍。</sub>
+  <img src="/images/app-c-early-checks.png" width="760" alt="手绘板：前几章自测焦点（原理示意，非实拍）">
+  <br><sub>▲ 知识轨（手绘板 · 原理示意/非实拍）。极性、EXTI、1 kHz 算术是早期核对轴。</sub>
 </p>
 1. BluePill 的 PC13 板载 LED 通常低电平点亮。
 2. 按键接 GND 时用上拉，使松开为 1、按下为 0。
 3. F1 做 AFIO 重映射前必须使能 AFIO 时钟，并保留 SWD 所需引脚。
 
-## 根书 04 中断与 NVIC → 第 4 章与第 10 章
+## 根书 04 中断与 NVIC → [第 4 章](../v0-foundations/04-function-pointer-state-machine.md)与[第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)
 
 1. EXTI0 只能在同一时刻选择 PA0、PB0 等端口来源中的一个。
 2. 阻塞延时会延长中断屏蔽/嵌套时间，推迟其他中断并破坏响应预算；ISR 应有界并尽快退出。
 3. PRIMASK 管可屏蔽中断总闸，BASEPRI 按优先级阈值屏蔽，FAULTMASK 还会屏蔽大多数故障；NMI 不受这些普通屏蔽影响。
 
-## 根书 05 定时器与 PWM → 第 11 章与第 12 章
+## 根书 05 定时器与 PWM → [第 11 章](../v1-drivers/11-systick-timebase-rtc.md)与[第 12 章](../v1-drivers/12-timers-pwm.md)
 
 1. PSC 与 ARR 共同决定计数更新周期：`f_update = f_tim / ((PSC+1)(ARR+1))`（向上计数的基本情况）。
 2. CCR 决定比较位置，从而决定 PWM 占空比或输出比较事件时刻。
@@ -93,7 +93,7 @@ platforms: [generic]
 
 对账：F103C8 只有 DMA1 的 7 条通道，没有 DMA2。USART1_TX 是 Channel 4，USART1_RX 是 Channel 5，ADC1 是 Channel 1。缓冲区长度 8、半字、`CNDTR` 读回 3：已写入 `8 − 3 = 5` 个采样，`5 × 2 = 10` 字节。半传输在 4 个采样，也就是 8 字节，不是 4 字节。F1 的 DMA 控制器是 AHB 主机，外设寄存器在 APB。F4 的 USART1_RX 换成 DMA2 Stream 5、Channel 4；FIFO 是 4 个 32 位字。
 
-## 根书 11 RTC 与看门狗 → 第 11 章与第 19 章
+## 根书 11 RTC 与看门狗 → [第 11 章](../v1-drivers/11-systick-timebase-rtc.md)与[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)
 
 1. 主电源掉电后，RTC 依靠 VBAT 备份域和 LSE/LSI（取决于配置）继续运行。
 2. WWDG 有窗口，喂得过早或过晚都可复位；IWDG 主要约束过晚。
@@ -109,8 +109,8 @@ platforms: [generic]
 
 
 <p align="center">
-  <img src="/images/app-c-bus-system.png" width="760" alt="Handraw：总线到系统核对轴（原理示意）">
-  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。环回≠ACK；IAP 拒跳；FromISR 优先级；CFSR 先读。非实拍。</sub>
+  <img src="/images/app-c-bus-system.png" width="760" alt="手绘板：总线到系统核对轴（原理示意，非实拍）">
+  <br><sub>▲ 知识轨（手绘板 · 原理示意/非实拍）。环回≠ACK；IAP 拒跳；FromISR 优先级；CFSR 先读。</sub>
 </p>
 1. 单节点正常模式没有其他节点发送 ACK，错误计数上升，最终可能 Bus-Off；先用回环或增加正确终端的第二节点。
 2. 36 MHz、总时间份额 8、500 kbit/s 时预分频是 `36 MHz / (8 × 500 kHz) = 9`。
@@ -124,7 +124,7 @@ platforms: [generic]
 
 对账：PLL 72 MHz 且 `RCC_CFGR.USBPRE = 0` 时，USB 时钟是 `72 / 1.5 = 48` MHz。全速设备在 D+ 上拉 1.5 kΩ。本仓库 `usb-cdc` 的设备描述符是 18 字节，`bMaxPacketSize0` 是 64，VID/PID 是 `0x1209/0x0001`，不是 ST 例程常见的 `0x0483/0x5740`。配置集合 `wTotalLength` 是 `0x0043`，也就是 67 字节；`bMaxPower` 的 `0x32` 表示 100 mA。全速批量和中断的最大包长都是 64 字节；1023 只属于全速等时。
 
-## 根书 15 FreeRTOS 入门 → 第 21 章与第 22 章
+## 根书 15 FreeRTOS 入门 → [第 21 章](../v3-rtos/21-why-rtos.md)与[第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md)
 
 1. 同优先级且启用时间片的就绪任务会在 tick 边界轮转。
 2. 固定周期任务用 `vTaskDelayUntil`，因为它锚定绝对唤醒时间，不把本轮执行时间累加到周期。
@@ -144,7 +144,11 @@ platforms: [generic]
 2. 先保存堆栈中的 PC/LR 和 SCB 的 CFSR/HFSR，再按有效位查看 BFAR/MMFAR。
 3. 没有同输入、同编译选项的周期基线，就无法判断优化是否有效或只是改变了测试条件。
 
-对账：`CFSR` 在 `0xE000ED28`，`HFSR` 在 `0xE000ED2C`，`MMFAR` 在 `0xE000ED34`，`BFAR` 在 `0xE000ED38`。`HFSR.FORCED` 是 bit 30，值是 `0x40000000`，表示故障被升级进了 HardFault。`BFAR` 只有 `CFSR` bit 15（`BFARVALID`）为 1 时才是这次的地址；`MMFAR` 要看 bit 7（`MMARVALID`）。异常栈上的 PC 在 `stack[6]`。先置 `DEMCR`（`0xE000EDFC`）的 `TRCENA`（bit 24），再使能 `DWT_CTRL.CYCCNTENA`，读 `0xE0001004`。72 MHz 时 72 个周期是 1 µs。M3/M4 的硬件断点比较器是 6 个，M7 是 8 个。
+对账：`CFSR` 在 `0xE000ED28`，`HFSR` 在 `0xE000ED2C`，`MMFAR` 在 `0xE000ED34`，`BFAR` 在 `0xE000ED38`。`HFSR.FORCED` 是 bit 30，值是 `0x40000000`，表示故障被升级进了 HardFault。
+
+`BFAR` 只有 `CFSR` bit 15（`BFARVALID`）为 1 时才是这次的地址；`MMFAR` 要看 bit 7（`MMARVALID`）。异常栈上的 PC 在 `stack[6]`。
+
+先置 `DEMCR`（`0xE000EDFC`）的 `TRCENA`（bit 24），再使能 `DWT_CTRL.CYCCNTENA`，读 `0xE0001004`。72 MHz 时 72 个周期是 1 µs。M3/M4 的硬件断点比较器是 6 个，M7 是 8 个。
 
 ## 根书 18 常见问题 FAQ → [第 45 章](../v7-delivery/45-troubleshooting-handbook.md)
 
@@ -197,7 +201,7 @@ platforms: [generic]
 7. DS10198 给料号/引脚/电气和典型值；RM0351 给 PWR/RCC 状态机与寄存器；AN4746 给功耗优化方法；UM1724 给 Nucleo 板与 JP6 测量路径；ES0250 给指定 silicon revision 的已知限制和 workaround。
 8. 固定的 HAL RTC wake-up handler 在调用 callback 前已经清掉 EXTI pending 与 `RTC_FLAG_WUTF`；callback 或 Stop 返回后再读只能看到清零结果。应在 `RTC_WKUP_IRQHandler()` 入口、调用 HAL handler 前把 RTC/EXTI/PWR 原始位发布到 Stop 2 保持的 SRAM，返回后消费该软件记录。
 
-## 根书 25 STM32H7 引脚 → 第 28 章与第 34 章
+## 根书 25 STM32H7 引脚 → [第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 34 章](../v4-platforms/34-multicore-cache.md)
 
 1. H743ZI LQFP144 的第 1 脚是 PE2。
 2. 第二只 VCAP（VCAP2）是第 106 脚；VCAP1 是第 71 脚。
@@ -231,8 +235,8 @@ platforms: [generic]
 
 
 <p align="center">
-  <img src="/images/app-c-not-proof.png" width="760" alt="Handraw：答对数字≠产品证据（原理示意）">
-  <br><sub>▲ 知识轨（Handraw · 原理示意/非实拍）。自测证明读懂契约，不签收量产与最坏响应。非实拍。</sub>
+  <img src="/images/app-c-not-proof.png" width="760" alt="手绘板：答对数字≠产品证据（原理示意，非实拍）">
+  <br><sub>▲ 知识轨（手绘板 · 原理示意/非实拍）。自测证明读懂契约，不签收量产与最坏响应。</sub>
 </p>
 1. FreeRTOS Kernel 主要提供调度、IPC、定时器和内存等内核机制；RT-Thread/Zephyr 还把设备框架、构建配置、网络、文件系统、Shell 等组件组织进统一生态。产品策略与验收仍由项目负责。
 2. 互斥量只序列化被包住的代码；片选、DMA 完成、超时恢复和驱动状态可能仍被拆成多个临界段。所有者任务把完整事务和状态集中在一个写入者中。

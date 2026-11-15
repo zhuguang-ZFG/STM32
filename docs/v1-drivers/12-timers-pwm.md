@@ -98,7 +98,9 @@ ISR 的频率也要算账：1kHz 更新中断每秒进 1000 次，每次几十�
 
 反例：ARR=999 的 TIM3，last=990、now=10，真实差是 20，`uint32_t` 相减却得到 4294966316；就算改成模 1000，也分不清经过了零圈还是一整圈。S6 因此把捕获时基换成 32 位自由计数，并给捕获判定加了范围：只接受 100µs–500ms 的间隔，首次捕获只建立基准，过捕获（overcapture）重新建立基准，超过 1 秒没有新边沿就清掉频率。
 
-共享判定函数在 `mcu/code/common/behavior/capture.h`：`delta = now - previous`，只有见过上一拍且 `100 <= delta <= 500000` 才输出 `1000000/delta`；`overcapture` 把频率清零并记一次丢失。`tests.c` 里写着对应的断言：`UINT32_MAX-499` 之后接 `500` 得到 1000Hz，`overcapture=true` 后频率为 0、`lost=1`，超时后清零。主循环不直接读捕获结构体，而是用 `lock()`/`unlock()` 的 PRIMASK 短临界区复制一份快照，再在临界区外使用；跨 ISR 与主循环的变量按[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同声明。这些是源码里的断言与写法，不是本章跑出来的板上读数；板上测频在 S6 里仍标着待实测。
+共享判定函数在 `mcu/code/common/behavior/capture.h`：`delta = now - previous`，只有见过上一拍且 `100 <= delta <= 500000` 才输出 `1000000/delta`；`overcapture` 把频率清零并记一次丢失。`tests.c` 里写着对应的断言：`UINT32_MAX-499` 之后接 `500` 得到 1000Hz，`overcapture=true` 后频率为 0、`lost=1`，超时后清零。
+
+主循环不直接读捕获结构体，而是用 `lock()`/`unlock()` 的 PRIMASK 短临界区复制一份快照，再在临界区外使用；跨 ISR 与主循环的变量按[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同声明。这些是源码里的断言与写法，不是本章跑出来的板上读数；板上测频在 S6 里仍标着待实测。
 
 ![输入捕获：边沿拍照 → CNT 差值 → 脉宽与频率](/anim/tim-input-capture.svg)
 
@@ -272,9 +274,13 @@ TIM1 没有波形，先查 `BDTR` 的 MOE：偏移 0x44、复位值 0x0000，bit
 
 F407 一侧：TIM3 在 APB1，168MHz 主频、APB1=/4 时 TIM3=84MHz；1kHz 用 PSC=83、ARR=999。PA6 是 TIM3_CH1 AF2，TIM3_CH2 在 PA7 AF2；TIM3_CH1 还可到 PB4/PC6，换脚查 DS8626 Table 9。Port F 没有 TIM3 通道，PF6/PF7/PF8 的 AF3 是 TIM10_CH1/TIM11_CH1/TIM13_CH1。TIM2/TIM5 是 32 位，TIM3 是 16 位；TIM1/TIM8 是高级定时器，输出前要开 `BDTR.MOE`。HAL 的行号与 MspInit 行为绑定 F4 HAL 的 1f6451c 版本，换库先核对。
 
-F103 一侧：TIM3 同样在 APB1，72MHz 主频、PCLK1=36MHz 时 TIM3=72MHz；1kHz 用 PSC=71、ARR=999。C8 的 TIM2–TIM5 都是 16 位，ARR 最大 65535，1 秒要 PSC=7199、ARR=9999；32 位定时器是 F4 等系列的事。PA6 是 LQFP48 第 16 脚的默认 TIM3_CH1，同一脚还列着 SPI1_MISO，同一时间只能用一个功能；保持 TIM3_REMAP=00 才留在 PA6，重映射到 PB4/PC6 要经 AFIO。F1 没有逐脚 AF 号，别把 F4 的 AF2 写法搬过去。PC13 当翻灯脚时只能灌电流，规则见[第 9 章](./09-gpio.md)。SPL 的 `TIM_TimeBaseInit()`/`TIM_OC1Init()` 与 HAL 落位相同，但一手源码仍缺。
+F103 一侧：TIM3 同样在 APB1，72MHz 主频、PCLK1=36MHz 时 TIM3=72MHz；1kHz 用 PSC=71、ARR=999。C8 的 TIM2–TIM5 都是 16 位，ARR 最大 65535，1 秒要 PSC=7199、ARR=9999；32 位定时器是 F4 等系列的事。
 
-ESP32 一侧只划边界：ESP32-S3 的定时器是 timer group，PWM 是 LEDC；LEDC 的占空比按 `duty/2^bits` 算，和 STM32 的 `CCR/(ARR+1)` 不是同一套参数，PSC/ARR/CCR 的名字与位定义都不要带过去。e03 的 S3 分支用 GPIO10、LEDC 低速通道 0、5kHz fade，只作为实验对照。ESP32 外设、驱动框架与音频链路见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)，架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)，多核与 Cache 见[第 34 章](../v4-platforms/34-multicore-cache.md)。
+PA6 是 LQFP48 第 16 脚的默认 TIM3_CH1，同一脚还列着 SPI1_MISO，同一时间只能用一个功能；保持 TIM3_REMAP=00 才留在 PA6，重映射到 PB4/PC6 要经 AFIO。F1 没有逐脚 AF 号，别把 F4 的 AF2 写法搬过去。PC13 当翻灯脚时只能灌电流，规则见[第 9 章](./09-gpio.md)。SPL 的 `TIM_TimeBaseInit()`/`TIM_OC1Init()` 与 HAL 落位相同，但一手源码仍缺。
+
+ESP32 一侧只划边界：ESP32-S3 的定时器是 timer group，PWM 是 LEDC；LEDC 的占空比按 `duty/2^bits` 算，和 STM32 的 `CCR/(ARR+1)` 不是同一套参数，PSC/ARR/CCR 的名字与位定义都不要带过去。
+
+e03 的 S3 分支用 GPIO10、LEDC 低速通道 0、5kHz fade，只作为实验对照。ESP32 外设、驱动框架与音频链路见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)，架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)，多核与 Cache 见[第 34 章](../v4-platforms/34-multicore-cache.md)。
 
 其它分工：SysTick 的 24 位上限与 RTC 在[第 11 章](./11-systick-timebase-rtc.md)；DMA 搬运捕获数据在[第 14 章](./14-dma.md)；TIM TRGO 触发 ADC 在[第 15 章](./15-adc-dac-sampling.md)；编码器测速与闭环在[第 38 章](../v5-motion/38-encoder-speed-measurement.md)；仪器与证据方法在[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。
 

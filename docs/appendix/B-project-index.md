@@ -13,7 +13,7 @@ platforms: [generic]
 - **依据锚点**：根书例程区 `examples/`（15 条，MIT）与姊妹书工程区 `code/`（47 项，projects.json 登记，Apache-2.0）；`motor-dc-speed` 为 B3 批次补登。
 
 
-本附录是全书配套工程的**双登记簿**：根书例程区（`examples/`，F103 线，15 条）与姊妹书工程区（`code/`，47 个可编译验证工程，F407/ESP32/GD32/宿主四类）。例程不是「复制后能编译」就结束——每个工程都要留下可观察结果，并写清不能由该结果推出什么。
+本附录是全书配套工程的**双登记簿**：根书例程区（`examples/`，F103 线，15 条）与姊妹书工程区（`code/`，47 个可编译验证工程，F407/ESP32/GD32/宿主四类）。例程不是「复制后能编译」就结束。每个工程都要留下可观察结果，并写清不能由该结果推出什么。
 
 - 根书区：`examples/` 下 14 例程 + 补登的 `motor-dc-speed`（B3 批次新增，源表漏登），MIT 许可。
 - 姊妹书区：`code/` 下 47 工程，`code/projects.json` 登记、CI 逐个构建（ARM 工程用 arm-none-eabi-gcc；ESP-IDF 工程用 `espressif/idf:v5.5.2` 容器，target esp32s3；宿主工程用本机 gcc），Apache-2.0。
@@ -44,7 +44,7 @@ platforms: [generic]
 
 ### 先和账对上的四行（时钟与位时间）
 
-跑表之前，先把四行与 附录 D 文末前两张账对上——对不上就先不要加下一种总线：
+跑表之前，先把四行与 附录 D 文末前两张账对上；对不上就先不要加下一种总线：
 
 | 例程 | 先对上的数 | 对不上说明什么 |
 | --- | --- | --- |
@@ -65,10 +65,10 @@ platforms: [generic]
 
 ### 推荐跑法
 
-1. **先闭环**：`gpio-blink → exti-key → timer-pwm`——证明下载、引脚、时基。
-2. **再连外设**：`uart-dma-idle → i2c-oled → spi-flash → adc-dma`——一次一种总线。
-3. **再处理状态**：`rtc-alarm → iap-bootloader → can-bxcan → usb-*`——每步保留可回退镜像。
-4. **最后并发**：`freertos-task`——裸机行为可解释后，调度问题才不与驱动混淆。
+1. **先闭环**：`gpio-blink → exti-key → timer-pwm`：证明下载、引脚、时基。
+2. **再连外设**：`uart-dma-idle → i2c-oled → spi-flash → adc-dma`：一次一种总线。
+3. **再处理状态**：`rtc-alarm → iap-bootloader → can-bxcan → usb-*`：每步保留可回退镜像。
+4. **最后并发**：`freertos-task`：裸机行为可解释后，调度问题才不与驱动混淆。
 5. **最后对照旧库**：`spl-f1-blink` 单独 SPL V3.5.0 + CMake，不与 HAL 示例双重初始化。
 
 ### 每例程的交付记录
@@ -166,6 +166,6 @@ platforms: [generic]
 
 ### 证据状态
 
-工程分两档：**宿主验证**（host-probe 与公共层：断言全绿、CI 必跑）与**目标板验证**（arm-make/esp-idf：CI 验证「能干净构建」，板上现象按各章「待上板实测」口径另行回填——见 [第 40 章](../v6-labs-projects/40-lab-method-instruments.md) 的实测记录制度）。哪个工程处于哪一档，以各工程 README 清单为准，本表不代填。
+工程分两档：**宿主验证**（host-probe 与公共层：断言全绿、CI 必跑）与**目标板验证**（arm-make/esp-idf：CI 验证「能干净构建」，板上现象按各章「待上板实测」口径另行回填；见 [第 40 章](../v6-labs-projects/40-lab-method-instruments.md) 的实测记录制度）。哪个工程处于哪一档，以各工程 README 清单为准，本表不代填。
 
-根书例程区源码在 `examples/`（MIT）；姊妹书工程区在 `code/`（Apache-2.0）；本书正文与图 CC BY 4.0（根域）/Apache-2.0（mcu 域）——完整许可边界见 附录 E。
+根书例程区源码在 `examples/`（MIT）；姊妹书工程区在 `code/`（Apache-2.0）；本书正文与图 CC BY 4.0（根域）/Apache-2.0（mcu 域）。完整许可边界见 附录 E。

@@ -182,7 +182,7 @@ static const struct rt_device_ops buz_ops = {
 
 三个纪律：注册名全局唯一（find 按名线性比对，重名先到先得）；设备类枚举只作分类标签，选 `RT_Device_Class_Miscellaneous` 表达「杂项」即可；`INIT_DEVICE_EXPORT` 让注册在开机自动执行，应用侧 `rt_device_find("buzzer")` 直接取柄。
 
-![手绘板：v5.3.0 设备框架生命周期边界：find/open/失败路径本章代码可覆盖，串口 DMA、接收回调、缓冲模式要回对应 BSP 驱动核对，每启用一个组件都增加 Flash/RAM 与初始化依赖](/images/ch28-rtthread-lifecycle.png)
+![手绘板：v5.3.0 设备框架生命周期边界：find/open/失败路径本章代码可覆盖，串口 DMA、接收回调、缓冲模式要回对应 BSP 驱动核对，每启用一个组件都增加 Flash/RAM 与初始化依赖（原理示意，非实拍）](/images/ch28-rtthread-lifecycle.png)
 
 这张手绘板把生命周期章节的边界画出来：本章讲的 register/find/open 是框架层契约；各驱动 read 的阻塞与超时语义、DMA 细节、缓冲模式，要到对应 BSP 驱动里核对，不能统一假设。
 

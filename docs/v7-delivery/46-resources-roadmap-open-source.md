@@ -67,7 +67,7 @@ platforms: [generic]
 
 ![学习路线三阶段与三道门槛（原理示意）](/figures/sample-00-roadmap-gates.svg)
 
-![手绘板：三条学习路径与 API 三 lanes 对照（原理示意）](/images/ch00-three-api-lanes.png)
+![手绘板：三条学习路径与 API 三 lanes 对照（原理示意，非实拍）](/images/ch00-three-api-lanes.png)
 
 ### 三、采购清单：两条线并陈
 

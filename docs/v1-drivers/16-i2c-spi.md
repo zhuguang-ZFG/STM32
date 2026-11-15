@@ -432,15 +432,21 @@ E07 是 ESP32-S3 的板载传感器实验，不属于 STM32 的 I2C 外设章，
 | 多从机时两个器件同时说话 | 两个 CS 同时为低 | 看两根 CS 的电平 | 一次只拉低一个 CS；MISO 未被选中时应高阻 |
 | 主模式突然不发了，SPE 被清 | NSS 被外部拉低触发 MODF | 读 SR 的 MODF 与 CR1 的 SPE/MSTR | 单主机用 SSM=1、SSI=1，片选走 GPIO |
 | W25Q 写不进去 | 没发 0x06 写使能，或页越界 | 读状态寄存器 WEL/BUSY；地址低 8 位加长度是否超过 256 | 每次编程前发 WREN；按页对齐 |
-| QMI8658 的 WHO_AM_I 读到 0xFF/0x00 | ESP32 侧地址、GPIO 或上拉不对 | 核对 0x6A、GPIO1/GPIO2；量总线电平 | 查板卡原理图与 IDF 配置；细节归第 31 章 |
+| QMI8658 的 WHO_AM_I 读到 0xFF/0x00 | ESP32 侧地址、GPIO 或上拉不对 | 核对 0x6A、GPIO1/GPIO2；量总线电平 | 查板卡原理图与 IDF 配置；细节归[第 31 章](../v4-platforms/31-esp32-drivers-audio.md) |
 
 ## 跨平台边界
 
-F407 一侧：I2C1/2/3 都在 APB1，基址 `0x40005400`/`0x40005800`/`0x40005C00`，时钟门在 `RCC_APB1ENR` 的 bit21/22/23（手册常识，本章未取 RM0090 原件核对）；168 MHz 主频下 PCLK1=42 MHz，100 kHz 用 CCR=210、TRISE=43，400 kHz 用 CCR=35 加 F/S=1。I2C1 默认 PB6/PB7，AF4；PB8/PB9 也是 AF4，换脚要改 AFR。事件寄存器是 SR1/SR2，F4 额外有 FLTR。SPI1 在 APB2，84 MHz 下 BR=000 是 42 MHz、BR=010 是 10.5 MHz；PA4~PA7 是 AF5，SPI1 的 DMA 请求在 DMA2，不在 DMA1。HAL 与 CMSIS 的宏名绑定 F4 头文件，换库先核对。
+F407 一侧：I2C1/2/3 都在 APB1，基址 `0x40005400`/`0x40005800`/`0x40005C00`，时钟门在 `RCC_APB1ENR` 的 bit21/22/23（手册常识，本章未取 RM0090 原件核对）；168 MHz 主频下 PCLK1=42 MHz，100 kHz 用 CCR=210、TRISE=43，400 kHz 用 CCR=35 加 F/S=1。
 
-F103 一侧：I2C1/2 在 APB1，I2C1 基址 `0x40005400`，72 MHz 主频下 PCLK1=36 MHz，100 kHz 用 0x00B4（CCR=180、TRISE=37），400 kHz 用 0x801E（CCR=30、F/S=1、DUTY=0）；PB6/PB7 是复位默认，重映射到 PB8/PB9 要先开 AFIO 时钟。F1 的 GPIO 配置走 CRL/CRH，没有 AFR；事件寄存器同样是 SR1/SR2。根书把 F1 硬件 I2C 在从机拉住 SDA 时的卡忙列为经验现象，属于来源说法，待复核。SPI1 在 APB2，72 MHz 下 BR=010 是 9 MHz、BR=000 是 36 MHz；PA4~PA7 是复位默认，SPI1 的 DMA 请求在 DMA1。F103C8 的 SPI/I2C 数量与引脚以 DS5319 为准，本章没有取到原表。
+I2C1 默认 PB6/PB7，AF4；PB8/PB9 也是 AF4，换脚要改 AFR。事件寄存器是 SR1/SR2，F4 额外有 FLTR。SPI1 在 APB2，84 MHz 下 BR=000 是 42 MHz、BR=010 是 10.5 MHz；PA4~PA7 是 AF5，SPI1 的 DMA 请求在 DMA2，不在 DMA1。HAL 与 CMSIS 的宏名绑定 F4 头文件，换库先核对。
 
-ESP32 只划边界。ESP32-S3 没有 STM32 的 I2C/SPI 寄存器，I2C 走 ESP-IDF 的 `i2c_master` 驱动，SPI 走 `spi_master`；START/STOP/ACK、7 位地址、重复起始这些线上规则仍然成立，但 SR1/SR2、CCR/TRISE、CPOL/CPHA 的寄存器名一个都不要带过去。E07 的 QMI8658 是板载 I2C 器件，SDA=GPIO1、SCL=GPIO2、7 位地址 0x6A，读 WHO_AM_I 0x00 预期 0x05，从 0x35 连读 12 字节；这套配置是那一块板子的具体值，不是 ESP32 系列通用常数。ESP32-S3 的外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)，架构与启动不在本章展开。
+F103 一侧：I2C1/2 在 APB1，I2C1 基址 `0x40005400`，72 MHz 主频下 PCLK1=36 MHz，100 kHz 用 0x00B4（CCR=180、TRISE=37），400 kHz 用 0x801E（CCR=30、F/S=1、DUTY=0）；PB6/PB7 是复位默认，重映射到 PB8/PB9 要先开 AFIO 时钟。F1 的 GPIO 配置走 CRL/CRH，没有 AFR；事件寄存器同样是 SR1/SR2。根书把 F1 硬件 I2C 在从机拉住 SDA 时的卡忙列为经验现象，属于来源说法，待复核。
+
+SPI1 在 APB2，72 MHz 下 BR=010 是 9 MHz、BR=000 是 36 MHz；PA4~PA7 是复位默认，SPI1 的 DMA 请求在 DMA1。F103C8 的 SPI/I2C 数量与引脚以 DS5319 为准，本章没有取到原表。
+
+ESP32 只划边界。ESP32-S3 没有 STM32 的 I2C/SPI 寄存器，I2C 走 ESP-IDF 的 `i2c_master` 驱动，SPI 走 `spi_master`；START/STOP/ACK、7 位地址、重复起始这些线上规则仍然成立，但 SR1/SR2、CCR/TRISE、CPOL/CPHA 的寄存器名一个都不要带过去。
+
+E07 的 QMI8658 是板载 I2C 器件，SDA=GPIO1、SCL=GPIO2、7 位地址 0x6A，读 WHO_AM_I 0x00 预期 0x05，从 0x35 连读 12 字节；这套配置是那一块板子的具体值，不是 ESP32 系列通用常数。ESP32-S3 的外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)，架构与启动不在本章展开。
 
 其它分工：DMA 的请求映射与 NDTR/半字账在[第 14 章](./14-dma.md)；GPIO 的开漏、复用与 BSRR 在[第 9 章](./09-gpio.md)；PCLK1/PCLK2 的时钟树在[第 8 章](./08-architecture-memory-clock.md)；抓包与仪器方法在[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)；Flash 与 IAP 的页/扇区账在[第 17 章](./17-flash-iap-ota.md)；低功耗下外设关断在[第 18 章](../v2-reliability/18-low-power.md)。
 

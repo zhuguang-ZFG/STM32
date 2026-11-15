@@ -175,7 +175,9 @@ HAL 的等价物是 `HAL_DAC_Start` 加 `HAL_DAC_SetValue(..., DAC_ALIGN_12B_R, 
 
 `BOFF1` 是另一个取舍：0 为缓冲开（复位默认），带载能力强，但输出摆幅到不了 0 V 与 VREF 两头；1 为缓冲关，摆幅更接近轨，输出阻抗高，带负载会分压。关断时输出阻抗的量级两来源冲突（根书约 15 kΩ，S10 写 MΩ），具体值待复核；带高阻负载或加跟随器再量。
 
-静态输出不需要触发；要让电压按波形走，TIM6 的更新事件经 TRGO 触发 DAC，`TSEL1=000` 就是 TIM6 TRGO（复位值）。DAC 在触发沿把 `DHR12R1` 搬到 `DOR1`；DMA1 Stream5 Channel7 在每次 DAC 请求时从正弦表取下一个样本。波形频率 = 样本率 / 表长。84 MHz 的 TIM6 要 64 点 1 kHz：样本率 64 kHz，`84e6/64e3 = 1312.5` 不是整数；PSC=0 时 ARR=1311 得 `84e6/1312/64 = 1000.38 Hz`，ARR=1312 得 `84e6/1313/64 = 999.62 Hz`，两边误差都约 ±0.038%。S10 原表把第二行写成 998.94 Hz（−0.11%），复算对不上。表长砍到 8 点，正弦退化成阶梯三角。
+静态输出不需要触发；要让电压按波形走，TIM6 的更新事件经 TRGO 触发 DAC，`TSEL1=000` 就是 TIM6 TRGO（复位值）。DAC 在触发沿把 `DHR12R1` 搬到 `DOR1`；DMA1 Stream5 Channel7 在每次 DAC 请求时从正弦表取下一个样本。波形频率 = 样本率 / 表长。
+
+84 MHz 的 TIM6 要 64 点 1 kHz：样本率 64 kHz，`84e6/64e3 = 1312.5` 不是整数；PSC=0 时 ARR=1311 得 `84e6/1312/64 = 1000.38 Hz`，ARR=1312 得 `84e6/1313/64 = 999.62 Hz`，两边误差都约 ±0.038%。S10 原表把第二行写成 998.94 Hz（−0.11%），复算对不上。表长砍到 8 点，正弦退化成阶梯三角。
 
 启动顺序：DAC 侧先置 TEN1 与 DMAEN1，再使能 DMA 流；反过来 DMA 先跑，第一个样本会被覆盖。
 
@@ -273,11 +275,17 @@ F103C8 没有 DAC（中密度；DAC 从大容量 F103 与 F4 才有），要模�
 
 ## 跨平台边界
 
-F407 一侧：ADC1/2/3 在 APB2，基址 `0x40012000/2100/2200`，每个 16 个外部通道；内部通道只在 ADC1（IN16/17/18）。ADCCLK 上限 36 MHz，168 MHz 主频下 PCLK2=84 MHz，÷4=21 MHz 合法、÷2=42 MHz 越限；一次转换是采样加 12 个 ADCCLK，8 档采样 3…480 周期。规则组 16、注入组 4；ADC1 的 DMA 请求在 DMA2 Stream0/Stream4 的 Channel0。DAC1/2 在 PA4/PA5，基址 `0x40007400`，DAC1 的 DMA 请求是 DMA1 Stream5 Channel7；F4 ADC 没有 F1 那种上电 CAL 步骤，内部通道用出厂校准值修正，DAC 也没有 CAL。HAL 与 CMSIS 的宏名绑定具体系列的头文件，换库先核对。
+F407 一侧：ADC1/2/3 在 APB2，基址 `0x40012000/2100/2200`，每个 16 个外部通道；内部通道只在 ADC1（IN16/17/18）。ADCCLK 上限 36 MHz，168 MHz 主频下 PCLK2=84 MHz，÷4=21 MHz 合法、÷2=42 MHz 越限；一次转换是采样加 12 个 ADCCLK，8 档采样 3…480 周期。规则组 16、注入组 4；ADC1 的 DMA 请求在 DMA2 Stream0/Stream4 的 Channel0。
 
-F103 一侧：C8 只有 ADC1/2，没有 ADC3、没有 DAC；ADC1 基址 `0x40012400`，ADC2 `0x40012800`，时钟门在 `RCC_APB2ENR` 的 bit9/10。ADCCLK 上限 14 MHz，72 MHz 主频下 ÷6=12 MHz 合法、÷4=18 MHz 越限；一次转换是采样加 12.5 个 ADCCLK，8 档采样 1.5…239.5 周期，同一个编码与 F4 的含义不同。内部通道在 ADC1：IN16 温度、IN17 Vrefint，ADC2 的 16/17 接 VSS；上电要做 RSTCAL/CAL 校准。ADC1 的 DMA 请求在 DMA1 Channel1。大容量 F103 有 DAC，C8 没有；在 C8 上要模拟电压，用 PWM+RC 或外接 DAC 芯片。
+DAC1/2 在 PA4/PA5，基址 `0x40007400`，DAC1 的 DMA 请求是 DMA1 Stream5 Channel7；F4 ADC 没有 F1 那种上电 CAL 步骤，内部通道用出厂校准值修正，DAC 也没有 CAL。HAL 与 CMSIS 的宏名绑定具体系列的头文件，换库先核对。
 
-GD32 与 ESP32 不在本章平台列表。GD32 的 ADC/DAC 命名、通道数与校准流程和 STM32 不是一套，完整对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)；ESP32-S3 的 ADC 由 oneshot/continuous 驱动管理，DAC 与 PWM 的 API 也另成一套，外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。采样数据的存储与掉电保护见[第 17 章](./17-flash-iap-ota.md)，低功耗下的 ADC 关断见[第 18 章](../v2-reliability/18-low-power.md)，仪器与证据方法见[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。
+F103 一侧：C8 只有 ADC1/2，没有 ADC3、没有 DAC；ADC1 基址 `0x40012400`，ADC2 `0x40012800`，时钟门在 `RCC_APB2ENR` 的 bit9/10。ADCCLK 上限 14 MHz，72 MHz 主频下 ÷6=12 MHz 合法、÷4=18 MHz 越限；一次转换是采样加 12.5 个 ADCCLK，8 档采样 1.5…239.5 周期，同一个编码与 F4 的含义不同。
+
+内部通道在 ADC1：IN16 温度、IN17 Vrefint，ADC2 的 16/17 接 VSS；上电要做 RSTCAL/CAL 校准。ADC1 的 DMA 请求在 DMA1 Channel1。大容量 F103 有 DAC，C8 没有；在 C8 上要模拟电压，用 PWM+RC 或外接 DAC 芯片。
+
+GD32 与 ESP32 不在本章平台列表。GD32 的 ADC/DAC 命名、通道数与校准流程和 STM32 不是一套，完整对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)；ESP32-S3 的 ADC 由 oneshot/continuous 驱动管理，DAC 与 PWM 的 API 也另成一套，外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。
+
+采样数据的存储与掉电保护见[第 17 章](./17-flash-iap-ota.md)，低功耗下的 ADC 关断见[第 18 章](../v2-reliability/18-low-power.md)，仪器与证据方法见[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。
 
 ## 离开检查
 

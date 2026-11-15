@@ -108,7 +108,7 @@ cycles = µs × f_cpu
 | 72 MHz（F103） | 72 cycles | 13.89 µs | 7200 cycles | 59.65 s |
 | 168 MHz（F407） | 168 cycles | 5.95 µs | 16800 cycles | 25.57 s |
 
-![DWT 计时窗口：Δcycles = 固定开销 + 被测代码 + 窗口内中断，空窗口基线用来扣固定开销](/images/ch17-dwt-window.png)
+![手绘板：DWT 计时窗口：Δcycles = 固定开销 + 被测代码 + 窗口内中断，空窗口基线用来扣固定开销（原理示意，非实拍）](/images/ch17-dwt-window.png)
 
 图中 t0、t1 两次读 `CYCCNT` 之间发生的一切都计入 Δcycles：固定开销、被测代码与窗口内中断；先测一次空窗口做基线，再解释差值，并确认被测循环还在窗口里、主频与优化等级固定。窗口的宽度是 cycles，不是微秒；同一个 Δ 在 72 MHz 与 168 MHz 下对应的时间不同，换算系数必须跟着主频走。
 
@@ -129,7 +129,7 @@ HardFault 的寄存器地图、CFSR 的 19 个位、栈帧怎样压、`naked` ha
 1. **先看 CFSR/HFSR，确认这是不是一条能落到地址上的故障**。`MMARVALID`/`BFARVALID` 为 0 时，`MMFAR`/`BFAR` 里的值不可信；`IMPRECISERR` 下 PC 也可能已经跑远。VALID 位不亮的地址，不要拿去做 `addr2line`。
 2. **按 `EXC_RETURN` 选栈**。bit2=0 用 MSP，bit2=1 用 PSP；bit4=0 表示 FPU 扩展帧（`0xFFFFFFE1/E9/ED`），bit4=1 是基本帧（`0xFFFFFFF1/F9/FD`）。取 PC 前要先按扩展帧布局定位基本帧。基本帧里 PC 在 `sp[6]`，也就是 `((uint32_t *)sp)[6]`。拿错栈，读出来的 8 个字全是垃圾。
 
-![异常栈帧：基本帧 8 个字，PC 在帧首 +0x18；下方按 PRECISERR、IMPRECISERR、STKERR/MSTKERR 三栏分支](/images/ch17-stack-frame.png)
+![手绘板：异常栈帧：基本帧 8 个字，PC 在帧首 +0x18；下方按 PRECISERR、IMPRECISERR、STKERR/MSTKERR 三栏分支（原理示意，非实拍）](/images/ch17-stack-frame.png)
 
 图中基本帧的 8 个字按 r0、r1、r2、r3、r12、LR、PC、xPSR 排列，PC 在帧首 +0x18，也就是 `sp[6]`；图下方的 PRECISERR/IMPRECISERR/STKERR/MSTKERR 提醒：读到这 8 个字，不等于每一格都能安全解引用。FPU 扩展帧在基本帧前面多出 S0–S15、FPSCR 与一个保留字（按 ARM 文档推导，图中未画），取 PC 前先按 `EXC_RETURN` 把指针移到基本帧。
 3. **把 PC 交给 GDB 或 `addr2line`**。GDB 连上时可以直接：

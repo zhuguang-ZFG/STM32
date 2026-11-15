@@ -80,7 +80,7 @@ FreeRTOS 是「编译期选一个 heap_x」：heap_1–5 的能力阶梯、块�
 
 ![四系统选型对照：裸机前后台、FreeRTOS、RT-Thread、Zephyr 各自的强项与代价](/figures/sample-28-os-compare.svg)
 
-![手绘板：四系统选型对照：FreeRTOS 小内核自行组合、RT-Thread 设备框架与软件包、Zephyr Kconfig+Devicetree、CMSIS-RTOS2 统一接口不统一实现](/images/ch28-os-compare.png)
+![手绘板：四系统选型对照：FreeRTOS 小内核自行组合、RT-Thread 设备框架与软件包、Zephyr Kconfig+Devicetree、CMSIS-RTOS2 统一接口不统一实现（原理示意，非实拍）](/images/ch28-os-compare.png)
 
 - **设备与控制台**：FreeRTOS 裸内核不自带驱动模型与 shell，UART 收发、日志、命令行都归项目自建（[第 24 章](./24-queue-semaphore-notification.md) 的 ring+sem 就是手写版）；RT-Thread 用 `rt_device` 设备框架与 finsh 把这两件事标准化。差异的工程含义：RT-Thread 的软件包能依赖统一设备接口跨 BSP 跑；FreeRTOS 的同类能力靠移植与第三方。
 - **配置**：FreeRTOS 是「头文件派」：`FreeRTOSConfig.h` 手改宏，无工具依赖，依赖检查靠人（开了 `configUSE_MUTEXES` 忘开递归互斥的配套宏，编译能过、运行不对）；RT-Thread 是「菜单派」：Kconfig 声明依赖，menuconfig 灰化不可选项，scons 生成 `rtconfig.h`。注意 ESP-IDF 的存在：它用 Kconfig 管 FreeRTOS 配置（`CONFIG_FREERTOS_*` 生成后喂给内核）。「FreeRTOS 只能手改头文件」的说法要带上「ESP-IDF 混合形态除外」。
@@ -163,7 +163,7 @@ Zephyr 在这个漏斗里的定位：跨厂商板卡、Kconfig/Devicetree、协�
 <details><summary>参考答案</summary>lab 的 `configMAX_PRIORITIES=5`（`FreeRTOSConfig.h:23`），合法值 0–4，5 本身越界。任何迁移映射先读目标工程的 `configMAX_PRIORITIES` 与 RT-Thread 级别配置，再给映射表。示例里的 25 是在「256 级」假设下给的，脱离配置。</details>
 
 7. 内存对照的三个要点？
-<details><summary>参考答案</summary>FreeRTOS 编译期选一个 heap_x（能力阶梯见第 25 章）；RT-Thread 四件分配器并存（mem/memheap/slab/mempool），`src/tlsf.c` 不存在、TLSF 是论文算法与软件包；静态创建两边都有，但 lab `configSUPPORT_STATIC_ALLOCATION=0`，示例要注明配置。资源账按 map 加水位自算，不搬别人的 256 KiB 示例。</details>
+<details><summary>参考答案</summary>FreeRTOS 编译期选一个 heap_x（能力阶梯见[第 25 章](./25-memory-management.md)）；RT-Thread 四件分配器并存（mem/memheap/slab/mempool），`src/tlsf.c` 不存在、TLSF 是论文算法与软件包；静态创建两边都有，但 lab `configSUPPORT_STATIC_ALLOCATION=0`，示例要注明配置。资源账按 map 加水位自算，不搬别人的 256 KiB 示例。</details>
 
 8. 「ESP32 用 IDF 自带 FreeRTOS」的边界是什么？
 <details><summary>参考答案</summary>平台绑定：Wi-Fi/BLE 协议栈、电源管理、S3 双核 SMP 调度与 IDF 深度耦合，换内核成本以人月计。边界：S3 的 SMP 适配是双核形态，不能外推到单核 F407 推断 FreeRTOS 行为。</details>

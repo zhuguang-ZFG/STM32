@@ -260,7 +260,7 @@ vPortDefineHeapRegions( xHeapRegions );
 
 RAM 的四类住客包括线程栈、内核对象池（RTOS 堆）、C 库堆与 DMA 缓冲。它们各自的风险与验证手段，收在一张手绘图里：
 
-![手绘板：F407 RAM 的四类住客与验证手段：线程栈（水位与溢出钩子）、内核对象池/堆（启动前预算、最小空闲记录）、C 库堆（唯一分配器与锁策略）、DMA 缓冲（链接 map、地址断言）](/images/ch28-memory-regions.png)
+![手绘板：F407 RAM 的四类住客与验证手段：线程栈（水位与溢出钩子）、内核对象池/堆（启动前预算、最小空闲记录）、C 库堆（唯一分配器与锁策略）、DMA 缓冲（链接 map、地址断言）（原理示意，非实拍）](/images/ch28-memory-regions.png)
 
 ## RT-Thread 对照：四件套与一个不在内核里的 TLSF
 

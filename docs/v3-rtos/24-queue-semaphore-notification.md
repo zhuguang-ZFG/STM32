@@ -15,7 +15,7 @@ platforms: [f407]
 
 - **问题**：队列、二值/计数信号量、互斥锁和递归互斥锁，在 FreeRTOS 里都是同一个 `QueueDefinition`；`uxQueueType` 是字段还是宏，几种形态靠哪几个字段区分？`xQueueGenericSend` 的三条分支怎么走，为什么 overwrite 要求 `uxLength==1`，等待名单按什么顺序唤醒？FromISR 为什么只能延迟让出，`pxHigherPriorityTaskWoken` 与 `portYIELD_FROM_ISR` 怎么配合，ISR 优先级阈值是多少？互斥锁出生就 give 一次，优先级继承怎么升、怎么落，ISR 里为什么不能 take？任务通知写 TCB 的哪两个字段，事件组在 lab 为什么只有 24 位，软件定时器为什么只有一个守护任务？通知比队列快多少，为什么只写定性结论？最后是三笔账：深度 10、项 16 B 的队列占多少 RAM，1312/56/616/269 各是什么身份，E04 的 6000/2500 怎么算，F5 的「跑满 3000 ms」为什么错，继承数值为什么是 22→20？
 - **交付**：能在纸上画出 `QueueDefinition` 的字段分区，说出三种队列/信号量靠哪几个字段区分；逐行读 `prvCopyDataToQueue`，指出单次 memcpy 与指针回绕；写出 `xQueueGenericSend` 的三分支与 overwrite 断言；写出 FromISR 的标准骨架与优先级约束；写出互斥锁继承三步与回落；算清 248 B 与 1312/56/616/269；按 E04 时间线算出 6000/2500，并指出 6500 与 1→3 的错；按 v5.3.0 说出 RT-Thread 的真实字段与函数名。
-- **边界**：单平台 F407（Cortex-M4F、`ARM_CM4F`、lab 跑 HSI 16 MHz、`configMAX_PRIORITIES=5`、heap 16 KiB）。FreeRTOS 结论按 V11.1.0，根书 F103 例程按 V11.3.2，行号不混排。队列集、多通知槽与 8/56 位事件组只在位宽表里点名条件，不展开；E04 只写理论、模型与待实测，完整仪器实验归第 40 章。RT-Thread 只按 v5.3.0 的 IPC 字段与函数名，不把标准版 BSP 的配置当成 lab 事实。通知速度只写「更快，幅度依配置，需同板基准」，来源里的百分比与倍数不采用。
+- **边界**：单平台 F407（Cortex-M4F、`ARM_CM4F`、lab 跑 HSI 16 MHz、`configMAX_PRIORITIES=5`、heap 16 KiB）。FreeRTOS 结论按 V11.1.0，根书 F103 例程按 V11.3.2，行号不混排。队列集、多通知槽与 8/56 位事件组只在位宽表里点名条件，不展开；E04 只写理论、模型与待实测，完整仪器实验归[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。RT-Thread 只按 v5.3.0 的 IPC 字段与函数名，不把标准版 BSP 的配置当成 lab 事实。通知速度只写「更快，幅度依配置，需同板基准」，来源里的百分比与倍数不采用。
 - **依据锚点**：F4《队列》（`mcu/docs/rtos/freertos/04-queue.md`）、F5《信号量与互斥量》（`mcu/docs/rtos/freertos/05-sem-mutex.md`）、F6《任务通知、事件组与软件定时器》（`mcu/docs/rtos/freertos/06-notify-event-timer.md`）、R2《IPC 全家桶》（`mcu/docs/rtos/rtthread/02-ipc.md`）、E04《优先级反转复现》（`mcu/docs/lab/e04-priority-inversion.md`）。配置见 `mcu/code/rtos/01-freertos-lab/FreeRTOSConfig.h`（`:41-47`、`:62`），lab 场景见 `mcu/code/rtos/01-freertos-lab/main.c` 的场景 2/3/4/6。上游对账：FreeRTOS-Kernel V11.1.0 的 [queue.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/queue.c)、[queue.h](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/include/queue.h)、[semphr.h](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/include/semphr.h)、[event_groups.h](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/include/event_groups.h)、[tasks.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/tasks.c)；RT-Thread v5.3.0 的 [ipc.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/src/ipc.c)、[rtdef.h](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/include/rtdef.h)。异常帧与 PendSV 让出见 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) 与 [第 23 章](./23-context-switch-porting.md)；tick 时基见 [v1 第 11 章](../v1-drivers/11-systick-timebase-rtc.md)。
 
 ## 先做出来
@@ -319,7 +319,9 @@ void EXTI0_IRQHandler( void )
 
 `portYIELD_FROM_ISR` 在 Cortex-M4F 上检查参数，为真才挂 PendSV；为假什么也不做。一个中断里可以调多个 FromISR API，每个都往同一个 flag 上写，最后只调用一次 `portYIELD_FROM_ISR`。不要在中途调用，也不要在每个 API 后面各调一次。
 
-ISR 优先级约束与 ch10 的 NVIC 配置是同一件事。lab 的 `configPRIO_BITS=4`，`configMAX_SYSCALL_INTERRUPT_PRIORITY` 定义为 `5 << (8 - 4)`，即原始值 `0x50`。逻辑优先级 5 对应原始 `0x50`，逻辑 0–4 对应 `0x00`–`0x40`。能调 FromISR 的中断，逻辑优先级必须 **≥ 5**（数值不小于 0x50）；逻辑 0–4 的中断高于 syscall 阈值，内核临界区盖不住它，调 FromISR 会让链表在临界区外被改。`portASSERT_IF_INTERRUPT_PRIORITY_INVALID()` 在调试版会抓这种调用，但前提是 `configASSERT` 有定义。异常进入、BASEPRI 与 NVIC 优先级分组见 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)。
+ISR 优先级约束与 ch10 的 NVIC 配置是同一件事。lab 的 `configPRIO_BITS=4`，`configMAX_SYSCALL_INTERRUPT_PRIORITY` 定义为 `5 << (8 - 4)`，即原始值 `0x50`。逻辑优先级 5 对应原始 `0x50`，逻辑 0–4 对应 `0x00`–`0x40`。能调 FromISR 的中断，逻辑优先级必须 **≥ 5**（数值不小于 0x50）；逻辑 0–4 的中断高于 syscall 阈值，内核临界区盖不住它，调 FromISR 会让链表在临界区外被改。
+
+`portASSERT_IF_INTERRUPT_PRIORITY_INVALID()` 在调试版会抓这种调用，但前提是 `configASSERT` 有定义。异常进入、BASEPRI 与 NVIC 优先级分组见 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)。
 
 `xQueueSendFromISR`/`xQueueReceiveFromISR` 之外，`xSemaphoreGiveFromISR` 也走同一条延迟让出路径；任务通知的 `vTaskNotifyGiveFromISR`、`xTaskNotifyFromISR` 也一样带 `pxHigherPriorityTaskWoken`。规则统一：ISR 只记账，出口只切一次。
 
@@ -440,11 +442,11 @@ E04 的 FreeRTOS 剧本在 `mcu/code/rtos/01-freertos-lab/main.c` 的场景 6，
 
 RT-Thread 版同剧本：L=22、M=21、H=20，0 最高。H 等锁时，`_rt_mutex_take` 把 owner 的当前优先级从 22 抬到 20；`list_thread` 里能看到 L 的 priority 列变成 20，还锁后回到 22。R2 写的「1 变 3」方向与数值都错：RT-Thread 是数值小者优先，lab 的基数是 22/21/20，不是 1/2/3。继承的数值是 22→20，回落是 20→22。
 
-E04 的证据状态：`hardware_status: pending`，实测记录表全空。上面两个数都是剧本参数推出的理论值，不是串口日志。完整的上板测量、逻辑分析仪打点与双 OS 日志并排，归第 40 章。本章只把账算对，不替 E04 宣布实测。
+E04 的证据状态：`hardware_status: pending`，实测记录表全空。上面两个数都是剧本参数推出的理论值，不是串口日志。完整的上板测量、逻辑分析仪打点与双 OS 日志并排，归[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。本章只把账算对，不替 E04 宣布实测。
 
 ![优先级反转与继承动画：三泳道时间线，二值版 H 被 M 间接阻塞，互斥版 L 被抬级后 M 插不进](/anim/priority-inversion.svg)
 
-![手绘板：优先级继承的时刻序列：L 持锁、M 就绪运行、H 请求锁、L 继承 H 的优先级、H 取得锁并运行、H 阻塞等 L 还锁、M 仍就绪（原理示意）](/images/ch15-prio-inherit.png)
+![手绘板：优先级继承的时刻序列：L 持锁、M 就绪运行、H 请求锁、L 继承 H 的优先级、H 取得锁并运行、H 阻塞等 L 还锁、M 仍就绪（原理示意，非实拍）](/images/ch15-prio-inherit.png)
 
 ![E04 理论时间线（非实测）：二值版 H 等约 6000 ms，互斥版约 2500 ms，L 在 500 ms 已做 500 ms、剩余 2500 ms](/images/labs/e04-timeline.svg)
 

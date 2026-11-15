@@ -125,7 +125,7 @@ $ arm-none-eabi-gcc main.o startup.o -T stm32f407xx.ld -o blink.elf
 
 ![四步构建流水线动画：预处理、编译、汇编、链接各留下什么](/anim/build-four-steps.svg)
 
-#### 第 1 步：预处理 `-E`——宏在纸上摊平
+#### 第 1 步：预处理 `-E`，宏在纸上摊平
 
 `-E` 只做三件事：展开 `#include`、替换宏、按条件编译裁剪。输出仍是 C 源码，带 `# 行号 "文件"` 标记，给调试器认行用。
 
@@ -144,7 +144,7 @@ arm-none-eabi-gcc -E main.c -o main.i
 
 这就是“宏只是文本替换”的实物：地址加法与移位留给编译器做常量折叠，指针、`volatile`、位运算的语义在这一行已经确定。后面两步只是“翻译”它。查展开结果要看**使用处**，不是找那一行 `#define`。
 
-#### 第 2 步：编译 `-S`——C 变成汇编
+#### 第 2 步：编译 `-S`，C 变成汇编
 
 `-S` 让 `cc1` 停在汇编层。它做语法检查、类型检查、优化，然后吐出目标架构的汇编：
 
@@ -171,7 +171,7 @@ main:
 
 `-O0` 下函数序言固定存在（`push {r7, lr}` 加 `add r7, sp, #0`，为了调试时栈回溯方便）；换 `-O2` 这两条会消失。优化等级怎样改写汇编，[第 2 章](./02-c-volatile-ub.md)有完整对照。
 
-#### 第 3 步：汇编 `-c`——半成品 `.o`
+#### 第 3 步：汇编 `-c`，半成品 `.o`
 
 ```bash
 arm-none-eabi-gcc -c main.s -o main.o
@@ -181,7 +181,7 @@ arm-none-eabi-gcc -c main.s -o main.o
 
 ```text
 $ arm-none-eabi-nm main.o
-（一个 U 都没有——外设访问是硬编码地址常量，不需要符号决议）
+（一个 U 都没有；外设访问是硬编码地址常量，不需要符号决议）
 
 $ arm-none-eabi-nm startup_stm32f407xx.o | grep ' U '
     U _ebss
@@ -200,7 +200,7 @@ $ arm-none-eabi-objdump -h main.o
 
 `objdump -h` 的地址栏 `00000000` 不是最终运行位置。`.text` 此时是个 0xa8 字节的块，链接时才决定把它放到哪里，这就是“可重定位”。查 `nm` 时先认三种符号类型：`T/t` 是代码段（大写全局、小写局部），`U` 是还要去别处找定义，`W` 是弱符号、可以被覆盖。
 
-#### 第 4 步：链接——决议符号，按脚本排座
+#### 第 4 步：链接，决议符号，按脚本排座
 
 ```bash
 arm-none-eabi-gcc main.o startup_stm32f407xx.o \
@@ -229,11 +229,11 @@ $ arm-none-eabi-nm -n blink.elf | grep -E ' (Reset_Handler|main)$'
 - **VMA（Virtual Memory Address）** 是运行时的地址。`.isr_vector` 与 `.text` 在 `0x0800_0000` 段（Flash），`.data`/`.bss` 在 `0x2000_0000` 段（SRAM）。这是链接脚本把“哪块东西放哪块存储”焊死的效果，[第 6 章](./06-linker-startup-map.md)整章讲这个。
 - `text 660` = 392（向量表）+ 268（代码）。`bss 1536` 是 `._user_heap_stack` 预留的栈与堆空间，不占 Flash。
 - `Reset_Handler` 是 **W（弱符号）**：启动文件里给了默认实现，用户可以覆盖。芯片复位后 CPU 从 `0x0800_0000` 取向量表第 2 个字跳到这里。
-- `main` 的地址按 `nm` 口径记为 `080001aa`：`nm` 把 Thumb 位抹掉了，给出纯地址。换 `readelf -s` 问同一个符号，会显示 `080001ab`——**`readelf -s` 保留这一位，`nm` 抹掉它**。那一位 1 是 Cortex-M 只跑 Thumb 的标记，不是错位。断点用纯地址，往向量表或函数指针里填地址时用带 1 的形式。
+- `main` 的地址按 `nm` 口径记为 `080001aa`：`nm` 把 Thumb 位抹掉了，给出纯地址。换 `readelf -s` 问同一个符号，会显示 `080001ab`。**`readelf -s` 保留这一位，`nm` 抹掉它**。那一位 1 是 Cortex-M 只跑 Thumb 的标记，不是错位。断点用纯地址，往向量表或函数指针里填地址时用带 1 的形式。
 
 四道工序走完，一份 65 行的 C 源码变成了能烧进 Flash 的 `.elf`。每一步都留下可检查的中间文件：`.i`（纯 C）、`.s`（汇编）、`.o`（可重定位目标）、`.elf`（可执行）。
 
-![手绘板：65 行 C 经四步变成 660 字节固件，每一步留下可检查的文件（原理示意）](/images/v0-05-four-steps.png)
+![手绘板：65 行 C 经四步变成 660 字节固件，每一步留下可检查的文件（原理示意，非实拍）](/images/v0-05-four-steps.png)
 
 ### ELF：头五字段与节表
 
@@ -290,7 +290,9 @@ $ arm-none-eabi-nm -n blink.elf | grep -E ' (Reset_Handler|main)$'
 
 `blink.elf` 文件本身是 34,604 字节，`objcopy -O binary` 之后只剩 660 字节。34,604 − 660 = 33,944 字节，全是调试信息与符号表。这也是为什么“烧 bin 才谈第几字节”。
 
-节表回答“文件里有哪些抽屉”，程序头回答“装载器怎样装车”。`blink.elf` 的两条 `LOAD` 把 `.isr_vector` 与 `.text` 装进 `0x08000000`（`FileSiz=MemSiz=0x294`），把 `.bss` 与堆栈预留区装进 `0x20000000`（`FileSiz=0`，`MemSiz=0x600`）；它的 `.data` 是空的，看不出差值。来源另一具标本 `elf_probe.elf` 的 `.data` 有初值，第二条 `LOAD` 是 `FileSiz=0x0c`、`MemSiz=0x20`，差的 20 字节正是 `.bss`：有初值才占 Flash，为 0 只占 RAM，在 ELF 里就是这两个数的差。VMA 与 LMA 的完整故事在[第 6 章](./06-linker-startup-map.md)。
+节表回答“文件里有哪些抽屉”，程序头回答“装载器怎样装车”。`blink.elf` 的两条 `LOAD` 把 `.isr_vector` 与 `.text` 装进 `0x08000000`（`FileSiz=MemSiz=0x294`），把 `.bss` 与堆栈预留区装进 `0x20000000`（`FileSiz=0`，`MemSiz=0x600`）；它的 `.data` 是空的，看不出差值。
+
+来源另一具标本 `elf_probe.elf` 的 `.data` 有初值，第二条 `LOAD` 是 `FileSiz=0x0c`、`MemSiz=0x20`，差的 20 字节正是 `.bss`：有初值才占 Flash，为 0 只占 RAM，在 ELF 里就是这两个数的差。VMA 与 LMA 的完整故事在[第 6 章](./06-linker-startup-map.md)。
 
 ### 环境搭建五步
 

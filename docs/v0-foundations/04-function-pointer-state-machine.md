@@ -222,9 +222,13 @@ q->w = (uint8_t)(w + 1);                          /* 再发布写指针 */
 
 用哪几个寄存器接收栈上的值，是编译器的自由：来源记录里 10.3.1 给成 `ldr r2, [sp]`，别的版本可能是 `ldr r1, [sp]`。AAPCS 只承诺“前 4 个参数在 r0–r3，第 5 个起在栈上 `[sp]`/`[sp,#4]`”，剩下的它不管。
 
-**64 位参数必须落在偶奇寄存器对**。`add64` 的两个 `long long`，x 在 r0:r1、y 在 r2:r3，返回值也在 r0:r1；`adds`/`adc` 进位链就是“两个 32 位寄存器扮一个 64 位数”的证据，宿主实测 `add64(0x100000000, 0x200000001) = 0x300000001`。真正的反直觉点在 `mix(int tag, long long v)`：tag 占了 r0，v **不能**放 r1:r2，AAPCS 要求 64 位参数对齐到**偶数号**寄存器，于是 v 落 r2:r3，**r1 被跳过**。调用方汇编从头到尾没写 r1；此刻 r1 里是上一个函数的返回高半（垃圾值），而 `mix` 正确地对它视而不见。宿主断言 `mix(7, 0x100000000) = 0x100000007`。推论：给函数签名排序时把 64 位参数放前面、int 填后面，能少留寄存器空洞，ABI 不会替你重排。
+**64 位参数必须落在偶奇寄存器对**。`add64` 的两个 `long long`，x 在 r0:r1、y 在 r2:r3，返回值也在 r0:r1；`adds`/`adc` 进位链就是“两个 32 位寄存器扮一个 64 位数”的证据，宿主实测 `add64(0x100000000, 0x200000001) = 0x300000001`。
 
-**硬浮点 ABI** 另走一套：编译旗 `-mfpu=fpv4-sp-d16 -mfloat-abi=hard` 时，单精度走 s0–s15、双精度走 d0–d7。`add_d(double, double)` 的两个 double 从 d0、d1 进来，汇编里 `vmov r0, r1, d0` / `vmov r2, r3, d1` 把 d0/d1 搬进内核寄存器，再 `bl __aeabi_dadd`：fpv4-sp 只有单精度硬件，double 加法得调软件库，软件库按 r0:r1/r2:r3 收参是它自己的内部约定。对照 `-mfloat-abi=soft`，double 按 64 位整数规则直接走 r0:r1。两种 ABI 编出的目标文件**不能混链**，链接器会报 VFP 参数 mismatch。宿主断言 `add_d(0.5, 0.25) == 0.75`。
+真正的反直觉点在 `mix(int tag, long long v)`：tag 占了 r0，v **不能**放 r1:r2，AAPCS 要求 64 位参数对齐到**偶数号**寄存器，于是 v 落 r2:r3，**r1 被跳过**。调用方汇编从头到尾没写 r1；此刻 r1 里是上一个函数的返回高半（垃圾值），而 `mix` 正确地对它视而不见。宿主断言 `mix(7, 0x100000000) = 0x100000007`。推论：给函数签名排序时把 64 位参数放前面、int 填后面，能少留寄存器空洞，ABI 不会替你重排。
+
+**硬浮点 ABI** 另走一套：编译旗 `-mfpu=fpv4-sp-d16 -mfloat-abi=hard` 时，单精度走 s0–s15、双精度走 d0–d7。`add_d(double, double)` 的两个 double 从 d0、d1 进来，汇编里 `vmov r0, r1, d0` / `vmov r2, r3, d1` 把 d0/d1 搬进内核寄存器，再 `bl __aeabi_dadd`：fpv4-sp 只有单精度硬件，double 加法得调软件库，软件库按 r0:r1/r2:r3 收参是它自己的内部约定。
+
+对照 `-mfloat-abi=soft`，double 按 64 位整数规则直接走 r0:r1。两种 ABI 编出的目标文件**不能混链**，链接器会报 VFP 参数 mismatch。宿主断言 `add_d(0.5, 0.25) == 0.75`。
 
 ### 栈帧：push {r4, lr} … pop {r4, pc}
 
@@ -244,9 +248,11 @@ non_leaf:
 
 **返回地址弹进 PC** 是 Thumb-2 的经典收尾：弹栈与跳转合一。这个 Cortex-M4 帧 = push 8 + sub 16 = **24 字节**。对照组 `add2` 是叶子函数，不调用任何人，编译器直接注释 `@ link register save eliminated.`，全身就 `add r0, r0, r1` + `bx lr` 两条指令。计数核对：全文件 `push {r4, lr}` 恰出现 1 次、`pop {r4, pc}` 恰出现 1 次，正是 `non_leaf` 这一对；`strd , [sp]` 也恰 1 次，就是 `sum6` 那次的栈传参。
 
-宿主 gcc 16.1.0 真跑 `non_leaf`，探针读数为：`sp(main)` 到 `sp(non_leaf)` 一帧 **64 字节**，`buf` 距 `sp(non_leaf)` **32 字节**；sp 向下走（`sp_callee < sp_main`），帧差是 8 的倍数，因为 AAPCS 要求公共接口处 sp 8 字节对齐。64 字节与 24 字节的差别只在目标与编译器，机制不变：**sp 一根指针的移动 = 分配与释放的全部成本**。递归无界就是栈溢出；裸机没有 MMU 兜底，症状往往是“变量莫名其妙变了”，HardFault 都不一定报。现场定位见[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，中断切换栈的完整现场见[第 23 章](../v3-rtos/23-context-switch-porting.md)。
+宿主 gcc 16.1.0 真跑 `non_leaf`，探针读数为：`sp(main)` 到 `sp(non_leaf)` 一帧 **64 字节**，`buf` 距 `sp(non_leaf)` **32 字节**；sp 向下走（`sp_callee < sp_main`），帧差是 8 的倍数，因为 AAPCS 要求公共接口处 sp 8 字节对齐。
 
-![手绘板：函数指针一跳之后，查表、AAPCS 参数落位与 24 字节栈帧（原理示意）](/images/v0-04-call-frame.png)
+64 字节与 24 字节的差别只在目标与编译器，机制不变：**sp 一根指针的移动 = 分配与释放的全部成本**。递归无界就是栈溢出；裸机没有 MMU 兜底，症状往往是“变量莫名其妙变了”，HardFault 都不一定报。现场定位见[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，中断切换栈的完整现场见[第 23 章](../v3-rtos/23-context-switch-porting.md)。
+
+![手绘板：函数指针一跳之后，查表、AAPCS 参数落位与 24 字节栈帧（原理示意，非实拍）](/images/v0-04-call-frame.png)
 
 ### 中断服务函数：签名为什么必须符合调用约定
 
@@ -331,7 +337,9 @@ void EXTI0_IRQHandler(void)
 
 本章可带走的结论是语言与架构级的：函数指针与 `typedef` 是标准 C；向量表是“Flash 里的函数指针数组”这一机制来自 Cortex-M 启动文件；AAPCS 的参数落位、被调方保存、8 字节栈对齐是 ARM 公布的调用约定，gcc / clang / IAR / Keil 都遵守。两平台的 C 编译器都受它约束，所以“前 4 个参数进 r0–r3、第 5 个起走栈、64 位占偶奇对、sp 移动即栈帧生灭”这套算法可以带着走。
 
-不能带走的是取证形状与芯片细节。本章逐条汇编来自 Cortex-M4（F407 目标）与宿主 x86-64：`.isr_vector` 的 392 字节、`FSM` 的 48 字节、`non_leaf` 的 24 字节、`d0/d1` 的硬浮点路径，都是这套工具链与这颗内核的读数。F103 侧只取根书第 04 章的 ISR 签名与“只置标志”写法，来源没有给出 F103 的逐条汇编对照，本章不把 M4 的指令形状、向量表大小或硬浮点寄存器当成 F103 的实测。`EXTI0_IRQHandler` 这样的槽位名与 IRQ 编号属于芯片家族的启动文件，NVIC/EXTI 的完整流程在[第 10 章][ch10]；寄存器名、时钟与引脚差异指向卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)，本章不泛化。
+不能带走的是取证形状与芯片细节。本章逐条汇编来自 Cortex-M4（F407 目标）与宿主 x86-64：`.isr_vector` 的 392 字节、`FSM` 的 48 字节、`non_leaf` 的 24 字节、`d0/d1` 的硬浮点路径，都是这套工具链与这颗内核的读数。
+
+F103 侧只取根书第 04 章的 ISR 签名与“只置标志”写法，来源没有给出 F103 的逐条汇编对照，本章不把 M4 的指令形状、向量表大小或硬浮点寄存器当成 F103 的实测。`EXTI0_IRQHandler` 这样的槽位名与 IRQ 编号属于芯片家族的启动文件，NVIC/EXTI 的完整流程在[第 10 章][ch10]；寄存器名、时钟与引脚差异指向卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)，本章不泛化。
 
 | 事项 | 本章的证据范围 | 跨平台时的处理 |
 | --- | --- | --- |

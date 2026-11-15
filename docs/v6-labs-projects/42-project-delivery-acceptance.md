@@ -78,17 +78,17 @@ ACC §6 的 SHA256SUMS 与 metadata.json 字段表更严格，这里取两者并
 
 ![IAP 验收门：从构建到交付的证据链（原理示意）](/figures/iap-acceptance-gates.svg)
 
-![手绘板：IAP 验收的三个门与恢复路径（原理示意）](/images/ch19-iap-gates.png)
+![手绘板：IAP 验收的三个门与恢复路径（原理示意，非实拍）](/images/ch19-iap-gates.png)
 
 ### 五、里程碑三岔口与预算清单
 
 项目推进到中期最容易掉进三岔口（贪多、跳步、无证据），解药是预算先行的六项清单：Flash、RAM、最坏响应、平均电流、带宽、队列峰值。每项都要有算式（[第 41 章](./41-dual-board-logger-project.md) 的 64 B/1 KB 账、[第 25 章](../v3-rtos/25-memory-management.md) 的堆预算都是同类）。任何一项超了，先缩功能或换目标芯片，不动阈值。
 
-![手绘板：四问验收栏、六项预算与交付包五件（原理示意）](/images/v6-42-acceptance-four.png)
+![手绘板：四问验收栏、六项预算与交付包五件（原理示意，非实拍）](/images/v6-42-acceptance-four.png)
 
 ![项目里程碑分诊：贪多/跳步/无证据三岔口（原理示意）](/figures/sample-19-milestone-triage.svg)
 
-![手绘板：里程碑分诊与两行收尾——证明了什么、还没证明什么（原理示意）](/images/ch19-milestone-triage.png)
+![手绘板：里程碑分诊与两行收尾，证明了什么、还没证明什么（原理示意，非实拍）](/images/ch19-milestone-triage.png)
 
 ### 六、SRAM 预算图与缓冲所有权
 
