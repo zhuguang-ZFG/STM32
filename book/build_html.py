@@ -41,7 +41,7 @@ body {
   font-family: "Source Han Sans SC", "Noto Sans CJK SC", "Microsoft YaHei",
                "PingFang SC", system-ui, sans-serif;
   line-height: 1.82; color: var(--ink); text-align: justify;
-  text-justify: inter-ideograph;
+  text-justify: inter-ideograph; overflow-wrap: break-word;
 }
 nav.book-nav {
   border-bottom: 1px solid var(--rule); margin-bottom: 2.2rem;
@@ -73,7 +73,7 @@ hr { border: 0; border-top: 1px solid var(--rule); margin: 2rem 0; }
 pre {
   background: var(--code-bg); border: 1px solid var(--rule); border-radius: 4px;
   padding: 0.8rem 0.95rem; overflow-x: auto; line-height: 1.55; text-align: left;
-  font-size: 0.86rem;
+  font-size: 0.86rem; overflow-wrap: normal;
 }
 code { background: var(--code-bg); padding: 0.08rem 0.28rem; border-radius: 3px; font-size: 0.9em; }
 :not(pre) > code { overflow-wrap: anywhere; }
@@ -87,6 +87,9 @@ table {
 th, td { border: 1px solid var(--rule); padding: 0.45rem 0.65rem; vertical-align: top; overflow-wrap: break-word; }
 thead th { background: #f3ecdc; font-weight: 600; }
 tbody tr:nth-child(even) { background: #fbf7ec; }
+@media (min-width: 900px) {
+  th, td { overflow-wrap: anywhere; }
+}
 figure.book-figure { margin: 1.9em 0; text-align: center; }
 img { max-width: 100%; height: auto; }
 a.figure-zoom { display: block; cursor: zoom-in; }
