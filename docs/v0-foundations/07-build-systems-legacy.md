@@ -24,7 +24,11 @@ make clean && make          # 先真构建，让 build/ 里每个目标都有产
 touch main.c && make -n     # 只动 main.c，再干跑
 ```
 
-顺序不能省：来源书只记了 `make clean && make -n` 接 `touch main.c && make -n` 两条连跑的干跑，但 `make clean` 刚删掉 `build/`，`make -n` 又不产出文件，第二次干跑看到每个目标都缺失，仍会打印全量命令；那不是局部重建失效，而是实验里没有可比较的旧产物，读者复现这个观察应先跑一次真的 `make`。干跑输出要按“出现了哪些目标”读，而不是按行数读：`build/main.o` 因 `main.c` 变新而重建，`build/blink.elf` 与由它派生的 `build/blink.bin`、`build/blink.hex` 沿依赖边跟着重建，启动文件对应的 `build/startup_stm32f407xx.o` 不再重新编译；`all` 是伪目标，末尾那条 `$(SIZE)` 每次都会打印。如果改一个文件后所有 `.o` 都重新出现，说明依赖写成了“所有目标依赖所有源文件”，局部重建已经失效。`make -n` 不执行命令，只按同一套 mtime 比对把将执行的命令打印出来；`touch` 只改时间、不改内容，Make 仍然认为文件变了——它不读源码，只比较时间。这个观察留下一条判断标准：**构建系统不是“猜你改了什么”，而是“沿图上写明的边，比较两边的时间”。** 后面 CMake、IDF 与 scons 再花哨，也都在维护同一张图。
+顺序不能省：来源书只记了 `make clean && make -n` 接 `touch main.c && make -n` 两条连跑的干跑，但 `make clean` 刚删掉 `build/`，`make -n` 又不产出文件，第二次干跑看到每个目标都缺失，仍会打印全量命令；那不是局部重建失效，而是实验里没有可比较的旧产物，读者复现这个观察应先跑一次真的 `make`。
+
+干跑输出要按“出现了哪些目标”读，而不是按行数读：`build/main.o` 因 `main.c` 变新而重建，`build/blink.elf` 与由它派生的 `build/blink.bin`、`build/blink.hex` 沿依赖边跟着重建，启动文件对应的 `build/startup_stm32f407xx.o` 不再重新编译；`all` 是伪目标，末尾那条 `$(SIZE)` 每次都会打印。如果改一个文件后所有 `.o` 都重新出现，说明依赖写成了“所有目标依赖所有源文件”，局部重建已经失效。
+
+`make -n` 不执行命令，只按同一套 mtime 比对把将执行的命令打印出来；`touch` 只改时间、不改内容，Make 仍然认为文件变了——它不读源码，只比较时间。这个观察留下一条判断标准：**构建系统不是“猜你改了什么”，而是“沿图上写明的边，比较两边的时间”。** 后面 CMake、IDF 与 scons 再花哨，也都在维护同一张图。
 
 ## 机制
 
@@ -312,7 +316,9 @@ void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef *init)
 3. **移位量由寄存器布局决定**：MODER、OSPEEDR、PUPDR 是 2 位/引脚，移 `pinpos * 2`；OTYPER 是 1 位/引脚，移 `pinpos`。
 4. **枚举值即位段值**：`init->GPIO_Mode` 直接左移，没有查表，因为头文件把枚举定义成了与硬件编码相同的值。
 
-库没有魔法，只有更周全的边界处理：循环多引脚、清旧值、断言。手写版是 `GPIOA->MODER |= (0x01 << (5 * 2))` 这样一行；库版把同一件事包进函数，代价是循环与分支。时钟使能也有一个容易被当成“就一句 `|=`”的细节。`RCC_AHB1PeriphClockCmd()` 在写 `AHB1ENR` 之后还补了一句 `(void)RCC->AHB1ENR;` 的读回。RM0090 有一条“外设时钟使能后，访问外设寄存器前需等几个时钟周期生效”。刚 `|=` 完立刻访问外设，可能在时钟还没真正喂到外设的那几个周期里读/写落空，现象是“配置了但没生效”。读回 `RCC->AHB1ENR` 强制一次总线往返，等流水线把写落地再继续；手写时要自己补 `(void)RCC->AHB1ENR;` 或 `__DSB();`。`assert_param` 则是 Debug 版的参数体检：打开 `USE_FULL_ASSERT` 时参数错误进入 `assert_failed()`，关闭时展开为 `((void)0)`，编译期完全消失。看到程序“卡死”在 `assert_failed` 的死循环，不是硬件挂了，是库在喊参数错了，看调用栈找传错的调用方。
+库没有魔法，只有更周全的边界处理：循环多引脚、清旧值、断言。手写版是 `GPIOA->MODER |= (0x01 << (5 * 2))` 这样一行；库版把同一件事包进函数，代价是循环与分支。
+
+时钟使能也有一个容易被当成“就一句 `|=`”的细节。`RCC_AHB1PeriphClockCmd()` 在写 `AHB1ENR` 之后还补了一句 `(void)RCC->AHB1ENR;` 的读回。RM0090 有一条“外设时钟使能后，访问外设寄存器前需等几个时钟周期生效”。刚 `|=` 完立刻访问外设，可能在时钟还没真正喂到外设的那几个周期里读/写落空，现象是“配置了但没生效”。读回 `RCC->AHB1ENR` 强制一次总线往返，等流水线把写落地再继续；手写时要自己补 `(void)RCC->AHB1ENR;` 或 `__DSB();`。`assert_param` 则是 Debug 版的参数体检：打开 `USE_FULL_ASSERT` 时参数错误进入 `assert_failed()`，关闭时展开为 `((void)0)`，编译期完全消失。看到程序“卡死”在 `assert_failed` 的死循环，不是硬件挂了，是库在喊参数错了，看调用栈找传错的调用方。
 
 把“GPIO_Init 反推法”带到别的函数上，方法不变：列结构体字段，查手册每个字段对应哪个寄存器位，再对照库源码核对翻译逻辑。`USART_Init` 的 `USART_BaudRate` 落 BRR，`WordLength` 落 CR1.M，`StopBits` 落 CR2.STOP，`Parity` 落 CR1.PCE 与 PS，`Mode` 落 CR1.TE/RE，`HardwareFlowControl` 落 CR3 的 CTSE/RTSE。HAL、LL、RT-Thread 驱动只是换皮，结构体字段名变了、断言宏变了，“结构体打包 + 位操作翻译 + 断言”这三板斧不变。至于什么时候用库、什么时候手写：初始化代码启动时跑一次，用库换可读性与防错；中断与性能热路径直接位操作；量产可以混合，配 `-ffunction-sections -fdata-sections` 与 `--gc-sections` 把没用到的库函数在链接时剔除（第 6 章）。
 
@@ -358,7 +364,15 @@ void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef *init)
 
 ## 跨平台边界
 
-构建系统这一层与芯片无关，但“两平台共用同一副骨架”要按维度拆开说。依赖图这一维确实共用：一张图按 mtime 决定重建，Make 的三要素、缺头文件边与 `-MMD -MP` 的补法，在 F103 与 ESP32 的工程里都按同一套问题去读。生成器这一维只对 CMake/IDF 成立：CMake 先产出构建文件再构建，ESP-IDF 在 CMake 之上用 `idf_component_register` 圈组件，这些事实都来自 B7 对 CMake 与 IDF 的记录，本章没有把它们写成 F103 一侧的机制。配置层这一维按平台各算各的：F103 的 SPL 工程用 `stm32f10x_conf.h` 选择包含哪些驱动头文件，用 `STM32F10X_MD` 与 `USE_STDPERIPH_DRIVER` 两个宏进入真实编译命令；ESP32 的 IDF 工程用 Kconfig 菜单把选择写进 `sdkconfig`，构建时生成 `sdkconfig.h`。同样是“配置决定编什么”，两套机制不同，不能互相搬。两条栈的所有权也不同。F103 侧的遗留栈是 SPL V3.5.0：版本、`STM32F10X_MD`、`USE_STDPERIPH_DRIVER`、启动文件、链接脚本和 `system_stm32f10x.c` 必须成套；ESP32 侧的工程单位是 ESP-IDF 组件，配置走 Kconfig 与 `sdkconfig`，调度入口是 `idf.py`。把 `stm32f10x_*` 文件搬到 ESP32，或把 ESP-IDF 的组件宏搬到 F1，都不是移植，只是把两套所有权混在一起。`GPIO_Init` 的逐行解剖也必须按版本读：S15 的取证对象是 F4 V1.8.0，寄存器是 `MODER/OTYPER/OSPEEDR/PUPDR`；F103 的 V3.5.0 走同一套“结构体 + 移位 + 断言”的方法，但落点是 `GPIOx_CRL/CRH`。方法可以带走，寄存器名、位段和时钟使能寄存器不能跨版本搬运。生成器与配置机制之外还有别的平台差异，本章没有逐项取证，留给卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。
+构建系统这一层与芯片无关，但“两平台共用同一副骨架”要按维度拆开说。依赖图这一维确实共用：一张图按 mtime 决定重建，Make 的三要素、缺头文件边与 `-MMD -MP` 的补法，在 F103 与 ESP32 的工程里都按同一套问题去读。
+
+生成器这一维只对 CMake/IDF 成立：CMake 先产出构建文件再构建，ESP-IDF 在 CMake 之上用 `idf_component_register` 圈组件，这些事实都来自 B7 对 CMake 与 IDF 的记录，本章没有把它们写成 F103 一侧的机制。
+
+配置层这一维按平台各算各的：F103 的 SPL 工程用 `stm32f10x_conf.h` 选择包含哪些驱动头文件，用 `STM32F10X_MD` 与 `USE_STDPERIPH_DRIVER` 两个宏进入真实编译命令；ESP32 的 IDF 工程用 Kconfig 菜单把选择写进 `sdkconfig`，构建时生成 `sdkconfig.h`。同样是“配置决定编什么”，两套机制不同，不能互相搬。
+
+两条栈的所有权也不同。F103 侧的遗留栈是 SPL V3.5.0：版本、`STM32F10X_MD`、`USE_STDPERIPH_DRIVER`、启动文件、链接脚本和 `system_stm32f10x.c` 必须成套；ESP32 侧的工程单位是 ESP-IDF 组件，配置走 Kconfig 与 `sdkconfig`，调度入口是 `idf.py`。把 `stm32f10x_*` 文件搬到 ESP32，或把 ESP-IDF 的组件宏搬到 F1，都不是移植，只是把两套所有权混在一起。
+
+`GPIO_Init` 的逐行解剖也必须按版本读：S15 的取证对象是 F4 V1.8.0，寄存器是 `MODER/OTYPER/OSPEEDR/PUPDR`；F103 的 V3.5.0 走同一套“结构体 + 移位 + 断言”的方法，但落点是 `GPIOx_CRL/CRH`。方法可以带走，寄存器名、位段和时钟使能寄存器不能跨版本搬运。生成器与配置机制之外还有别的平台差异，本章没有逐项取证，留给卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。
 
 | 事项 | 本章的证据范围 | 跨平台时的处理 |
 | --- | --- | --- |
