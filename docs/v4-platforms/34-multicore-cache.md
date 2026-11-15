@@ -5,20 +5,20 @@ platforms: [esp32, f407]
 
 # 多核、Cache 与内存一致性
 
-「多核」这个词在 MCU 世界里藏着两种完全不同的形态：ESP32-S3 是 SMP，一个 FreeRTOS 内核同时管两颗 LX7；STM32H745 是 AMP，两颗核各跑一个内核，共享内存加 HSEM 交换数据。「Cache」则是另一个正交的雷：F407 根本没有 cache，H7 的 M7 带 16+16 KB，S3 靠 cache 窗口执行外部 Flash。下面把三平台的内存模型放在一起对照，把「DMA 看见的内存 ≠ CPU 看见的内存」讲成一张可执行的方向表，再把 H745 的五层双核契约从旁注展开成契约书。
+「多核」这个词在 MCU 世界里藏着两种完全不同的形态：ESP32-S3 是 SMP，一个 FreeRTOS 内核同时管两颗 LX7；STM32H745 是 AMP，两颗核各跑一个内核，共享内存加 HSEM 交换数据。「Cache」则是另一个独立的问题：F407 根本没有 cache，H7 的 M7 带 16+16 KB，S3 靠 cache 窗口执行外部 Flash。下面把三平台的内存模型放在一起对照，把「DMA 看见的内存 ≠ CPU 看见的内存」整理成一张可执行的方向表，再把 H745 的五层双核契约从旁注展开成完整的契约表。
 
-这一章没有板级实测。上游核对按 **ESP-IDF v5.5.2** 实取：`soc_caps.h:140,145` 的 writeback 支持位与核数、`esp_cache.h:25-38,54-57` 的 msync 方向宏与「经典 ESP32 无 writeback」原话、`cache_ll.h:401-403,501,514` 都已命中。
+这里没有板级实测。上游核对按 **ESP-IDF v5.5.2** 实取：`soc_caps.h:140,145` 的 writeback 支持位与核数、`esp_cache.h:25-38,54-57` 的 msync 方向宏与「经典 ESP32 无 writeback」原话、`cache_ll.h:401-403,501,514` 都已命中。
 
 H7 侧按 AN4891/AN5557/RM0433 口径（cache 行 32 B、CM7@D1/CM4@D2 的核域归属、DTCM 只有 CPU/MDMA 可达）。H745 五层契约是**设计与验收协议**（D28:336 自认非实测），故障注入列是验收要求，不是记录；MPU 配置写法也是设计口径，仓库里没有 H7 MPU 实例。
 
-> 版本口径：ESP-IDF **v5.5.2**（行号绑定 `$IDF_PATH`，换版本重核）；H7 按 AN4891（系统架构）、AN5557（双核）、RM0433、ES0392；F407 口径沿 [v1 第 14 章](../v1-drivers/14-dma.md) 与 RM0090。中断分配、`esp_intr_alloc`、`portMUX`、`volatile` 边界的机制本体已在 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) 冻结，本章只回链。
+> 版本口径：ESP-IDF **v5.5.2**（行号绑定 `$IDF_PATH`，换版本重核）；H7 按 AN4891（系统架构）、AN5557（双核）、RM0433、ES0392；F407 口径沿 [v1 第 14 章](../v1-drivers/14-dma.md) 与 RM0090。中断分配、`esp_intr_alloc`、`portMUX`、`volatile` 边界的机制本体已在 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) 冻结，这里只回链。
 
 ## 本章罗盘
 
 - **问题**：三平台的 cache 有无与取指路径之别：F407 原地执行，S3 走 Cache 窗口。Cache/DMA 所有权交接方向（TX clean/RX invalidate）不能反的原因，32 B 行对齐与「禁对未对齐窄区间 invalidate」的机制。归属链一组：「D1 有 Cache」这句简称错在哪，核与域的归属链怎么读，D1/D2/D3 各归属什么、为什么是电源/时钟域而非三条电源轨，H7 的 DTCM 为何只有 CPU/MDMA 能访问、F407 的 CCM 与它差在哪。多核一侧：H745 为何是 AMP 不是 SMP，HSEM 只管什么不管什么，五层契约各冻结什么、注入什么。API 与 MPU：S3 的 writeback 支持，「S3 是 write-through」错在哪，esp_cache 的 C2M/M2C 与 STM32 的 clean/invalidate 怎么对照，MPU 的两条解法与 M7 的 16 区上限。
 - **交付**：能画出三平台内存模型对照表（无 cache/带 cache/Cache 映射执行）；能把 Cache/DMA 交接方向表落到 `SCB_CleanDCache_by_Addr`/`SCB_InvalidateDCache_by_Addr` 的调用顺序；能把「cache 在核内、CM7 在 D1」的归属链说清；能写 DTCM/CCM 禁区表并配 map 核对动作；能把 H745 五层契约按层冻结、按层注入；能用 `soc_caps.h:140` 纠正「S3 write-through」的说法；能用 esp_cache 方向宏做跨平台对照；能给出 MPU 两条解法的设计口径并标注「仓库无实例」。
-- **边界**：中断/临界区/`portMUX`/`volatile` 的机制归 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)（含 S3 的 SMP 半场：`ESP_INTR_FLAG_IRAM`、`xTaskCreatePinnedToCore`、`tskNO_AFFINITY`），本章只回链；DMA 的通道/_fifo/CCM 机制归 [v1 第 14 章](../v1-drivers/14-dma.md)；网络路径的禁区应用归 [第 33 章](./33-network-protocol-stack.md)（本章是主讲位，那里引用）；H7 的时钟/VOS/480 MHz 归 [第 28 章](./28-chip-migration-differences.md)。D28 五层契约的故障注入列是验收要求，不是已完成的实测。
-- **依据锚点**：D25《H7 引脚》（`docs/25-STM32H7引脚.md` 的 Cache/电源域段）、E4《中断与双核》（`mcu/docs/esp32/04-irq-dualcore.md`，mapping 为 partial：双核半已迁 ch10，本章接 Cache 半场）、D28《嵌入式系统与 RTOS 生态》（`docs/28-嵌入式系统与RTOS生态.md:317-341` 的 H745 契约段）。上游对账：ESP-IDF v5.5.2 的 [soc_caps.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/soc/esp32s3/include/soc/soc_caps.h)、[esp_cache.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_hw_support/include/esp_cache.h)、[cache_ll.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/hal/cache_ll.h)；AN4891、AN5557、PM0214。Cache 所有权图见 `D25:336-341`（自绘机制示意）。
+- **边界**：中断/临界区/`portMUX`/`volatile` 的机制归 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)（含 S3 的 SMP 半场：`ESP_INTR_FLAG_IRAM`、`xTaskCreatePinnedToCore`、`tskNO_AFFINITY`），这里只回链；DMA 的通道/_fifo/CCM 机制归 [v1 第 14 章](../v1-drivers/14-dma.md)；网络路径的禁区应用归 [第 33 章](./33-network-protocol-stack.md)（这里是主讲位，那里引用）；H7 的时钟/VOS/480 MHz 归 [第 28 章](./28-chip-migration-differences.md)。D28 五层契约的故障注入列是验收要求，不是已完成的实测。
+- **依据锚点**：D25《H7 引脚》（`docs/25-STM32H7引脚.md` 的 Cache/电源域段）、E4《中断与双核》（`mcu/docs/esp32/04-irq-dualcore.md`，mapping 为 partial：双核半已迁 ch10，这里接 Cache 半场）、D28《嵌入式系统与 RTOS 生态》（`docs/28-嵌入式系统与RTOS生态.md:317-341` 的 H745 契约段）。上游对账：ESP-IDF v5.5.2 的 [soc_caps.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/soc/esp32s3/include/soc/soc_caps.h)、[esp_cache.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_hw_support/include/esp_cache.h)、[cache_ll.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/hal/cache_ll.h)；AN4891、AN5557、PM0214。Cache 所有权图见 `D25:336-341`（自绘机制示意）。
 
 ## 先做出来
 
@@ -30,7 +30,7 @@ H7 侧按 AN4891/AN5557/RM0433 口径（cache 行 32 B、CM7@D1/CM4@D2 的核域
 | H743（M7） | **16 KB I + 16 KB D**（行 32 B） | 片内 Flash 原地执行 + cache 加速 | 显式 clean/invalidate + MPU 可选 |
 | ESP32-S3（LX7×2） | cache 窗口映射 | **代码在外部 Flash，经 cache 窗口取指** | 写 Flash 关 Cache 窗口（[第 30 章](./30-esp32s3-architecture-boot.md)）；S3 支持 writeback（见机制段） |
 
-三种模型三种义务：F4 只背「禁区表」；H7 要背「方向表 + 行对齐」；S3 要背「窗口纪律 + writeback 能力」。
+三种模型三种义务：F4 只需记住「禁区表」；H7 要记住「方向表 + 行对齐」；S3 要记住「窗口纪律 + writeback 能力」。
 
 ### 2. 方向表纸上推演一次
 
@@ -69,7 +69,7 @@ ESP32 侧同一条纪律以运行期 API 存在：`Cache_Get_ICache_Line_Size()`
 
 地址不同（`0x20000000` vs `0x1000_0000`）、原因不同（DTCM 是「只有 CPU/MDMA 挂在总线上」vs CCM 是「总线矩阵对该区无 DMA 从机通路」）、手册不同（AN4891/RM0433 vs RM0090）。
 
-对策相同：描述符与 DMA 缓冲放可达区（H7 放 D1 AXI SRAM 或 D2 SRAM），**写完 section 不算完成，打开链接 map 确认落点地址**（[第 33 章](./33-network-protocol-stack.md) 的 RAM_net 账也在同一动作里）。
+对策相同：描述符与 DMA 缓冲放可达区（H7 放 D1 AXI SRAM 或 D2 SRAM），**写完 section 不算完成，打开链接 map 确认落点地址**（[第 33 章](./33-network-protocol-stack.md) 的 RAM_net 预算也在同一动作里）。
 
 ### 四、MPU：两条解法与 16 区上限
 
@@ -82,9 +82,9 @@ H7 上让 DMA 缓冲与 cache 和平共处的两条路：
 
 ### 五、H745：AMP，不是一个内核管两颗核
 
-H745 的 M7+M4 双核常见形态是 **AMP**：两颗核各跑一个内核固件，通过共享内存交换数据、用 HSEM 完成核间同步。这与 S3 的 SMP 是两种世界：「有两颗核」推不出「一个内核管两个核」（[第 27 章](../v3-rtos/27-rtos-comparison-selection.md) 的旁注在本章展开）。
+H745 的 M7+M4 双核常见形态是 **AMP**：两颗核各跑一个内核固件，通过共享内存交换数据、用 HSEM 完成核间同步。这与 S3 的 SMP 是两种世界：「有两颗核」推不出「一个内核管两个核」（[第 27 章](../v3-rtos/27-rtos-comparison-selection.md) 的旁注在这里展开）。
 
-S3 半场的 SMP 机制（单内核双核、`xTaskCreatePinnedToCore`、`portMUX`、`tskNO_AFFINITY`）已在 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) 冻结，本章不重教。
+S3 半场的 SMP 机制（单内核双核、`xTaskCreatePinnedToCore`、`portMUX`、`tskNO_AFFINITY`）已在 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) 冻结，这里不重教。
 
 HSEM 只提供两件事：**原子占用/释放**与**给另一核发中断通知**。它不搬 payload、不替 M7 维护 data cache。「锁解决谁先来，不解决货到没到」。
 
@@ -117,7 +117,7 @@ esp_cache 的方向宏与 STM32 侧一一对应（`esp_cache.h:25-38` 逐行实�
 | `DIR_C2M|INVALIDATE` | clean + invalidate | 两个动作 |
 | `FLAG_UNALIGNED` | （无等价：STM32 要求对齐） | 未对齐块自担风险 |
 
-行大小运行期可查（`cache_ll.h:501,514`）；S3 取指的两条路与关 Cache 窗口的内存模型读法，机制本体在 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) 的 IRAM 纪律段，本章只用其结论。
+行大小运行期可查（`cache_ll.h:501,514`）；S3 取指的两条路与关 Cache 窗口的内存模型读法，机制本体在 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) 的 IRAM 纪律段，这里只用其结论。
 
 ![ESP32 中断分配与核间结构：SMP 单实例的两颗核](/figures/esp32-04-int-alloc.svg)
 
@@ -155,11 +155,11 @@ esp_cache 的方向宏与 STM32 侧一一对应（`esp_cache.h:25-38` 逐行实�
 
 ## 跨平台边界
 
-- S3 的 SMP 半场（中断分配、IRAM 纪律、`portMUX`、双核自旋锁）：归 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)，本章只回链。
+- S3 的 SMP 半场（中断分配、IRAM 纪律、`portMUX`、双核自旋锁）：归 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)，这里只回链。
 - F407 的 DMA 通道与 CCM 机制：归 [v1 第 14 章](../v1-drivers/14-dma.md)。
-- 网络场景的禁区应用与 RAM_net 账：归 [第 33 章](./33-network-protocol-stack.md)。
+- 网络场景的禁区应用与 RAM_net 预算：归 [第 33 章](./33-network-protocol-stack.md)。
 - H7 的时钟树/VOS/revision 门禁：归 [第 28 章](./28-chip-migration-differences.md)。
-- H745 双核的启动交接与 OTA 场景：归 [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md) 的 IAP/双槽口径，本章只讲通信契约。
+- H745 双核的启动交接与 OTA 场景：归 [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md) 的 IAP/双槽口径，这里只讲通信契约。
 
 ## 离开检查
 
@@ -168,5 +168,5 @@ esp_cache 的方向宏与 STM32 侧一一对应（`esp_cache.h:25-38` 逐行实�
 - 「cache 在核内、CM7 在 D1」的归属链与三域分工能白板画。
 - DTCM/CCM 禁区表（地址/原因/手册三列）能说清，map 核对动作记得住。
 - H745 的 AMP 语义与五层契约能按层冻结、按层注入；「HSEM 不替代屏障」说得清。
-- 「S3 支持 writeback」能用 `soc_caps.h:140` 定谳；msync 与 CMSIS 的方向对照表能互译。
+- 「S3 支持 writeback」能用 `soc_caps.h:140` 确认；msync 与 CMSIS 的方向对照表能互译。
 - MPU 两条解法的取舍与「仓库无实例、设计口径」的诚实边界守得住。

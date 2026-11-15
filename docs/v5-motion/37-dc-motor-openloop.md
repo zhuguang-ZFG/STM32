@@ -7,16 +7,16 @@ platforms: [f103]
 
 开环调速的含义是**给电压激励，转速电机自己定**：占空比控制的是驱动施加电压的时间比例（近似平均电压），转速由平均电压、电机参数与负载转矩共同决定。空载 50% 可能近半速、带负载明显偏低、低速还有静摩擦门槛。下面把 PWM 的端点语义（CCR=ARR 差一格）落到寄存器，把带符号占空比、斜坡、租约与换向合同立成安全边界，最后把协议 v1 的带宽算到 37.3%。这三组数由新增的数值断言测试锁定。
 
-这一章没有板级实测。PWM 表（72 MHz、PSC 0、ARR 3599、20 kHz）、CCR 映射与带宽账全部是算术复算；「三档转速单调上升」是预期，不是结论；波形确认（M30-A）待执行；租约、斜坡与 REVERSING 参数是**项目常量**，来自固件冻结默认，没有外部可比对象。M30-A/B/C 全部「待执行（实物未到）」。「高于可闻频段」沿用 [v1 第 12 章](../v1-drivers/12-timers-pwm.md) 的诚实口径：把开关声移出主要可听范围，仍要实测电机与驱动的噪声。
+这里没有板级实测。PWM 表（72 MHz、PSC 0、ARR 3599、20 kHz）、CCR 映射与带宽计算全部是算术复算；「三档转速单调上升」是预期，不是结论；波形确认（M30-A）待执行；租约、斜坡与 REVERSING 参数是**项目常量**，来自固件冻结默认，没有外部可比对象。M30-A/B/C 全部「待执行（实物未到）」。「高于可闻频段」沿用 [v1 第 12 章](../v1-drivers/12-timers-pwm.md) 的诚实口径：把开关声移出主要可听范围，仍要实测电机与驱动的噪声。
 
 > 版本口径：冻结配置 v1.2：TIM1 PWM 72 MHz/PSC 0/ARR 3599（20 kHz）、TIM4 时基 PSC 7199/ARR 99（10 ms）、协议 v1（43 B 帧 × 100 Hz）、输出限幅 900‰、积分限幅 500‰、斜坡 ±50‰/10 ms、租约 500 ms。PWM 表与 [v1 第 12 章](../v1-drivers/12-timers-pwm.md) 的 20 kHz 表行是同一组数。
 
 ## 本章罗盘
 
 - **问题**：占空比不等于转速的原因，开环「开」的是什么。ARR=3599 的复算，CCR=ARR 只到 99.97% 的差一格语义，满压写 CCR=3600 的理由。带符号占空比（−1000…+1000 ‰）单点映射的必要性，方向与幅值分离防的两类 bug。安全边界一组：输出限幅 900‰ 与积分限幅 500‰ 的分工，`params_valid` 拒 ≥1000 的依据，斜坡 ±50‰/10 ms 的作用，命令一跳变不可接受的原因，500 ms 租约如何保证「断串口必停机」，STOP 豁免会话检查的理由。换向与带宽：REVERSING 合同四阶段与 3 s 超时，直翻换向产生回流尖峰的原因，协议 v1 带宽算到 37.3% 的步骤。最后是控制时基必须用 TIM4 硬件心跳的原因。
-- **交付**：能复算 PWM 四数并说清换时钟树的三条重算理由；能区分 CCR=0/CCR=ARR/CCR>ARR 三种端点语义并写出满压写法；能把带符号占空比映射到 `motor_bridge.c` 的单点；能配双限幅与参数校验；能实现斜坡与租约；能走 REVERSING 四阶段合同；能三步复算带宽账并给出「扩遥测先算总线」的判据；能把控制时基与串口任务的所有权分开。
-- **边界**：本章讲开环与安全边界；驱动桥的真值表与供电归 [第 36 章](./36-motor-driver-power.md)；编码器测量与转速口径归[第 38 章](./38-encoder-speed-measurement.md)（本章的 REVERSING 停稳判据 |rpm|≤5 消费它的量化知识）；PI 闭环归[第 39 章](./39-speed-closed-loop-pi.md)（均在本卷内）；UART 协议帧格式与判帧归 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)；FreeRTOS 任务的节拍与队列归 [v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md)。全部实验待执行。
-- **依据锚点**：M30 草稿（`plans/2026-11-11-motor-control/chapters-draft/30-直流电机开环调速.md`）、HF v1.2、DESIGN 合同（`plans/2026-11-11-motor-control/design.md` 的 `N=P×Q×G`、F01、REVERSING 段）、数值断言测试 `book/tests/test_motor_numbers.py`（本章新增）。上游对账：RM0008（TIM1 PWM 段，[v1 第 12 章](../v1-drivers/12-timers-pwm.md) 已核）；TB6612 datasheet（[Pololu 0J86](https://www.pololu.com/file/0j86/tb6612fng.pdf)）。
+- **交付**：能复算 PWM 四数并说清换时钟树的三条重算理由；能区分 CCR=0/CCR=ARR/CCR>ARR 三种端点语义并写出满压写法；能把带符号占空比映射到 `motor_bridge.c` 的单点；能配双限幅与参数校验；能实现斜坡与租约；能走 REVERSING 四阶段合同；能三步复算带宽并给出「扩遥测先算总线」的判据；能把控制时基与串口任务的所有权分开。
+- **边界**：内容限于开环与安全边界；驱动桥的真值表与供电归 [第 36 章](./36-motor-driver-power.md)；编码器测量与转速口径归[第 38 章](./38-encoder-speed-measurement.md)（这里的 REVERSING 停稳判据 |rpm|≤5 消费它的量化知识）；PI 闭环归[第 39 章](./39-speed-closed-loop-pi.md)（均在本卷内）；UART 协议帧格式与判帧归 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)；FreeRTOS 任务的节拍与队列归 [v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md)。全部实验待执行。
+- **依据锚点**：M30 草稿（`plans/2026-11-11-motor-control/chapters-draft/30-直流电机开环调速.md`）、HF v1.2、DESIGN 合同（`plans/2026-11-11-motor-control/design.md` 的 `N=P×Q×G`、F01、REVERSING 段）、数值断言测试 `book/tests/test_motor_numbers.py`（这次新增）。上游对账：RM0008（TIM1 PWM 段，[v1 第 12 章](../v1-drivers/12-timers-pwm.md) 已核）；TB6612 datasheet（[Pololu 0J86](https://www.pololu.com/file/0j86/tb6612fng.pdf)）。
 
 ## 先做出来
 
@@ -70,7 +70,7 @@ PWM1 是「CNT<CCR 有效」：CCR=0 恒无效；**CCR=ARR 时有效格数 3599/
 
 ![手绘板：换向四阶段，斜坡归零、撤销驱动、等停稳、再反向（原理示意，非实拍）](/images/ch30-stop-triage.png)
 
-### 五、协议 v1 与带宽账
+### 五、协议 v1 与带宽计算
 
 43 B 帧 × 100 Hz，8N1 每字节 10 bit（1 起始+8 数据+1 停止）：
 
@@ -93,7 +93,7 @@ PWM1 是「CNT<CCR 有效」：CCR=0 恒无效；**CCR=ARR 时有效格数 3599/
 
 ### 七、数值断言测试
 
-本章两组可复算数值由 `book/tests/test_motor_numbers.py` 锁定（随本章提交加入，全部四章落位后按批次处理，把旧草稿路径的测试退役）：
+两组可复算数值由 `book/tests/test_motor_numbers.py` 锁定（随这次提交加入，全部四章落位后按批次处理，把旧草稿路径的测试退役）：
 
 1. **PWM 端点**：`arr = 72_000_000 // 20_000 - 1 == 3599`、`counts == 3600`、`arr/counts ≈ 0.99972`；文案锚点「| ARR | 3599 |」「须大于 ARR」「CCR>ARR」；负向哨兵：三种错误写法（把 3600 与 ARR 写成相等、把 CCR 写成不小于 ARR、把差一格的满值写成 100% 端点）不得出现在文案里。
 2. **串口带宽**：`43 × 100 = 4300 B/s`、`×10 = 43 000 bit/s`、`/115200 ≈ 37.3%`（±0.05）；正向锚点「37.3%」「43 kbit/s」；负向哨兵：把 43 kbit/s 误写成占带宽 4% 的旧说法不得出现。
@@ -130,6 +130,6 @@ PWM1 是「CNT<CCR 有效」：CCR=0 恒无效；**CCR=ARR 时有效格数 3599/
 - PWM 四数与端点三种语义（CCR=0/CCR=ARR/CCR>ARR）能复算并落代码。
 - 带符号占空比的单点映射与双限幅能画出数据流。
 - 租约与 STOP 豁免的安全论证能说清；REVERSING 四阶段能走一遍。
-- 带宽账三步复算到 37.3%，测试断言能跑绿。
+- 带宽三步复算到 37.3%，测试断言能跑绿。
 - 控制时基的所有权边界（ISR 写桥/主循环收发）守得住。
 - 全部待执行项挂着，没有一条写成实测。

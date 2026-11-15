@@ -5,22 +5,22 @@ platforms: [f407, esp32]
 
 # 双板综合项目
 
-同一份需求（周期采样、队列缓冲、串口上报、配置可存、断线必停），在 F407 与 ESP32-S3 上各做一遍；这是本章的教学设计：**公共部分只讲一遍，平台差异用对照表**。两份来源文档刻意互镜像（骨架逐字相同、五处按平台分叉），合并后的正文按「公共架构 → 平台差分 → 故障注入」组织。这是一个真实的工程载体：SAMPLE 载荷 64 B、线上 74 B、队列载荷 1 KiB、租约 500 ms、期限监督。每个数字都可复算。
+同一份需求（周期采样、队列缓冲、串口上报、配置可存、断线必停），在 F407 与 ESP32-S3 上各做一遍。公共部分只讲一遍，平台差异用对照表。两份来源文档刻意互镜像（基本结构逐字相同、五处按平台分叉），合并后的正文按「公共架构 → 平台差分 → 故障注入」组织。这是一个真实的工程载体：SAMPLE 载荷 64 B、线上 74 B、队列载荷 1 KiB、租约 500 ms、期限监督。每个数字都可复算。
 
-这一章没有板级实测。两份来源的 `hardware_status` 都是 `pending`；上板记录要注明板版本、固件提交、接线、输入和原始日志，本页当前仍是待实测。故障注入四命令的表是**预期逻辑结果（非实测）**，原文自带限定；`mcu/docs/lab/reports/j1-test-report.md` 是空白模板。工程实况也要说明：`mcu/code/projects/` 目录不存在，真实载体是 `code/projects.json` 登记的 `code/stm32/07-sensor-logger`、`code/esp32/08-sensor-logger` 与 `code/common/logger`，全部在库。
+这里没有板级实测。两份来源的 `hardware_status` 都是 `pending`；上板记录要注明板版本、固件提交、接线、输入和原始日志，本页当前仍是待实测。故障注入四命令的表是**预期逻辑结果（非实测）**，原文自带限定；`mcu/docs/lab/reports/j1-test-report.md` 是空白模板。工程实况也要说明：`mcu/code/projects/` 目录不存在，真实载体是 `code/projects.json` 登记的 `code/stm32/07-sensor-logger`、`code/esp32/08-sensor-logger` 与 `code/common/logger`，全部在库。
 
 > 版本口径：F407 侧 FreeRTOS V11.1.0、复位 HSI 16 MHz（[v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md) lab 同源）；S3 侧 ESP-IDF 5.5.2（[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md) 同源）。PRJ1《F407 logger》（`mcu/docs/projects/01-f407-logger.md`）、PRJ2《S3 logger》（`.../02-s3-logger.md`）。
 
 ## 本章罗盘
 
 - **问题**：四层架构（外设适配/公共核心/RTOS 运行层/主机）怎么分，哪些东西两板共用？SAMPLE 载荷的 64 字节怎么拆、线上为什么是 74 B，队列满为什么丢新不丢旧？期限监督和心跳差在哪，「任务活着但进度停滞」怎么检出？配置一侧：改 RAM/持久化/重启加载三个状态两板各怎么落，EEPROM 双槽提交标记与 NVS 单 blob 的取舍是什么？最后是故障与看门狗：注入四命令各打什么、预期什么，两板的看门狗形态差在哪？
-- **交付**：能画出四层架构与两板的 port 边界；能手算 64 B 载荷、74 B 线上帧、1 KiB 载荷与 1.6 s 队列账，以及 `samples` 的 1120 B RAM；能解释期限判据（采样/通信最近一次进展距现在 <2500/<1500 ms）；能写双槽提交标记的启动挑选逻辑；能按四命令跑故障注入（构建开关先开）；能把「断电押注」实验设计出来。
-- **边界**：本章讲项目组织与双板对照；FreeRTOS 队列/任务机制归 [v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md)，TWDT 归 [第 32 章](../v4-platforms/32-esp32-wifi-ble-espnow.md) 的任务级契约段与 [v1 第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) 的看门狗语义；OTA 回滚细节归 [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md)；QMI8658 与音频链路归 [第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。全部实验待执行。
+- **交付**：能画出四层架构与两板的 port 边界；能手算 64 B 载荷、74 B 线上帧、1 KiB 载荷与 1.6 s 队列容量，以及 `samples` 的 1120 B RAM；能解释期限判据（采样/通信最近一次进展距现在 <2500/<1500 ms）；能写双槽提交标记的启动挑选逻辑；能按四命令跑故障注入（构建开关先开）；能把「断电押注」实验设计出来。
+- **边界**：内容限于项目组织与双板对照；FreeRTOS 队列/任务机制归 [v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md)，TWDT 归 [第 32 章](../v4-platforms/32-esp32-wifi-ble-espnow.md) 的任务级契约段与 [v1 第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) 的看门狗语义；OTA 回滚细节归 [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md)；QMI8658 与音频链路归 [第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。全部实验待执行。
 - **依据锚点**：PRJ1、PRJ2（`mcu/docs/projects/`）；工程 `mcu/code/stm32/07-sensor-logger`、`mcu/code/esp32/08-sensor-logger`、`mcu/code/common/logger`、`mcu/code/projects.json`（实存核对）。上游对账：RM0090（DMA2 向量表与 FreeRTOS 优先级规则沿 [v3-rtos 24 章](../v3-rtos/24-queue-semaphore-notification.md) 已核口径）；AT24C02（写周期 5 ms/页 8 B，datasheet）；ESP-IDF NVS/TWDT（v5.5.2 口径）。
 
 ## 先做出来
 
-### 1. 一份协议，先算字节账
+### 1. 一份协议，先算字节数
 
 SAMPLE 载荷（固定 64 字节，全部小端）：
 
@@ -72,13 +72,13 @@ EEPROM 双槽与 NVS 单 blob 的取舍：双槽能在断电时回退到上一�
 
 ### 三、显式过载保护：满则丢新
 
-16 槽队列满时的策略是**丢最新、计数上报**：STATUS 帧里带丢弃计数，上位机能看到「传感器产量 > 消费能力」。调大队列之前先看 STATUS 高水位：丢弃计数为 0 就别加内存。F407 的中断账顺带核一遍：DMA2 Stream0 = IRQ56，优先级 6 ≥ `configMAX_SYSCALL_INTERRUPT_PRIORITY` 对应的数值 5（[v3-rtos 24 章](../v3-rtos/24-queue-semaphore-notification.md) 的 FromISR 规则）；USART1 用 DMA2 Stream5，不与 Stream0 共用流。
+16 槽队列满时的策略是**丢最新、计数上报**：STATUS 帧里带丢弃计数，上位机能看到「传感器产量 > 消费能力」。调大队列之前先看 STATUS 高水位：丢弃计数为 0 就别加内存。F407 的中断配置顺带核一遍：DMA2 Stream0 = IRQ56，优先级 6 ≥ `configMAX_SYSCALL_INTERRUPT_PRIORITY` 对应的数值 5（[v3-rtos 24 章](../v3-rtos/24-queue-semaphore-notification.md) 的 FromISR 规则）；USART1 用 DMA2 Stream5，不与 Stream0 共用流。
 
 ![记录器数据流：两板采样输入经 sample、滤波封装成 64 B 载荷（线上 74 B），进入 16 槽队列；队列载荷 1 KiB、samples 数组 1120 B；满则丢新并计数，主机按 sequence 缺口发现丢帧](/arch/logger-flow.png)
 
 ![队列溢出动画：满则丢新与计数上报](/anim/logger-queue-overflow.svg)
 
-![手绘板：64 B 载荷、74 B 线上帧与 16 槽队列的字节账（原理示意，非实拍）](/images/v6-41-logger-budget.png)
+![手绘板：64 B 载荷、74 B 线上帧与 16 槽队列的字节预算（原理示意，非实拍）](/images/v6-41-logger-budget.png)
 
 ### 四、期限监督 vs 心跳
 
@@ -86,7 +86,7 @@ EEPROM 双槽与 NVS 单 blob 的取舍：双槽能在断电时回退到上一�
 
 ### 五、配置三态与双槽提交
 
-配置有三个状态，两板都要分清：**configure** 只改 RAM（立刻生效但不持久）；**save** 才持久化；**重启加载**的是最近一次 save 的版本；改了没 save，重启就回到旧配置（两份来源的「断电押注」段）。EEPROM 双槽的实现账：2×128 B 槽，按 8 字节页边界写前 127 字节，最后写提交标记；启动时挑「最新且有效 generation」的槽：标记没写完（断电）就选旧槽。NVS 单 blob 一次 commit 原子生效；「单 blob 最大 1984 字节」是 IDF 版本相关常量，标待核。
+配置有三个状态，两板都要分清：**configure** 只改 RAM（立刻生效但不持久）；**save** 才持久化；**重启加载**的是最近一次 save 的版本；改了没 save，重启就回到旧配置（两份来源的「断电押注」段）。EEPROM 双槽的实现：2×128 B 槽，按 8 字节页边界写前 127 字节，最后写提交标记；启动时挑「最新且有效 generation」的槽：标记没写完（断电）就选旧槽。NVS 单 blob 一次 commit 原子生效；「单 blob 最大 1984 字节」是 IDF 版本相关常量，标待核。
 
 ### 六、故障注入：四命令
 
@@ -107,11 +107,11 @@ EEPROM 双槽与 NVS 单 blob 的取舍：双槽能在断电时回退到上一�
 
 | 结论 | 身份 | 判据 |
 | --- | --- | --- |
-| SAMPLE 载荷 64 B 字段账 | 文档推导 | 4+4+4+1+1+2+24+24 复算 |
+| SAMPLE 载荷 64 B 字段占用 | 文档推导 | 4+4+4+1+1+2+24+24 复算 |
 | 线上 74 B | 代码核对 | 64 B payload + 6 B 头 + 2 B CRC + COBS 1 B + 分隔符 1 B；`protocol_encode()` 返回 74 |
 | 队列 1 KiB 载荷 / samples 1120 B | 代码核对 | 16×64 B payload；ARM ABI 下 `sizeof(frame_t)=70`、`sizeof(samples)=1120` |
 | 期限判据（2500/1500/50 ms） | 代码核对 | `health.c` 比较 `now-last_ms >= deadline`；2500/100=25 个周期，不是 20 次计数 |
-| F407 中断账（IRQ56、优先级 6≥5） | 手册级 | [v3-rtos 24 章](../v3-rtos/24-queue-semaphore-notification.md) 已核规则 + 向量表 |
+| F407 中断配置（IRQ56、优先级 6≥5） | 手册级 | [v3-rtos 24 章](../v3-rtos/24-queue-semaphore-notification.md) 已核规则 + 向量表 |
 | EEPROM 双槽/页 8 B/提交标记 | 手册级 | AT24C02 datasheet（写周期 5 ms） |
 | NVS blob 1984 B 上限 | 来源说法待核 | IDF 版本相关常量 |
 | 姿态换算 ±4g→8192、±512dps→64 | 来源说法待核 | 两源一致；手册灵敏度表未逐项复核 |
@@ -133,7 +133,7 @@ EEPROM 双槽与 NVS 单 blob 的取舍：双槽能在断电时回退到上一�
 ## 离开检查
 
 - 四层架构与 port 边界能画；「公共只讲一遍」的正文结构能落地。
-- 64 B 载荷、74 B 线上、1120 B samples、1.6 s、2500 ms 五笔账当场复算。
+- 64 B 载荷、74 B 线上、1120 B samples、1.6 s、2500 ms 五项数值当场复算。
 - 平台对照表五栏能填；「S3 无外部看门狗芯片，用的是 TWDT」不再说错。
 - 双槽提交标记与 NVS 单 blob 的取舍能讲；断电押注实验能设计。
 - 故障注入四命令与构建开关能落；「预期逻辑结果（非实测）」限定全程保留。

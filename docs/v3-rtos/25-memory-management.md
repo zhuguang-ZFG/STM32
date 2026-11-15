@@ -5,17 +5,17 @@ platforms: [f407]
 
 # 内存管理
 
-`configTOTAL_HEAP_SIZE` 把 16 KiB 池子交给 heap_4 管。你问它「还剩多少」它能答，问它「最大还能一次分出多大」它得想了想才答得对：总空闲与最大连续块是两个数，前一个涨了后一个不一定涨。下面从 heap_1 到 heap_5 讲清能力阶梯，把 heap_4 的合并算法拆到源码行，再把「碎片只能试探」升级成「可观测加试探兜底」，最后对照 RT-Thread 的堆家族收一张表。
+`configTOTAL_HEAP_SIZE` 把 16 KiB 堆区交给 heap_4 管。它能直接回答「还剩多少」，但「最大还能一次分出多大」需要额外计算：总空闲与最大连续块是两个数，前一个涨了后一个不一定涨。下面从 heap_1 到 heap_5 讲清能力阶梯，把 heap_4 的合并算法拆到源码行，再把「碎片只能试探」改进为「可观测，并保留试探作为判断手段」，最后对照 RT-Thread 的堆家族收一张表。
 
 没有新的上板读数。场景 5 的代码真实存在（`mcu/code/rtos/01-freertos-lab/main.c:249-264`），但仓库里没有落盘的串口日志，实验表只写操作与预期；probe 量出的 TCB 88 B 与固定开销 1312 B 是来源说法（未复核）；上游行号来自文档核对，不是本地编译证据。能亲手跑的只有场景 5 本身。
 
-> 版本口径：FreeRTOS 的 `heap_1.c`、`heap_2.c`、`heap_3.c`、`heap_4.c`、`heap_5.c` 与 `tasks.c` 行号按 FreeRTOS-Kernel V11.1.0 对账；RT-Thread 的堆文件清单与命令名按 v5.3.0 的 `src/` 树对账（调研取件为 master 分支，若版本间有出入以你手上的源码为准）。根书 F103 例程按 V11.3.2，行号不与本章混排。
+> 版本口径：FreeRTOS 的 `heap_1.c`、`heap_2.c`、`heap_3.c`、`heap_4.c`、`heap_5.c` 与 `tasks.c` 行号按 FreeRTOS-Kernel V11.1.0 对账；RT-Thread 的堆文件清单与命令名按 v5.3.0 的 `src/` 树对账（调研取件为 master 分支，若版本间有出入以你手上的源码为准）。根书 F103 例程按 V11.3.2，两版行号不混排。
 
 ## 本章罗盘
 
 - **问题**：五个 heap 的差别先从释放与合并看起：heap_1 的 `vPortFree` 只能断言失败，heap_2 的空闲表排序且不合并，heap_3 缺少 `xPortGetFreeHeapSize`，heap_4 释放时靠边界信息找前邻块；「边界标记法」是错误说法。分配按 8 B 对齐，块头多占 overhead，当前空闲、历史最低水位与 `vPortGetHeapStats` 各回答不同问题。静态创建有真实失败条件，Idle/Timer 钩子是三参数签名，`configCHECK_FOR_STACK_OVERFLOW=2` 在切换时检查填充。heap_5 的区域表有调用顺序约束，CCM 不能放 DMA 缓冲；16 KiB 池按 TCB 88 B 加 8 B 头算预算。RT-Thread 的 `src/` 有四种堆实现，`tlsf.c` 不存在，slab 的「碎片免疫」被夸大，`rt_mp` 的 O(1) 来自固定块，`RT_USING_HEAP` 关掉后是纯静态固件，finsh 的堆监控命令要按真实名字写。
-- **交付**：能按「能否释放、合并、多区」给五个 heap 各一句话定位；能走读 `prvInsertBlockIntoFreeList` 的三步合并，纠正「边界标记法」的说法，算出块头 8 B 的对齐开销；能分清当前空闲与历史最低水位，知道 heap_4 能直读最大连续块而 heap_5 不能；能复述场景 5 的六步操作与每步预期，指出「总空闲够、最大连续块不够」的判定时刻；能写出三参数的 Idle/Timer 静态钩子，说清静态创建的失败条件；能写出 heap_5 的区域表并把 CCM 的 DMA 禁区说对；能用 88 B TCB 加 8 B 头算一笔 16 KiB 预算；能按真实源码讲 RT-Thread 的四种堆实现、TLSF 的选档方向、内存池的 O(1) 与零堆固件。
-- **边界**：单平台 F407（Cortex-M4F、`ARM_CM4F`、heap 16 KiB、`configSUPPORT_DYNAMIC_ALLOCATION=1`、`configSUPPORT_STATIC_ALLOCATION=0`）。FreeRTOS 结论按 V11.1.0；引用行号时区分「FreeHeapSize」「MinimumEver」「HeapStats」三个函数的落点，不混排。RT-Thread 只按 v5.3.0 的 `src/` 文件清单与 finsh 命令名讲，TLSF 只作论文与软件包对照，不写成内核自带。本章不展开伙伴系统、Slab 论文的分配器设计细节，不重教队列与任务创建的 RAM 开销（[ch24](./24-queue-semaphore-notification.md) 已算过 248 B 与 269），不写 Flash/IAP（那是 [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md) 的领地）。参数区与掉电保存只回链不展开。
+- **交付**：能按「能否释放、合并、多区」给五个 heap 各一句话定位；能走读 `prvInsertBlockIntoFreeList` 的三步合并，纠正「边界标记法」的说法，算出块头 8 B 的对齐开销；能分清当前空闲与历史最低水位，知道 heap_4 能直读最大连续块而 heap_5 不能；能复述场景 5 的六步操作与每步预期，指出「总空闲够、最大连续块不够」的判定时刻；能写出三参数的 Idle/Timer 静态钩子，说清静态创建的失败条件；能写出 heap_5 的区域表并把 CCM 的 DMA 禁区说对；能用 88 B TCB 加 8 B 头做一次 16 KiB 预算；能按真实源码讲 RT-Thread 的四种堆实现、TLSF 的选档方向、内存池的 O(1) 与零堆固件。
+- **边界**：单平台 F407（Cortex-M4F、`ARM_CM4F`、heap 16 KiB、`configSUPPORT_DYNAMIC_ALLOCATION=1`、`configSUPPORT_STATIC_ALLOCATION=0`）。FreeRTOS 结论按 V11.1.0；引用行号时区分「FreeHeapSize」「MinimumEver」「HeapStats」三个函数的落点，不混排。RT-Thread 只按 v5.3.0 的 `src/` 文件清单与 finsh 命令名讲，TLSF 只作论文与软件包对照，不写成内核自带。这里不展开伙伴系统、Slab 论文的分配器设计细节，不重教队列与任务创建的 RAM 开销（[ch24](./24-queue-semaphore-notification.md) 已算过 248 B 与 269），不写 Flash/IAP（那是 [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md) 的领地）。参数区与掉电保存只回链不展开。
 - **依据锚点**：F7《heap_1 到 heap_5》（`mcu/docs/rtos/freertos/07-heap.md`）、R3《RT-Thread 内存管理》（`mcu/docs/rtos/rtthread/03-mem.md`）、测验 `f7-heap`。配置见 `mcu/code/rtos/01-freertos-lab/FreeRTOSConfig.h`（`:31`、`:36`），场景 5 见 `mcu/code/rtos/01-freertos-lab/main.c:249-264`，内存地图见 `mcu/code/rtos/01-freertos-lab/stm32f407xx.ld:5-7` 与 [v1 第 8 章](../v1-drivers/08-architecture-memory-clock.md)。上游对账：FreeRTOS-Kernel V11.1.0 的 [heap_1.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/portable/MemMang/heap_1.c)、[heap_2.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/portable/MemMang/heap_2.c)、[heap_3.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/portable/MemMang/heap_3.c)、[heap_4.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/portable/MemMang/heap_4.c)、[heap_5.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/portable/MemMang/heap_5.c)、[tasks.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/tasks.c)；RT-Thread v5.3.0 的 [mem.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/src/mem.c)、[memheap.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/src/memheap.c)、[slab.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/src/slab.c)、[mempool.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/src/mempool.c)。任务栈水位与 TCB 结构见 [第 22 章](./22-tasks-tcb-scheduler.md)；队列的 RAM 开销见 [第 24 章](./24-queue-semaphore-notification.md)。
 
 ## 先做出来
@@ -60,7 +60,7 @@ FreeRTOS 提供五个 heap 版本，能力逐级增加，代价也逐级变化�
 - **heap_2**：空闲链表**按大小排序**，分配取第一个够大的块（best fit，`heap_2.c:130-155`）。可释放，但释放的块只按大小插回去，从不看邻居。交替分配释放几轮，池子就碎成满地小洞。它也没有 `xPortGetMinimumEverFreeHeapSize`，换用它，引用水位 API 的代码直接链接失败。
 - **heap_3**：`pvPortMalloc` 包 `malloc`、`vPortFree` 包 `free`（`heap_3.c:65`、`:89`）。线程安全交给 libc 的锁，尺寸交给 libc 的堆。它**没有任何 `xPortGet` 统计**，总量、水位、统计都没有，用它就别想监控堆。
 - **heap_4**：空闲链表按**地址**排序，释放时相邻就合并。首次适配，代价可控，指标齐全，是大多数产品的落点。
-- **heap_5**：heap_4 的算法搬进「区域表」里跑，堆不再是一整块连续内存。其余能力与 heap_4 相同。
+- **heap_5**：heap_4 的算法在「区域表」上运行，堆不再是一整块连续内存。其余能力与 heap_4 相同。
 
 选型不能简化为「heap_4 最好」。只在启动时分配、固件跑一辈子不动的产品，heap_1 的确定性最高；只有快速原型要接 libc 生态，heap_3 才进场。heap_4 是「既要释放又要可控」这个最常见组合的答案，不是唯一答案。
 
@@ -96,7 +96,7 @@ static size_t xHeapStructSize =
 
 ### 分配：首次适配
 
-`pvPortMalloc` 从 `xStart` 开始沿空闲链表走，取**第一个**装得下的块（`heap_4.c:247` 附近）。块太大就切走要的部分，剩下的小尾巴留在链表里；正好装下就把整块摘走。首次适配快、实现短，代价是偏爱链表前端的低地址块：同尺寸请求反复来，低地址区先被切碎。这个倾向配合「相邻合并」，多数场景可接受；极端交替负载下它就是碎片来源之一。
+`pvPortMalloc` 从 `xStart` 开始沿空闲链表走，取**第一个**装得下的块（`heap_4.c:247` 附近）。块太大就切走要的部分，剩余的小块留在链表里；正好装下就把整块摘走。首次适配快、实现短，代价是偏爱链表前端的低地址块：同尺寸请求反复来，低地址区先被切碎。这个倾向配合「相邻合并」，多数场景可接受；极端交替负载下它就是碎片来源之一。
 
 ### 释放：`prvInsertBlockIntoFreeList` 的三步
 
@@ -153,7 +153,7 @@ if ( ( uint8_t * ) pxPrevBlock == ( uint8_t * ) pxBlockToInsert ) {
 
 第三行是旧资料常漏的：判断「碎没碎」不必只靠试探分配。heap_4 上读一次 stats，用「最大连续块 / 总空闲」就是碎片度的直接读数；heap_5 没有这个 API，才退回试探法：`pvPortMalloc(4096)` 失败但总空闲充足，就是碎片在说话，分完记得 `vPortFree` 还回去。
 
-产品级兜底有三条路：分配失败进安全态（关外设、置故障标志、等看门狗复位）；或记日志告警后降级运行；或直接复位重来。最不可接受的是静默续跑。失败那一刻起，后面所有输出都不可信。
+产品级的失败处理有三条路：分配失败进安全态（关外设、置故障标志、等看门狗复位）；或记日志告警后降级运行；或直接复位重来。最不可接受的是静默续跑。失败那一刻起，后面所有输出都不可信。
 
 ## 场景 5：碎片实验的六步
 
@@ -212,9 +212,9 @@ lab 的 `configSUPPORT_STATIC_ALLOCATION=0`（`FreeRTOSConfig.h`），本工程�
 
 `configCHECK_FOR_STACK_OVERFLOW = 2`（`FreeRTOSConfig.h:31`）开启后，内核在**每次上下文切换**时检查任务的栈底填充：栈按 0xA5 预填，切换时看栈底那几个字节还是不是 0xA5。被踩了就调 `vApplicationStackOverflowHook( xTask, pcTaskName )`，lab 的实现打印任务名后停机。
 
-为什么它值这点开销：爆栈的第一现场多数不是 HardFault，而是**悄悄踩了邻居**。
+这点开销换来的是更早的发现：栈溢出通常不会立即触发 HardFault，而是**先悄悄改写相邻内存**。
 
-相邻的 TCB、别的任务栈、某个全局数组，被踩后系统还能跑，只是某天某个值莫名其妙错了，通信偶尔丢包，日志里出现乱码。等 HardFault 再查，现场早被踩得面目全非。
+相邻的 TCB、别的任务栈、某个全局数组，被改写后系统还能运行，只是某天某个值莫名其妙错了，通信偶尔丢包，日志里出现乱码。等 HardFault 再查，现场已经被改得难以辨认。
 
 canary 把抓捕提前到踩线的那一次切换。配置 1 只检查栈指针越界（更便宜、更迟钝），配置 2 连填充一起查。栈水位的原理与测量见 [第 22 章](./22-tasks-tcb-scheduler.md) 的栈水位一节。
 
@@ -280,7 +280,7 @@ FreeRTOS 让你「编译期选一个 heap_x」；RT-Thread 的 `src/` 里同时�
 四种之外再校三处旧章的说法：
 
 - **TLSF 的选档方向**。两级位图找块：`fls`/CLZ 只负责「请求尺寸 → 第一级档位」的粗定位；选定可用块要用 `ffs`/CTZ 在位图里找**最低**有效位，方向是从「刚好够用的最小档」往下取。写成「CLZ 找最小够用档」把两级分工搞反了。
-- **slab 的「碎片免疫」过头**。同一尺寸类内部确实不产生外部碎片：归还的块和请求的块必然同尺寸。但固定尺寸类本身带来**内部碎片**（大对象塞进大一号的类，尾部浪费），zone 扩张还可能失败。正确说法是「类内无外部碎片」，不是「免疫」。
+- **slab 的「碎片免疫」说法过强**。同一尺寸类内部确实不产生外部碎片：归还的块和请求的块必然同尺寸。但固定尺寸类本身带来**内部碎片**（大对象放入大一号的类，尾部浪费），zone 扩张还可能失败。正确说法是「类内无外部碎片」，不是「免疫」。
 - **finsh 的堆监控命令名**。真实导出的命令是 `memheapcheck`/`memheaptrace`（`memheap.c:959`/`:1039`）与 `memcheck`/`memtrace`（`mem.c:640`/`:711`）；`list_memheap` 只是 `msh.c` 内部函数，不是可敲的命令。旧章的 `list_memp` 在内核源码里没有对应导出。
 
 两边的结构对照：
@@ -305,9 +305,9 @@ FreeRTOS 让你「编译期选一个 heap_x」；RT-Thread 的 `src/` 里同时�
 
 | 仓库 | 文件 | 看什么 |
 | --- | --- | --- |
-| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `portable/MemMang/heap_1.c` … `heap_5.c` | 五个方案的完整实现，每个几百行内：heap_1 只分不收、heap_2 首适应不合并、heap_4 合并相邻空闲块、heap_5 多段堆；对照本章「堆预算：从粗估到公式」的取舍论证 |
+| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `portable/MemMang/heap_1.c` … `heap_5.c` | 五个方案的完整实现，每个几百行内：heap_1 只分不收、heap_2 首适应不合并、heap_4 合并相邻空闲块、heap_5 多段堆；对照前面「堆预算：从粗估到公式」的取舍论证 |
 | [FreeRTOS/FreeRTOS-Kernel-Book](https://github.com/FreeRTOS/FreeRTOS-Kernel-Book) | `ch03.md` 等 | FreeRTOS 官方伴读书稿，逐个 heap 方案讲实现与适用场景，比读裸代码多一层动机解释 |
-| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/mem.c` + `src/slab.c` | 小内存算法与 SLAB 两种 `rt_malloc` 后端：对照本章「RT-Thread 对照：四种分配器」的分配策略行 |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/mem.c` + `src/slab.c` | 小内存算法与 SLAB 两种 `rt_malloc` 后端：对照前面「RT-Thread 对照：四种分配器」的分配策略行 |
 | [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/mempool.c` | `rt_mp_create`/`rt_mp_alloc` 的固定块池实现：空闲块单链表、摘头挂头、timeout 排队；对照上面 rt_mp 一段的描述 |
 | [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/memheap.c` | 多段堆管理器：把几块不连续内存（如 CCM+SRAM）纳成统一堆；RT-Thread 对「heap_5 拆堆」问题的另一份答案 |
 
@@ -363,7 +363,7 @@ FreeRTOS 让你「编译期选一个 heap_x」；RT-Thread 的 `src/` 里同时�
 16. finsh 的堆监控命令真实叫什么？
 <details><summary>参考答案</summary>`memheapcheck`/`memheaptrace`（`memheap.c:959`/`:1039`）与 `memcheck`/`memtrace`（`mem.c:640`/`：711`）。`list_memheap` 只是 `msh.c` 内部函数，不是可敲的命令。</details>
 
-17. 本章哪些数是来源说法、哪些未实测？
+17. 哪些数是来源说法、哪些未实测？
 <details><summary>参考答案</summary>来源说法（未复核）：probe 的 TCB 88 B 与固定开销 1312 B、每定时器 56 B、269 上界。未实测：场景 5 的 `big ok?=0/1` 板级读数（代码在 `main.c:249-264`，仓库无落盘日志）、爆栈触发 OverflowHook 的实验、RT-Thread 的分配耗时对比。文档推导：五版能力表、合并三步、8 B 头、指标 API 落点、heap_5 三规矩、RT-Thread 文件清单与命令名。</details>
 
 <QuizBank chapter="f7-heap" />

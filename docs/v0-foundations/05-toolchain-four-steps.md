@@ -5,18 +5,18 @@ platforms: [generic]
 
 # 工具链与四步构建
 
-> 电脑是 x86，芯片是 ARM。每次编译，都是一群程序在替另一块芯片准备机器码。下面按顺序看：谁在运行、谁在干活、库从哪来、四步各留下什么、ELF 怎么读；第一次装环境另附五项验收。
+> 电脑是 x86，芯片是 ARM。每次编译都要运行多个程序，为另一块芯片生成机器码。下面按顺序看：谁在运行、各工具做什么、库从哪来、四步各留下什么、ELF 怎么读；第一次装环境另附五项验收。
 
 ## 本章罗盘
 
 - **问题**：`arm-none-eabi-` 三段各管什么，为什么系统 `gcc` 编不了 F407？`gcc` 自己不做编译，它把活分给谁？四步各留下什么：`-E`、`-S`、`-c` 和链接分别产出哪种文件，报错时怎样一眼看出死在哪个阶段，ELF 头的五个字段与节表又各自回答什么问题？裸机没有 Linux 系统调用，`printf` 的输出凭什么能接到串口？最后是环境：第一次装工具链、make、OpenOCD、ST-Link 驱动和 SWD 线，每一步验收什么？
 - **交付**：能用 build/host/target 说明“交叉”交叉在哪；能按 binutils 的分工查符号、段、体积与格式；能说清 newlib 钩子如何把 `printf` 接到串口；能用 `gcc -###` 读出 cc1、as、collect2 的调度链；能亲手跑完四步并在 `.i`、`.s`、`.o`、`.elf` 里找到对应证据；能读 ELF 头五字段与节表的 `Addr`/`Off`/`Size`/`Flg`；能按五步搭好环境，并用三条命令确认自己用的是哪套工具链。
-- **边界**：本章以 Cortex-M 裸机、F407 工程与 xPack GNU Arm Embedded GCC 15.2.1 的来源记录为证据，概念适用于没有 OS 的 ARM 嵌入式工程。链接脚本、启动文件与 map 体积审计留给[第 6 章](./06-linker-startup-map.md)；Makefile 与遗留构建栈留给[第 7 章](./07-build-systems-legacy.md)；GDB 与 SWD 调试留给[第 20 章](../v2-reliability/20-debug-performance.md)；寄存器与外设地址留给[第 8 章][ch08]及后续驱动章。环境五步以 Windows 10/11 为主线，Linux 与 macOS 只给对应命令名；板上烧录与点灯步骤来源没有记录本机复跑，本章明确标为未跑。
+- **边界**：取证范围是 Cortex-M 裸机、F407 工程与 xPack GNU Arm Embedded GCC 15.2.1 的来源记录，概念适用于没有 OS 的 ARM 嵌入式工程。链接脚本、启动文件与 map 体积审计留给[第 6 章](./06-linker-startup-map.md)；Makefile 与遗留构建栈留给[第 7 章](./07-build-systems-legacy.md)；GDB 与 SWD 调试留给[第 20 章](../v2-reliability/20-debug-performance.md)；寄存器与外设地址留给[第 8 章][ch08]及后续驱动章。环境五步以 Windows 10/11 为主线，Linux 与 macOS 只给对应命令名；板上烧录与点灯步骤来源没有记录本机复跑，这里明确标为未跑。
 - **依据锚点**：B0《工具链全景：四个软件一台戏》（`mcu/docs/build/00-toolchain.md`）、B1《四步构建：从 main.c 到机器码》（`mcu/docs/build/01-four-steps.md`）、B2《ELF 解剖：把固件放上解剖台》（`mcu/docs/build/02-elf.md`）、S0《环境搭建：裸机工具链》（`mcu/docs/stm32/00-env.md`）；根书第 01 章《开发环境搭建》（`docs/01-开发环境搭建.md`）的 SWD 接线与 ST-Link 驱动部分。工具链版本、四步读数、ELF 数字均转引自上述来源。
 
 ## 先做出来
 
-这一节不需要开发板，只需要 `arm-none-eabi-gcc` 已经在 `PATH` 里。工具链还没装，先跳到后面的“环境搭建五步”，装完再回来。
+不需要开发板，只需要 `arm-none-eabi-gcc` 已经在 `PATH` 里。工具链还没装，先跳到后面的“环境搭建五步”，装完再回来。
 
 先看四步构建留不留下证据：
 
@@ -41,7 +41,7 @@ sh probe.sh steps
 
 GCC 用三个词描述“谁在哪台机器上干什么”：
 
-| 角色 | 回答的问题 | 本章取值 |
+| 角色 | 回答的问题 | 这里的取值 |
 | --- | --- | --- |
 | build | 工具链在哪种机器上被构建 | x86-64 PC |
 | host | 编译器在哪种机器上运行 | x86-64 PC |
@@ -61,14 +61,14 @@ GCC 用三个词描述“谁在哪台机器上干什么”：
 
 来源取证用的版本是 **xPack GNU Arm Embedded GCC 15.2.1**（取证记录里的安装路径是解压目录 `xpack-arm-none-eabi-gcc-15.2.1-1.1/bin`，盘符随解压位置而定），与 CI 的 arm-host job 同源；宿主侧是 **MinGW-Builds gcc 16.1.0**（x86-64）。F407 的交叉编译旗是 `-mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard`。版本号会变，target 与 ABI 的对应关系不会变。
 
-### 兵器谱：七件主兵器加两件量具
+### 工具清单：七件主工具加两件量具
 
-`gcc` 是调度员，真正动手的是 binutils。来源的兵器谱标题写“七件兵器”，表里另外还列了两件查看用的量具。七件主兵器各有一招：
+`gcc` 是调度员，真正动手的是 binutils。来源的标题写“七件兵器”，表里另外还列了两件查看用的量具。七件主工具各有一项主要用途：
 
-| 工具 | 一招鲜 | 在本章哪里出现 |
+| 工具 | 主要用途 | 在正文哪里出现 |
 | --- | --- | --- |
 | `as` | 汇编器：把 `.s` 汇编成 `.o` | 四步的第 3 步、`-###` 的第二行 |
-| `ld` | 链接器：把 `.o` 与库合成 `.elf` | 四步的第 4 步，链接脚本章 |
+| `ld` | 链接器：把 `.o` 与库合成 `.elf` | 四步的第 4 步，链接脚本 |
 | `ar` | 归档：把多个 `.o` 打成 `.a` 静态库 | 库的打包形式 |
 | `nm` | 符号表：列出 `.elf` 里的符号与地址 | 查 `U` 符号、查 `main` 与弱符号 |
 | `objcopy` | 格式转换：`.elf` 转 `.bin`/`.hex` | 烧录产物 |
@@ -92,9 +92,9 @@ PC 上的 C 标准库由 glibc 提供。glibc 依赖 Linux 系统调用，裸机
 | `_close/_lseek/_read/_isatty` | 文件操作占位 | 裸机一般空实现 |
 | `_exit/_kill/_getpid` | 进程占位 | 裸机一般空实现 |
 
-以 `printf` 为例：newlib 不替你决定“输出到哪”。你实现 `_write`，把收到的字节写进 UART 寄存器，`printf` 就走串口；也可以把输出接到 SWO，经 ITM 送出；或接到 Semihosting，经调试器送回 PC。上层代码不变，变的只是钩子的实现。这就是串口章里 printf 重定向的全部机关。
+以 `printf` 为例：newlib 不替你决定“输出到哪”。你实现 `_write`，把收到的字节写进 UART 寄存器，`printf` 就走串口；也可以把输出接到 SWO，经 ITM 送出；或接到 Semihosting，经调试器送回 PC。上层代码不变，变的只是钩子的实现。串口章里的 printf 重定向就是这一步。
 
-一个版本坑先记在这里：老版 newlib 默认不带浮点 `printf`，`%f` 可能不工作，需要在链接时加 `-u _printf_float`。这不是语法错误，编译阶段不会提醒你。
+一个版本差异先记在这里：老版 newlib 默认不带浮点 `printf`，`%f` 可能不工作，需要在链接时加 `-u _printf_float`。这不是语法错误，编译阶段不会提醒你。
 
 ### gcc -###：把调度剧本念出来
 
@@ -166,8 +166,8 @@ main:
 ```
 
 - `orr r3, r3, #32`：源码的 `|= (1UL << 5)` 被常量折叠成 `#32`。**读-改-写**在汇编里看得一清二楚：先 `ldr` 读、再 `orr` 改、最后 `str` 写。
-- 为什么不是一条原子指令？因为 C 里写的就是 `|=`；想避免翻车，要在外设侧换原子入口，这条边界在[第 2 章](./02-c-volatile-ub.md)已经讲过。
-- 地址 `0x40023830` 没出现在指令里，而是被塞进字面池（`.L6`），用 `ldr r3, .L6` 取。ARM 的立即数字段装不下 32 位地址，只能这么干。
+- 为什么不是一条原子指令？因为 C 里写的就是 `|=`；想避免这个问题，要在外设侧换原子入口，这条边界在[第 2 章](./02-c-volatile-ub.md)已经讲过。
+- 地址 `0x40023830` 没出现在指令里，而是被放进字面池（`.L6`），用 `ldr r3, .L6` 取。ARM 的立即数字段装不下 32 位地址，只能这样生成。
 
 `-O0` 下函数序言固定存在（`push {r7, lr}` 加 `add r7, sp, #0`，为了调试时栈回溯方便）；换 `-O2` 这两条会消失。优化等级怎样改写汇编，[第 2 章](./02-c-volatile-ub.md)有完整对照。
 
@@ -229,7 +229,7 @@ $ arm-none-eabi-nm -n blink.elf | grep -E ' (Reset_Handler|main)$'
 - **VMA（Virtual Memory Address）** 是运行时的地址。`.isr_vector` 与 `.text` 在 `0x0800_0000` 段（Flash），`.data`/`.bss` 在 `0x2000_0000` 段（SRAM）。这是链接脚本把“哪块东西放哪块存储”固定下来的结果，[第 6 章](./06-linker-startup-map.md)整章讲这个。
 - `text 660` = 392（向量表）+ 268（代码）。`bss 1536` 是 `._user_heap_stack` 预留的栈与堆空间，不占 Flash。
 - `Reset_Handler` 是 **W（弱符号）**：启动文件里给了默认实现，用户可以覆盖。芯片复位后 CPU 从 `0x0800_0000` 取向量表第 2 个字跳到这里。
-- `main` 的地址按 `nm` 口径记为 `080001aa`：`nm` 把 Thumb 位抹掉了，给出纯地址。换 `readelf -s` 问同一个符号，会显示 `080001ab`。**`readelf -s` 保留这一位，`nm` 抹掉它**。那一位 1 是 Cortex-M 只跑 Thumb 的标记，不是错位。断点用纯地址，往向量表或函数指针里填地址时用带 1 的形式。
+- `main` 的地址按 `nm` 口径记为 `080001aa`：`nm` 不显示 Thumb 位，给出纯地址。换 `readelf -s` 问同一个符号，会显示 `080001ab`。**`readelf -s` 保留这一位，`nm` 不显示它**。那一位 1 是 Cortex-M 只跑 Thumb 的标记，不是错位。断点用纯地址，往向量表或函数指针里填地址时用带 1 的形式。
 
 四道工序走完，一份 65 行的 C 源码变成了能烧进 Flash 的 `.elf`。每一步都留下可检查的中间文件：`.i`（纯 C）、`.s`（汇编）、`.o`（可重定位目标）、`.elf`（可执行）。
 
@@ -304,7 +304,7 @@ $ arm-none-eabi-nm -n blink.elf | grep -E ' (Reset_Handler|main)$'
 
 > F407 家族板卡形态参考：图为一块第三方 F407 板（LQFP100）；来源的基准板霸天虎为 F407ZGT6（LQFP144），外观不同、芯片同门（Wikimedia Commons，CC0，作者 Ordercrazy）。
 
-**第一步：装 ARM 交叉编译器。** 打开 Arm 官网开发者页，搜 “Arm GNU Toolchain”，下载 Windows 版 `arm-gnu-toolchain-14.x.rel*-mingw-w64-x86_64-arm-none-eabi.exe`。安装到最后一步务必勾选 “Add path to environment variable”，然后开一个**新的**终端用 `arm-none-eabi-gcc --version` 验证。来源环境章以 14.x 安装包为例，看到 `gcc version 14.x.x` 即成功；本书取证工程的版本是 15.2.1。版本号会变，验收点不变：`--version` 要报出 `arm-none-eabi` 目标。
+**第一步：装 ARM 交叉编译器。** 打开 Arm 官网开发者页，搜 “Arm GNU Toolchain”，下载 Windows 版 `arm-gnu-toolchain-14.x.rel*-mingw-w64-x86_64-arm-none-eabi.exe`。安装到最后一步务必勾选 “Add path to environment variable”，然后开一个**新的**终端用 `arm-none-eabi-gcc --version` 验证。来源环境章以 14.x 安装包为例，看到 `gcc version 14.x.x` 即成功；这里的取证工程版本是 15.2.1。版本号会变，验收点不变：`--version` 要报出 `arm-none-eabi` 目标。
 
 **第二步：装 make。** Windows 没有自带 make，最省心的来源是 **xPack Windows Build Tools**：下载 `xpack-windows-build-tools-*-win32-x64.zip`，解压到无中文无空格的路径（如 `D:\tools\xpack-build-tools`），把其 `bin` 目录加入系统 PATH，新开终端用 `make --version` 验证。
 
@@ -330,11 +330,11 @@ cd mcu/code/stm32/00-blink
 make
 ```
 
-产物有四个：`blink.elf` 带调试信息，GDB 用它；`blink.bin` 是纯二进制镜像；`blink.hex` 是 Intel HEX；`blink.map` 是符号地址清单。烧录命令是 `make flash`，来源描述的关键日志是 `** Programming Started **`、`** Verified OK **`、`** Resetting Target **`，随后 PF6 红灯约 1 Hz 闪烁。**来源没有记录本机板上复跑，本章只把它标为待上板验证，不把点灯现象当成已复现的实测。**
+产物有四个：`blink.elf` 带调试信息，GDB 用它；`blink.bin` 是纯二进制镜像；`blink.hex` 是 Intel HEX；`blink.map` 是符号地址清单。烧录命令是 `make flash`，来源描述的关键日志是 `** Programming Started **`、`** Verified OK **`、`** Resetting Target **`，随后 PF6 红灯约 1 Hz 闪烁。**来源没有记录本机板上复跑，这里只把它标为待上板验证，不把点灯现象当成已复现的实测。**
 
 ## 测量与证据
 
-本章数字来自 B0、B1、B2 与 S0 的取证记录。四步与 ELF 的读数由来源工程在 xPack GNU Arm Embedded GCC 15.2.1 上跑出；环境五步中，`--version` 类检查是来源给出的验收命令，板上烧录与点灯没有本机复跑记录。换工具链版本、换优化档或换板子，具体数字会变，判读方法不变。
+数字来自 B0、B1、B2 与 S0 的取证记录。四步与 ELF 的读数由来源工程在 xPack GNU Arm Embedded GCC 15.2.1 上跑出；环境五步中，`--version` 类检查是来源给出的验收命令，板上烧录与点灯没有本机复跑记录。换工具链版本、换优化档或换板子，具体数字会变，判读方法不变。
 
 | 取证项 | 来源命令 | 来源记录里的读数 |
 | --- | --- | --- |
@@ -371,12 +371,12 @@ make
 | 烧录成功但灯不亮 | 引脚号照搬了别的板子 | 霸天虎是 PF6，网上教程常是 PA8/PF9 | 查自己板子的原理图 |
 | 仿真器与板子都接 3.3V 后发热或连不上 | 两路电源对供 | 3.3V 是否接到板子的电源脚 | 板子单独 USB 供电，3.3V 只作检测 |
 | `.elf` 几十 KB，以为 Flash 装不下 | 把调试信息算进了固件 | `size` 的 text+data 才是 Flash 占用 | 看 `size`，不要看 `.elf` 文件大小 |
-| `readelf` 入口与 `nm` 地址差 1 | Thumb 状态位：`readelf` 保留、`nm` 抹掉 | 同一符号两工具对照：`readelf -s` 最低位为 1，`nm` 最低位为 0 | 断点用纯地址；填向量表或函数指针时用带 1 的形式 |
+| `readelf` 入口与 `nm` 地址差 1 | Thumb 状态位：`readelf` 保留、`nm` 不显示 | 同一符号两工具对照：`readelf -s` 最低位为 1，`nm` 最低位为 0 | 断点用纯地址；填向量表或函数指针时用带 1 的形式 |
 
 ## 离开检查
 
 1. build、host、target 各回答什么问题？为什么系统 `gcc` 编不了 F407？`arm-none-eabi-` 三段各代表什么？
-2. binutils 七件主兵器各有一招：`.elf` 转 `.bin` 用谁？反汇编用谁？列符号用谁？看体积用谁？
+2. binutils 七件主工具各有一项主要用途：`.elf` 转 `.bin` 用谁？反汇编用谁？列符号用谁？看体积用谁？
 3. 裸机为什么不能用 glibc？newlib 的 `_write` 与 `_sbrk` 分别解决什么问题？`printf` 想走串口，要动哪一层？
 4. `gcc -### -c` 为什么打印两行工具路径？链接时 `collect2` 与 `ld` 是什么关系？
 5. 四步各留下什么文件？`main.i` 为什么从 65 行涨到 1575 行？`.o` 的地址栏为什么是 0？`fatal error`、`error:`、`undefined reference` 分别死在哪一步？

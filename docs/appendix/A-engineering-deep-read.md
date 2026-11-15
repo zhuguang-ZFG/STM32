@@ -7,15 +7,15 @@ platforms: [generic]
 
 ## 本章罗盘
 
-- **问题**：串口接收链路的每一段（DMA 缓冲/字节队列/帧协议）各签了什么「合同」，违反后的典型症状是什么？IDLE 为什么不是帧边界？环形缓冲免锁的前提是什么？帧协议为什么选 COBS+CRC-16，「从任意字节流再同步」怎么实现？慢消费者的失败怎么变成可读计数？F1 与 F4 的 DMA 通道/流怎么对照，NDTR 与 BRR 的账怎么算？
-- **交付**：能按五契约走读一条完整接收链路；能写出契约 A/B 两种实现并说清各自空窗与禁项；能用 `tot_len`/不变式与 COBS+CRC 检查串验证实现；能把 NDTR/BRR/H7 32 字节四笔账当场复算。
+- **问题**：串口接收链路的每一段（DMA 缓冲/字节队列/帧协议）各签了什么「合同」，违反后的典型症状是什么？IDLE 为什么不是帧边界？环形缓冲免锁的前提是什么？帧协议为什么选 COBS+CRC-16，「从任意字节流再同步」怎么实现？慢消费者的失败怎么变成可读计数？F1 与 F4 的 DMA 通道/流怎么对照，NDTR 与 BRR 怎么算？
+- **交付**：能按五契约走读一条完整接收链路；能写出契约 A/B 两种实现并说清各自空窗与禁项；能用 `tot_len`/不变式与 COBS+CRC 检查串验证实现；能把 NDTR/BRR/H7 32 字节四项计算当场复算。
 - **边界**：本附录是工程深读层；UART/DMA 机制归 [v1 第 13、14 章](../v1-drivers/13-uart-framed-protocol.md)，Cache 一致性归 [第 34 章](../v4-platforms/34-multicore-cache.md)，队列语义归 [第 24 章](../v3-rtos/24-queue-semaphore-notification.md)。寄存器名按平台分列，禁混写。
-- **依据锚点**：双源合并：五契约骨架（`mcu/code/stm32/03-uart-dma`、`05-framed-protocol`、`code/common/reliability`）与 F103 双契约（根书附录 A）；出处登记见[附录 E](./E-sources-version-license.md) 注册表，账表见[附录 D](./D-glossary.md) 文末的账。
+- **依据锚点**：双源合并：五契约结构（`mcu/code/stm32/03-uart-dma`、`05-framed-protocol`、`code/common/reliability`）与 F103 双契约（根书附录 A）；出处登记见[附录 E](./E-sources-version-license.md) 注册表，数据表见[附录 D](./D-glossary.md) 文末的手算页。
 
 
 本附录把 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[v1 第 14 章](../v1-drivers/14-dma.md)、[v0 第 4 章](../v0-foundations/04-function-pointer-state-machine.md) 与 [第 41 章](../v6-labs-projects/41-dual-board-logger-project.md) 各讲一段的串口接收链路，接成**一条完整的字节旅程**：从线路上的电平跳变到业务层手里的一帧数据，每一段都签着一份「合同」。违反任何一条，链路会以典型症状死给你看，而症状往往出现在离违约现场很远的地方。
 
-两份来源并陈：**五契约骨架**（F407 线，三份配套工程为证据源：`mcu/code/stm32/03-uart-dma`、`mcu/code/stm32/05-framed-protocol`、`mcu/code/common/reliability`，测试在 `tests.c`）承载主线；**F103 双契约**（BluePill 线，Normal/Circular 两类缓冲区所有权契约）并入契约一/三的展开位。寄存器名按平台分开写，禁混写。
+两份来源并陈：**五契约结构**（F407 线，三份配套工程为证据源：`mcu/code/stm32/03-uart-dma`、`mcu/code/stm32/05-framed-protocol`、`mcu/code/common/reliability`，测试在 `tests.c`）承载主线；**F103 双契约**（BluePill 线，Normal/Circular 两类缓冲区所有权契约）并入契约一/三的展开位。寄存器名按平台分开写，禁混写。
 
 ## 0. 全景：一个字节的三段旅程
 
@@ -77,7 +77,7 @@ IDLE 的含义只有一个：**线路静默了一个帧时间**。它不携带�
 
 | 事件 | 硬件语义 | 应用该做什么 | 错误用法 |
 | --- | --- | --- | --- |
-| IDLE | 一个帧时间内无新字节 | 把新增区间搬进字节队列 | 当帧边界直接切帧 |
+| IDLE | 一个帧时间内无新字节 | 把新增区间加入字节队列 | 当帧边界直接切帧 |
 | ORE | RX 未读走时来了新字节 | 记数、读 DR 清除、考虑加大搬运频率 | 静默丢弃不计数 |
 | FE/NE | 帧错误/噪声 | 记数；连续出现先查波特率与时钟源 | 只清不查根因 |
 
@@ -94,7 +94,7 @@ ORE 的处理要点是**计数比恢复更重要**：丢的字节找不回来，
 if (q->count == Q_SLOTS) { q->dropped = sat_add(q->dropped, 1); return; }
 ```
 
-连**计数本身都用饱和加法**（`sat_add`），溢出场景下计数器自己先溢出归零，是最讽刺的翻车方式。
+连**计数本身都用饱和加法**（`sat_add`），溢出场景下计数器自己先溢出归零，是最反直觉的失败方式。
 
 ## 契约四：帧协议要能从任意字节流再同步
 
@@ -120,23 +120,23 @@ CRC-16/CCITT-FALSE（poly 0x1021，init 0xffff，不反射）
 | TX 发送截止期 | 每帧 100 ms 发不出算失败，补发同步分隔符 | 失败计数 |
 | RX 字节队列（512 B） | 溢出即失步：解析器进 DISCARD | 溢出计数 |
 | 记录器槽位（[第 41 章](../v6-labs-projects/41-dual-board-logger-project.md) 的 16 槽） | 丢新样本，保住历史 | `dropped`（饱和加法） |
-| 配置代次（双槽） | 代次失配的旧读数不进记录 | 按代次分账 |
+| 配置代次（双槽） | 代次失配的旧读数不进记录 | 按代次区分 |
 
-「丢新还是丢旧」是每个系统的显式决定：TX 队列**保旧弃新**（发送中的帧不能撕）、记录器**保历史弃新样**（故障时刻的数据最值钱）。没有对错，但**必须写下来**。健康监督的底座就在这：监督的不是「任务活着」，是「每一层的失败计数没有增长」（[v1 第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)）。
+「丢新还是丢旧」是每个系统的显式决定：TX 队列**保旧弃新**（发送中的帧不能截断）、记录器**保历史弃新样**（故障时刻的数据最重要）。没有对错，但**必须写下来**。健康监督的基础就在这里：监督的不是「任务活着」，是「每一层的失败计数没有增长」（[v1 第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)）。
 
 ![手绘板：验证矩阵，刺激、可见结果、不证明什么（原理示意，非实拍）](/images/app-a-verify.png)
 
-## 六、跨到 ESP32-S3：同一 codec，换一副骨架
+## 六、跨到 ESP32-S3：同一 codec，换一套结构
 
-`code/esp32/06-framed-protocol` 与 F407 版**共用同一个 codec**（源文件级复用），只换搬运骨架：收字节从「IDLE 中断 + DMA 环形 + NDTR 轮询」换成「驱动事件回调 + ring buffer」（[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)）；帧边界与溢出语义同一份代码；交叉验证用同一份 CLI 对两块板。这就是 [第 41 章](../v6-labs-projects/41-dual-board-logger-project.md) port 层的含义：**协议与健康逻辑是公共资产，随硬件变的只有搬运层**。
+`code/esp32/06-framed-protocol` 与 F407 版**共用同一个 codec**（源文件级复用），只换搬运结构：收字节从「IDLE 中断 + DMA 环形 + NDTR 轮询」换成「驱动事件回调 + ring buffer」（[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)）；帧边界与溢出语义同一份代码；交叉验证用同一份 CLI 对两块板。这就是 [第 41 章](../v6-labs-projects/41-dual-board-logger-project.md) port 层的含义：**协议与健康逻辑是公共资产，随硬件变的只有搬运层**。
 
-## 七、把时间算到微秒（F103 账， SYSCLK 72 MHz、115200、8N1）
+## 七、把时间算到微秒（F103 数据，SYSCLK 72 MHz、115200、8N1）
 
-分档与 BRR 算式见 附录 D 文末的账。四笔：
+分档与 BRR 算式见附录 D 文末的手算页。四项：
 
 - **一位与 IDLE**：一位约 8.68 µs；8N1 一帧 10 位约 86.8 µs；IDLE 置位 = RX 空闲满一个帧时间，它不表示协议长度字段已到。
 - **NDTR 不是字节进度条**：普通模式字节宽 128 缓冲读到 NDTR=100，已写 128−100=28 字节；循环模式不要用这一减（NDTR 会重装）；半字宽度的单位是半字不是字节。
-- **BRR 的小数位**：USART1 在 APB2（72 MHz）：`USARTDIV = 72e6/(16×115200) = 39.0625`，低 4 位收成 1 → BRR=`0x271`，结果正好 115200；丢掉这 1 个小数位才有约 0.16% 误差。0.16% 属于 USART2@36 MHz 的 `0x138`，记账写清是哪个 USART。
+- **BRR 的小数位**：USART1 在 APB2（72 MHz）：`USARTDIV = 72e6/(16×115200) = 39.0625`，低 4 位收成 1 → BRR=`0x271`，结果正好 115200；丢掉这 1 个小数位才有约 0.16% 误差。0.16% 属于 USART2@36 MHz 的 `0x138`，计算时写清是哪个 USART。
 - **H7 的 32 字节**：D-Cache 行长 32 字节，clean/invalidate 按 32 B 对齐整行做；只对刚写的几字节 invalidate 会连累同行其余字节（[第 34 章](../v4-platforms/34-multicore-cache.md)）；内存能否被所选 DMA 访问是另一件事。
 
 ## 八、最小验证矩阵
@@ -153,7 +153,7 @@ CRC-16/CCITT-FALSE（poly 0x1021，init 0xffff，不反射）
 | seq 乱序 / 旧响应 | 拒绝配对 | seq 回显核对 |
 | H7 Cache 开/关对照 | 数据一致或明确失败 | 内存段、Cache 操作、字节对比 |
 
-`code/common/reliability/tests.c` 把这些场景做成可跑的 C 断言（全切分点、时间回绕、背压、饱和计数、守护式模糊），`sh probe.sh` 一条命令全绿；上板之前，协议层的正确性已在宿主机上钉死过一遍。
+`code/common/reliability/tests.c` 把这些场景做成可跑的 C 断言（全切分点、时间回绕、背压、饱和计数、守护式模糊），`sh probe.sh` 一条命令全绿；上板之前，协议层的正确性已在宿主机上核对过一遍。
 
 ## 九、一页总图
 
@@ -168,4 +168,4 @@ CRC-16/CCITT-FALSE（poly 0x1021，init 0xffff，不反射）
                     ━━━━━━ 契约二：IDLE 只是搬运通知 ━━━━
 ```
 
-五个契约背下来，在任何一颗芯片上搭串口接收链路，要做的都只剩同一件事：**给每一段找对所有的主人，把失败变成数字。** 出处与版本快照见附录 E 注册表；相关账表见附录 D 文末的账（附录落位后链接）。
+五个契约背下来，在任何一颗芯片上搭串口接收链路，要做的都只剩同一件事：**给每一段找对所有的主人，把失败变成数字。** 出处与版本快照见附录 E 注册表；相关数据表见附录 D 文末的手算页（附录落位后链接）。

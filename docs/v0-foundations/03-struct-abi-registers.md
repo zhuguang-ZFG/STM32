@@ -5,18 +5,18 @@ platforms: [f407, f103]
 
 # 结构体、ABI 与寄存器映射
 
-> 同一块寄存器有两种写法：`GPIOF->BSRR = 1 << 6;` 和 `*(volatile uint32_t *)(0x40021418) = 1 << 6;`。前者凭什么等价于后者？答案不在语法里，在三条布局规则里。
+> 同一块寄存器有两种写法：`GPIOF->BSRR = 1 << 6;` 和 `*(volatile uint32_t *)(0x40021418) = 1 << 6;`。两者等价，依据是三条布局规则，而不是语法。
 
 ## 本章罗盘
 
 - **问题**：`GPIOF->BSRR` 展开后为什么正好落在 `0x40021418`？一个只有 `a`、`b`、`c` 三个成员、数据宽度合计 6 字节的结构体，为什么 `sizeof` 是 12？为什么硬件寄存器映射不能用位域，也不能随手加 `#pragma pack(1)`？三个问题分别指向成员顺序、对齐填充与编译器自由裁量的边界。
 - **交付**：能拿到一张寄存器地图就写出对应的 `TypeDef`，用 `offsetof`、`sizeof`、`_Static_assert` 三件工具逐成员对账；能手算含填充结构体的每个偏移，并在内存画布上指出洞的位置；能说清结构体映射担保什么、不担保什么，以及为什么位域与 pack 不属于寄存器。
-- **边界**：本章逐成员核对的是 F407 的 `stm32f407xx.h`；F103 的寄存器组不是同一张地图，来源 C4 没有给出它的成员表与偏移，本章不补，寄存器级差异指向卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。结构体按值传参、返回时的寄存器与栈约定属于调用约定，留给[第 4 章](./04-function-pointer-state-machine.md)。来源记录里板上 GDB 对照仍标为待回填，本章不把它写成已完成。位域布局的可移植性只有编译器文档与来源结论，没有跨工具链对照实验。
+- **边界**：逐成员核对的是 F407 的 `stm32f407xx.h`；F103 的寄存器组不是同一张地图，来源 C4 没有给出它的成员表与偏移，这里不补，寄存器级差异指向卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。结构体按值传参、返回时的寄存器与栈约定属于调用约定，留给[第 4 章](./04-function-pointer-state-machine.md)。来源记录里板上 GDB 对照仍标为待回填，这里不把它写成已完成。位域布局的可移植性只有编译器文档与来源结论，没有跨工具链对照实验。
 - **依据锚点**：C4《结构体与 ABI：一个结构体罩住整组寄存器》（`mcu/docs/c/04-struct-abi.md`）及其取证工程 `mcu/code/c/04-struct-abi/probe.c`、`broken.c`；`stm32f407xx.h` 第 526–537 行的 `GPIO_TypeDef` 定义、RM0090 §8.4 的寄存器地图与 ARM AAPCS 的布局规则均转引自 C4；变量段归属与指针宽度在[第 1 章](./01-c-memory-model.md)，volatile 的访存合同在[第 2 章](./02-c-volatile-ub.md)。
 
 ## 先做出来
 
-这一节不需要开发板，只需要一个宿主 `gcc`。目标只有一个：先押两个数字，再让编译器当场对账。
+不需要开发板，只需要一个宿主 `gcc`。目标只有一个：先押两个数字，再让编译器当场对账。
 
 ```bash
 cd mcu/code/c/04-struct-abi
@@ -140,7 +140,7 @@ Packed_t: sizeof=8, offsets a=4 b=0 c=5
 
 ![结构体对齐：char a、int b、char c 之间插入 3 字节与 3 字节填充，sizeof 从 6 变 12](/figures/c-04-struct-abi.svg)
 
-尾部填充买的不是浪费，是数组 stride。`broken.c` 里把 `Padded_t arr[2]` 摆开实测：
+尾部填充的作用是保证数组 stride，占用的字节不算浪费。`broken.c` 里把 `Padded_t arr[2]` 摆开实测：
 
 ```text
 Padded_t: sizeof = 12  a=0 b=4 c=8
@@ -182,7 +182,7 @@ bitfield layout is implementation-defined; use mask macros for hardware register
 /* 写：reg = (reg & ~REG_FIELD_B_MASK) | ((val << 1) & REG_FIELD_B_MASK) */
 ```
 
-掩码的移位计数怎么证明小于 32 位、`1UL` 与 `1` 差在哪，[第 2 章](./02-c-volatile-ub.md)已经逐条对过账；这里只记住结论：位域管软件内部打包，掩码管硬件寄存器。
+掩码的移位计数怎么证明小于 32 位、`1UL` 与 `1` 差在哪，[第 2 章](./02-c-volatile-ub.md)已经逐条核对过；这里只记住结论：位域管软件内部打包，掩码管硬件寄存器。
 
 ### 端序与打包：小端确认与 pack 的用途
 
@@ -192,7 +192,7 @@ bitfield layout is implementation-defined; use mask macros for hardware register
 endian: 0x12345678 stored as 78 56 34 12 -> little-endian
 ```
 
-最低有效字节 `0x78` 住在最低地址，这是小端。来源记录写明 ARM Cortex-M4 默认小端；本章只在宿主上实测了这一读数，没有把它扩展成“所有 ARM 芯片都如此”的断言。
+最低有效字节 `0x78` 住在最低地址，这是小端。来源记录写明 ARM Cortex-M4 默认小端；这里只在宿主上实测了这一读数，没有把它扩展成“所有 ARM 芯片都如此”的断言。
 
 `#pragma pack(1)` 或 `__attribute__((packed))` 能把填充压掉，`broken.c` 里同一组成员在 pack(1) 下变成 6 字节：
 
@@ -219,13 +219,13 @@ Packed1_t: sizeof = 6  a=0 b=1 c=5   (b 落在 1 = 非对齐访问)
 | 用位域描述寄存器位 | 不能，布局实现定义 | 掩码宏 + 移位 |
 | 同一份 TypeDef 跨芯片复用 | 不能，寄存器地图是芯片专属 | 每颗芯片各自对账 |
 | 用 pack 压缩寄存器结构体 | 不能，破坏对齐访问 | pack 只用于协议帧 |
-| 结构体按值传参、按值返回 | 不在本章范围 | [第 4 章](./04-function-pointer-state-machine.md)的调用约定 |
+| 结构体按值传参、按值返回 | 不在讨论范围 | [第 4 章](./04-function-pointer-state-machine.md)的调用约定 |
 
-最后一行要说清楚：本章只讨论“结构体在内存里怎么排”，不讨论“结构体作为参数怎么进寄存器、怎么走栈、大结构体返回时谁负责拷贝”。那是 AAPCS 的调用约定部分，第 4 章展开。
+最后一行要说清楚：这里只讨论“结构体在内存里怎么排”，不讨论“结构体作为参数怎么进寄存器、怎么走栈、大结构体返回时谁负责拷贝”。那是 AAPCS 的调用约定部分，第 4 章展开。
 
 ## 测量与证据
 
-本章所有布局读数来自 C4 的取证工程。来源记录与本次复跑一致，复跑环境：宿主 MinGW-Builds gcc 16.1.0（x86_64-posix-seh），交叉 GNU Arm Embedded Toolchain 10.3.1，编译旗 `-std=c11 -Wall -Wextra -O0`。布局由 ABI 决定，与优化档无关，`-O0` 只是让取证工程保持最直白的形式。
+布局读数全部来自 C4 的取证工程。来源记录与本次复跑一致，复跑环境：宿主 MinGW-Builds gcc 16.1.0（x86_64-posix-seh），交叉 GNU Arm Embedded Toolchain 10.3.1，编译旗 `-std=c11 -Wall -Wextra -O0`。布局由 ABI 决定，与优化档无关，`-O0` 只是让取证工程保持最直白的形式。
 
 | 取证项 | 命令 | 读数 |
 | --- | --- | --- |
@@ -262,7 +262,7 @@ sizeof(GPIO_TypeDef) = 0x28  <-- target: 0x28
 assert-fail.c:6:1: error: static assertion failed: "GPIO_TypeDef size must be 0x28 (10 x uint32)"
 ```
 
-板上那一步要标清楚：来源记录里在 F407 工程用 GDB 执行 `print &((GPIO_TypeDef*)0)->BSRR`、再对照 `0x40021400 + 0x18` 的步骤，只做到编译期核实，读数待回填。本章能用编译期断言证明的内容不依赖这块板子；板上对照是复核，不是前提。
+板上那一步要标清楚：来源记录里在 F407 工程用 GDB 执行 `print &((GPIO_TypeDef*)0)->BSRR`、再对照 `0x40021400 + 0x18` 的步骤，只做到编译期核实，读数待回填。能用编译期断言证明的内容不依赖这块板子；板上对照是复核，不是前提。
 
 判断“真的会了”：给你一张没见过的寄存器地图，你能在十分钟内写出 `TypeDef`、为每个成员补 `_Static_assert`，并在不运行程序的情况下算出 `sizeof`；再给你一个含填充的结构体，你能在纸上画出每个洞的位置和数组 stride。
 
@@ -282,19 +282,19 @@ assert-fail.c:6:1: error: static assertion failed: "GPIO_TypeDef size must be 0x
 
 ## 跨平台边界
 
-本章的布局规则不是 F407 专属。声明顺序、成员对齐、结构体对齐与数组 stride 来自 ARM AAPCS，属于架构级约定；两平台的 C 编译器都受它约束，所以“成员按声明顺序排、地址按对齐递增、成员不许重排”这套算法可以带着走。`offsetof`、`sizeof`、`_Static_assert` 三件工具也是标准 C，不依赖某一颗芯片。
+这些布局规则不是 F407 专属。声明顺序、成员对齐、结构体对齐与数组 stride 来自 ARM AAPCS，属于架构级约定；两平台的 C 编译器都受它约束，所以“成员按声明顺序排、地址按对齐递增、成员不许重排”这套算法可以带着走。`offsetof`、`sizeof`、`_Static_assert` 三件工具也是标准 C，不依赖某一颗芯片。
 
-但寄存器块的具体形状是芯片专属。本章逐成员核对的是 F407 的 `stm32f407xx.h`，由此得到的 `BSRR = 0x18`、`sizeof(GPIO_TypeDef) = 0x28`、`GPIOF_BASE = 0x40021400` 都只属于这张地图。来源 C4 没有给出 F103 的 GPIO 成员表、偏移或基址，本章不替它补；把 F407 的寄存器名、偏移、时钟或引脚直接套到 F103 上，是本章明确划出的红线。两平台的寄存器级差异、移植检查表与型号对照，放在卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。
+但寄存器块的具体形状是芯片专属。逐成员核对的是 F407 的 `stm32f407xx.h`，由此得到的 `BSRR = 0x18`、`sizeof(GPIO_TypeDef) = 0x28`、`GPIOF_BASE = 0x40021400` 都只属于这张地图。来源 C4 没有给出 F103 的 GPIO 成员表、偏移或基址，这里不替它补；把 F407 的寄存器名、偏移、时钟或引脚直接套到 F103 上，是这里明确划出的红线。两平台的寄存器级差异、移植检查表与型号对照，放在卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。
 
 其余几条边界同样按来源处理：
 
-| 事项 | 本章的证据范围 | 跨平台时的处理 |
+| 事项 | 这里的证据范围 | 跨平台时的处理 |
 | --- | --- | --- |
 | 布局规则 | AAPCS 三规则，来源 C4 | 规则可复用，具体偏移必须逐芯片对账 |
 | GPIO 寄存器地图 | 仅 F407 头文件 | F103 不照搬，指向[第 28 章](../v4-platforms/28-chip-migration-differences.md)、[第 29 章](../v4-platforms/29-gd32-arm-riscv.md) |
 | 端序 | 宿主实测小端；来源写明 M4 默认小端 | F103 未测，不在两平台间泛化 |
 | pack 的对齐风险 | Cortex-M4 上可能触发 `UsageFault` | 具体异常行为按目标平台手册复核 |
-| 结构体传参/返回 | 本章未展开 | 第 4 章的调用约定 |
+| 结构体传参/返回 | 这里未展开 | 第 4 章的调用约定 |
 
 ## 离开检查
 

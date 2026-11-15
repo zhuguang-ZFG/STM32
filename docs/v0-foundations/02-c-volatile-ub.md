@@ -5,18 +5,18 @@ platforms: [generic]
 
 # volatile、const 与未定义行为
 
-> 同一段轮询，`-O0` 跑得好好的，`-O2` 一开就死等。编译器没有坏，它只是不知道那个地址后面藏着一台会自己变状态的机器。
+> 同一段轮询，`-O0` 跑得好好的，`-O2` 一开就死等。编译器没有错，它只是不知道那个地址对应的硬件会在程序之外改变值。
 
 ## 本章罗盘
 
 - **问题**：同一段轮询，`-O0` 能等到标志位，`-O2` 却原地死转；`flag ^= 1` 已经标了 `volatile`，中断里的一次更新还是会丢；`x + 1 > x` 在 `x = INT_MAX` 时返回 1，`1u << 33` 在 `-O0` 与 `-O2` 下给出两个答案。三个现象分别指向优化器的授权范围、`volatile` 的合同边界和未定义行为的代价。
 - **交付**：能给任意一段访存代码生成 `-O0` 与 `-O2` 两份汇编，指出哪次读被缓存、哪次写被删除、哪几次读-改-写被合并；能写对 `volatile` 与 `const` 的每个组合；能把掩码移位的计数证明到编译期或运行期；能用 `union` 或 `memcpy` 合法地看 `float` 的位模式。
-- **边界**：本章以单核 Cortex-M4 裸机为主，例子来自来源记录的 x86-64 宿主与 Cortex-M4 交叉两套产物；宿主读数只用于复现，板上的真相以 M4 那份为准。F407 没有数据 cache，`volatile` 加屏障基本够用；ESP32-S3 这类带数据 cache 的核，DMA 共享缓冲还要清理与无效化。MISRA 一节是自选十条，不是全量合规。结构体布局与寄存器映射见[第 3 章](./03-struct-abi-registers.md)，工具链与优化档见[第 5 章](./05-toolchain-four-steps.md)，链接与启动见[第 6 章](./06-linker-startup-map.md)，HardFault 现场见[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。
-- **依据锚点**：C3《volatile：跟编译器约法三章》（`mcu/docs/c/03-volatile.md`）、C7《未定义行为与 MISRA-C 精要》（`mcu/docs/c/07-ub-misra.md`）；ISO/IEC 9899:2018 §5.1.2.3（程序执行）、§6.7.3（类型限定符）与附录 J.2（未定义行为清单），均转引自上述来源；MISRA C:2012 的规则编号同样转引自 C7。变量的段归属与 `const` 的 RAM 账在[第 1 章](./01-c-memory-model.md)。
+- **边界**：以单核 Cortex-M4 裸机为主，例子来自来源记录的 x86-64 宿主与 Cortex-M4 交叉两套产物；宿主读数只用于复现，板上的真相以 M4 那份为准。F407 没有数据 cache，`volatile` 加屏障基本够用；ESP32-S3 这类带数据 cache 的核，DMA 共享缓冲还要清理与无效化。MISRA 一节是自选十条，不是全量合规。结构体布局与寄存器映射见[第 3 章](./03-struct-abi-registers.md)，工具链与优化档见[第 5 章](./05-toolchain-four-steps.md)，链接与启动见[第 6 章](./06-linker-startup-map.md)，HardFault 现场见[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。
+- **依据锚点**：C3《volatile：跟编译器约法三章》（`mcu/docs/c/03-volatile.md`）、C7《未定义行为与 MISRA-C 精要》（`mcu/docs/c/07-ub-misra.md`）；ISO/IEC 9899:2018 §5.1.2.3（程序执行）、§6.7.3（类型限定符）与附录 J.2（未定义行为清单），均转引自上述来源；MISRA C:2012 的规则编号同样转引自 C7。变量的段归属与 `const` 的 RAM 占用在[第 1 章](./01-c-memory-model.md)。
 
 ## 先做出来
 
-这一节不需要开发板，只需要两套编译器：宿主 `gcc` 和 `arm-none-eabi-gcc`。目标是把同一份源码在 `-O0` 与 `-O2` 下各编一次，亲眼看到优化器删掉了什么。
+不需要开发板，只需要两套编译器：宿主 `gcc` 和 `arm-none-eabi-gcc`。目标是把同一份源码在 `-O0` 与 `-O2` 下各编一次，亲眼看到优化器删掉了什么。
 
 先跑 volatile 取证工程：
 
@@ -66,7 +66,7 @@ is_bigger_after_inc(INT_MAX)   -O0 → 1    -O2 → 1    -O2 -fwrapv → 0
 shift_oob(1u, 33u)             -O0 → 2    -O2 → 0
 ```
 
-两个读数值得停一下：`-O0` 也把 `x + 1 > x` 折成了 1，老教程说的“-O0 返回 0”在 gcc 16 上不成立；`1u << 33` 却在两档之间变了脸，因为它是 UB，没有标准答案。这两件事是本章后半程的主线。
+两个读数值得停一下：`-O0` 也把 `x + 1 > x` 折成了 1，老教程说的“-O0 返回 0”在 gcc 16 上不成立；`1u << 33` 却在两档之间变了脸，因为它是 UB，没有标准答案。这两件事支配后半章的讨论。
 
 ## 机制
 
@@ -86,11 +86,11 @@ C 标准给编译器的授权写在 §5.1.2.3：只要可观察行为不变，�
 
 ### volatile 的访存合同：四个现场
 
-取证环境是两套工具链，同日实测，均 `-std=c11 -Wall -Wextra` 零告警：宿主 MinGW-Builds gcc 16.1.0（x86_64-posix-seh）与 xPack arm-none-eabi-gcc 15.2.1（`-mcpu=cortex-m4 -mthumb`）。两边优化决策一模一样：同一个优化器、同一条 as-if 规则，只是指令形式不同。x86 那份方便在本机 30 秒复现，Cortex-M4 那份才是板子上真正会跑的东西。
+取证环境是两套工具链，同日实测，均 `-std=c11 -Wall -Wextra` 零告警：宿主 MinGW-Builds gcc 16.1.0（x86_64-posix-seh）与 xPack arm-none-eabi-gcc 15.2.1（`-mcpu=cortex-m4 -mthumb`）。两边优化决策一模一样：同一个优化器、同一条 as-if 规则，只是指令形式不同。x86 那份方便在本机 30 秒复现，Cortex-M4 那份对应板子上实际运行的代码。
 
 #### 现场 1：轮询状态位，读一次 vs 每次读
 
-源码只有一处差别：`unsigned int` 与 `volatile unsigned int`。`-O0` 下 `poll_plain` 每圈都真访存，这才是“-O0 能跑”的真相。`-O2` 下 x86-64 把判断依据读到寄存器一次（`testb $1, g_status(%rip)`），没置位就跳进 `.L3: jmp .L3`；M4 那份就是前面看过的 `b .L3`，一条指令的紧死循环，没有访存、没有中断以外的出口。板子看起来活着（SWD 还能连），这段代码不会往下走。判断依据被缓存在寄存器里，bit0 后来被硬件置 1，代码不会知道。换 `poll_volatile`，`-O2` 下循环回到每圈访存，x86 是 `testb $1, v_status(%rip)`，M4 是 `ldr r3, [r2, #4]`。
+源码只有一处差别：`unsigned int` 与 `volatile unsigned int`。`-O0` 下 `poll_plain` 每圈都真访存，这就是“-O0 能跑”的原因。`-O2` 下 x86-64 把判断依据读到寄存器一次（`testb $1, g_status(%rip)`），没置位就跳进 `.L3: jmp .L3`；M4 那份就是前面看过的 `b .L3`，一条指令的无出口循环，没有访存、没有中断以外的出口。板子看起来仍在运行（SWD 还能连），但这段代码不会往下走。判断依据被缓存在寄存器里，bit0 后来被硬件置 1，代码不会知道。换 `poll_volatile`，`-O2` 下循环回到每圈访存，x86 是 `testb $1, v_status(%rip)`，M4 是 `ldr r3, [r2, #4]`。
 
 ![编译器把 flag 缓存进寄存器，ISR 在内存里写 1；轮询循环因此看不到更新](/figures/c-03-volatile.svg)
 
@@ -171,11 +171,11 @@ isr_toggle:
 | `const uint32_t *p` | `*p = x` | 只读查表、输入参数 |
 | `uint32_t * const p` | `p = &b` | 固定指向的句柄 |
 | `const volatile uint32_t *p` | 程序不许写，且每次读都真访存 | 只读状态寄存器（如 `IDR`、`SR`） |
-| `volatile uint32_t * const p` | 指针锁死、目标每次真访存 | 外设寄存器块句柄 |
+| `volatile uint32_t * const p` | 指针本身不可改、目标每次真访存 | 外设寄存器块句柄 |
 
 `const volatile` 不是自相矛盾：`volatile` 说的是硬件可能绕过编译器改它，`const` 说的是本程序不该写它。CMSIS 的 `GPIO_TypeDef` 用 `__IO`（即 `volatile` 的封装）声明整组寄存器；读 `IDR` 这类只读寄存器时，`const volatile` 才是完整语义。
 
-两个常见误会。其一，`const` 不等于编译期常量：`const int n = 5;` 仍是对象，只是不可写，地址与段归属照旧，`const` 大数组还会被放进 Flash（[第 1 章](./01-c-memory-model.md)算过这笔 RAM 账）。其二，`volatile` 不改变变量的段归属和地址，只改每一次访问的方式。用强制转换去掉真 `const` 对象的限定再写，是未定义行为，编译器可以按“你不会这么干”继续优化。
+两个常见误会。其一，`const` 不等于编译期常量：`const int n = 5;` 仍是对象，只是不可写，地址与段归属照旧，`const` 大数组还会被放进 Flash（[第 1 章](./01-c-memory-model.md)算过这项 RAM 开销）。其二，`volatile` 不改变变量的段归属和地址，只改每一次访问的方式。用强制转换去掉真 `const` 对象的限定再写，是未定义行为，编译器可以按“你不会这么干”继续优化。
 
 ### UB：编译器拿“你不会越界”当燃料
 
@@ -195,7 +195,7 @@ is_bigger_after_inc:
     bx      lr
 ```
 
-加法、比较都被“你不会溢出”这条假设吃掉了。`-fwrapv` 把有符号溢出重新定义为按补码回绕，编译器失去假设权，只能真算：
+加法、比较都被“你不会溢出”这条假设消除了。`-fwrapv` 把有符号溢出重新定义为按补码回绕，编译器失去假设权，只能真算：
 
 ```asm
 is_bigger_after_inc:
@@ -214,7 +214,7 @@ is_bigger_after_inc:
 | `-O2` | 1 | 恒真折叠 |
 | `-O2 -fwrapv` | 0 | 溢出按回绕，INT_MAX+1 = INT_MIN，比较为假 |
 
-`-O0` 那一行是本章最该记住的反例。把宿主 `-O0` 汇编拉出来，函数体是 `pushq %rbp; movq %rsp, %rbp; movl %ecx, 16(%rbp); movl $1, %eax; popq %rbp; ret`，加法与比较都不在，只剩装载常量；`main` 里仍规规矩矩 `call`，可被调用的函数已经不算账了。`-O0` 不等于逐行照实执行，它只是不在调用点做折叠、不在函数间传播。
+`-O0` 那一行值得单独记住。把宿主 `-O0` 汇编拉出来，函数体是 `pushq %rbp; movq %rsp, %rbp; movl %ecx, 16(%rbp); movl $1, %eax; popq %rbp; ret`，加法与比较都不在，只剩装载常量；`main` 里仍规规矩矩 `call`，可被调用的函数已经不再执行加法和比较。`-O0` 不等于逐行照实执行，它只是不在调用点做折叠、不在函数间传播。
 
 ![UB 编译器优化陷阱：源代码 → 编译器假设无 UB → 折叠为常量 → 运行时与数学期望偏离](/anim/ub-compiler-trap.svg)
 
@@ -300,11 +300,11 @@ MISRA-C:2012 全本 300 多条，汽车与医疗行业做全量合规。嵌入�
 | 9 | volatile 纪律 | 外设寄存器与 ISR 共享变量必须 volatile；但它不解决原子性 |
 | 10 | 无副作用依赖 | `&&` 与逻辑或的右侧、`if` 条件里的副作用不许是程序依赖的一部分 |
 
-边界要说清：这十条是自选清单，不是 MISRA 合规证书；MISRA 也不能替代编译器，它约束写法，抓现行仍靠警告与静态分析。三道防线按成本排：`-Wall -Wextra`（配 `-Werror` 进 CI）零成本；`-Wconversion -Wsign-conversion`、`-Wstrict-aliasing`、`-Warray-bounds`、`-Wuninitialized`、`-fstack-usage` 是专项；cppcheck、clang-tidy、gcc `-fanalyzer` 看数据流。UBSan 在宿主上最有效，来源记录的 MinGW gcc 16.1.0 没带运行库，交叉链支持也有限，所以嵌入式的主战场是第一、三道防线。
+边界要说清：这十条是自选清单，不是 MISRA 合规证书；MISRA 也不能替代编译器，它约束写法，发现违规仍靠警告与静态分析。三道防线按成本排：`-Wall -Wextra`（配 `-Werror` 进 CI）零成本；`-Wconversion -Wsign-conversion`、`-Wstrict-aliasing`、`-Warray-bounds`、`-Wuninitialized`、`-fstack-usage` 是专项；cppcheck、clang-tidy、gcc `-fanalyzer` 看数据流。UBSan 在宿主上最有效，来源记录的 MinGW gcc 16.1.0 没带运行库，交叉链支持也有限，所以嵌入式的主要手段是第一、三道防线。
 
 ## 测量与证据
 
-本章所有数字来自来源 C3、C7 的实测记录，两套工具链同日取证：宿主 MinGW-Builds gcc 16.1.0（x86_64-posix-seh），交叉 xPack arm-none-eabi-gcc 15.2.1（`-mcpu=cortex-m4 -mthumb`），编译旗 `-std=c11 -Wall -Wextra`，零告警。换编译器、换版本、换优化档，指令形状会变，判读方法不变。
+全部数字来自来源 C3、C7 的实测记录，两套工具链同日取证：宿主 MinGW-Builds gcc 16.1.0（x86_64-posix-seh），交叉 xPack arm-none-eabi-gcc 15.2.1（`-mcpu=cortex-m4 -mthumb`），编译旗 `-std=c11 -Wall -Wextra`，零告警。换编译器、换版本、换优化档，指令形状会变，判读方法不变。
 
 | 取证项 | 命令 | 来源记录里的结果 |
 | --- | --- | --- |
@@ -334,8 +334,8 @@ MISRA-C:2012 全本 300 多条，汽车与医疗行业做全量合规。嵌入�
 
 三点读法：
 
-1. B 行纠正一个流行说法：去掉 `delay` 参数的 volatile，灯照闪，因为 `__asm__ volatile ("nop")` 独立挡住了删除。要复现翻车，得连 `nop` 一起删（C 行）。
-2. F 行比 C 行更常见也更阴：漏的是寄存器宏里一个词，现象不是不闪，而是偶尔配不上、换颗芯片就不好使。
+1. B 行纠正一个流行说法：去掉 `delay` 参数的 volatile，灯照闪，因为 `__asm__ volatile ("nop")` 独立挡住了删除。要复现这个失败，得连 `nop` 一起删（C 行）。
+2. F 行比 C 行更常见，也更隐蔽：漏的是寄存器宏里一个词，现象不是不闪，而是偶尔配置失败、换一颗芯片就失效。
 3. D 行说明 volatile 保的是“每次使用都可见”，不是“必须占一块内存”：`delay` 是 static 且被内联，计数留在寄存器；MMIO 不受影响，地址硬编码，编译器无处可藏。
 
 自查漏没漏 volatile，一条命令数宏展开后的结果：
@@ -354,10 +354,10 @@ arm-none-eabi-gcc -mcpu=cortex-m4 -E main.c | grep -c 'volatile uint32_t'
 
 | 现象 | 原因 | 区分证据 | 下一动作 |
 | --- | --- | --- | --- |
-| `-O0` 一切正常，发布档翻车 | 优化器按 as-if 删改访存 | 同档复现，查 `-O2` 汇编 | 功能验证至少跑一遍与发布一致的 `-O` 档 |
+| `-O0` 一切正常，发布档出错 | 优化器按 as-if 删改访存 | 同档复现，查 `-O2` 汇编 | 功能验证至少跑一遍与发布一致的 `-O` 档 |
 | 轮询循环原地死转 | 标志没加 volatile，只读一次 | 汇编里 `.L3: b .L3`，循环内无访存 | 标志对象加 volatile |
 | 延时变 0 | 空循环无副作用，计数非 volatile | `delay_plain` 只剩 `ret`/`bx lr` | 计数 volatile，或循环体放 `__asm__ volatile` |
-| 照抄“去掉 delay 的 volatile 灯就不闪” | 循环体里的 `asm volatile` 独立兜底 | B 行：灯照闪 | 连 nop 一起去掉才复现（C 行），结论自己跑一遍 |
+| 照抄“去掉 delay 的 volatile 灯就不闪” | 循环体里的 `asm volatile` 单独保留循环 | B 行：灯照闪 | 连 nop 一起去掉才复现（C 行），结论自己跑一遍 |
 | 配置顺序反了、换芯片才复发 | 寄存器宏漏 volatile | F 行：先读 MODER 后开时钟 | 用 CMSIS `__IO` 结构体，或给宏补 volatile |
 | 所有外设写被删光 | 宏、参数、nop 三处全漏 | E 行：`main` 只剩 `b.n 0` | 同上，并跑展开计数 |
 | 拿 volatile 当锁 | 它不保证原子与顺序 | M4 `isr_toggle` 三条指令两个间隙 | 临界区、只置位/只清位协议、BSRR |

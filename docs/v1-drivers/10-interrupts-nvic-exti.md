@@ -5,25 +5,25 @@ platforms: [f407, f103, gd32, esp32]
 
 # 中断、NVIC/EXTI、CLIC 与双核
 
-> 轮询是隔一会儿去门口看有没有快递，中断是快递按门铃。门铃响之后，CPU 不是直接跳进你写的函数：引脚边沿先在 EXTI 变成请求，NVIC 按优先级决定放不放行，内核再从向量表取出地址跳进 ISR。下面把 F407 的三层链路拆成可复算的地址与位段，用 F103 的 AFIO 与分组对照，最后看 ESP32-S3 的中断分配器、IRAM 纪律与双核分工。标题里的 CLIC 属于 GD32 的 RISC-V 一侧，这里只在跨平台边界指路。
+> 轮询是 CPU 定时检查外设状态，中断是外设主动发出请求。请求到来之后，CPU 不是直接跳进你写的函数：引脚边沿先在 EXTI 变成请求，NVIC 按优先级决定放不放行，内核再从向量表取出地址跳进 ISR。下面把 F407 的三层链路拆成可复算的地址与位段，用 F103 的 AFIO 与分组对照，最后看 ESP32-S3 的中断分配器、IRAM 纪律与双核分工。标题里的 CLIC 属于 GD32 的 RISC-V 一侧，这里只在跨平台边界指路。
 
 ## 本章罗盘
 
 - **问题**：按一下 PF6 的按键，为什么要在 SYSCFG、EXTI、NVIC 和 ISR 里各过一道门？`IRQn = 6` 怎样变成向量槽 22、`ISER[0]` 的 bit6 与 IP 字节 `0xE000E406`？逻辑优先级 5 为什么存成 `0x50`，写成 16 又为什么静默变成最高优先级 0？写 `SCB->AIRCR` 为什么必须带 `0x5FA`？把 `EXTI0_IRQHandler` 名字拼错，为什么中断会一直停在死循环里？ESP32-S3 的中断为什么不是固定向量，`IRAM_ATTR` 与双核分工又在守什么边界？
 - **交付**：能从 `IRQn` 推出 ISER 下标、位号与 IP 字节地址；能按 PRIGROUP 表说清抢占与子优先级的切分，并写出带 `0x5FA` 的 AIRCR 值；能用槽号 `IRQn + 16` 与 weak 顶替的 objdump 证据解释 ISR 的落点；能照六步清单配通一条外部中断；能读懂 `esp_intr_alloc` 的源、级、核与 IRAM 标志，并在双核共享数据时选对锁。
-- **边界**：四平台章。F407 的地址、位段、probe 读数来自 S4《NVIC 与 EXTI》与 RM0090、PM0214；F103 的 AFIO、HAL 分组与三把总闸来自根书第 04 章与 RM0008、PM0056；ESP32-S3 的中断分配器、IRAM 纪律与双核分工来自 P4《中断与双核》，Cache 一致性与多核内存模型留给[第 34 章](../v4-platforms/34-multicore-cache.md)；GD32 只写边界，CLIC/ECLIC 的完整对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。SysTick 时基留给[第 11 章](./11-systick-timebase-rtc.md)，UART 中断留给[第 13 章](./13-uart-framed-protocol.md)，RTOS 上下文切换与 FromISR 约束留给[第 23 章](../v3-rtos/23-context-switch-porting.md)、[第 24 章](../v3-rtos/24-queue-semaphore-notification.md)，HardFault 现场留给[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。来源没有记录本章的上板读数，本章不把实验步骤写成已经量到的结果。
+- **边界**：四平台章。F407 的地址、位段、probe 读数来自 S4《NVIC 与 EXTI》与 RM0090、PM0214；F103 的 AFIO、HAL 分组与三把总闸来自根书第 04 章与 RM0008、PM0056；ESP32-S3 的中断分配器、IRAM 纪律与双核分工来自 P4《中断与双核》，Cache 一致性与多核内存模型留给[第 34 章](../v4-platforms/34-multicore-cache.md)；GD32 只写边界，CLIC/ECLIC 的完整对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。SysTick 时基留给[第 11 章](./11-systick-timebase-rtc.md)，UART 中断留给[第 13 章](./13-uart-framed-protocol.md)，RTOS 上下文切换与 FromISR 约束留给[第 23 章](../v3-rtos/23-context-switch-porting.md)、[第 24 章](../v3-rtos/24-queue-semaphore-notification.md)，HardFault 现场留给[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。来源没有记录上板读数，这里不把实验步骤写成已经量到的结果。
 - **依据锚点**：S4《S4 NVIC 与 EXTI：打断的艺术》（`mcu/docs/stm32/04-nvic-exti.md`）、根书第 04 章《中断与 NVIC》（`docs/04-中断与NVIC.md`）、P4《P4 中断与双核：IRAM 纪律与核间分工》（`mcu/docs/esp32/04-irq-dualcore.md`）；[第 8 章](./08-architecture-memory-clock.md)的 PPB 与时钟门控、[第 9 章](./09-gpio.md)的引脚配置、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体、[第 4 章](../v0-foundations/04-function-pointer-state-machine.md)的函数指针数组。PM0214、RM0090、RM0008、PM0056 与 ESP-IDF v5.5.2 的条文均转引自上述来源。
 
 ## 先做出来
 
-开局不烧板，先在宿主机上把 F407 的中断账跑一遍。来源工程把 52 条断言、头文件常数与交叉链接的 objdump 证据收在一个脚本里：
+开局不烧板，先在宿主机上把 F407 的中断配置跑一遍。来源工程把 52 条断言、头文件常数与交叉链接的 objdump 证据收在一个脚本里：
 
 ```bash
 cd mcu/code/stm32/04-nvic-exti
 sh probe.sh
 ```
 
-输出里先找这三行，它们是本章的骨架：
+输出里先找这三行，输出里先找这三行，后面的推断都以它们为起点：
 
 ```text
 EXTI0_IRQn = 6    <- stm32f407xx.h:83
@@ -31,15 +31,15 @@ EXTI0          6     22 0x0058        0     6 0xE000E100 0xE000E406
 == 断言通过 52/52 ==
 ```
 
-第一行说明门牌号来自头文件，第二行把向量槽、ISER 下标、位号与 IP 字节排成一排，第三行说明宿主机的断言全绿。读之前先押一题：按键走的那条中断线，搬进 NVIC 后的槽号是小于 5、5 到 10 之间，还是大于 10？押完再往下看，猜错不丢分，丢了“地址是推出来的”这个直觉才丢分。
+第一行说明地址来自头文件，第二行把向量槽、ISER 下标、位号与 IP 字节排成一排，第三行说明宿主机的断言全绿。读之前先做个判断：按键走的那条中断线，进入 NVIC 后的槽号是小于 5、5 到 10 之间，还是大于 10？判断完再往下看。
 
-有板的人再加一步：在调试器里读 `NVIC->ISER[0]` 与 `EXTI->PR`，按一次键，看哪一位从 0 变 1、又在你清掉之后回到 0。来源没有记录这一步的板上读数，本章把它留作实验，不写成已跑结果。
+有板的人再加一步：在调试器里读 `NVIC->ISER[0]` 与 `EXTI->PR`，按一次键，看哪一位从 0 变 1、又在你清掉之后回到 0。来源没有记录这一步的板上读数，这里把它留作实验，不写成已跑结果。
 
 ## 机制
 
-### 三层链路：EXTI 举旗，NVIC 仲裁，向量表带路
+### 三层链路：EXTI 产生请求，NVIC 仲裁，向量表给出入口
 
-中断不是“一个开关”，而是三个硬件模块接力。S4 的 probe 第 0 段直接从 CMSIS 头文件把这条链挖了出来，每行自带行号引证：
+中断不是“一个开关”，而是三个硬件模块依次参与。S4 的 probe 第 0 段直接从 CMSIS 头文件把这条链整理了出来，每行自带行号引证：
 
 ```text
   PERIPH_BASE = 0x40000000    <- stm32f407xx.h:910
@@ -64,9 +64,9 @@ EXTI0          6     22 0x0058        0     6 0xE000E100 0xE000E406
 
 为什么 NVIC/SCB 的地址在 `core_cm4.h`，而 EXTI/SYSCFG 在 `stm32f407xx.h`？前者是 ARM 定义的 Cortex-M4 内核标配，所有 M4 芯片都一样；后者是 ST 加的外设，各家不同。查手册时，内核问题翻 PM0214，外设问题翻 RM0090。
 
-![PF6 到 ISR 的四层关卡：EXTICR2 选门、EXTI6 设沿、NVIC bit23 放行、EXTI9_5 清 PR bit6](/arch/exti-chain.png)
+![PF6 到 ISR 的四个环节：EXTICR2 选择 EXTI 线、EXTI6 设置触发沿、NVIC bit23 使能、EXTI9_5 清除 PR bit6](/arch/exti-chain.png)
 
-图上四道门缺一不可：前三个决定请求能不能进 NVIC 并跳到 ISR，最后一个决定这次 ISR 结束后会不会立刻再进。只选门、设沿、放行而忘了清挂起，回调不是不来，而是反复来。
+图上的四个环节缺一不可：前三个决定请求能不能进 NVIC 并跳到 ISR，最后一个决定这次 ISR 结束后会不会立刻再进。只选择 EXTI 线、设置触发沿、使能 NVIC 而忘了清挂起，回调不是不来，而是反复来。
 
 ### 三条地址公式：IRQn/32、IRQn%32 与 IP 字节
 
@@ -144,7 +144,7 @@ F407 的优先级寄存器每中断一个字节，但只实现了高 4 位：
 | 6 | 1 | 3 | `0x05FA0600` |
 | 7 | 0 | 4 | `0x05FA0700` |
 
-抢占优先级决定能不能打断正在执行的 ISR，数值越小越横；子优先级只在两份请求**同时挂起**时决定谁先上，它没有打断能力。上表第一列的 PRIGROUP 0~3 在 4 位实现下效果相同（4 抢占 + 0 子）。FreeRTOS 要 4 位全给抢占，落在 PRIGROUP 0~3 这一档；SPL/HAL 老代码常见的“组 2”是另一套编号：SPL/HAL 组 2 = 2 抢占 + 2 子（`0x05FA0500`），而 PRIGROUP=2 才是 4+0（`0x05FA0200`）。根书按 HAL 的 `NVIC_PRIORITYGROUP_x` 编号，那张表里的 `GROUP_4` 指“4 位抢占”，与这里的 PRIGROUP 值不是同一套编号；移植时先看位宽，再对名字。
+抢占优先级决定能不能打断正在执行的 ISR，数值越小优先级越高；子优先级只在两份请求**同时挂起**时决定谁先执行，它没有打断能力。上表第一列的 PRIGROUP 0~3 在 4 位实现下效果相同（4 抢占 + 0 子）。FreeRTOS 要 4 位全给抢占，落在 PRIGROUP 0~3 这一档；SPL/HAL 老代码常见的“组 2”是另一套编号：SPL/HAL 组 2 = 2 抢占 + 2 子（`0x05FA0500`），而 PRIGROUP=2 才是 4+0（`0x05FA0200`）。根书按 HAL 的 `NVIC_PRIORITYGROUP_x` 编号，那张表里的 `GROUP_4` 指“4 位抢占”，与这里的 PRIGROUP 值不是同一套编号；移植时先看位宽，再对名字。
 
 AIRCR 是带锁寄存器：写入时高 16 位必须是 VECTKEY = `0x5FA`，否则写操作被无视。上表第四列的每个值都是钥匙 `0x05FA0000` 再加 PRIGROUP 值左移 8 位拼出来的形状（PRIGROUP=5 即 `0x05FA0500`），出处是 `core_cm4.h:1661` 的 `0x5FAUL << SCB_AIRCR_VECTKEY_Pos`。`NVIC_SetPriorityGrouping()` 内部就是“读 AIRCR、改 [10:8]、带钥匙写回”。
 
@@ -183,7 +183,7 @@ Idx Name          Size      VMA       LMA       File off  Algn
 - 你在 C 文件里定义 `EXTI0_IRQHandler`，它就是**强符号**，把启动文件里的 weak 默认（`Default_Handler` 死循环）顶替掉。函数名拼错，中断就会一直停在默认死循环里；
 - 槽里装的是 `0x08000189` = 函数地址 `| 1`，最低位是 Thumb 状态位，向量跳转时靠它保持 Thumb 模式。
 
-### EXTI：选门、设沿、清挂起，六步一条不少
+### EXTI：选择中断线、设置触发沿与清除挂起
 
 EXTI 寄存器块只有六个，偏移与头文件行号一起列在 S4 的 probe 记录里（基址 `0x40013C00`）：
 
@@ -222,7 +222,7 @@ EXTI_PR偏移    = 0x14    <- stm32f407xx.h:449    挂起标志，写 1 清除
 | 1 | 开 GPIOF 时钟 | `RCC_AHB1ENR` | 引脚配置写不进 |
 | 2 | PF6 配成输入（带上/下拉） | GPIOF `MODER`/`PUPDR` | 电平悬空乱触发 |
 | 3 | 开 SYSCFG 时钟 | `RCC_APB2ENR` bit14 | EXTICR 写了不生效 |
-| 4 | SYSCFG 选门：EXTI6 接 PF6 | EXTICR2[11:8] = `0x5` | 边沿根本到不了 EXTI |
+| 4 | SYSCFG 选择中断线：EXTI6 接 PF6 | EXTICR2[11:8] = `0x5` | 边沿根本到不了 EXTI |
 | 5 | EXTI 设沿放行 | IMR/RTSR/FTSR 的 bit6 | 请求被屏蔽 |
 | 6 | NVIC 放行 | `NVIC_SetPriority` + `EnableIRQ` | 中断进不了内核 |
 
@@ -244,9 +244,9 @@ void EXTI9_5_IRQHandler(void)          /* 强符号顶替 weak 默认 */
 
 进去时 LR 被硬件换成特征值 **EXC_RETURN**：裸机主循环用 MSP，值是 `0xFFFFFFF9`；若被打断的是跑在 PSP 上的任务（如 RTOS 线程），则是 `0xFFFFFFFD`，两者只差 bit2 的 SPSEL 位（返回 Thread 模式时用 MSP 还是 PSP 弹栈，PM0214）。ISR 末尾一条普通的 `bx lr` 就完成异常返回：硬件认出 LR 里的特征值，不做普通跳转，而是把之前压栈的 8 个字弹回去，主循环从断点处继续。被打断的代码毫无知觉，这正是共享变量要 `volatile` 的原因（[第 2 章](../v0-foundations/02-c-volatile-ub.md)）。
 
-### F103：同一件事的另一套账
+### F103：同一件事的另一套寄存器
 
-F103 的 EXTI 同样按脚号分 16 条线：PA0、PB0、PC0 共用 EXTI0，不能同时做外部中断。换端口要先开 **AFIO 时钟**，再写 `AFIO->EXTICR`。这是 F1 的做法；F4、L4、H7 把这组寄存器放进 SYSCFG，G0 又挪进 EXTI 自己（`EXTI_EXTICR`）。同一套“选门”概念，三个位置，名字不能照抄。
+F103 的 EXTI 同样按脚号分 16 条线：PA0、PB0、PC0 共用 EXTI0，不能同时做外部中断。换端口要先开 **AFIO 时钟**，再写 `AFIO->EXTICR`。这是 F1 的做法；F4、L4、H7 把这组寄存器放进 SYSCFG，G0 又挪进 EXTI 自己（`EXTI_EXTICR`）。同一套“选择中断线”概念，三个位置，名字不能照抄。
 
 优先级分组在根书里用 HAL 的宏表示，默认是 `NVIC_PRIORITYGROUP_4`：
 
@@ -262,11 +262,11 @@ F103 的 EXTI 同样按脚号分 16 条线：PA0、PB0、PC0 共用 EXTI0，不�
 
 三把总闸各挡一段：`PRIMASK` 关掉可配置优先级的中断，NMI 和 HardFault 仍能进入；`FAULTMASK` 再挡住 HardFault，仍留 NMI；`BASEPRI` 只挡住优先级数值大于等于阈值的那一截。NMI 不参加 EXTI0 和 TIM2 那种抢占比较。第 8 章讲过 F103 的 CSS 中断走 NMI，所以关中断也挡不住它。
 
-尾链（tail-chaining）在退出时若已有挂起异常，可以省掉一部分出栈再入栈，但它不改变谁有权抢占。低优先级不会因为尾链插进高优先级的 ISR；PM0056 第 2.3.7 节没有给出尾链省下多少周期，本章也不给具体数字。入栈约 12 个 HCLK，72MHz 下约 167ns，不含 ISR 正文。
+尾链（tail-chaining）在退出时若已有挂起异常，可以省掉一部分出栈再入栈，但它不改变谁有权抢占。低优先级不会因为尾链插进高优先级的 ISR；PM0056 第 2.3.7 节没有给出尾链省下多少周期，这里也不给具体数字。入栈约 12 个 HCLK，72MHz 下约 167ns，不含 ISR 正文。
 
 `HAL_Delay()` 依赖 SysTick 中断。若在 ISR 里调用它，而该 ISR 的优先级又高于 SysTick，计数不前进，就会死等。ISR 里只置标志或塞缓冲区，慢活交回主循环。FreeRTOS 的 FromISR 优先级数值约束另有一套，见[第 24 章](../v3-rtos/24-queue-semaphore-notification.md)。
 
-根书给的按键实验是 PA0 下降沿进 EXTI0，ISR 里只置 `volatile` 标志，主循环消抖后翻转 PC13；连续按 10 次，记录 10 次有效翻转，并在调试器里确认 `EXTI_PR` 已清零。来源只给了步骤与判据，没有记录读数，本章照录为实验设计。
+根书给的按键实验是 PA0 下降沿进 EXTI0，ISR 里只置 `volatile` 标志，主循环消抖后翻转 PC13；连续按 10 次，记录 10 次有效翻转，并在调试器里确认 `EXTI_PR` 已清零。来源只给了步骤与判据，没有记录读数，这里照录为实验设计。
 
 ### ESP32-S3：分配器、IRAM 纪律与双核
 
@@ -302,19 +302,19 @@ P4 的探针记录：
 0x3c028810  k_table      → drom0_0_seg     # 常量还在 Flash
 ```
 
-`isr_leaky` 的每一条指令都在 IRAM，可它 `callx8` 过去的 `helper_far` 落在 Flash 映射段 `0x42008f1c`；Cache 一关，取指就断在半路。`isr_tight` 的 `call8` 目标 `helper_near` 还在 IRAM 区间内，这才是真的 IRAM-safe。esp32s3 的 IRAM 取指窗口起点是 `0x40374000`，Flash 映射是 `0x42xxxxxx`，常量映射是 `0x3Cxxxxxx`；初代 ESP32 是 `0x400xxxxx` 一片，两代数字不能互抄。
+`isr_leaky` 的每一条指令都在 IRAM，可它 `callx8` 过去的 `helper_far` 落在 Flash 映射段 `0x42008f1c`；Cache 一关，取指就失败。`isr_tight` 的 `call8` 目标 `helper_near` 还在 IRAM 区间内，才满足 IRAM-safe 条件。esp32s3 的 IRAM 取指窗口起点是 `0x40374000`，Flash 映射是 `0x42xxxxxx`，常量映射是 `0x3Cxxxxxx`；初代 ESP32 是 `0x400xxxxx` 一片，两代数字不能混用。
 
-P4 还记了一个链接器的坑：IDF 默认带 `-Wl,--gc-sections`，没人引用的 ISR 会被整段收掉，第一版探针的 nm 里只剩 `app_main` 和 `g_hits`，后来用 `g_isr_table` 保住符号才留下七个。
+P4 还记了一个链接器行为：IDF 默认带 `-Wl,--gc-sections`，没人引用的 ISR 会被整段收掉，第一版探针的 nm 里只剩 `app_main` 和 `g_hits`，后来用 `g_isr_table` 保住符号才留下七个。
 
-Cache 关闭窗口的完整机制与多核 Cache 一致性属于[第 34 章](../v4-platforms/34-multicore-cache.md)；本章只记落址判据：ISR 要么整条链进 IRAM，要么老实被推迟。
+Cache 关闭窗口的完整机制与多核 Cache 一致性属于[第 34 章](../v4-platforms/34-multicore-cache.md)；这里只记落址判据：ISR 要么整条链进 IRAM，要么被推迟。
 
-双核一侧，S3 的 `SOC_CPU_CORES_NUM = 2`，FreeRTOS 跑 SMP，任务默认可以调度到任意核。需要控制核归属时用 `xTaskCreatePinnedToCore(..., xCoreID)`：`0`/`1` 钉到 PRO_CPU/APP_CPU，`tskNO_AFFINITY` 不钉核。`tskNO_AFFINITY` 实测是 `0x7FFFFFFF`，不是 -1；`xTaskCreate` 的函数体只是转调钉核版。能不钉就不钉，钉核会降低调度器灵活性。
+双核一侧，S3 的 `SOC_CPU_CORES_NUM = 2`，FreeRTOS 跑 SMP，任务默认可以调度到任意核。需要控制核归属时用 `xTaskCreatePinnedToCore(..., xCoreID)`：`0`/`1` 绑定到 PRO_CPU/APP_CPU，`tskNO_AFFINITY` 不绑定核。`tskNO_AFFINITY` 实测是 `0x7FFFFFFF`，不是 -1；`xTaskCreate` 的函数体只是转调绑定核的版本。能不绑定就不绑定，绑定核会降低调度器灵活性。
 
 双核与中断共享数据时，`volatile` 只阻止编译器优化掉访问，保证不了原子性，也保证不了核间可见性。读-改-写要用 `portMUX` 自旋锁或临界区，临界区要尽可能短；ISR 到任务用队列/通知的 `...FromISR` 版本。线程与锁的细节见[第 23 章](../v3-rtos/23-context-switch-porting.md)与[第 24 章](../v3-rtos/24-queue-semaphore-notification.md)。
 
 ## 测量与证据
 
-本章的读数分两类：来源工程在宿主机上实跑的断言与反汇编，以及来源没有记录上板读数的实验。下表把两类分开记。
+读数分两类：来源工程在宿主机上实跑的断言与反汇编，以及来源没有记录上板读数的实验。下表把两类分开记。
 
 | 取证项 | 来源命令或位置 | 来源记录里的读数 |
 | --- | --- | --- |
@@ -334,8 +334,8 @@ Cache 关闭窗口的完整机制与多核 Cache 一致性属于[第 34 章](../
 | ESP32 中断源 | P4 probe 第 1 段 | `ETS_MAX_INTR_SOURCE = 99`（编号 0~98）；98 个名字覆盖 95 个不同编号 |
 | ESP32 中断级 | P4 probe 第 8 段 | `LEVEL1..6` = `1<<1`..`1<<6`，`NMI` = `1<<7` |
 | ESP32 IRAM 落址 | `code/esp32/09-iram-discipline` 的 `probe.sh` 第 3/4/6 段 | `isr_leaky 0x4037668c` 调用 `helper_far 0x42008f1c`；`isr_tight 0x403766ac` 调用 `helper_near 0x40376698`；`k_table 0x3c028810` |
-| ESP32 双核 | P4 来源 | `SOC_CPU_CORES_NUM = 2`；`tskNO_AFFINITY = 0x7FFFFFFF`；`xTaskCreate` 转调钉核版 |
-| ESP32 上板实验 | P4 来源 | “真的关一次 Cache”“ISR 里故意调 printf”“三种核参数打印 `xPortGetCoreID()`”均标“待上机回填”，本章不写成已跑 |
+| ESP32 双核 | P4 来源 | `SOC_CPU_CORES_NUM = 2`；`tskNO_AFFINITY = 0x7FFFFFFF`；`xTaskCreate` 转调绑定核版本 |
+| ESP32 上板实验 | P4 来源 | “真的关一次 Cache”“ISR 里故意调 printf”“三种核参数打印 `xPortGetCoreID()`”均标“待上机回填”，这里不写成已跑 |
 
 宿主机复跑命令：
 
@@ -347,7 +347,7 @@ cd mcu/code/esp32/09-iram-discipline
 sh probe.sh          # 构建后用 nm/.map 给七条链归类（需 ESP-IDF v5.5.2）
 ```
 
-这些读数的共同结论只有一条：**头文件里算出的地址、写进寄存器的位、反汇编里出现的指令，三样必须能互相对上**。回读只证明“你写的位和你的宏自洽”，不证明向量表真的跳到了你的函数；objdump 里的槽内容才是最终判决。
+这些读数的共同结论只有一条：**头文件里算出的地址、写进寄存器的位、反汇编里出现的指令，三样必须能互相对上**。回读只证明“你写的位和你的宏自洽”，不证明向量表真的跳到了你的函数；objdump 里的槽内容才是最终证据。
 
 <QuizBank chapter="s04-nvic" />
 
@@ -356,7 +356,7 @@ sh probe.sh          # 构建后用 nm/.map 给七条链归类（需 ESP-IDF v5.
 | 现象 | 原因 | 区分证据 | 下一动作 |
 | --- | --- | --- | --- |
 | 进了 ISR 就再也出不来，主循环停摆 | 没清 `EXTI_PR`，出 ISR 瞬间请求又成立 | `EXTI->PR` 对应位一直为 1 | ISR 第一行写 1 清挂起（W1C） |
-| 边沿到了，EXTI 没反应 | SYSCFG 时钟没开，EXTICR 写了不生效 | 读回 EXTICR 与写入不符；`RCC_APB2ENR` bit14 为 0 | 先开 SYSCFG 时钟再选门 |
+| 边沿到了，EXTI 没反应 | SYSCFG 时钟没开，EXTICR 写了不生效 | 读回 EXTICR 与写入不符；`RCC_APB2ENR` bit14 为 0 | 先开 SYSCFG 时钟再选择中断线 |
 | 换了端口，按键还是旧端口触发 | 同一编号引脚共用一条 EXTI 线，PA6 与 PB6 抢 EXTI6 | 改 EXTICR 后旧端口仍触发 | 换一个脚号，或只保留一个端口 |
 | 中断进不了内核 | NVIC 没使能，或优先级分组与预期不符 | `ISER` 对应位为 0；AIRCR PRIGROUP 被别处改过 | 用 `NVIC_EnableIRQ` 并核对分组 |
 | 想把 16 当最低优先级，结果它最横 | `(priority << 4) & 0xFF` 在本字节截断，16→`0x00` | 读回 IP 字节是 `0x00` | 逻辑优先级限制在 0~15 |
@@ -370,17 +370,17 @@ sh probe.sh          # 构建后用 nm/.map 给七条链归类（需 ESP-IDF v5.
 | ESP32 关 Cache 时 ISR 崩 | 只给本体标了 `IRAM_ATTR`，调用链或 rodata 还在 Flash | nm 地址落在 `0x42xxxxxx`/`0x3Cxxxxxx` | 整条链进 IRAM，或不要声明 `ESP_INTR_FLAG_IRAM` |
 | 声明了 IRAM 却仍然崩 | 声明是承诺，系统不再推迟该中断 | 反汇编的 `callx8` 目标在 Flash 映射段 | 整条链排查，别只标本体 |
 | 双核共享计数器偶尔少 1 | `volatile` 不保证原子性，也不保证核间可见性 | 读-改-写被另一个核插队 | 用 `portMUX` 或内核对象，临界区尽量短 |
-| 任务莫名跑到另一个核 | 没钉核，SMP 调度器自由安排 | 打印 `xPortGetCoreID()` 与预期不符 | 有理由时用 `xTaskCreatePinnedToCore`，否则接受调度 |
+| 任务莫名跑到另一个核 | 没绑定核，SMP 调度器自由安排 | 打印 `xPortGetCoreID()` 与预期不符 | 有理由时用 `xTaskCreatePinnedToCore`，否则接受调度 |
 
 ## 跨平台边界
 
 F407 这一侧，`IRQn / 32`、`IRQn % 32`、`IP 字节 = 0xE000E400 + IRQn` 与槽号 `IRQn + 16` 都是 Cortex-M4 的内核约定；但 IRQn 的编号、EXTI 线数、SYSCFG 与 EXTI 的偏移是 F407 头文件里的具体值。换同系列型号时，先按对应的 `stm32fxxx.h` 与参考手册重查，不能凭“都是 F4”补一个没读过的位。
 
-F103 一侧，NVIC 与向量表的结构相同，差异在“选门”的位置：F1 用 AFIO 的 `EXTICR`，F4/L4/H7 用 SYSCFG 的 `SYSCFG_EXTICR`，G0 用 EXTI 自己的 `EXTI_EXTICR`。分组还要认准 API 的编号体系：HAL 的 `NVIC_PRIORITYGROUP_x` 按抢占位数命名，SCB 的 PRIGROUP 按 0~7 的值命名，两套名字不能互相套。F103 的入栈开销按 PM0056 的 12 HCLK 计，尾链的具体周期数手册没有给，本章不补。
+F103 一侧，NVIC 与向量表的结构相同，差异在“选择中断线”的寄存器位置：F1 用 AFIO 的 `EXTICR`，F4/L4/H7 用 SYSCFG 的 `SYSCFG_EXTICR`，G0 用 EXTI 自己的 `EXTI_EXTICR`。分组还要认准 API 的编号体系：HAL 的 `NVIC_PRIORITYGROUP_x` 按抢占位数命名，SCB 的 PRIGROUP 按 0~7 的值命名，两套名字不能互相套。F103 的入栈开销按 PM0056 的 12 HCLK 计，尾链的具体周期数手册没有给，这里不补。
 
-GD32 只划边界。GD32 的 ARM 型号沿用 Cortex-M 的 NVIC 体系；RISC-V 型号（如 GD32VF103）改用 ECLIC/CLIC，术语、优先级模型与向量方式都换了名字，本章不把 NVIC 的寄存器名带过去。CLIC/ECLIC 的完整对照、中断号地图与向量直跳见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)；芯片迁移的通用检查表见[第 28 章](../v4-platforms/28-chip-migration-differences.md)。
+GD32 只划边界。GD32 的 ARM 型号沿用 Cortex-M 的 NVIC 体系；RISC-V 型号（如 GD32VF103）改用 ECLIC/CLIC，术语、优先级模型与向量方式都换了名字，不把 NVIC 的寄存器名带过去。CLIC/ECLIC 的完整对照、中断号地图与向量直跳见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)；芯片迁移的通用检查表见[第 28 章](../v4-platforms/28-chip-migration-differences.md)。
 
-ESP32 这一侧，没有 NVIC 与固定向量表，中断由分配器在运行时绑定到核与级。P4 的 99 个源编号与 7 级是 ESP32-S3 的具体账，换型号要按对应的 `soc/interrupts.h` 与 `soc_caps.h` 重查；IRAM 取指窗口两代也不同（S3 是 `0x40374000` 起，初代 ESP32 是 `0x400xxxxx` 起）。
+ESP32 这一侧，没有 NVIC 与固定向量表，中断由分配器在运行时绑定到核与级。P4 的 99 个源编号与 7 级是 ESP32-S3 的具体数字，换型号要按对应的 `soc/interrupts.h` 与 `soc_caps.h` 重查；IRAM 取指窗口两代也不同（S3 是 `0x40374000` 起，初代 ESP32 是 `0x400xxxxx` 起）。
 
 Cache 映射、Cache 关闭窗口与多核一致性见[第 34 章](../v4-platforms/34-multicore-cache.md)；架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)；外设驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。
 
@@ -398,7 +398,7 @@ Cache 映射、Cache 关闭窗口与多核一致性见[第 34 章](../v4-platfor
 <details>
 <summary>对照答案</summary>
 
-1. EXTI 负责把引脚边沿变成中断请求，NVIC 负责按优先级仲裁并呈递，内核再按向量表取地址跳进 ISR。SYSCFG 是 EXTI 前面的选门开关，决定这条线接哪个端口的同号引脚。加上 ISR 清挂起，就是选门、设沿、放行、清挂起四道门。
+1. EXTI 负责把引脚边沿变成中断请求，NVIC 负责按优先级仲裁并呈递，内核再按向量表取地址跳进 ISR。SYSCFG 决定 EXTI 线连接哪个端口的同号引脚。加上 ISR 清挂起，就是选择中断线、设置触发沿、使能 NVIC、清除挂起四个环节。
 2. 37 / 32 = 1、37 % 32 = 5，使能位在 `ISER[1]` 的 bit5，地址 `0xE000E104`；IP 字节是 `0xE000E400 + 37 = 0xE000E425`。SysTick 是内核异常（`IRQn = -1`），优先级走 SCB 的 SHP 寄存器，不在 NVIC 的 IPR 里。
 3. 5 << 4 = `0x50`，低 4 位总为 0。写 16 时 `(16 << 4) & 0xFF = 0x00`，读回来当作优先级 0（最高）。越界不报错、不换字节，只在本字节里截断，嵌套关系会悄悄反掉。
 4. PRIGROUP = 5 是 2 位抢占 + 2 位子优先级；写入值 `0x05FA0500`。高 16 位必须带 VECTKEY `0x5FA`，少了它整个写操作被硬件无视；组值 5 放 [10:8]，即 `5 << 8 = 0x500`。
