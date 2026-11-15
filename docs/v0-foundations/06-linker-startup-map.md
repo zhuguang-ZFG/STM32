@@ -9,7 +9,7 @@ platforms: [f407]
 
 ## 本章罗盘
 
-- **问题**：136 行链接脚本的契约头、MEMORY、SECTIONS 三段各管什么？向量表为什么必须住 Flash 头排，删掉 `KEEP` 后哪三层证据会同时报警？`.data` 的 VMA 与 LMA 分别给谁看，少写 `AT> FLASH` 为什么能让 660 字节的 bin 涨到 128MB？复位后到 `main` 之间硬件和软件各做什么？`size` 三列、map 三板斧、`nm --size-sort` 怎样把体积账对到具体符号？
+- **问题**：136 行链接脚本的契约头、MEMORY、SECTIONS 三段各管什么？向量表为什么必须住 Flash 头排，删掉 `KEEP` 后哪三层证据会同时报警？`.data` 的 VMA 与 LMA 分别给谁看，少写 `AT> FLASH` 为什么能让 660 字节的 bin 涨到 128MB？复位后到 `main` 之间，硬件和软件各做什么？最后是体积审计：`size` 三列、map 三板斧、`nm --size-sort` 怎样把账对到具体符号？
 - **交付**：能逐段读 136 行图纸，指出三段边界；能用 `nm`、`readelf`、map 三条证据判断向量表是否被回收、`.data` 是否搬得动、自定义段是否成了 orphan；能按五站复述启动流程并说出每站失败的样子；能用 size、map、nm 完成一次“先审账再优化”的体积审计。
 - **边界**：单平台 F407（F407ZGT6：1MB Flash、128KB SRAM、64KB CCM）。数字来自 xPack GNU Arm Embedded GCC 15.2.1、binutils 2.45.1 的 `00-blink` 与 `link_probe` 标本；来源没有记录板上复跑，烧录后的现象在本章标为未跑。构建系统与链接旗标留给[第 7 章](./07-build-systems-legacy.md)，SWD 与 GDB 留给[第 20 章](../v2-reliability/20-debug-performance.md)，中断号与外设向量留给[第 10 章][ch10]，Flash 分区与 IAP 留给[第 17 章][ch17]。
 - **依据锚点**：B3《链接脚本：固件的建筑图纸》（`mcu/docs/build/03-linker-script.md`）、B4《启动过程：上电到 main 的每一条指令》（`mcu/docs/build/04-startup.md`）、B5《map 与体积：谁吃了我的 Flash》（`mcu/docs/build/05-map-size.md`）；[第 5 章](./05-toolchain-four-steps.md)的四步构建与 ELF 节表。工具链版本、字节数、地址与 `nm` 输出转引自上述来源。
@@ -253,6 +253,8 @@ FPU 那一步容易被漏：Makefile 写着 `-mfloat-abi=hard -mfpu=fpv4-sp-d16`
 | 三行都写对，启动文件不搬 | `_siccm` 在启动文件里出现 0 次，CCM 里的初值仍是随机值 | `grep -c _siccm startup_stm32f407xx.s` |
 
 第一态的杀伤力在于测不出来：变量明明能用，只是不在你以为的 CCM，DMA 能不能访问、速度多少全与预期不符。第二态的算术是 `0x10000000 − 0x08000000 = 134,217,728`，再加 16 字节初值，等于 134,217,744；660 字节的固件被一个词放大到 128MB。第三态收回 576 字节：`(0x0800023c + 4) − 0x08000000 = 0x240 = 576`。第四态最容易被忽略：图纸单方面开了房间，施工队不知道；`Reset_Handler` 里只有一个 `.data` 搬运循环，`_siccm/_sccm/_eccm` 三块门牌立着，没有一条指令走过去。要让带初值的变量真住进 CCM，得自己在启动文件补第二段拷贝，照抄 `.data` 那几条指令，把符号换成 `_siccm/_sccm/_eccm`。
+
+![手绘板：.data 的 VMA/LMA 双地址，以及 CCM 段漏写 AT> FLASH 撑出的 128 MB 空洞（原理示意）](/images/v0-06-vma-lma.png)
 
 ### size 三列：Flash 与 RAM 各吃哪份
 

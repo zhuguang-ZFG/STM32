@@ -9,7 +9,7 @@ platforms: [f407, f103]
 
 ## 本章罗盘
 
-- **问题**：`void (*table[8])(void)` 到底怎么读，`typedef` 改了什么？为什么说向量表就是 Flash 里的函数指针数组？`fsm_feed` 里一行查表调用，编译出来是什么？环形缓冲的读写指针相等时，到底是空还是满？函数指针跳过去之后，前四个参数凭什么正好在 r0–r3、第 5 个凭什么在栈上、局部变量凭什么随 sp 自动回收？中断服务函数为什么必须写成 `void f(void)`？
+- **问题**：`void (*table[8])(void)` 到底怎么读，`typedef` 改了什么，为什么说向量表就是 Flash 里的函数指针数组？`fsm_feed` 里一行查表调用，编译出来是什么，环形缓冲的读写指针相等时又到底是空还是满？调用约定这一组：函数指针跳过去之后，前四个参数凭什么正好在 r0–r3、第 5 个凭什么在栈上、局部变量凭什么随 sp 自动回收？最后是中断入口：服务函数为什么必须写成 `void f(void)`。
 - **交付**：能读、能写函数指针声明与 `typedef`；能把“串口命令解析”落成状态×事件的动作表；能为环形缓冲选定满/空规则并说清容量代价；能拿 `-O2` 汇编指出参数落位、栈帧大小与返回地址位置；能按向量表槽位写出签名正确的 ISR，并说清它为什么只做记账。
 - **边界**：本章的逐条汇编取证来自 Cortex-M4（F407 目标）与宿主 x86-64 两套产物；F103 侧只取根书第 04 章的 ISR 签名与“只置标志”写法，没有对应的逐条汇编对照。AAPCS 规则可跨 ARM Cortex-M 复用，但具体指令形状、向量表大小与硬浮点寄存器不搬运。NVIC 优先级、EXTI 通道与寄存器细节留给[第 10 章][ch10]；寄存器、时钟与引脚差异指向卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。共享变量的 `volatile` 合同见[第 2 章](./02-c-volatile-ub.md)，结构体布局与寄存器映射见[第 3 章](./03-struct-abi-registers.md)。
 - **依据锚点**：C5《函数指针、状态机与环形缓冲》（`mcu/docs/c/05-func-pointer.md`）；C6《调用约定与栈帧》（`mcu/docs/c/06-abi-stack.md`）；根书第 04 章《中断与 NVIC》（`docs/04-中断与NVIC.md`）的驱动基本功与中断服务函数签名部分；AAPCS 条款与 PM0056 的 NVIC 章节均转引自上述来源。
@@ -245,6 +245,8 @@ non_leaf:
 **返回地址弹进 PC** 是 Thumb-2 的经典收尾：弹栈与跳转合一。这个 Cortex-M4 帧 = push 8 + sub 16 = **24 字节**。对照组 `add2` 是叶子函数，不调用任何人，编译器直接注释 `@ link register save eliminated.`，全身就 `add r0, r0, r1` + `bx lr` 两条指令。计数核对：全文件 `push {r4, lr}` 恰出现 1 次、`pop {r4, pc}` 恰出现 1 次，正是 `non_leaf` 这一对；`strd , [sp]` 也恰 1 次，就是 `sum6` 那次的栈传参。
 
 宿主 gcc 16.1.0 真跑 `non_leaf`，探针读数为：`sp(main)` 到 `sp(non_leaf)` 一帧 **64 字节**，`buf` 距 `sp(non_leaf)` **32 字节**；sp 向下走（`sp_callee < sp_main`），帧差是 8 的倍数，因为 AAPCS 要求公共接口处 sp 8 字节对齐。64 字节与 24 字节的差别只在目标与编译器，机制不变：**sp 一根指针的移动 = 分配与释放的全部成本**。递归无界就是栈溢出；裸机没有 MMU 兜底，症状往往是“变量莫名其妙变了”，HardFault 都不一定报。现场定位见[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，中断切换栈的完整现场见[第 23 章](../v3-rtos/23-context-switch-porting.md)。
+
+![手绘板：函数指针一跳之后，查表、AAPCS 参数落位与 24 字节栈帧（原理示意）](/images/v0-04-call-frame.png)
 
 ### 中断服务函数：签名为什么必须符合调用约定
 

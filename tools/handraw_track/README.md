@@ -13,6 +13,7 @@
 | --- | --- |
 | `hd.py` | 绘图原语库：抖动线 / 手绘框 / 手绘箭头 / 高亮条 / 页面骨架 |
 | `fig_chNN.py` | 每章的图设计（真实寄存器、公式、版本号来自对应章节正文） |
+| `fig_v0_v6.py` | 合并卷 v0 基础篇、v6 实验项目篇的图设计 |
 | `render.py` | Playwright + Chromium 把 SVG 截成 1152×864 PNG |
 | `embed.py` | 把 `<p align="center">` 图块插到锚点图之后（zh+en 同步） |
 
@@ -23,6 +24,9 @@ cd tools/handraw_track
 python fig_ch28.py                          # 写 SVG 到 assets/illustrations/handraw/
 python render.py ../../assets/illustrations/handraw/ch28-*.svg
 ```
+
+合并卷（v0 / v6）章节按 `/images/<name>.png` 引用，渲染后要把同一张 PNG 复制到
+`docs/public/images/`；`chNN` 旧章的 `/images/` 资产仍在原目录。
 
 渲染依赖本机 Playwright Chromium（与 `tools/svg2gif.py` 依赖本机 Chrome 同理）；
 PNG 已提交进 git，CI 与读者不需要这一步。
@@ -44,4 +48,4 @@ PNG 已提交进 git，CI 与读者不需要这一步。
 2. 仿照 `fig_ch28.py` 写 `fig_chNN.py`：固定 seed、真实数字、IG 图型登记写进提交说明。
 3. `embed_chNN.py` 里写清 zh/en 的 alt 与图注（证明什么 / 不能证明什么 / 不是实拍）。
 4. 渲染后先逐张看图再嵌入；嵌入后跑 `python tools/slop_lint.py` 与
-   `python stm32-book/build_html.py --check`。
+   `python -m book.build_html --check`。
