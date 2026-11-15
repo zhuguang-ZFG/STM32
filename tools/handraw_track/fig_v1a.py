@@ -16,8 +16,9 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from hd import (AMBER_FILL, AMBER_STROKE, BLUE, BLUE_D, GREEN_D, INK, MUTED,  # noqa: E402
-                RED, WHITE, Fig, save)
+from hd import (AMBER_FILL, AMBER_PALE, AMBER_STROKE, BLUE, BLUE_D,  # noqa: E402
+                BLUE_FILL, GREEN_D, GREEN_FILL, INK, MUTED, RED, RED_FILL,
+                WHITE, Fig, save)
 
 STAGE = Path(__file__).resolve().parents[2] / ".temp" / "l0-l5-pass" / "figures"
 
@@ -31,166 +32,197 @@ def _box(f, x, y, w, h, color, title, lines, title_size=19, line_size=14.5,
 
 
 def ch08_clock_tree_path():
-    f = Fig("ch08-clock-tree-path", "时钟树一条路：晶振到外设地址")
-    f.text(56, 126,
-           "8MHz 晶振或复位默认的 HSI 16MHz，经 PLL 与总线分频，最后落到一个外设寄存器地址。",
-           size=16, color=MUTED)
+    f = Fig("ch08-clock-tree-path", "时钟树一条路：晶振到外设地址",
+            tag="CH 08 · 时钟与总线")
+    f.text(64, 126,
+           "晶振或 HSI 先过 PLL 变速箱，再沿三条总线分压，最后落到一个寄存器地址。",
+           size=19, color=MUTED)
 
-    # sources
-    _box(f, 56, 186, 196, 74, GREEN_D, "HSE 8MHz",
-         ["外部晶振；SRC=1"], title_size=20, line_size=14)
-    _box(f, 56, 286, 196, 74, BLUE_D, "HSI 16MHz",
-         ["复位默认；SRC=0"], title_size=20, line_size=14)
-
-    # PLL
-    f.rect(306, 170, 316, 204, color=BLUE_D, fill=WHITE, sw=2.6)
-    f.text(326, 204, "PLL：fVCO = 输入 × N / M", size=17, color=BLUE_D,
-           weight="bold")
-    f.multi(326, 238, [
-        "M = 8    N = 336",
-        "P = 2    Q = 7",
-        "VCO = 1MHz × 336 = 336MHz",
-        "SYSCLK = 336MHz ÷ 2 = 168MHz",
-        "USB = 336MHz ÷ 7 = 48MHz",
-    ], size=15.5, color=INK, lh=26)
-
-    # SYSCLK
-    f.rect(690, 196, 250, 120, color=AMBER_STROKE, fill=WHITE, sw=2.6)
-    f.text(706, 232, "SYSCLK 168MHz", size=20, color=AMBER_STROKE,
-           weight="bold")
-    f.text(706, 262, "SW = 10b 切到 PLL", size=15, color=INK)
-    f.text(706, 290, "读 SWS 确认已切换", size=15, color=INK)
-
-    # source -> PLL -> SYSCLK
-    f.arrow(256, 223, 300, 250, color=INK, sw=2.2, bend=0.0)
-    f.arrow(256, 323, 300, 300, color=INK, sw=2.2, bend=0.0)
-    f.arrow(626, 270, 686, 256, color=INK, sw=2.2, bend=0.0)
-
-    # bus distribution bar
-    f.text(270, 412, "分频控制：HPRE / PPRE1 / PPRE2", size=13.5, color=MUTED)
-    f.line(815, 318, 815, 384, color=INK, sw=2.2, amp=1.0)
-    f.line(250, 384, 890, 384, color=INK, sw=2.2, amp=1.0)
-    for cx in (250, 570, 890):
-        f.arrow(cx, 386, cx, 426, color=INK, sw=2.2, bend=0.0)
-
-    # bus dividers
-    _box(f, 110, 430, 280, 100, GREEN_D, "AHB ÷1 → HCLK 168MHz",
-         ["GPIO / RCC / DMA"], title_size=17, line_size=14)
-    _box(f, 430, 430, 280, 100, BLUE_D, "APB1 ÷4 → 42MHz",
-         ["硬件上限 42MHz"], title_size=17, line_size=14)
-    _box(f, 750, 430, 280, 100, AMBER_STROKE, "APB2 ÷2 → 84MHz",
-         ["硬件上限 84MHz"], title_size=17, line_size=14)
-
-    # one peripheral address
-    f.arrow(250, 532, 250, 586, color=INK, sw=2.4, bend=0.0)
-    f.panel(110, 590, 520, 116, AMBER_FILL)
-    f.rect(110, 590, 520, 116, color=AMBER_STROKE, fill=None, sw=2.6,
+    # Two sources.
+    f.card(64, 170, 220, 110, GREEN_D, fill=GREEN_FILL)
+    f.rect(84, 194, 46, 26, color=GREEN_D, sw=2.0, fill=WHITE,
            double=False)
-    f.text(126, 622, "GPIOA->MODER = 0x4002_0000", size=19, color=INK,
-           weight="bold", font="'Consolas','Courier New',monospace")
-    f.text(126, 654, "AHB1 段基址 0x4002_0000 + 偏移 0x00", size=15,
-           color=INK)
-    f.text(126, 684, "每口隔 0x400：GPIOF = 0x4002_1400", size=15, color=INK)
+    f.line(84, 207, 130, 207, color=GREEN_D, sw=2.0)
+    f.line(96, 184, 96, 230, color=GREEN_D, sw=2.0)
+    f.line(118, 184, 118, 230, color=GREEN_D, sw=2.0)
+    f.text(146, 206, "HSE", size=21, color=GREEN_D, weight="bold")
+    f.text(146, 234, "8 MHz 晶振", size=16, color=INK)
+    f.text(146, 260, "SRC = 1", size=14, color=MUTED)
 
-    # side notes
-    f.rect(670, 590, 420, 116, color=BLUE_D, fill=WHITE, sw=2.4)
-    f.text(686, 620, "APB 分频 ≠ 1：定时器时钟 ×2", size=16, color=BLUE_D,
+    f.card(64, 300, 220, 100, BLUE_D, fill=BLUE_FILL)
+    f.chip(84, 318, 46, 44, BLUE_D, size=12)
+    f.text(146, 334, "HSI", size=21, color=BLUE_D, weight="bold")
+    f.text(146, 362, "16 MHz，复位默认", size=15, color=INK)
+    f.text(146, 388, "SRC = 0", size=14, color=MUTED)
+
+    # PLL gearbox.
+    f.card(320, 170, 340, 230, BLUE_D, fill=WHITE)
+    f.gear(366, 214, 18, BLUE_D, teeth=8)
+    f.gear(414, 236, 24, AMBER_STROKE, teeth=10)
+    f.text(454, 206, "PLL 变速箱", size=22, color=BLUE_D, weight="bold")
+    f.text(454, 234, "fVCO = 输入 × N / M", size=16, color=MUTED)
+    f.text(342, 282, "M = 8", size=19, color=INK, weight="bold")
+    f.text(432, 282, "N = 336", size=19, color=INK, weight="bold")
+    f.text(540, 282, "P = 2", size=19, color=INK, weight="bold")
+    f.text(342, 320, "VCO = 1 MHz × 336", size=17, color=INK)
+    f.text(342, 348, "= 336 MHz", size=25, color=AMBER_STROKE, weight="bold")
+    f.text(342, 382, "SYSCLK = 336 ÷ 2 = 168 MHz", size=17, color=GREEN_D,
            weight="bold")
-    f.text(686, 650, "TIM2 = 42MHz × 2 = 84MHz", size=15, color=INK)
-    f.text(686, 678, "回读：168 / 168 / 42 / 84 / 84 MHz", size=15, color=INK)
 
-    # order strip
-    f.panel(56, 724, 1034, 44, WHITE)
-    f.rect(56, 724, 1034, 44, color=MUTED, fill=None, sw=2.2, double=False)
-    f.text(72, 753,
-           "顺序：VOS=1 → 5WS → HSEON → PLLON → SW=10b → HPRE/PPRE；SWS 回读才算切换。",
+    # SYSCLK gauge and USB tap.
+    f.card(700, 170, 250, 150, AMBER_STROKE, fill=AMBER_PALE)
+    f.clockface(748, 224, 32, AMBER_STROKE, hand=(-1, 2))
+    f.text(796, 226, "168 MHz", size=28, color=AMBER_STROKE, weight="bold")
+    f.text(796, 254, "SYSCLK", size=16, color=INK, weight="bold")
+    f.text(720, 298, "SW = 10b 切到 PLL；SWS 回读确认", size=14, color=INK)
+
+    f.card(974, 170, 114, 90, BLUE_D, fill=BLUE_FILL)
+    f.text(1031, 204, "USB", size=19, color=BLUE_D, anchor="middle",
+           weight="bold")
+    f.text(1031, 232, "48 MHz", size=19, color=INK, anchor="middle")
+    f.text(1031, 252, "Q = 7", size=13, color=MUTED, anchor="middle")
+
+    # Source -> PLL -> SYSCLK.
+    f.arrow(286, 222, 316, 236, color=GREEN_D, sw=2.2, bend=0.0)
+    f.arrow(286, 350, 316, 330, color=BLUE_D, sw=2.2, bend=0.0)
+    f.arrow(662, 270, 696, 250, color=AMBER_STROKE, sw=2.6, bend=0.0)
+    f.arrow(952, 230, 972, 224, color=BLUE_D, sw=2.0, bend=0.0, head=8)
+
+    # Main bus pipe: one trunk, three valves, three drops.
+    f.line(825, 322, 825, 424, color=INK, sw=2.6, amp=0.8)
+    f.line(214, 424, 906, 424, color=INK, sw=2.6, amp=0.8)
+    for cx, label, color in ((214, "÷1", GREEN_D), (560, "÷4", BLUE_D),
+                             (906, "÷2", AMBER_STROKE)):
+        f.circle(cx, 424, 15, color=color, sw=1.8, fill=WHITE)
+        f.text(cx, 430, label, size=13, color=color, anchor="middle",
+               weight="bold")
+        f.arrow(cx, 440, cx, 456, color=color, sw=2.4, bend=0.0)
+
+    # Three bus cards.
+    f.card(64, 460, 296, 136, GREEN_D, fill=GREEN_FILL)
+    f.text(84, 494, "AHB ÷1 · HPRE", size=21, color=GREEN_D, weight="bold")
+    f.text(84, 526, "HCLK 168 MHz", size=20, color=INK, weight="bold")
+    f.text(84, 556, "GPIO / RCC / DMA", size=16, color=INK)
+
+    f.card(400, 460, 296, 136, BLUE_D, fill=BLUE_FILL)
+    f.text(420, 494, "APB1 ÷4 · PPRE1", size=21, color=BLUE_D, weight="bold")
+    f.text(420, 526, "42 MHz", size=20, color=INK, weight="bold")
+    f.text(420, 556, "硬件上限 42 MHz", size=16, color=INK)
+
+    f.card(736, 460, 296, 136, AMBER_STROKE, fill=AMBER_PALE)
+    f.text(756, 494, "APB2 ÷2 · PPRE2", size=21, color=AMBER_STROKE,
+           weight="bold")
+    f.text(756, 526, "84 MHz", size=20, color=INK, weight="bold")
+    f.text(756, 556, "硬件上限 84 MHz", size=16, color=INK)
+
+    # Landing point: one real register, plus the timer x2 rule.
+    f.arrow(214, 598, 214, 626, color=GREEN_D, sw=2.4, bend=0.0)
+    f.card(64, 630, 480, 88, AMBER_STROKE, fill=WHITE)
+    f.text(84, 662, "GPIOA->MODER = 0x4002_0000", size=20, color=INK,
+           weight="bold")
+    f.text(84, 690, "AHB1 段基址 + 偏移 0x00；GPIOF = 0x4002_1400",
+           size=15, color=MUTED)
+
+    f.card(564, 630, 480, 88, BLUE_D, fill=WHITE)
+    f.text(584, 660, "APB 分频 ≠ 1：定时器时钟 ×2", size=18, color=BLUE_D,
+           weight="bold")
+    f.text(584, 690, "TIM2 = 42 MHz × 2 = 84 MHz；回读 168 / 42 / 84",
            size=15, color=INK)
+
+    # Order strip.
+    f.panel(64, 736, 1024, 32, WHITE, amp=1.0)
+    f.rect(64, 736, 1024, 32, color=MUTED, sw=1.8, fill=None, double=False,
+           amp=1.0)
+    f.text(80, 758,
+           "顺序：VOS=1 → 5WS → HSEON → PLLON → SW=10b → HPRE/PPRE；SWS 回读才算切换。",
+           size=14.5, color=INK)
     return f
 
 
 def ch10_exti_nvic_path():
-    f = Fig("ch10-exti-nvic-path", "引脚到 ISR：四道门与优先级")
-    f.text(56, 126,
-           "边沿先变成 EXTI 请求，NVIC 按优先级放行，向量表给出 ISR 的入口。",
-           size=16, color=MUTED)
+    f = Fig("ch10-exti-nvic-path", "引脚到 ISR：四道门与优先级",
+            tag="CH 10 · 中断与 EXTI")
+    f.text(64, 126,
+           "PF6 的一个边沿，要走完四道门才变成 ISR；优先级决定谁能在半路插队。",
+           size=19, color=MUTED)
+
+    # A pulse leaves the pin and passes four gates.
+    f.chip(64, 166, 58, 54, GREEN_D, size=13)
+    f.text(93, 242, "PF6", size=16, color=GREEN_D, anchor="middle",
+           weight="bold")
+    f.line(93, 256, 93, 280, color=GREEN_D, sw=2.4)
+    f.arrow(93, 280, 93, 306, color=GREEN_D, sw=2.4, bend=0.0)
+    f.text(120, 292, "边沿", size=14, color=MUTED)
 
     gates = [
-        ("①", "SYSCFG", BLUE_D, [
+        ("1", "SYSCFG", BLUE_D, BLUE_FILL, [
             "EXTICR2[11:8] = 0x5",
             "PF6 → EXTI6",
             "基址 0x40013800",
-            "先开 APB2 bit14 时钟",
         ]),
-        ("②", "EXTI", AMBER_STROKE, [
-            "IMR/RTSR/FTSR bit6",
-            "PR bit6 挂起",
-            "写 1 清（W1C）",
+        ("2", "EXTI", AMBER_STROKE, AMBER_PALE, [
+            "IMR / RTSR / FTSR bit6",
+            "PR bit6 挂起，写 1 清",
             "基址 0x40013C00",
         ]),
-        ("③", "NVIC", GREEN_D, [
+        ("3", "NVIC", GREEN_D, GREEN_FILL, [
             "IRQn 23 → 向量槽 39",
             "ISER[0] bit23",
             "IP 字节 0xE000E417",
-            "基址 0xE000E100",
         ]),
-        ("④", "ISR", RED, [
+        ("4", "ISR", RED, RED_FILL, [
             "EXTI9_5_IRQHandler",
             "槽 39 / 偏移 0x009C",
             "第一行清 PR",
-            "名字错 → Default_Handler",
         ]),
     ]
-    x = 56
-    for i, (num, title, color, lines) in enumerate(gates):
-        f.rect(x, 170, 244, 190, color=color, fill=WHITE, sw=2.4)
-        f.circle(x + 30, 200, 16, color=color, sw=2.0)
-        f.text(x + 30, 206, num, size=15, color=color, anchor="middle",
-               weight="bold")
-        f.text(x + 54, 207, title, size=19, color=color, weight="bold")
+    x = 64
+    for i, (num, title, color, fill, lines) in enumerate(gates):
+        f.card(x, 318, 236, 178, color, fill=fill)
+        f.gate(x + 14, 330, 50, 64, color, num)
+        f.text(x + 20, 432, title, size=23, color=color, weight="bold")
         for j, ln in enumerate(lines):
-            f.text(x + 16, 246 + j * 27, ln, size=14, color=INK)
+            f.text(x + 20, 462 + j * 25, ln, size=15, color=INK)
         if i < 3:
-            f.arrow(x + 246, 265, x + 262, 265, color=INK, sw=2.2, bend=0.0)
-        x += 264
+            f.arrow(x + 238, 400, x + 258, 400, color=INK, sw=2.2,
+                    bend=0.0, head=8)
+        x += 256
 
-    # priority encoding
-    f.rect(56, 400, 500, 250, color=BLUE_D, fill=WHITE, sw=2.4)
-    f.text(72, 434, "优先级：4 位字段，左移 4 位", size=19, color=BLUE_D,
+    # Priority is a 4-bit field shifted into the IP byte.
+    f.card(64, 516, 482, 190, BLUE_D, fill=WHITE)
+    f.text(84, 550, "优先级：4 位字段，左移 4 位", size=21, color=BLUE_D,
            weight="bold")
-    f.multi(72, 472, [
-        "逻辑 5 → 存入 IP 字节 0x50",
-        "逻辑 16 → 截断成 0x00（最高）",
-        "AIRCR = 0x05FA0500：2 抢占 + 2 子",
-        "写 AIRCR 必带 VECTKEY 0x5FA",
-        "F407 只有 0~15 这 16 档",
-    ], size=15, color=INK, lh=30)
+    f.pill(84, 572, 122, 36, "逻辑 5", BLUE_D, fill=BLUE_FILL, size=16)
+    f.arrow(210, 590, 246, 590, color=BLUE_D, sw=2.0, bend=0.0, head=7)
+    f.pill(250, 572, 140, 36, "IP = 0x50", BLUE_D, fill=BLUE_FILL, size=16)
+    f.text(84, 642, "逻辑 16 → 截断成 0x00（最高）", size=16, color=INK)
+    f.text(84, 670, "AIRCR = 0x05FA0500：2 抢占 + 2 子", size=16, color=INK)
+    f.text(84, 696, "写 AIRCR 必带 VECTKEY 0x5FA", size=15, color=MUTED)
 
-    # preemption order
-    f.rect(584, 400, 508, 250, color=GREEN_D, fill=WHITE, sw=2.4)
-    f.text(600, 434, "抢占：谁能打断谁", size=19, color=GREEN_D,
+    # Preemption: lower preempt number cuts the line; equal number queues.
+    f.card(574, 516, 514, 190, GREEN_D, fill=WHITE)
+    f.text(594, 550, "抢占：谁打断谁", size=21, color=GREEN_D,
            weight="bold")
-    f.line(610, 464, 610, 566, color=GREEN_D, sw=1.8, amp=1.0)
-    rows = [
-        ("EXTI0（抢占 2）正在跑", INK),
-        ("EXTI9_5（同级 2）挂起排队", INK),
-        ("EXTI1（抢占号更小）立刻压栈换人", RED),
-        ("ISR1 退出 → 回 EXTI0 → EXTI9 补位", INK),
-    ]
-    for i, (ln, color) in enumerate(rows):
-        y = 470 + i * 32
-        f.circle(610, y - 5, 5, color=color, sw=1.4)
-        f.text(628, y, ln, size=15, color=color)
-    f.text(600, 622, "子优先级只在同时挂起时排队，没有打断能力。",
-           size=14, color=MUTED)
+    f.pill(594, 572, 204, 38, "EXTI0 · 抢占 2", GREEN_D, fill=GREEN_FILL,
+           size=15)
+    f.pill(594, 620, 204, 38, "EXTI9_5 · 同级 2", GREEN_D, fill=GREEN_FILL,
+           size=15)
+    f.pill(814, 572, 236, 38, "EXTI1 · 抢占 1", RED, fill=RED_FILL,
+           size=15)
+    f.arrow(812, 632, 812, 596, color=RED, sw=2.4, bend=0.0, head=8)
+    f.text(820, 652, "号更小 → 立刻压栈换人", size=15, color=RED,
+           weight="bold")
+    f.text(594, 688, "同级只在同时挂起时排队，不能打断。", size=15,
+           color=MUTED)
 
-    # formula strip
-    f.panel(56, 670, 1036, 76, AMBER_FILL)
-    f.text(72, 704,
-           "IRQn/32 = ISER 下标，IRQn%32 = 位号；IP 字节 = 0xE000E400 + IRQn。",
-           size=17, color=INK, weight="bold")
-    f.text(72, 732,
-           "USART1：IRQn 37 → ISER[1] bit5、IP 0xE000E425；与槽号 IRQn + 16 一起对账。",
-           size=15, color=MUTED)
+    # Formula strip: two short lines beat one clipped line.
+    f.panel(64, 716, 1024, 54, AMBER_FILL, amp=1.2)
+    f.text(80, 740,
+           "IRQn/32 = ISER 下标；IRQn%32 = 位号；IP = 0xE000E400 + IRQn。",
+           size=15.5, color=INK, weight="bold")
+    f.text(80, 762,
+           "USART1：IRQn 37 → ISER[1] bit5、IP 0xE000E425；槽号 = IRQn + 16。",
+           size=14.5, color=MUTED)
     return f
 
 

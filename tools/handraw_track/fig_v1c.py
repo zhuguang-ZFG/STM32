@@ -8,32 +8,34 @@ Layouts are schematic, not measured and not to scale.
 """
 from pathlib import Path
 
-from hd import *
+from hd import (AMBER_PALE, AMBER_STROKE, BLUE, BLUE_D, BLUE_FILL, GRAY_FILL,
+                GREEN_D, GREEN_FILL, INK, MUTED, RED, RED_FILL, WHITE,
+                Fig, save)
 
 OUT = Path(__file__).resolve().parents[2] / ".temp" / "l0-l5-pass" / "figures"
 
 
 def adc_dac_chain():
     f = Fig("v1c-adc-dac-chain", "ADC 采样链：从模拟电压到 DMA 缓冲",
-            title_color=BLUE_D)
+            title_color=BLUE_D, tag="CH 15 · ADC 与 DAC")
     f.text(576, 132, "STM32F407 · 12 位 · VREF = 3.3 V · 1 LSB = 805.7 µV",
            size=20, color=MUTED, anchor="middle")
 
     # ---- top: analog in -> sample/hold -> SAR -> DMA -> buffer ----
     boxes = [
-        (54, "模拟输入", BLUE_D,
+        (54, "模拟输入", BLUE_D, BLUE_FILL,
          ["PA0 / IN0", "0 – 3.3 V", "源阻抗 R_s"]),
-        (266, "采样保持", AMBER_STROKE,
+        (266, "采样保持", AMBER_STROKE, AMBER_PALE,
          ["C_ADC 充电", "t > 9.01τ / 9.70τ", "采样窗口定精度"]),
-        (478, "SAR ADC", RED,
+        (478, "SAR ADC", RED, RED_FILL,
          ["12 轮二分", "4096 → 1 档", "V_dac ≤ Vin 保留"]),
-        (690, "DMA", GREEN_D,
+        (690, "DMA", GREEN_D, GREEN_FILL,
          ["半字搬运 DR", "NDTR = 采样个数", "DMA2 Stream0/4"]),
-        (902, "滤波 / 输出", BLUE_D,
+        (902, "滤波 / 输出", BLUE_D, BLUE_FILL,
          ["uint16_t 数组", "按 rank 顺序", "控制 / 上位机"]),
     ]
-    for x, title, color, lines in boxes:
-        f.rect(x, 188, 180, 132, color=color, fill=WHITE, sw=2.4)
+    for x, title, color, fill, lines in boxes:
+        f.card(x, 188, 180, 132, color, fill=fill)
         f.text(x + 90, 220, title, size=22, color=color,
                anchor="middle", weight="bold")
         f.multi(x + 12, 251, lines, size=16, color=INK, lh=25)
@@ -46,37 +48,35 @@ def adc_dac_chain():
     f.text(590, 368, "采样 + 12.5 周期", size=17, color=INK)
 
     # ---- middle: one worked value path ----
-    f.rect(54, 392, 1028, 150, color=BLUE_D, fill=WHITE, sw=2.4)
+    f.card(54, 392, 1028, 150, BLUE_D, fill=WHITE)
     f.text(76, 424, "2.00 V 的去路（模型算术，不是板上读数）",
            size=21, color=BLUE_D, weight="bold")
     chips = [
-        (76, 280, "Vin = 2.00 V", BLUE_D),
-        (392, 300, "12 轮 → 2482 = 0x9B2", RED),
-        (728, 332, "回算 1.99966 V；差 0.42 LSB", GREEN_D),
+        (76, 280, "Vin = 2.00 V", BLUE_D, BLUE_FILL),
+        (392, 300, "12 轮 → 2482 = 0x9B2", RED, RED_FILL),
+        (728, 340, "回算 1.99966 V；差 0.42 LSB", GREEN_D, GREEN_FILL),
     ]
-    for x, w, label, color in chips:
-        f.rect(x, 446, w, 70, color=color, fill=PAPER, sw=2.2)
-        f.text(x + w / 2, 489, label, size=20, color=INK,
-               anchor="middle", weight="bold")
+    for x, w, label, color, fill in chips:
+        f.pill(x, 446, w, 70, label, color, fill=fill, text_color=INK,
+               size=20)
     f.arrow(356, 481, 388, 481, color=BLUE, bend=0, head=8)
     f.arrow(692, 481, 724, 481, color=BLUE, bend=0, head=8)
     f.text(76, 534, "1 LSB = 3.3 V / 4096 = 805.7 µV；码 2048 = 1.65 V",
            size=18, color=MUTED)
 
     # ---- bottom: DAC reverse path ----
-    f.rect(54, 564, 1028, 140, color=GREEN_D, fill=WHITE, sw=2.4)
+    f.card(54, 564, 1028, 140, GREEN_D, fill=WHITE)
     f.text(76, 596, "反方向：DAC 把码变回电压（F407，PA4）",
            size=21, color=GREEN_D, weight="bold")
     dac = [
-        (76, 250, "DHR12R1 = 2048", AMBER_STROKE),
-        (356, 190, "DOR1", BLUE_D),
-        (576, 210, "缓冲器", MUTED),
-        (816, 240, "PA4 ≈ 1.65 V", GREEN_D),
+        (76, 250, "DHR12R1 = 2048", AMBER_STROKE, AMBER_PALE),
+        (356, 190, "DOR1", BLUE_D, BLUE_FILL),
+        (576, 210, "缓冲器", MUTED, WHITE),
+        (816, 240, "PA4 ≈ 1.65 V", GREEN_D, GREEN_FILL),
     ]
-    for x, w, label, color in dac:
-        f.rect(x, 612, w, 64, color=color, fill=PAPER, sw=2.2)
-        f.text(x + w / 2, 652, label, size=20, color=INK,
-               anchor="middle", weight="bold")
+    for x, w, label, color, fill in dac:
+        f.pill(x, 612, w, 64, label, color, fill=fill, text_color=INK,
+               size=20)
     for x0, x1 in ((326, 352), (546, 572), (786, 812)):
         f.arrow(x0, 644, x1, 644, color=BLUE, bend=0, head=8)
     f.text(76, 697,
@@ -93,7 +93,7 @@ def adc_dac_chain():
 
 def flash_ota_rollback():
     f = Fig("v1c-flash-ota-rollback", "升级、校验、回滚：换槽是一条小记录",
-            title_color=GREEN_D)
+            title_color=GREEN_D, tag="CH 17 · Flash 与 OTA")
     f.text(576, 132,
            "STM32F407 · 1 MB · Bootloader 扇区 0 · 元数据扇区 1 · Slot A/B 各 480 KB",
            size=19, color=MUTED, anchor="middle")
@@ -129,14 +129,17 @@ def flash_ota_rollback():
     f.text(54, 326, "一次升级的五步（任一步失败都不动当前槽）",
            size=18, color=MUTED)
     steps = [
-        (54, "① 写备槽", GREEN_D, ["只擦 Slot B", "Slot A 不动"]),
-        (264, "② 校验", BLUE_D, ["长度 ≤ 槽大小", "CRC32 + 向量两字"]),
-        (474, "③ 提交", AMBER_STROKE, ["追加 seq+1 记录", "meta_crc 最后写"]),
-        (684, "④ 首启自检", GREEN_D, ["点灯 / 串口 / 外设", "通过 → 有效"]),
-        (894, "⑤ 回退", RED, ["不确认 → 标无效", "追加 active=A"]),
+        (54, "① 写备槽", GREEN_D, GREEN_FILL, ["只擦 Slot B", "Slot A 不动"]),
+        (264, "② 校验", BLUE_D, BLUE_FILL,
+         ["长度 ≤ 槽大小", "CRC32 + 向量两字"]),
+        (474, "③ 提交", AMBER_STROKE, AMBER_PALE,
+         ["追加 seq+1 记录", "meta_crc 最后写"]),
+        (684, "④ 首启自检", GREEN_D, GREEN_FILL,
+         ["点灯 / 串口 / 外设", "通过 → 有效"]),
+        (894, "⑤ 回退", RED, RED_FILL, ["不确认 → 标无效", "追加 active=A"]),
     ]
-    for x, title, color, lines in steps:
-        f.rect(x, 338, 188, 126, color=color, fill=WHITE, sw=2.4)
+    for x, title, color, fill, lines in steps:
+        f.card(x, 338, 188, 126, color, fill=fill)
         f.text(x + 94, 370, title, size=19, color=color,
                anchor="middle", weight="bold")
         f.multi(x + 12, 402, lines, size=15, color=INK, lh=26)
@@ -145,7 +148,7 @@ def flash_ota_rollback():
 
     # ---- two failure boundaries ----
     f.text(54, 502, "两条失败边界", size=18, color=MUTED)
-    f.rect(54, 516, 502, 172, color=RED, fill=WHITE, sw=2.4)
+    f.card(54, 516, 502, 172, RED, fill=RED_FILL)
     f.text(74, 550, "镜像长事务：写 B 时断电", size=20, color=RED,
            weight="bold")
     f.multi(74, 584, [
@@ -155,7 +158,7 @@ def flash_ota_rollback():
         "恢复动作：重写 B，不动 A",
     ], size=16, color=INK, lh=28)
 
-    f.rect(580, 516, 502, 172, color=AMBER_STROKE, fill=WHITE, sw=2.4)
+    f.card(580, 516, 502, 172, AMBER_STROKE, fill=AMBER_PALE)
     f.text(600, 550, "记录短事务：提交时断电", size=20, color=AMBER_STROKE,
            weight="bold")
     f.multi(600, 584, [

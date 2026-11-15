@@ -203,6 +203,8 @@ F103 的 GPIO 写法是 `GPIOB->CRL` 的 PB6/PB7 两个半字节都写 `0xE`（�
 
 ### 五、24C02：页、tWR 与 ACK polling
 
+![手绘板：24C02 的 8 格页跨页写会绕回页首覆盖前 12 字节，门卫等 tWR 结束才点头，ACK polling 与读收尾四步（原理示意，非实拍）](/images/ch16-at24c02-page-wrap.png)
+
 AT24C02 是 2 Kbit = 256 字节，页大小 8 字节，写周期 tWR 约 5 ms（S11 写典型 5 ms，Atmel 手册原件未核）。7 位地址 0x50，字地址 1 字节，写一字节的事务是：
 
 ```text

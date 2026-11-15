@@ -85,6 +85,8 @@ pcReadFrom 初值 = pcHead + (5-1) × 16 = 0x1040
 
 ### 一、一个结构体，三种对象
 
+![手绘板：同一块 QueueDefinition 签货架、信号灯、挂牌锁三份租约；环形货架回绕指针，ISR 阈值 0x50、等待名单按优先级排（原理示意，非实拍）](/images/ch24-queue-three-contracts.png)
+
 `queue.c` 的 `QueueDefinition` 原文是下面这些字段。注意最后两行是宏，不是结构体成员：`uxQueueType` 只是 `pcHead` 的别名，`queueQUEUE_IS_MUTEX` 只是 `NULL`。
 
 ```c

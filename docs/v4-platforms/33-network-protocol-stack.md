@@ -56,6 +56,8 @@ lwIP 子模块 commit `07680c81…` 属于 **ST fork `stm32-mw-lwip`**（lwip-tc
 
 ### 二、Cache 交接：方向表与 32 B 行
 
+![手绘板：Cache 是厨师便签、SRAM 是台面、DMA 是搬整盘 32B 的跑菜员；TX clean / RX invalidate，DTCM 与 CCM 禁区各不同（原理示意，非实拍）](/images/ch33-cache-dma-kitchen.png)
+
 H7 的 D-Cache 使 DMA 一致性变成显式工作（M7 cache 行 **32 字节**，clean/invalidate 按整行生效）：
 
 | 方向 | 交接前动作 | 原因 |
