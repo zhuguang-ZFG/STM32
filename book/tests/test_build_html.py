@@ -73,7 +73,9 @@ class BuildHtmlTest(unittest.TestCase):
         self.quiz_dir.mkdir(parents=True)
         (self.docs / "v0-foundations").mkdir(parents=True)
         (self.docs / "public" / "arch").mkdir(parents=True)
-        (self.docs / "public" / "arch" / "demo.svg").write_text("<svg/>", encoding="utf-8")
+        (self.docs / "public" / "arch" / "demo.svg").write_text(
+            '<svg width="10" height="5" viewBox="0 0 10 5"></svg>', encoding="utf-8"
+        )
         (self.docs / "v0-foundations" / "01-a.md").write_text(CHAPTER, encoding="utf-8")
         (self.quiz_dir / "q1.json").write_text(
             '{"title": "自测", "chapter": "q1", "questions": ['
@@ -95,6 +97,7 @@ class BuildHtmlTest(unittest.TestCase):
         self.assertIn('id="先做出来"', page)
         self.assertIn('<section class="quiz">', page)
         self.assertIn('src="../arch/demo.svg"', page)
+        self.assertIn('width="10" height="5"', page)
         self.assertIn('class="book-figure"', page)
         self.assertIn('<figcaption>演示图</figcaption>', page)
         self.assertIn('href="./02-other.html"', page)
@@ -108,6 +111,13 @@ class BuildHtmlTest(unittest.TestCase):
         self.assertIn('<figure class="book-figure">', build_html.wrap_figures(standalone))
         self.assertNotIn('<figure', build_html.wrap_figures(inline))
         self.assertNotIn('<figure', build_html.wrap_figures(empty))
+
+    def test_add_image_dimensions_keeps_existing_width_ratio(self):
+        png = b"\x89PNG\r\n\x1a\n" + b"\x00\x00\x00\rIHDR" + (100).to_bytes(4, "big") + (50).to_bytes(4, "big")
+        (self.docs / "public" / "arch" / "demo.png").write_bytes(png)
+        html_text = '<p><img src="/arch/demo.png" alt="示意" width="76"></p>'
+        rendered = build_html.add_image_dimensions(html_text, self.docs / "public")
+        self.assertIn('width="76" height="38"', rendered)
 
     def test_wrap_tables_marks_scroll_container(self):
         wrapped = build_html.wrap_tables("<table><tr><td>x</td></tr></table>")

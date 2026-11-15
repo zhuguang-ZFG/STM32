@@ -8,6 +8,7 @@ import json
 import posixpath
 import re
 import shutil
+import struct
 import sys
 import tempfile
 from pathlib import Path
@@ -149,6 +150,7 @@ def relativize(html_text: str, depth: int) -> str:
 FIGURE_P_RE = re.compile(r'<p>\s*<img\s+([^>]*?)\s*/?>\s*</p>')
 ALT_RE = re.compile(r'\balt="([^"]*)"')
 SRC_RE = re.compile(r'\bsrc="([^"]*)"')
+IMG_TAG_RE = re.compile(r'<img\b([^>]*?)(\s*/?)>', re.I)
 TABLE_RE = re.compile(r'<table>.*?</table>', re.S)
 
 
@@ -158,6 +160,107 @@ def wrap_tables(html_text: str) -> str:
         lambda match: f'<div class="table-scroll">{match.group(0)}</div>',
         html_text,
     )
+
+
+def _svg_size(text: str) -> tuple[int, int] | None:
+    root = re.search(r'<svg\b([^>]*)>', text, re.I | re.S)
+    if root is None:
+        return None
+    attrs = root.group(1)
+    numeric = {}
+    for key in ("width", "height"):
+        match = re.search(rf'\b{key}="([0-9.]+)(?:px)?"', attrs, re.I)
+        if match:
+            numeric[key] = float(match.group(1))
+    if "width" in numeric and "height" in numeric:
+        return round(numeric["width"]), round(numeric["height"])
+    viewbox = re.search(r'\bviewBox="([^"]+)"', attrs, re.I)
+    if viewbox:
+        parts = re.split(r'[\s,]+', viewbox.group(1).strip())
+        if len(parts) == 4:
+            try:
+                return round(float(parts[2])), round(float(parts[3]))
+            except ValueError:
+                pass
+    return None
+
+
+def _jpeg_size(data: bytes) -> tuple[int, int] | None:
+    if data[:2] != b"\xff\xd8":
+        return None
+    offset = 2
+    sof = {0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7, 0xC9, 0xCA, 0xCB, 0xCD, 0xCE, 0xCF}
+    while offset + 4 <= len(data):
+        if data[offset] != 0xFF:
+            offset += 1
+            continue
+        while offset < len(data) and data[offset] == 0xFF:
+            offset += 1
+        if offset >= len(data):
+            return None
+        marker = data[offset]
+        offset += 1
+        if marker in (0xD8, 0xD9) or 0xD0 <= marker <= 0xD7:
+            continue
+        if offset + 2 > len(data):
+            return None
+        length = int.from_bytes(data[offset : offset + 2], "big")
+        if length < 2:
+            return None
+        if marker in sof and offset + 7 <= len(data):
+            height = int.from_bytes(data[offset + 3 : offset + 5], "big")
+            width = int.from_bytes(data[offset + 5 : offset + 7], "big")
+            return (width, height) if width and height else None
+        offset += length
+    return None
+
+
+def _image_size(path: Path) -> tuple[int, int] | None:
+    suffix = path.suffix.lower()
+    if suffix == ".svg":
+        return _svg_size(path.read_text(encoding="utf-8", errors="ignore"))
+    data = path.read_bytes()
+    if suffix == ".png" and data.startswith(b"\x89PNG\r\n\x1a\n") and len(data) >= 24:
+        return struct.unpack(">II", data[16:24])
+    if suffix == ".gif" and data[:3] == b"GIF" and len(data) >= 10:
+        return struct.unpack("<HH", data[6:10])
+    if suffix in {".jpg", ".jpeg"}:
+        return _jpeg_size(data)
+    return None
+
+
+def add_image_dimensions(html_text: str, public_dir: Path) -> str:
+    """Reserve layout space for lazy images before they load."""
+
+    def repl(match: re.Match[str]) -> str:
+        attrs = match.group(1)
+        tail = match.group(2)
+        src = SRC_RE.search(attrs)
+        if src is None or not src.group(1).startswith("/"):
+            return match.group(0)
+        asset = public_dir / src.group(1).lstrip("/")
+        if not asset.is_file():
+            return match.group(0)
+        size = _image_size(asset)
+        if size is None:
+            return match.group(0)
+        width, height = size
+        width_attr = re.search(r'\bwidth="([0-9.]+)(?:px)?"', attrs, re.I)
+        height_attr = re.search(r'\bheight="([0-9.]+)(?:px)?"', attrs, re.I)
+        additions = []
+        if width_attr and height_attr:
+            return match.group(0)
+        if width_attr:
+            scaled = round(float(width_attr.group(1)) * height / width)
+            additions.append(f'height="{scaled}"')
+        elif height_attr:
+            scaled = round(float(height_attr.group(1)) * width / height)
+            additions.append(f'width="{scaled}"')
+        else:
+            additions.extend((f'width="{width}"', f'height="{height}"'))
+        return f'<img{attrs.rstrip()} {" ".join(additions)}{tail}>'
+
+    return IMG_TAG_RE.sub(repl, html_text)
 
 
 def wrap_figures(html_text: str, lazy: bool = False, zoom: bool = False) -> str:
@@ -268,6 +371,7 @@ def build(
         content = MD_HREF_RE.sub(
             lambda match: f'href="{match.group(1)}.html{match.group(2) or ""}"', content
         )
+        content = add_image_dimensions(content, public)
         depth = len(Path(entry["file"]).parts) - 1
         content = relativize(content, depth)
         content = wrap_figures(content, lazy=True, zoom=True)
