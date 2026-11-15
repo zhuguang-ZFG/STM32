@@ -5,17 +5,19 @@ platforms: [f103]
 
 # 速度闭环与 PI
 
-闭环一句话：每个控制节拍比较目标与测量，误差经 PI 算出新占空比；负载加重 → 误差变大 → 占空比加深 → 转速回拉。这一章把 PI 拆到单位（Kp ‰/rpm、Ki ‰/(rpm·s)——单位错就是增益错）、把抗饱和拆成四条条件积分规则、把状态机与六类故障位立成安全合同，最后给调参六步——每步带通过判据与回退条件。验收指标全部是**拟定目标**，不是测量结果。
+误差 −10 rpm、Kp=2.0、Ki=0.5，一个 10 ms 节拍后 PI 输出 −20.05‰。负号不是笔误：目标低于实测，占空比就得往下调。这一章从这笔账出发，拆开单位、抗饱和、状态机与调参顺序；验收指标全部是拟定目标，不是测量结果。
 
-证据先说清：本章零板级实测，且**不展示任何实测曲线**——「本章全部实验结果待 P2/P3 真板数据回填」。PI 手算、限幅对齐、状态机表全部可复算；冻结参数（Kp 2.0/Ki 0.5/限幅 900‰+500‰/斜坡 600 rpm/s/α=1.0）是「起步值非验收值」的双重限定参数；「H01–H10 主机测试 62 断言覆盖」是宿主模型实测（P3 未交付，标待核），不是板级。M32-A~F 六项全部「待执行（实物未到）」。
+这一章没有板级实测，也不展示任何实测曲线：全部实验结果要等 P2/P3 的真板数据回填。PI 手算、限幅对齐与状态机表都可复算；冻结参数（Kp 2.0、Ki 0.5、限幅 900‰+500‰、斜坡 600 rpm/s、α=1.0）是「起步值非验收值」的双重限定参数。
+
+「H01–H10 主机测试 62 断言覆盖」属于宿主模型实测（P3 未交付，标待核），不是板级。M32-A~F 六项全部「待执行（实物未到）」。
 
 > 版本口径：冻结参数 v1.2（Kp 2.0 ‰/rpm、Ki 0.5 ‰/(rpm·s)、i_limit 500‰、duty_limit 900‰、目标斜坡 600 rpm/s、滤波 α=1.0）；控制节拍 10 ms（TIM4）；状态机与 F01–F06 故障位按 DESIGN:140-162 合同；验收指标按 ACC §4/§5（「拟定验收目标」限定随引）。上游对账：RM0008（TIM 时基，[v1 第 12 章](../v1-drivers/12-timers-pwm.md) 已核）；TB6612 datasheet（[Pololu 0J86](https://www.pololu.com/file/0j86/tb6612fng.pdf)）；IWDG 机制见 [v1 第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。
 
 ## 本章罗盘
 
-- **问题**：PI 的离散式怎么写，Kp/Ki 的单位是什么，为什么单位错等于增益错？一个 10 ms 时间步的手算怎么走（e=−10 rpm → −20.05‰），负输出为什么必须存在（fabsf 反例）？输出限幅与抗饱和的概念差是什么，条件积分四规则怎么挡 windup？目标斜坡 600 rpm/s 为什么存在，PI 为什么不直接跟阶跃？状态机五态与事件优先级（故障>STOP>换向）是什么，故障锁存后怎么恢复？控制节拍与串口任务为什么分离？调参六步的通过判据与回退条件各是什么？四指标（超调/上升时间/稳态误差/整定时间）怎么定义？D 项为什么不用？
-- **交付**：能手算一个控制节拍并解释负输出的方向语义；能把条件积分四规则落成代码分支；能把状态机、故障锁存与恢复链（CLEAR→DISABLED→HEARTBEAT→ARMED）画成图；能把控制节拍与串口任务的所有权分开（ISR 写桥/主循环收发）；能按六步调参表走一遍并说出回退条件；能按四指标写验收记录的数据要求（同轴曲线、输入哈希、重复全保留）。
-- **边界**：开环链路（PWM 端点/带符号占空比/斜坡/租约）归 [第 37 章](./37-dc-motor-openloop.md)；编码器量化与回绕归 [第 38 章](./38-encoder-speed-measurement.md)；驱动桥与供电归 [第 36 章](./36-motor-driver-power.md)；DWT 测量法归 [v1 第 20 章](../v2-reliability/20-debug-performance.md)；IWDG 监督机制归 [v1 第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)（电机侧只接合同）；任务与队列机制归 [v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md)。EKF/Kalman 等状态估计不在本章——控制律是纯算术。
+- **问题**：PI 的离散式与 Kp/Ki 单位怎么定，单位错为什么等于增益错？误差 −10 rpm 时一个 10 ms 节拍输出多少，负输出为什么不能抹掉？输出限幅与抗饱和差在哪，条件积分四规则如何挡住 windup？目标斜坡、状态机与故障恢复、控制节拍与串口的分离、调参六步的判据与回退、四指标定义，以及 D 项为什么不进 V1。
+- **交付**：能手算一个控制节拍并解释负输出的方向；把条件积分四规则落成代码分支；画出五态状态机、故障锁存与恢复链（CLEAR→DISABLED→HEARTBEAT→ARMED）；把控制节拍与串口任务的所有权分开（ISR 写桥、主循环收发）；按六步调参表走一遍并说出回退条件；按四指标写验收记录的数据要求（同轴曲线、输入哈希、重复全保留）。
+- **边界**：开环链路（PWM 端点、带符号占空比、斜坡、租约）归 [第 37 章](./37-dc-motor-openloop.md)，编码器量化与回绕归 [第 38 章](./38-encoder-speed-measurement.md)，驱动桥与供电归 [第 36 章](./36-motor-driver-power.md)，DWT 测量归 [v1 第 20 章](../v2-reliability/20-debug-performance.md)，IWDG 归 [v1 第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，任务与队列归 [v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md)。EKF/Kalman 等状态估计不在本章，控制律是纯算术。
 - **依据锚点**：M32 草稿（`plans/2026-11-11-motor-control/chapters-draft/32-直流电机速度闭环.md`）、DESIGN 合同（`:121-130` 单位、`:132` 抗饱和、`:140-162` 状态机/F01–F06、`:85` 耗时预算）、ACC《验收》（`plans/2026-11-11-motor-control/acceptance.md`）。上游对账：RM0008；TB6612 datasheet；`tools/motor_analyze.py`（P3 交付物，标待核）。
 
 ## 先做出来
@@ -31,30 +33,32 @@ u_try  = Kp × e + I_try               （Kp: ‰/rpm；u: ‰）
 u      = clamp(u_try, ±duty_limit)
 ```
 
-手算（e=−10 rpm、I(0)=0、Kp=2.0、Ki=0.5）：I_try = 0 + 0.5×(−10)×0.01 = **−0.05‰**；u_try = 2.0×(−10) + (−0.05) = **−20.05‰**。**负输出必须存在**——负反馈环的方向语义：目标低于实测，就降占空比。旧实现里用 `fabsf` 抹掉符号会让负误差也输出正占空比，环彻底失效；负输出是 [第 37 章](./37-dc-motor-openloop.md) 带符号占空比的闭环意义。
+手算（e=−10 rpm、I(0)=0、Kp=2.0、Ki=0.5）：I_try = 0 + 0.5×(−10)×0.01 = −0.05‰；u_try = 2.0×(−10) + (−0.05) = −20.05‰。负输出必须保留：负反馈环的方向语义是目标低于实测就降占空比。
+
+旧实现里用 `fabsf` 抹掉符号，负误差也会输出正占空比，环彻底失效；负输出也是 [第 37 章](./37-dc-motor-openloop.md) 带符号占空比在闭环里的意义。
 
 ### 2. 限幅→PWM 对齐
 
-输出限幅 900‰ → CCR = 900×3600/1000 = **3240 < 3599**：限幅永远够不到满压端点（[第 37 章](./37-dc-motor-openloop.md) 的 CCR=ARR 差一格区与 CCR>ARR 都不会被触到）——限幅与端点语义天然对齐。积分限幅 500‰ → CCR 1800。
+输出限幅 900‰ → CCR = 900×3600/1000 = 3240 < 3599：限幅永远够不到满压端点，[第 37 章](./37-dc-motor-openloop.md) 的 CCR=ARR 差一格区与 CCR>ARR 都不会被触到，限幅与端点语义天然对齐。积分限幅 500‰ → CCR 1800。
 
 ## 机制
 
 ### 一、限幅 vs 抗饱和：钳当前与管历史
 
-输出限幅只钳**当前**输出；积分 windup 来自**误差长期存在时积分项的累积**——饱和恢复迟缓，表现为大超调与振荡。抗饱和用**条件积分**四规则（DESIGN:132 合同）：
+输出限幅只钳当前输出。积分 windup 是误差长期存在时积分项一直累积，饱和后恢复迟缓，表现为大超调和振荡。抗饱和用条件积分四规则（DESIGN:132 合同）：
 
 1. 未饱和 → 接受本次积分；
 2. 上界饱和且 e<0（误差方向朝离开饱和）→ 接受；
 3. 下界饱和且 e>0 → 接受；
-4. 其余（饱和且误差朝深里推）→ **拒绝**。
+4. 其余（饱和且误差朝深里推）→ 拒绝。
 
-积分项另有 ±500‰ 自限幅——「抗饱和必须用最终执行区间，不能只检查对称幅值限幅」（DESIGN:132 原口径）。
+积分项另有 ±500‰ 自限幅。DESIGN:132 的原话是「抗饱和必须用最终执行区间，不能只检查对称幅值限幅」。
 
-![手绘板：PI 一步手算与条件积分四规则——负输出有方向语义，饱和时拒绝加深（原理示意）](/images/ch32-pi-step.png)
+![手绘板：PI 一步手算与条件积分四规则，负输出有方向语义，饱和时拒绝加深（原理示意）](/images/ch32-pi-step.png)
 
 ### 二、目标斜坡与滤波
 
-目标突变（0→1000 rpm）不走阶跃——按 **600 rpm/s** 斜坡，PI 只跟平滑目标：阶跃目标的瞬间误差会打满限幅，斜坡把「追」变成「匀加速追」。测量滤波一阶 IIR：`rpm_filt += α×(rpm_raw − rpm_filt)`，α=1.0 冻结默认（不过滤）——α 的带宽/延迟取舍归调参段。
+目标突变（0→1000 rpm）不走阶跃，按 600 rpm/s 斜坡，PI 只跟平滑目标。阶跃目标的瞬间误差会打满限幅；斜坡把「追」变成「匀加速追」。测量滤波是一阶 IIR：`rpm_filt += α×(rpm_raw − rpm_filt)`，α=1.0 是冻结默认（不过滤），带宽与延迟的取舍放在调参段。
 
 ### 三、状态机与事件优先级
 
@@ -62,13 +66,17 @@ u      = clamp(u_try, ±duty_limit)
 DISABLED → (HEARTBEAT 会话) → ARMED → RUN_OPEN / RUN_SPEED → REVERSING → FAULT
 ```
 
-事件优先级：**故障位永远最先，其次 STOP，换向最末**。故障位全部锁存：F01 租约超时 / F02 反馈无效 / F03 反馈丢失 500 ms / F06 未标定（CPR=0）/ F04 控制截止期违约 / F05 换向超时。恢复链：CLEAR 仅在 DISABLED 态可用 → 重新 HEARTBEAT → 重新 ARM——「清故障就直接跑」是禁止路径。F04 的截止期目标 ≤2 ms、周期偏差 ≤1 ms（DESIGN:85），与 [v1 第 20 章](../v2-reliability/20-debug-performance.md) 的 DWT 测量法衔接。
+事件优先级固定：故障最先，其次 STOP，换向最末。故障位全部锁存：F01 租约超时、F02 反馈无效、F03 反馈丢失 500 ms、F06 未标定（CPR=0）、F04 控制截止期违约、F05 换向超时。恢复链是 CLEAR（仅 DISABLED 态可用）→ 重新 HEARTBEAT → 重新 ARM；清故障后直接跑是禁止路径。
 
-![手绘板：闭环状态机——五态、事件优先级、故障锁存与恢复链（原理示意）](/images/ch32-state-machine.png)
+F04 的截止期目标 ≤2 ms、周期偏差 ≤1 ms（DESIGN:85），与 [v1 第 20 章](../v2-reliability/20-debug-performance.md) 的 DWT 测量法衔接。
+
+![手绘板：闭环状态机，五态、事件优先级、故障锁存与恢复链（原理示意）](/images/ch32-state-machine.png)
 
 ### 四、控制节拍与串口任务的分离
 
-10 ms 控制节拍由 TIM4 硬件中断驱动，串口收发在主循环（或独立任务）：**ISR 只写桥，主循环只收发**——打印与协议解析拖慢主循环，不拉长控制周期。「控制周期被打印拖慢」的结构性对策就在这条所有权边界里；上 RTOS 后控制任务唯一拥有输出（回链 [v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md) 的任务所有权）。IWDG 独立监督：控制任务僵死时看门狗兜底（机制归 [v1 第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，P2 启用后验证——待核）。
+10 ms 控制节拍由 TIM4 硬件中断驱动，串口收发放在主循环（或独立任务）：ISR 只写桥，主循环只收发。打印和协议解析只会拖慢主循环，不拉长控制周期。
+
+控制周期被打印拖慢时，解就在这条所有权边界里；上 RTOS 后，控制任务唯一拥有输出（回链 [v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md) 的任务所有权）。IWDG 独立监督：控制任务僵死时由看门狗兜底（机制归 [v1 第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，P2 启用后验证，待核）。
 
 ### 五、调参六步（每步带判据与回退）
 
@@ -81,19 +89,21 @@ DISABLED → (HEARTBEAT 会话) → ARMED → RUN_OPEN / RUN_SPEED → REVERSING
 | 5 | 饱和恢复测试 | 大阶跃后无长时间饱和（windup 症状） | 加大 i_limit 或查条件积分 |
 | 6 | 重做阶跃/扰动/反转全套 | 四指标达拟定目标 | 全套重来，不逐项补 |
 
-**参数只适用于记录的装置**——换电机/换电压/换负载特性，六步重走。
+参数只适用于记录的装置：换电机、换电压或换负载特性，六步从头走。
 
-![手绘板：调参阶梯——先 P 后 I、每步只动一个参数、带回退（原理示意）](/images/ch32-tuning-ladder.png)
+![手绘板：调参阶梯，先 P 后 I、每步只动一个参数、带回退（原理示意）](/images/ch32-tuning-ladder.png)
 
 ### 六、验收指标与数据要求
 
-四指标（ACC §4/§5，**拟定验收目标，不是测量结果**）：稳态误差 ≤5%、超调 ≤15%、进入 ±5% 带整定 ≤2 s、扰动后恢复 ≤2 s；试验设计 ±150 rpm 阶跃。数据要求：三条同轴曲线（目标/斜坡/实测）、原始帧与输入 SHA256 归档、**两次重复结果全部保留，不只留好看的一次**。遥测字段合同（DESIGN §9）：目标/斜坡/原始计数/滤波转速/积分与限幅状态/输出/状态/故障位/耗时/丢样——扩遥测先过 [第 37 章](./37-dc-motor-openloop.md) 的 37.3% 带宽账。
+四指标（ACC §4/§5，是拟定验收目标，不是测量结果）：稳态误差 ≤5%、超调 ≤15%、进入 ±5% 带整定 ≤2 s、扰动后恢复 ≤2 s；试验设计 ±150 rpm 阶跃。
+
+数据要求：三条同轴曲线（目标、斜坡、实测）、原始帧与输入 SHA256 归档，两次重复结果全部保留，不只留好看的一次。遥测字段合同（DESIGN §9）：目标、斜坡、原始计数、滤波转速、积分与限幅状态、输出、状态、故障位、耗时、丢样；扩遥测先过 [第 37 章](./37-dc-motor-openloop.md) 的 37.3% 带宽账。
 
 ### 七、D 项为什么不用
 
-编码器转速测量的量化噪声（[第 38 章](./38-encoder-speed-measurement.md) 的 13.6 rpm 逐格跳）会被 D 项放大——V1 不实现 D。位置环或更高分辨率反馈下再评估。故障注入与 24 h 长跑的完整闭环实验（M32-E/F）挂 BLK-P0-4 热预算与实物门，待执行。
+编码器转速的量化噪声（[第 38 章](./38-encoder-speed-measurement.md) 的 13.6 rpm 逐格跳）会被 D 项放大，所以 V1 不实现 D。等上了位置环或更高分辨率的反馈再评估。故障注入与 24 h 长跑的完整闭环实验（M32-E/F）挂 BLK-P0-4 热预算与实物门，待执行。
 
-![手绘板：闭环故障分诊——不振/不振荡但慢/超调/抖动四象限的第一查点（原理示意）](/images/ch32-loop-fault-triage.png)
+![手绘板：闭环故障分诊，不振/不振荡但慢/超调/抖动四象限的第一查点（原理示意）](/images/ch32-loop-fault-triage.png)
 
 ## 测量与证据
 
@@ -133,16 +143,18 @@ DISABLED → (HEARTBEAT 会话) → ARMED → RUN_OPEN / RUN_SPEED → REVERSING
 
 ## 社区开源实现
 
-速度闭环这几十行代码，社区里有几处实现值得对照着读——重点看它们怎么处理本章的四个难点（抗饱和、测量滤波、节拍一致性、符号语义）：
+速度闭环这几十行代码，社区里有几处实现值得对照着读，重点看它们怎么处理本章的四个难点（抗饱和、测量滤波、节拍一致性、符号语义）：
 
 | 仓库 | 文件 | 看什么 |
 | --- | --- | --- |
-| [br3ttb/Arduino-PID-Library](https://github.com/br3ttb/Arduino-PID-Library) | `PID_v1.cpp` | Brett Beauregard 的经典实现：抗饱和用输出限幅时冻结积分（本章条件积分规则的极简版）、微分取测量而非误差（阶跃不踢）、`SetSampleTime` 强制节拍一致——配套博客系列 [Improving the Beginner's PID](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/) 逐条解释为什么这么写 |
-| [simplefoc/arduino-foc](https://github.com/simplefoc/arduino-foc) | `src/communication/` + `src/current_sense/` 之外的 `PID` 类（`src/common/foc_utils.h`） | SimpleFOC 的 `PIDController` 把 P/I/限幅/输出斜坡挤在一个类里：`limit` 既是输出限幅也是抗饱和边界、输出电压直接接 PWM 驱动——对照本章「限幅与抗饱和是两个概念」的分离论证 |
-| [simplefoc/arduino-foc](https://github.com/simplefoc/arduino-foc) | 速度环入口 `motor.FOC_move()` | 测量先过低通再进 PI（`lpf_velocity`），帧率由 `motor.loop()` 的调用节拍决定——本章 60 Hz 定节拍 + rpm_filt 的同款思路 |
-| [SimpleFOC 社区论坛](https://community.simplefoc.com/) | velocity loop / tuning 相关帖 | 实物调试记录：Kp 从 0 逐步加到轻微振荡再回退的整定过程、编码器量化与滤波时间的取舍——与本章调参六步同一条路径，且都是实物数据 |
+| [br3ttb/Arduino-PID-Library](https://github.com/br3ttb/Arduino-PID-Library) | `PID_v1.cpp` | Brett Beauregard 的经典实现：抗饱和用输出限幅时冻结积分（本章条件积分规则的极简版）、微分取测量而非误差（阶跃不踢）、`SetSampleTime` 强制节拍一致；配套博客系列 [Improving the Beginner's PID](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/) 逐条解释为什么这么写 |
+| [simplefoc/arduino-foc](https://github.com/simplefoc/arduino-foc) | `src/communication/` + `src/current_sense/` 之外的 `PID` 类（`src/common/foc_utils.h`） | SimpleFOC 的 `PIDController` 把 P/I/限幅/输出斜坡挤在一个类里：`limit` 既是输出限幅也是抗饱和边界、输出电压直接接 PWM 驱动，对照本章「限幅与抗饱和是两个概念」的分离论证 |
+| [simplefoc/arduino-foc](https://github.com/simplefoc/arduino-foc) | 速度环入口 `motor.FOC_move()` | 测量先过低通再进 PI（`lpf_velocity`），帧率由 `motor.loop()` 的调用节拍决定，与本章 60 Hz 定节拍 + rpm_filt 的同款思路 |
+| [SimpleFOC 社区论坛](https://community.simplefoc.com/) | velocity loop / tuning 相关帖 | 实物调试记录：Kp 从 0 逐步加到轻微振荡再回退的整定过程、编码器量化与滤波时间的取舍，与本章调参六步同一条路径，且都是实物数据 |
 
-对照之后会看到一个共性：社区实现的积分项几乎从不只存 `Ki·e·dt` 的裸累加——要么限幅时冻结（Arduino-PID-Library），要么把积分边界绑到输出限幅上（SimpleFOC）。本章的四规则是同一件事的显式展开。另一个共性：所有实现都假设调用节拍恒定并在文档里声明，`dt` 不作为每次调用的自由参数——这正是本章"控制节拍漂移"失败分支的预防措施。
+对照之后会看到一个共性：社区实现的积分项几乎从不只存 `Ki·e·dt` 的裸累加。要么限幅时冻结（Arduino-PID-Library），要么把积分边界绑到输出限幅上（SimpleFOC）。本章的四规则是同一件事的显式展开。
+
+另一个共性：所有实现都假设调用节拍恒定并在文档里声明，`dt` 不作为每次调用的自由参数。这正是本章「控制节拍漂移」失败分支的预防措施。
 
 ## 离开检查
 
