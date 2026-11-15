@@ -76,6 +76,7 @@ pre {
   font-size: 0.86rem;
 }
 code { background: var(--code-bg); padding: 0.08rem 0.28rem; border-radius: 3px; font-size: 0.9em; }
+:not(pre) > code { overflow-wrap: anywhere; }
 pre code { background: transparent; padding: 0; font-size: inherit; }
 table {
   width: 100%; border-collapse: collapse; margin: 1.4em 0;
