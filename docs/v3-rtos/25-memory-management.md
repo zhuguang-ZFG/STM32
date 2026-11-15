@@ -5,7 +5,7 @@ platforms: [f407]
 
 # 内存管理
 
-`configTOTAL_HEAP_SIZE` 把 16 KiB 堆区交给 heap_4 管。它能直接回答「还剩多少」，但「最大还能一次分出多大」需要额外计算：总空闲与最大连续块是两个数，前一个涨了后一个不一定涨。下面从 heap_1 到 heap_5 讲清能力阶梯，把 heap_4 的合并算法拆到源码行，再把「碎片只能试探」改进为「可观测，并保留试探作为判断手段」，最后对照 RT-Thread 的堆家族收一张表。
+`configTOTAL_HEAP_SIZE` 把 16 KiB 堆区交给 heap_4 管。它能直接回答「还剩多少」，但「最大还能一次分出多大」需要额外计算：总空闲与最大连续块是两个数，前一个涨了后一个不一定涨。能力阶梯从 heap_1 到 heap_5；heap_4 的合并算法拆到源码行；「碎片只能试探」改成可观测，试探留作判断手段；最后对照 RT-Thread 的堆家族收一张表。
 
 没有新的上板读数。场景 5 的代码真实存在（`mcu/code/rtos/01-freertos-lab/main.c:249-264`），但仓库里没有落盘的串口日志，实验表只写操作与预期；probe 量出的 TCB 88 B 与固定开销 1312 B 是来源说法（未复核）；上游行号来自文档核对，不是本地编译证据。能亲手跑的只有场景 5 本身。
 
@@ -15,6 +15,8 @@ platforms: [f407]
 
 - **问题**：五个 heap 的差别先从释放与合并看起：heap_1 的 `vPortFree` 只能断言失败，heap_2 的空闲表排序且不合并，heap_3 缺少 `xPortGetFreeHeapSize`，heap_4 释放时靠边界信息找前邻块；「边界标记法」是错误说法。分配按 8 B 对齐，块头多占 overhead，当前空闲、历史最低水位与 `vPortGetHeapStats` 各回答不同问题。静态创建有真实失败条件，Idle/Timer 钩子是三参数签名，`configCHECK_FOR_STACK_OVERFLOW=2` 在切换时检查填充。heap_5 的区域表有调用顺序约束，CCM 不能放 DMA 缓冲；16 KiB 池按 TCB 88 B 加 8 B 头算预算。RT-Thread 的 `src/` 有四种堆实现，`tlsf.c` 不存在，slab 的「碎片免疫」被夸大，`rt_mp` 的 O(1) 来自固定块，`RT_USING_HEAP` 关掉后是纯静态固件，finsh 的堆监控命令要按真实名字写。
 - **交付**：能按「能否释放、合并、多区」给五个 heap 各一句话定位；能走读 `prvInsertBlockIntoFreeList` 的三步合并，纠正「边界标记法」的说法，算出块头 8 B 的对齐开销；能分清当前空闲与历史最低水位，知道 heap_4 能直读最大连续块而 heap_5 不能；能复述场景 5 的六步操作与每步预期，指出「总空闲够、最大连续块不够」的判定时刻；能写出三参数的 Idle/Timer 静态钩子，说清静态创建的失败条件；能写出 heap_5 的区域表并把 CCM 的 DMA 禁区说对；能用 88 B TCB 加 8 B 头做一次 16 KiB 预算；能按真实源码讲 RT-Thread 的四种堆实现、TLSF 的选档方向、内存池的 O(1) 与零堆固件。
+- **级别**：L4 系统。证据位置：「短自测」与「场景 5：碎片实验的六步」；读完留下五个 heap 的定位、合并三步的走读与一次碎片实验的预期对账记录。
+- **开源读法**：对照 FreeRTOS-Kernel 的 `portable/MemMang/heap_4.c` 读 `prvInsertBlockIntoFreeList` 的地址序合并，看 8 B 块头怎样省掉 footer；开销与预算口径仍回本章。
 - **边界**：单平台 F407（Cortex-M4F、`ARM_CM4F`、heap 16 KiB、`configSUPPORT_DYNAMIC_ALLOCATION=1`、`configSUPPORT_STATIC_ALLOCATION=0`）。FreeRTOS 结论按 V11.1.0；引用行号时区分「FreeHeapSize」「MinimumEver」「HeapStats」三个函数的落点，不混排。RT-Thread 只按 v5.3.0 的 `src/` 文件清单与 finsh 命令名讲，TLSF 只作论文与软件包对照，不写成内核自带。这里不展开伙伴系统、Slab 论文的分配器设计细节，不重教队列与任务创建的 RAM 开销（[ch24](./24-queue-semaphore-notification.md) 已算过 248 B 与 269），不写 Flash/IAP（那是 [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md) 的领地）。参数区与掉电保存只回链不展开。
 - **依据锚点**：F7《heap_1 到 heap_5》（`mcu/docs/rtos/freertos/07-heap.md`）、R3《RT-Thread 内存管理》（`mcu/docs/rtos/rtthread/03-mem.md`）、测验 `f7-heap`。配置见 `mcu/code/rtos/01-freertos-lab/FreeRTOSConfig.h`（`:31`、`:36`），场景 5 见 `mcu/code/rtos/01-freertos-lab/main.c:249-264`，内存地图见 `mcu/code/rtos/01-freertos-lab/stm32f407xx.ld:5-7` 与 [v1 第 8 章](../v1-drivers/08-architecture-memory-clock.md)。上游对账：FreeRTOS-Kernel V11.1.0 的 [heap_1.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/portable/MemMang/heap_1.c)、[heap_2.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/portable/MemMang/heap_2.c)、[heap_3.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/portable/MemMang/heap_3.c)、[heap_4.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/portable/MemMang/heap_4.c)、[heap_5.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/portable/MemMang/heap_5.c)、[tasks.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/tasks.c)；RT-Thread v5.3.0 的 [mem.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/src/mem.c)、[memheap.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/src/memheap.c)、[slab.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/src/slab.c)、[mempool.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/src/mempool.c)。任务栈水位与 TCB 结构见 [第 22 章](./22-tasks-tcb-scheduler.md)；队列的 RAM 开销见 [第 24 章](./24-queue-semaphore-notification.md)。
 
@@ -170,7 +172,7 @@ if ( ( uint8_t * ) pxPrevBlock == ( uint8_t * ) pxBlockToInsert ) {
 
 证据口径：代码存在、可复跑；仓库没有落盘串口日志，`big ok?=0/1` 的读数是实验设计里的预期值，不是已复核的板级记录。上板跑一遍把日志抄进实验记录，这里的「两个数」才算亲手见过。
 
-换用 heap_2 重跑是个干净的对照实验：把构建里的 `heap_4.c` 换成 `heap_2.c`，`xPortGetMinimumEverFreeHeapSize` 直接编译失败：heap_2 没有这个符号（`heap_2.c` 全文只有 `xPortGetFreeHeapSize`，在 `:334`）。指标 API 要逐文件核对，这就是现场教学。
+换用 heap_2 重跑是个干净的对照实验：把构建里的 `heap_4.c` 换成 `heap_2.c`，`xPortGetMinimumEverFreeHeapSize` 直接编译失败：heap_2 没有这个符号（`heap_2.c` 全文只有 `xPortGetFreeHeapSize`，在 `:334`）。指标 API 要逐文件核对。
 
 ## 静态分配：把失败搬到编译期
 

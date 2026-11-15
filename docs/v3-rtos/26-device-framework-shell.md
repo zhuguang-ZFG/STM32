@@ -5,7 +5,7 @@ platforms: [f407]
 
 # 设备框架、shell 与配置系统
 
-FreeRTOS 把内核之外的一切留给你；RT-Thread 在内核之上叠了三层公共设施：设备框架管「应用怎么碰硬件」，finsh shell 管「人怎么碰固件」，Kconfig 加 scons 管「固件怎么长出来」。这三层是 RT-Thread 与裸内核 RTOS 拉开差距的地方，也是它移植成本比 FreeRTOS 高的地方：三层各有自己的配置宏、初始化级别与内存开销。下面把三层拆开：对象模型、分发路径、真实宏名、真实默认值，每条都按 v5.3.0 源码核对。
+FreeRTOS 把内核之外的一切留给你；RT-Thread 在内核之上叠了三层公共设施：设备框架管「应用怎么碰硬件」，finsh shell 管「人怎么碰固件」，Kconfig 加 scons 管「固件怎么长出来」。这三层是 RT-Thread 与裸内核 RTOS 拉开差距的地方，也是它移植成本比 FreeRTOS 高的地方：三层各有自己的配置宏、初始化级别与内存开销。对象模型、分发路径、真实宏名、真实默认值，逐条按 v5.3.0 源码核对。
 
 这里没有一条实测读数。六份源材料都没有板级日志；「168 MHz 上纳秒级的调用开销」「整套 msh 约 10–20 KB Flash」是来源说法（未复核），正文不把它们写成测量值。仓库里的 RT-Thread 实验工程 `mcu/code/rtos/02-rt-thread-lab` 是 Nano 式裁剪（`rtconfig.h` 只要内核，没有 `RT_USING_DEVICE` 与 `RT_USING_FINSH`）；设备与 shell 的实验必须切到标准 BSP 或显式打开组件，不能拿这个 lab 固件冒充「已跑通」。
 
@@ -15,6 +15,8 @@ FreeRTOS 把内核之外的一切留给你；RT-Thread 在内核之上叠了三�
 
 - **问题**：`struct rt_device` 的 ops 表在 `RT_USING_DEVICE_OPS` 开关两侧形态不同；`rt_device_read` 返回 `rt_ssize_t`，负值承载错误码；注册、查找与 open（init/open/`ref_count++`）的顺序决定自定义设备能否工作。三组易错点：`GET_PIN` 的宏参数是记号而不是字符，`port×16` 的适用范围要看系列；UART 接收要分清 v1/v2/DMA 管道，`rx_indicate` 回调里 `while(size)` 会死循环；I2C 总线锁可能走 ops 的 acquire/release 或 `rt_mutex`，默认 F407 BSP 上的 `parent.ops` 有编译条件。shell 一侧，`MSH_CMD_EXPORT` 展开成 FSymTab 条目，命令查找是线性扫描，`list_thread` 的原型与 finsh 的四个默认值要按 v5.3.0 写，5.3.0 没有 `FINSH_USING_MSH_ONLY`。配置一侧，menuconfig 写 `.config`、scons 生成 `rtconfig.h`，`RT_USING_I2C` 是带 1 的宏。
 - **交付**：能画出 `rt_device` 的字段分区，说出 ops 表的两套接口形态与各自的编译条件；能走读 `rt_device_open` 的 init→open→`ref_count++` 顺序，解释 `rt_ssize_t` 负值错误码的用途；能写出编译期压平引脚号的公式与三个变体（普通 GPIO、MP1、GPIOZ）；能按 v1/v2/DMA 三种模式分别说清 UART 接收管道与回调的正确写法（`n==0` 退出）；能写出在默认 BSP 下可编译的自定义设备（条件编译与内联函数指针两种）；能用真实的 `finsh_syscall` 结构与 `__fsym_` 前缀讲 FSymTab 机制，纠正「少时线性、多时二分」与 `list_thread(int,char**)` 的错误；能背出 finsh 四个默认值并说清裁剪总开关是 `RT_USING_MSH`；能画出 Kconfig→`.config`→`rtconfig.h` 的两段分工，指出 `depend` 是 Kconfig 与 scons 的接合点。
+- **级别**：L4 系统。证据位置：「短自测」与「自己写一个设备：默认 BSP 下必须能编译」；读完留下 ops 两套形态的区分、open 的调用顺序与一份按关宏形态写的设备注册草稿。
+- **开源读法**：对照 RT-Thread 的 `src/object.c`，看 `rt_object` 怎样统一管理名字、类型与链表节点；设备注册与查找的框架语义仍回本章。
 - **边界**：单平台 F407；RT-Thread 结论按 v5.3.0，旧章的 `msh_cmd_entry`、`FINSH_USING_MSH_ONLY`、`msh_cmd.c`、两参 `list_thread` 均不采用。FreeRTOS 侧不展开内核机制（[第 22 章](./22-tasks-tcb-scheduler.md)、[第 23 章](./23-context-switch-porting.md) 已讲），只对照「为什么没有设备框架」。设备驱动内部的 UART DMA 细节、I2C 时序寄存器归外设章（[v1 第 16 章](../v1-drivers/16-i2c-spi.md)、[v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)），这里只讲框架层。实验设计与判据可写，「已经量到」不可写。这些结论零实测。
 - **依据锚点**：R4《设备框架》（`mcu/docs/rtos/rtthread/04-device.md`）、R5《finsh 控制台》（`.../05-finsh.md`）、R6《Env 与 menuconfig》（`.../06-env-menuconfig.md`）。lab 实况见 `mcu/code/rtos/02-rt-thread-lab/rtconfig.h:2-5`。上游对账：RT-Thread v5.3.0 的 [rtdef.h](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/include/rtdef.h)、[device.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/components/drivers/core/device.c)、[drv_gpio.h](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/bsp/stm32/libraries/HAL_Drivers/drivers/drv_gpio.h)、[dev_i2c.h](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/components/drivers/include/drivers/dev_i2c.h)、[finsh.h](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/components/finsh/finsh.h)、[msh.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/components/finsh/msh.c)、[cmd.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/components/finsh/cmd.c)、[finsh Kconfig](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/components/finsh/Kconfig)。线程与优先级语义见 [第 22 章](./22-tasks-tcb-scheduler.md)；ISR 到任务的边界见 [第 23 章](./23-context-switch-porting.md)；ring+sem 管道的手写版见 [第 24 章](./24-queue-semaphore-notification.md)；NVIC 配置见 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)。
 
@@ -184,7 +186,7 @@ static const struct rt_device_ops buz_ops = {
 
 ![手绘板：v5.3.0 设备框架生命周期边界：find/open/失败路径文中代码可覆盖，串口 DMA、接收回调、缓冲模式要回对应 BSP 驱动核对，每启用一个组件都增加 Flash/RAM 与初始化依赖（原理示意，非实拍）](/images/ch28-rtthread-lifecycle.png)
 
-这张手绘示意图标出生命周期章节的边界：前面讲的 register/find/open 是框架层契约；各驱动 read 的阻塞与超时语义、DMA 细节、缓冲模式，要到对应 BSP 驱动里核对，不能统一假设。
+前面讲的 register/find/open 是框架层契约；各驱动 read 的阻塞与超时语义、DMA 细节、缓冲模式，要到对应 BSP 驱动里核对，不能统一假设。
 
 ## finsh/MSH：把函数名编进链接段
 

@@ -11,6 +11,8 @@ platforms: [generic]
 
 - **问题**：同一段轮询，`-O0` 能等到标志位，`-O2` 却原地死转；`flag ^= 1` 已经标了 `volatile`，中断里的一次更新还是会丢；`x + 1 > x` 在 `x = INT_MAX` 时返回 1，`1u << 33` 在 `-O0` 与 `-O2` 下给出两个答案。三个现象分别指向优化器的授权范围、`volatile` 的合同边界和未定义行为的代价。
 - **交付**：能给任意一段访存代码生成 `-O0` 与 `-O2` 两份汇编，指出哪次读被缓存、哪次写被删除、哪几次读-改-写被合并；能写对 `volatile` 与 `const` 的每个组合；能把掩码移位的计数证明到编译期或运行期；能用 `union` 或 `memcpy` 合法地看 `float` 的位模式。
+- **级别**：L0 起步。证据位置：「测量与证据」与「离开检查」；读完留下 `-O0`/`-O2` 两份汇编里被缓存、被删、被合并的访存对账记录。
+- **开源读法**：打开 `CMSIS_6` 的 `CMSIS/Core/Include/core_cm4.h`，看 `__I`、`__O`、`__IO` 怎样用类型表达读写权限；每次访存的纪律仍回本章与 C 标准。
 - **边界**：以单核 Cortex-M4 裸机为主，例子来自来源记录的 x86-64 宿主与 Cortex-M4 交叉两套产物；宿主读数只用于复现，板上的真相以 M4 那份为准。F407 没有数据 cache，`volatile` 加屏障基本够用；ESP32-S3 这类带数据 cache 的核，DMA 共享缓冲还要清理与无效化。MISRA 一节是自选十条，不是全量合规。结构体布局与寄存器映射见[第 3 章](./03-struct-abi-registers.md)，工具链与优化档见[第 5 章](./05-toolchain-four-steps.md)，链接与启动见[第 6 章](./06-linker-startup-map.md)，HardFault 现场见[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。
 - **依据锚点**：C3《volatile：跟编译器约法三章》（`mcu/docs/c/03-volatile.md`）、C7《未定义行为与 MISRA-C 精要》（`mcu/docs/c/07-ub-misra.md`）；ISO/IEC 9899:2018 §5.1.2.3（程序执行）、§6.7.3（类型限定符）与附录 J.2（未定义行为清单），均转引自上述来源；MISRA C:2012 的规则编号同样转引自 C7。变量的段归属与 `const` 的 RAM 占用在[第 1 章](./01-c-memory-model.md)。
 
@@ -66,7 +68,7 @@ is_bigger_after_inc(INT_MAX)   -O0 → 1    -O2 → 1    -O2 -fwrapv → 0
 shift_oob(1u, 33u)             -O0 → 2    -O2 → 0
 ```
 
-两个读数值得停一下：`-O0` 也把 `x + 1 > x` 折成了 1，老教程说的“-O0 返回 0”在 gcc 16 上不成立；`1u << 33` 却在两档之间变了脸，因为它是 UB，没有标准答案。这两件事支配后半章的讨论。
+两个读数要分开看：`-O0` 也把 `x + 1 > x` 折成了 1，老教程说的“-O0 返回 0”在 gcc 16 上不成立；`1u << 33` 却在两档之间变了脸，因为它是 UB，没有标准答案。这两件事支配后半章的讨论。
 
 ## 机制
 
@@ -87,6 +89,8 @@ C 标准给编译器的授权写在 §5.1.2.3：只要可观察行为不变，�
 ### volatile 的访存合同：四个现场
 
 取证环境是两套工具链，同日实测，均 `-std=c11 -Wall -Wextra` 零告警：宿主 MinGW-Builds gcc 16.1.0（x86_64-posix-seh）与 xPack arm-none-eabi-gcc 15.2.1（`-mcpu=cortex-m4 -mthumb`）。两边优化决策一模一样：同一个优化器、同一条 as-if 规则，只是指令形式不同。x86 那份方便在本机 30 秒复现，Cortex-M4 那份对应板子上实际运行的代码。
+
+![手绘板：优化器缓存、删除、合并访存，volatile 只收回这三项授权；`__I`/`__O`/`__IO` 用类型写读写合同（原理示意，非实拍）](/images/ch02-volatile-contract.png)
 
 #### 现场 1：轮询状态位，读一次 vs 每次读
 
@@ -158,7 +162,7 @@ isr_toggle:
 | 先配 A 再配 B，顺序不能乱 | 不够 | 内存屏障 `DMB/DSB/ISB`，CMSIS-Core 封成 `__DMB()/__DSB()/__ISB()` |
 | DMA 写的缓冲区 CPU 随后读 | 不够 | 屏障 + cache 清理/无效化（带数据 cache 的核，如 ESP32-S3） |
 
-这五道题对着上面的合同出，做完再往下走。
+这五道题对着上面的合同出。
 
 <QuizBank chapter="c03-volatile" />
 
@@ -214,7 +218,7 @@ is_bigger_after_inc:
 | `-O2` | 1 | 恒真折叠 |
 | `-O2 -fwrapv` | 0 | 溢出按回绕，INT_MAX+1 = INT_MIN，比较为假 |
 
-`-O0` 那一行值得单独记住。把宿主 `-O0` 汇编拉出来，函数体是 `pushq %rbp; movq %rsp, %rbp; movl %ecx, 16(%rbp); movl $1, %eax; popq %rbp; ret`，加法与比较都不在，只剩装载常量；`main` 里仍规规矩矩 `call`，可被调用的函数已经不再执行加法和比较。`-O0` 不等于逐行照实执行，它只是不在调用点做折叠、不在函数间传播。
+`-O0` 那一行单独看。把宿主 `-O0` 汇编拉出来，函数体是 `pushq %rbp; movq %rsp, %rbp; movl %ecx, 16(%rbp); movl $1, %eax; popq %rbp; ret`，加法与比较都不在，只剩装载常量；`main` 里仍规规矩矩 `call`，可被调用的函数已经不再执行加法和比较。`-O0` 不等于逐行照实执行，它只是不在调用点做折叠、不在函数间传播。
 
 ![UB 编译器优化陷阱：源代码 → 编译器假设无 UB → 折叠为常量 → 运行时与数学期望偏离](/anim/ub-compiler-trap.svg)
 

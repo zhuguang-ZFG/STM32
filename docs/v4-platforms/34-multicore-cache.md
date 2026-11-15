@@ -5,7 +5,7 @@ platforms: [esp32, f407]
 
 # 多核、Cache 与内存一致性
 
-「多核」这个词在 MCU 世界里藏着两种完全不同的形态：ESP32-S3 是 SMP，一个 FreeRTOS 内核同时管两颗 LX7；STM32H745 是 AMP，两颗核各跑一个内核，共享内存加 HSEM 交换数据。「Cache」则是另一个独立的问题：F407 根本没有 cache，H7 的 M7 带 16+16 KB，S3 靠 cache 窗口执行外部 Flash。下面把三平台的内存模型放在一起对照，把「DMA 看见的内存 ≠ CPU 看见的内存」整理成一张可执行的方向表，再把 H745 的五层双核契约从旁注展开成完整的契约表。
+MCU 上的「多核」有两种形态：ESP32-S3 是 SMP，一个 FreeRTOS 内核同时管两颗 LX7；STM32H745 是 AMP，两颗核各跑一个内核，共享内存加 HSEM 交换数据。「Cache」则是另一个独立的问题：F407 根本没有 cache，H7 的 M7 带 16+16 KB，S3 靠 cache 窗口执行外部 Flash。三平台的内存模型放在一起对照，「DMA 看见的内存 ≠ CPU 看见的内存」整理成一张可执行的方向表，H745 的五层双核契约也从旁注展开成完整的契约表。
 
 这里没有板级实测。上游核对按 **ESP-IDF v5.5.2** 实取：`soc_caps.h:140,145` 的 writeback 支持位与核数、`esp_cache.h:25-38,54-57` 的 msync 方向宏与「经典 ESP32 无 writeback」原话、`cache_ll.h:401-403,501,514` 都已命中。
 
@@ -17,6 +17,8 @@ H7 侧按 AN4891/AN5557/RM0433 口径（cache 行 32 B、CM7@D1/CM4@D2 的核域
 
 - **问题**：三平台的 cache 有无与取指路径之别：F407 原地执行，S3 走 Cache 窗口。Cache/DMA 所有权交接方向（TX clean/RX invalidate）不能反的原因，32 B 行对齐与「禁对未对齐窄区间 invalidate」的机制。归属链一组：「D1 有 Cache」这句简称错在哪，核与域的归属链怎么读，D1/D2/D3 各归属什么、为什么是电源/时钟域而非三条电源轨，H7 的 DTCM 为何只有 CPU/MDMA 能访问、F407 的 CCM 与它差在哪。多核一侧：H745 为何是 AMP 不是 SMP，HSEM 只管什么不管什么，五层契约各冻结什么、注入什么。API 与 MPU：S3 的 writeback 支持，「S3 是 write-through」错在哪，esp_cache 的 C2M/M2C 与 STM32 的 clean/invalidate 怎么对照，MPU 的两条解法与 M7 的 16 区上限。
 - **交付**：能画出三平台内存模型对照表（无 cache/带 cache/Cache 映射执行）；能把 Cache/DMA 交接方向表落到 `SCB_CleanDCache_by_Addr`/`SCB_InvalidateDCache_by_Addr` 的调用顺序；能把「cache 在核内、CM7 在 D1」的归属链说清；能写 DTCM/CCM 禁区表并配 map 核对动作；能把 H745 五层契约按层冻结、按层注入；能用 `soc_caps.h:140` 纠正「S3 write-through」的说法；能用 esp_cache 方向宏做跨平台对照；能给出 MPU 两条解法的设计口径并标注「仓库无实例」。
+- **级别**：L4 系统。证据位置：「测量与证据」与「离开检查」；读完留下三平台内存模型对照表、Cache 方向表与 H745 五层契约的对账记录。
+- **开源读法**：本章没有直接对应的单一开源仓库；缓存语义先读本章已引的 ESP-IDF `esp_cache.h`，双核归属与契约判据仍回 AN5557 与本章五层契约表。
 - **边界**：中断/临界区/`portMUX`/`volatile` 的机制归 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)（含 S3 的 SMP 半场：`ESP_INTR_FLAG_IRAM`、`xTaskCreatePinnedToCore`、`tskNO_AFFINITY`），这里只回链；DMA 的通道/_fifo/CCM 机制归 [v1 第 14 章](../v1-drivers/14-dma.md)；网络路径的禁区应用归 [第 33 章](./33-network-protocol-stack.md)（这里是主讲位，那里引用）；H7 的时钟/VOS/480 MHz 归 [第 28 章](./28-chip-migration-differences.md)。D28 五层契约的故障注入列是验收要求，不是已完成的实测。
 - **依据锚点**：D25《H7 引脚》（`docs/25-STM32H7引脚.md` 的 Cache/电源域段）、E4《中断与双核》（`mcu/docs/esp32/04-irq-dualcore.md`，mapping 为 partial：双核半已迁 ch10，这里接 Cache 半场）、D28《嵌入式系统与 RTOS 生态》（`docs/28-嵌入式系统与RTOS生态.md:317-341` 的 H745 契约段）。上游对账：ESP-IDF v5.5.2 的 [soc_caps.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/soc/esp32s3/include/soc/soc_caps.h)、[esp_cache.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_hw_support/include/esp_cache.h)、[cache_ll.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/hal/cache_ll.h)；AN4891、AN5557、PM0214。Cache 所有权图见 `D25:336-341`（自绘机制示意）。
 

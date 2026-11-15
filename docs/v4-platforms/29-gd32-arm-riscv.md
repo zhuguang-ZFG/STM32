@@ -5,7 +5,7 @@ platforms: [gd32]
 
 # GD32 系列对照（ARM + RISC-V）
 
-GD32 提供了「同一套外设结构、两套内核」的对照样本：GD32F4xx 与 STM32F407 同为 Cortex-M4F，工具链零增量、寄存器改个名；GD32VF103 外设像 F103、内核却换成 RISC-V（Bumblebee N200），中断控制器从 NVIC 换成 ECLIC、心跳从 SysTick 换成 mtime。下面把两条线并排拆：哪些只需改宏名，哪些要替换内核相关代码，哪些旧材料写错了、上游仓库怎么确认。
+GD32 提供了「同一套外设结构、两套内核」的对照样本：GD32F4xx 与 STM32F407 同为 Cortex-M4F，工具链零增量、寄存器改个名；GD32VF103 外设像 F103、内核却换成 RISC-V（Bumblebee N200），中断控制器从 NVIC 换成 ECLIC、心跳从 SysTick 换成 mtime。分界在改动量：哪些只需改宏名，哪些要替换内核相关代码，哪些旧材料写错了、上游仓库怎么确认。
 
 这里没有板级实测。ARM 线的时钟、GPIO、USART 与中断号已按 GD32 官方固件库 `@10d02f4` 实取核对，行号逐条可查；RISC-V 线按 `VF103@bc2be118`（gd32vf103 头文件、n200_eclic.h、n200_timer.h、system_gd32vf103.c）与 NMSIS 核对。
 
@@ -17,6 +17,8 @@ UM/datasheet 的页码引用（SDIO bit31、CAN 复位值等）未能取件，�
 
 - **问题**：GD32F4xx 的「工具链零增量」与型号宏选择；RCU 与 RCC 的偏移对照，200M 档三组配置（HDEN/HDS 真轮询）与 168M 默认档哪个是官方事实，官方 system 文件为何全文不设 Flash 等待。外设侧：GPIO 改名不改岗之外的 BC/TG，VF103 为何没有；USART 旧偏移表错在哪两处，上游如何确认。RISC-V 线：VF103 的「隔代布局」，照搬 F4xx RCU 宏的第一个错误在哪，108 MHz 是否为超频。内核差异：ECLIC 与 NVIC 的结构差异（无 +16、两维优先级、shv），mtime 与 SysTick 的四点差异，延时为何要「续约」，两套中断号映射为何不能混用。
 - **交付**：能说清双线总览（ARM 线改宏名、RISC-V 线换内核）；能复算 200M 档（25/25×400/2）与 108M 档（8÷2×27）并指出 USB 的 44.4 MHz 陷阱；能纠正「官方默认 200MHz」的说法（默认档 168M，200M 是预设函数）；能用上游修正版 USART 偏移表（STAT0@0x00、CTL0@0x0C）与 USART0=0x40011000（APB2）替换旧错表；能画 ECLIC 的四字段布局（cfg/ie/ip/attr/ctl，4 字节间隔）与 shv 两种路径；能算 mtime 的 tick（108M→27 MHz，1ms=27000）并写出先高后低写、高-低-高读与 `cmp += 周期` 三条纪律；能把两套中断号（F4 线 USART0=37 / V 线 USART0=56、EXTI0=25）分开背。
+- **级别**：L4 系统。证据位置：「测量与证据」与「离开检查」；读完留下双线兼容层级判定与 200M/108M 两档时钟复算的对账记录。
+- **开源读法**：对照 `riscv-gnu-toolchain` 的 `Makefile.in`，看 `--with-arch/--with-abi` 的缺省值怎样决定三元组默认位宽；寄存器事实仍回本章引用的 GD32 头文件与 UM。
 - **边界**：单线对照章。GD32 与 STM32 的外设寄存器细节只讲「差异点」，完整机制回 [v1 第 8–13 章](../v1-drivers/08-architecture-memory-clock.md) 与 [第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)；迁移方法论归 [第 28 章](./28-chip-migration-differences.md)；UART 协议帧归 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)。手册页码未取件的行带「来源说法待核」。板上实测（CK_OUT0 量频、PF6 翻转、等待拍数）在源章里就是「待上板」状态，这里不改写成结论。
 - **依据锚点**：G0《环境》（`mcu/docs/gd32/00-env.md`）、G1《RCU 时钟》（`.../01-rcu-clock.md`）、G2《GPIO 复用》（`.../02-gpio-af.md`）、G3《USART》（`.../03-usart.md`）、G4《外设差异》（`.../04-periph-diff.md`）、V0《工具链》（`.../05-riscv-toolchain.md`）、V1《CLIC 中断》（`.../06-clic-irq.md`）、V2《108MHz》（`.../07-rcu-108m.md`）、V3《mtime 延时》（`.../08-mtime-delay.md`）、V4《GPIO 最小点灯》（`.../09-gpio-minimal.md`）。上游对账：GD32 官方固件库 [gd32f4xx_usart.h](https://www.gigadevice.com/) `@10d02f4`（`:51-60`）、[gd32f4xx_gpio.h](https://www.gigadevice.com/)（`:52-63`）、[gd32f4xx_rcu.h](https://www.gigadevice.com/)（`:44-57,886-900`）、[system_gd32f4xx.c](https://www.gigadevice.com/)（`:56,:958-996`）；VF103 库 `@bc2be118`（gd32vf103.h、gd32vf103_rcu.h、n200_eclic.h:13-41、n200_timer.h:8-13、system_gd32vf103.c:47-61,750-830）；NMSIS core_feature_eclic.h（`:63,127-128,156,758`）。
 
@@ -33,7 +35,7 @@ ARM 线的「零增量」：`-mcpu/-mthumb/-mfpu/-mfloat-abi` 四旗与 F407 逐
 
 ### 2. 两个旧错误
 
-写 ch29 前先确认两个上游结论（都已在官方库实取核对）：
+两个上游结论先在这里确认（都已在官方库实取核对）：
 
 - **USART 偏移表**：旧材料的「CTL0@0x00…DATA@0x18」整体错位。上游 `gd32f4xx_usart.h:51-60` 实际是 **STAT0@0x00、DATA@0x04、BAUD@0x08、CTL0@0x0C、CTL1@0x10、CTL2@0x14、GP@0x18**（另有 STAT1@0x88）。这些偏移与 STM32 的 SR/DR/BRR/CR1–3/GTPR 逐项相同（0x00–0x18）。错的是旧表把 GD32 名称按到别的位置，别误读成 GD32 挪了寄存器。随文的「0x00 是主控制寄存器、0x0C 是波特率」一并废弃不用。
 - **USART0 基址**：旧材料写「USART0 = APB1+0x4400」。上游 `gd32f4xx.h:326` 的 `USART_BASE=APB1+0x4400`（0x40004400）是 **USART1**（=STM32 的 USART2）；**USART0 = 0x40011000（APB2，`gd32f4xx_usart.h:47`）**。它与 STM32 USART1 的老地址相同，也和它自己「USART0 中断号挂 APB2」的中断地图一致。

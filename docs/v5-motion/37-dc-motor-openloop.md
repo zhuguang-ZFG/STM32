@@ -15,6 +15,8 @@ platforms: [f103]
 
 - **问题**：占空比不等于转速的原因，开环「开」的是什么。ARR=3599 的复算，CCR=ARR 只到 99.97% 的差一格语义，满压写 CCR=3600 的理由。带符号占空比（−1000…+1000 ‰）单点映射的必要性，方向与幅值分离防的两类 bug。安全边界一组：输出限幅 900‰ 与积分限幅 500‰ 的分工，`params_valid` 拒 ≥1000 的依据，斜坡 ±50‰/10 ms 的作用，命令一跳变不可接受的原因，500 ms 租约如何保证「断串口必停机」，STOP 豁免会话检查的理由。换向与带宽：REVERSING 合同四阶段与 3 s 超时，直翻换向产生回流尖峰的原因，协议 v1 带宽算到 37.3% 的步骤。最后是控制时基必须用 TIM4 硬件心跳的原因。
 - **交付**：能复算 PWM 四数并说清换时钟树的三条重算理由；能区分 CCR=0/CCR=ARR/CCR>ARR 三种端点语义并写出满压写法；能把带符号占空比映射到 `motor_bridge.c` 的单点；能配双限幅与参数校验；能实现斜坡与租约；能走 REVERSING 四阶段合同；能三步复算带宽并给出「扩遥测先算总线」的判据；能把控制时基与串口任务的所有权分开。
+- **级别**：L4 系统。证据位置：「测量与证据」与「离开检查」；读完留下 PWM 四数的复算、37.3% 的带宽账与 REVERSING 四阶段的合同。
+- **开源读法**：对照 `grbl/grbl` 的 `grbl/stepper.c`，看运动控制的中断里怎样只做最少事；PWM 端点语义与寄存器事实仍回本章与 RM0008。
 - **边界**：内容限于开环与安全边界；驱动桥的真值表与供电归 [第 36 章](./36-motor-driver-power.md)；编码器测量与转速口径归[第 38 章](./38-encoder-speed-measurement.md)（这里的 REVERSING 停稳判据 |rpm|≤5 消费它的量化知识）；PI 闭环归[第 39 章](./39-speed-closed-loop-pi.md)（均在本卷内）；UART 协议帧格式与判帧归 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)；FreeRTOS 任务的节拍与队列归 [v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md)。全部实验待执行。
 - **依据锚点**：M30 草稿（`plans/2026-11-11-motor-control/chapters-draft/30-直流电机开环调速.md`）、HF v1.2、DESIGN 合同（`plans/2026-11-11-motor-control/design.md` 的 `N=P×Q×G`、F01、REVERSING 段）、数值断言测试 `book/tests/test_motor_numbers.py`（这次新增）。上游对账：RM0008（TIM1 PWM 段，[v1 第 12 章](../v1-drivers/12-timers-pwm.md) 已核）；TB6612 datasheet（[Pololu 0J86](https://www.pololu.com/file/0j86/tb6612fng.pdf)）。
 
@@ -55,7 +57,7 @@ PWM1 是「CNT<CCR 有效」：CCR=0 恒无效；**CCR=ARR 时有效格数 3599/
 
 ### 三、租约：断串口必停机
 
-命令流中断 **500 ms**（故障位 F01）锁存故障停机，串口拔掉不会留下一只转动的电机。心跳由上位机的 100 Hz 帧流维持；租约到期即锁存，恢复须重新 ARM。**STOP 豁免会话检查**：无论租约状态，STOP 命令始终执行。安全命令不能因为「会话已失效」被拒。
+命令流中断 **500 ms**（故障位 F01）锁存故障停机，串口拔掉不会留下一只转动的电机。心跳由上位机的 100 Hz 帧流维持；租约到期即锁存，恢复须重新 ARM。**STOP 豁免会话检查**：无论租约状态，STOP 命令始终执行。
 
 ![手绘板：PWM 数学与限幅，ARR 3599、CCR=ARR 差一格、900‰→CCR 3240（原理示意，非实拍）](/images/ch30-pwm-math.png)
 

@@ -5,12 +5,14 @@ platforms: [f407, f103, gd32, esp32]
 
 # 中断、NVIC/EXTI、CLIC 与双核
 
-> 轮询是 CPU 定时检查外设状态，中断是外设主动发出请求。请求到来之后，CPU 不是直接跳进你写的函数：引脚边沿先在 EXTI 变成请求，NVIC 按优先级决定放不放行，内核再从向量表取出地址跳进 ISR。下面把 F407 的三层链路拆成可复算的地址与位段，用 F103 的 AFIO 与分组对照，最后看 ESP32-S3 的中断分配器、IRAM 纪律与双核分工。标题里的 CLIC 属于 GD32 的 RISC-V 一侧，这里只在跨平台边界指路。
+> 轮询是 CPU 定时检查外设状态，中断是外设主动发出请求。请求到来之后，CPU 不是直接跳进你写的函数：引脚边沿先在 EXTI 变成请求，NVIC 按优先级决定放不放行，内核再从向量表取出地址跳进 ISR。标题里的 CLIC 属于 GD32 的 RISC-V 一侧，这里只在跨平台边界指路。
 
 ## 本章罗盘
 
 - **问题**：按一下 PF6 的按键，为什么要在 SYSCFG、EXTI、NVIC 和 ISR 里各过一道门？`IRQn = 6` 怎样变成向量槽 22、`ISER[0]` 的 bit6 与 IP 字节 `0xE000E406`？逻辑优先级 5 为什么存成 `0x50`，写成 16 又为什么静默变成最高优先级 0？写 `SCB->AIRCR` 为什么必须带 `0x5FA`？把 `EXTI0_IRQHandler` 名字拼错，为什么中断会一直停在死循环里？ESP32-S3 的中断为什么不是固定向量，`IRAM_ATTR` 与双核分工又在守什么边界？
 - **交付**：能从 `IRQn` 推出 ISER 下标、位号与 IP 字节地址；能按 PRIGROUP 表说清抢占与子优先级的切分，并写出带 `0x5FA` 的 AIRCR 值；能用槽号 `IRQn + 16` 与 weak 顶替的 objdump 证据解释 ISR 的落点；能照六步清单配通一条外部中断；能读懂 `esp_intr_alloc` 的源、级、核与 IRAM 标志，并在双核共享数据时选对锁。
+- **级别**：L1 驱动。证据位置：「测量与证据」与「离开检查」；读完留下 IRQn 到 ISER 位与 IP 字节的推导、槽号与 weak 顶替的 objdump 对账。
+- **开源读法**：翻 `CMSIS_6` 的 `CMSIS/Core/Include/core_cm4.h`，看 `NVIC_EnableIRQ` 与 `NVIC_SetPriority` 怎样从 `IRQn` 算出 ISER 位与 IP 字节；优先级位宽仍回 PM0214。
 - **边界**：四平台章。F407 的地址、位段、probe 读数来自 S4《NVIC 与 EXTI》与 RM0090、PM0214；F103 的 AFIO、HAL 分组与三把总闸来自根书第 04 章与 RM0008、PM0056；ESP32-S3 的中断分配器、IRAM 纪律与双核分工来自 P4《中断与双核》，Cache 一致性与多核内存模型留给[第 34 章](../v4-platforms/34-multicore-cache.md)；GD32 只写边界，CLIC/ECLIC 的完整对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。SysTick 时基留给[第 11 章](./11-systick-timebase-rtc.md)，UART 中断留给[第 13 章](./13-uart-framed-protocol.md)，RTOS 上下文切换与 FromISR 约束留给[第 23 章](../v3-rtos/23-context-switch-porting.md)、[第 24 章](../v3-rtos/24-queue-semaphore-notification.md)，HardFault 现场留给[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。来源没有记录上板读数，这里不把实验步骤写成已经量到的结果。
 - **依据锚点**：S4《S4 NVIC 与 EXTI：打断的艺术》（`mcu/docs/stm32/04-nvic-exti.md`）、根书第 04 章《中断与 NVIC》（`docs/04-中断与NVIC.md`）、P4《P4 中断与双核：IRAM 纪律与核间分工》（`mcu/docs/esp32/04-irq-dualcore.md`）；[第 8 章](./08-architecture-memory-clock.md)的 PPB 与时钟门控、[第 9 章](./09-gpio.md)的引脚配置、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体、[第 4 章](../v0-foundations/04-function-pointer-state-machine.md)的函数指针数组。PM0214、RM0090、RM0008、PM0056 与 ESP-IDF v5.5.2 的条文均转引自上述来源。
 
@@ -23,7 +25,7 @@ cd mcu/code/stm32/04-nvic-exti
 sh probe.sh
 ```
 
-输出里先找这三行，输出里先找这三行，后面的推断都以它们为起点：
+输出里先找这三行，后面的推断都以它们为起点：
 
 ```text
 EXTI0_IRQn = 6    <- stm32f407xx.h:83
@@ -235,6 +237,8 @@ void EXTI9_5_IRQHandler(void)          /* 强符号顶替 weak 默认 */
     /* 只置标志、搬数据，快进快出 */
 }
 ```
+
+![手绘板：PF6 边沿经 SYSCFG 与 EXTI 6 到 NVIC，再由向量槽进 ISR，以及抢占与子优先级的排队（原理示意，非实拍）](/images/ch10-exti-nvic-path.png)
 
 ### 进出现场：八个字与 EXC_RETURN
 

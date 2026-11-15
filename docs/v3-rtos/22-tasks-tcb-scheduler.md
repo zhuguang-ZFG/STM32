@@ -15,6 +15,8 @@ F1 的 GDB 首帧、F3 的七步 probe、F1 的串口日志和 R1 的 `list_thre
 
 - **问题**：新任务从 `xTaskCreate` 返回到第一次拿到 CPU，中间没有一行代码是它自己执行的，栈里那套「被中断过」的现场由内核伪造。`pxTopOfStack` 为什么必须是 TCB 的第一个字段，在前面加一个字段会坏在哪条指令上？`xTaskCreate` 到底做了几步，第六步是不是「立即切换」？栈深 128 是字节还是字，同优先级任务凭什么轮转，`configMAX_PRIORITIES ≤ 32` 又约束谁？tick 每拍只看延时表队首的依据是什么，`vTaskDelay` 为什么不是「等」？RT-Thread 的 `rt_thread` 与 FreeRTOS 的 TCB 怎么对应，两边选最高优先级的方向为什么相反？
 - **交付**：能在纸上画出 TCB 前几个字段与首帧 18 字布局，算出 72 B；能逐条讲出 `xTaskCreate` 六步与第六步的条件；能在位图上手算 `31 − CLZ` 与标量扫描；能解释 `vTaskDelay(1)` 的 (0,1] tick；能把 RT-Thread 的 `rt_thread`、32 级单组位图与 `__rt_ffs` 方向讲对。
+- **级别**：L4 系统。证据位置：「测量与证据」与「离开检查」；读完留下 TCB 字段表、首帧 18 字 = 72 B 的布局、`xTaskCreate` 六步与 `31 − CLZ` 选位的手算记录。
+- **开源读法**：对照 `FreeRTOS-Kernel` 的 `tasks.c` 与 `list.c`，看 `prvAddTaskToReadyList` 挂队尾、`vListInsert` 按值排序与 `31 − CLZ` 选最高；SysTick 与 NVIC 的寄存器语义仍回 RM0090。
 - **边界**：单平台 F407（Cortex-M4F，`ARM_CM4F` 端口，lab 跑 HSI 16 MHz）。全部 FreeRTOS 行号与宏语义按 V11.1.0；根书 F103 例程的 128/192/256 字栈、10240 B heap 与 F407 lab 的 256/256/320 字、16 KiB heap 不可互换。PendSV 的软硬栈帧与移植留给第 23 章；队列、信号量与通知留给第 24 章。RT-Thread 部分按 lab 的 `RT_THREAD_PRIORITY_MAX = 32` 写，不把 256 级当本工程事实。
 - **依据锚点**：F1《任务与 TCB》（`mcu/docs/rtos/freertos/01-task-tcb.md`）、F3《调度器》（`mcu/docs/rtos/freertos/03-scheduler.md`）、R1《线程与调度》（`mcu/docs/rtos/rtthread/01-thread-sched.md`）；首帧形状与 TCB 偏移见 F2（`mcu/docs/rtos/freertos/02-context-switch.md`）。lab 配置见 `mcu/code/rtos/01-freertos-lab/FreeRTOSConfig.h` 与 `mcu/code/rtos/02-rt-thread-lab/rtconfig.h`，板级报时见 `mcu/code/rtos/02-rt-thread-lab/board/board.c`。优先级方向与延时语义在 [第 21 章](./21-why-rtos.md) 已建立；SysTick 的 LOAD 算术见 [v1 第 11 章](../v1-drivers/11-systick-timebase-rtc.md)，这里不重列寄存器。
 
@@ -172,7 +174,7 @@ do { \
 
 第一步更新最高就绪速查器；第二步把任务的 `xStateListItem` 挂到对应优先级的队尾。
 
-`list.c` 里有两个插入函数，分工明确：`vListInsertEnd` 不排序，插到索引位置之前，就绪表用它；`vListInsert` 按 `xItemValue` 升序找位插入，延时表用它。延时项的 `xItemValue` 是唤醒时刻，所以延时表队首就是最早该醒的任务。选择时 `listGET_OWNER_OF_NEXT_ENTRY` 从上次位置的下一个取；队尾插入 + 循环取头 = 同优先级的任务天然轮转，时间片不需要额外数据结构。`configUSE_TIME_SLICING = 1` 时，tick 也会给同优先级任务一次轮转机会（`F3:100-112,140-170`）。
+`list.c` 里有两个插入函数：`vListInsertEnd` 不排序，插到索引位置之前，就绪表用它；`vListInsert` 按 `xItemValue` 升序找位插入，延时表用它。延时项的 `xItemValue` 是唤醒时刻，所以延时表队首就是最早该醒的任务。选择时 `listGET_OWNER_OF_NEXT_ENTRY` 从上次位置的下一个取；队尾插入 + 循环取头 = 同优先级的任务天然轮转，时间片不需要额外数据结构。`configUSE_TIME_SLICING = 1` 时，tick 也会给同优先级任务一次轮转机会（`F3:100-112,140-170`）。
 
 每个优先级一条 `List_t`，这是实打实的 RAM。F3 用 `configMAX_PRIORITIES = 5` 与 `= 33` 两次 `sizeof` 测量反推 `(660 − 100) ÷ (33 − 5) = 20 B`（`F3:210`）；这是文档推导，默认没有开 list integrity 检查。lab 的 5 级就绪表结构约 100 B，不含任务自己的 `ListItem_t`。F1:118 的「O(1)」要加限定：优化路径选最高是 O(1)；通用路径最坏要扫过所有非空优先级，最多 `configMAX_PRIORITIES` 次。lab 只有 5 级，扫描很短；级数大时这个差别才明显。
 
@@ -353,7 +355,7 @@ tick 侧：`SysTick_Handler` 调 `rt_interrupt_enter()` → `rt_tick_increase()`
 
 ## 社区开源实现
 
-前面这些概念（TCB、就绪表、优先级位图、上下文切换）在两个最常用的开源内核里都是主干源码，值得按章对照读：
+前面这些概念（TCB、就绪表、优先级位图、上下文切换）在两个最常用的开源内核里都是主干源码：
 
 | 仓库 | 文件 | 看什么 |
 | --- | --- | --- |
@@ -362,7 +364,7 @@ tick 侧：`SysTick_Handler` 调 `rt_interrupt_enter()` → `rt_tick_increase()`
 | [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/scheduler_up.c`（v5.0 起由旧 `scheduler.c` 拆分） | RT-Thread 的单核调度器：`rt_schedule()` 取最高优先级线程、就绪表位图用 `__rt_ffs`（CTZ 找最低置位，0 最高；对照失败分支里"方向写反"那条） |
 | [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/thread.c` | `rt_thread_create`/`rt_thread_init` 只把线程放进 INIT 态，必须 `rt_thread_startup` 才进调度；对照失败分支"创建后不运行" |
 
-两个内核值得对着读同一处：FreeRTOS 的 `configUSE_PORT_OPTIMISED_TASK_SELECTION`（CLZ，≤32 级，失败分支里 `#error` 的来源）与 RT-Thread 的 `__rt_ffs`（标量+位图混合）是同一个问题（"O(1) 找最高优先级"）的两份答案。读完再回看机制一节，抽象名词就都有了出处。版本口径：这里的取证绑定 FreeRTOS V11.x 与 RT-Thread v5.3.0，读源码时选对应 tag。
+两个内核值得对着读同一处：FreeRTOS 的 `configUSE_PORT_OPTIMISED_TASK_SELECTION`（CLZ，≤32 级，失败分支里 `#error` 的来源）与 RT-Thread 的 `__rt_ffs`（标量+位图混合）是同一个问题（"O(1) 找最高优先级"）的两份答案。机制一节里的抽象名词，在这两份源码里都有出处。版本口径：这里的取证绑定 FreeRTOS V11.x 与 RT-Thread v5.3.0，读源码时选对应 tag。
 
 ## 离开检查
 

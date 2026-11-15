@@ -5,7 +5,7 @@ platforms: [f407, esp32]
 
 # 网络与协议栈
 
-MCU 上网络先要划清**边界**：DMA 看见的内存与 CPU 看见的内存不同；lwIP 的 pbuf 是所有权不是指针；TCP 是字节流，帧边界要自己定义；三个平台的 DMA 禁区同名不同址不同原因。下面把 F407 的以太网 + lwIP 与 ESP32 的 esp_netif→lwIP 放在一起对照，按「先写需求、再选硬件」的顺序讲五条路径，把协议栈拆到 pbuf 不变式与 core-locking 边界。
+MCU 上网络先要划清**边界**：DMA 看见的内存与 CPU 看见的内存不同；lwIP 的 pbuf 是所有权不是指针；TCP 是字节流，帧边界要自己定义；三个平台的 DMA 禁区同名不同址不同原因。F407 的以太网 + lwIP 与 ESP32 的 esp_netif→lwIP 放在一起对照，五条路径按「先写需求、再选硬件」的顺序排出，协议栈拆到 pbuf 不变式与 core-locking 边界。
 
 这里没有板级实测。lwIP 按 **2.2.1**（RELEASE）实取核对：`pbuf.h:186-203` 的结构体与 `tot_len` 不变式逐字命中，`opt.h:190,2168,2086` 确认 core-locking 默认开、`LWIP_SOCKET_SELECT=1`、`LWIP_SO_SNDTIMEO=0`，`init.h:53-61` 是版本三段号。
 
@@ -19,6 +19,8 @@ lwIP 子模块 commit `07680c81…` 属于 **ST fork `stm32-mw-lwip`**（lwip-tc
 
 - **问题**：五条网络路径（内置 MAC+PHY / SPI Ethernet / AT offload / PPP / OS 网络栈）各自适合什么，为何「CubeMX 能勾选」不是上内置 Ethernet 的理由。硬件侧：RMII 六组信号，link LED 亮为何只是线索，H7 的 Ethernet DMA 为何进不了 DTCM、F407 的对应禁区，描述符与缓冲放哪、如何用 map 核对。数据一致性：Cache 维护方向表（TX clean / RX invalidate）为何不能反，未对齐窄区间 invalidate 错在哪。协议栈：pbuf 为何是所有权不是指针，`tot_len` 不变式，free 为何恰好一次，lwIP 三套 API 的线程边界，IRQ 里为何禁调 `tcp_write`。应用侧：TCP 字节流上的帧协议，单截止点发送为何依赖 `LWIP_SOCKET_SELECT` 而不依赖 `LWIP_SO_SNDTIMEO`，RAM_net 七项预算，ESP32 的 esp_netif 与 GOT_IP 事件角色。
 - **交付**：能按需求走五路径决策表；能列出 RMII 六组信号并设计「link 灯亮但 ping 不通」的排查顺序；能写出三平台 DMA 禁区表（H7 DTCM / F407 CCM / ESP32 关 Cache 窗口）并配 map 核对动作；能画 Cache 交接方向表与 32 B 行对齐纪律；能用 `pbuf.h:198` 的不变式解释 pbuf 链与所有权；能按三套 API 的线程边界回答「IRQ 里能不能发网络包」；能定义 0x534E 帧格式并写出单截止点 `send_all_until`；能列 RAM_net 七项预算与三项运行指标（goodput/丢包恢复/重试率）。
+- **级别**：L4 系统。证据位置：「测量与证据」与「离开检查」；读完留下五路径决策表、三平台 DMA 禁区表与 pbuf 不变式的对账记录。
+- **开源读法**：对照 `lwip-tcpip/lwip` 的 `src/core/pbuf.c`，看 `pbuf_free` 的引用计数如何兜住「恰好一次」；线程边界与 `opt.h` 默认值仍回本章。
 - **边界**：单讲 lwIP 侧网络栈；Wi-Fi 连接层（事件循环、六步流程）归 [第 32 章](./32-esp32-wifi-ble-espnow.md)，这里从 `IP_EVENT_STA_GOT_IP` 之后接手；DMA 机制与 CCM 禁区归 [v1 第 14 章](../v1-drivers/14-dma.md)；H7 的 Cache/双核语义归[第 34 章](./34-multicore-cache.md)（这里只用「TX clean/RX invalidate」结论）；RTOS 堆策略归 [第 25 章](../v3-rtos/25-memory-management.md)。MQTT/TLS 只讲语义与前提，具体端口号与库细节不展开。
 - **依据锚点**：D27《网络与协议栈》（`docs/27-网络与协议栈.md`）、E8《Wi-Fi》（`mcu/docs/esp32/08-wifi.md`，仅衔接段）。上游对账：lwIP `stm32-mw-lwip@07680c81` 的 [pbuf.h](https://github.com/STMicroelectronics/stm32-mw-lwip/blob/07680c81/src/include/lwip/pbuf.h)、[opt.h](https://github.com/STMicroelectronics/stm32-mw-lwip/blob/07680c81/src/include/lwip/opt.h)、[init.h](https://github.com/STMicroelectronics/stm32-mw-lwip/blob/07680c81/src/include/lwip/init.h)、[tcpip.h](https://github.com/STMicroelectronics/stm32-mw-lwip/blob/07680c81/src/include/lwip/tcpip.h)；AN4891（H7 系统架构）；CubeH7 `@8ec3113d`（lwIP 子模块 gitlink 已核）。
 
@@ -183,7 +185,7 @@ Wireshark 过滤器速查（实验 A–D 用）：`arp`、`icmp`、`bootp`（DHC
 | [lwip-tcpip/lwip](https://github.com/lwip-tcpip/lwip) | `src/core/tcp_out.c` | `tcp_write` 的缓冲语义（拷贝进 pbuf 队列还是引用）：为什么「IRQ 里调 tcp_write」必死、发送要等 ACK 才回收。对照失败分支"IRQ 里死锁" |
 | [lwIP 官方 wiki 与文档](https://www.nongnu.org/lwip/2_0_x/raw_api.html) | raw API 页 + [lwip-users 邮件列表](https://lists.nongnu.org/mailman/listinfo/lwip-users) | raw API 的零拷贝事件模型原文；社区问答主阵地，关于 `sys_now()` 截止点、mem_size 撞墙、PCB 缓冲上限的讨论都在这里 |
 
-ESP32 一侧，[espressif/esp-idf](https://github.com/espressif/esp-idf) 把 lwIP 封装在 `components/lwip` 里（默认 socket API），Wi-Fi eth 交接由 `esp_wifi` 的 netif glue 完成。GOT_IP 事件之后的事就是接下来的内容。社区调 lwIP 的第一课与这里一致：**内存配置（MEM_SIZE/PBUF 池）先于功能配置**。先让 RAM_net 的分配对上，再谈吞吐。
+ESP32 一侧，[espressif/esp-idf](https://github.com/espressif/esp-idf) 把 lwIP 封装在 `components/lwip` 里（默认 socket API），Wi-Fi eth 交接由 `esp_wifi` 的 netif glue 完成。社区调 lwIP 的第一课与这里一致：**内存配置（MEM_SIZE/PBUF 池）先于功能配置**。先让 RAM_net 的分配对上，再谈吞吐。
 
 ## 离开检查
 

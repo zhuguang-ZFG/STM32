@@ -15,12 +15,14 @@ platforms: [f407]
 
 - **问题**：任务 A 和任务 B 各有一个栈，CPU 只有一个；换现场的动作发生在 PendSV 里，SVC 把第一个任务送上去，SysTick 负责报时。三个异常各自对应哪个函数、哪一行向量表、哪一条 `#define`？PendSV 必须最低，`configKERNEL_INTERRUPT_PRIORITY` 已经是没人读取的死宏，挂起位在哪个寄存器，`portYIELD` 做了什么？硬件压哪 8 个字、软件补哪 9 个字，恢复时为什么最后一条是 `bx r14`？FPU 行李凭什么用 EXC_RETURN bit4 判断，s0–s15 与 s16–s31 分别归谁？PendSV 的十一条语义步骤里，`vTaskSwitchContext` 改了哪个变量？F407 用 `ARM_CM4F`、F103 用 `ARM_CM3`，`0x50` 与 `0xFF` 谁更急，FromISR 的逻辑阈值是 5 还是 80？还有几个容易漏的边界：`xTaskCreate` 堆尽返回什么，奇数优先级断言为什么在 F407 不执行，HardFault 归 FreeRTOS 还是归应用，RT-Thread Nano 的切换文件、异常符号和堆边界符号各是什么。
 - **交付**：能在纸上画出无 FPU 的 8 + 9 字现场与有 FPU 的 26 + 25 字现场；能把三个异常、三个源码名、三个向量名和三行 `#define` 对上号；能算出 SHPR3 的 PendSV/SysTick 两个字节都是 0xFF，并说清 `0x50 < 0xFF` 的方向；能按内核和 FPU 选出 `ARM_CM4F` 或 `ARM_CM3`；能把 RT-Thread Nano 的 `context_gcc.S`、`PendSV_Handler`/`HardFault_Handler`、`SysTick_Handler` 与 `&__bss_end__`→`&_estack` 讲对。
+- **级别**：L4 系统。证据位置：「测量与证据」与「离开检查」；读完留下 8 + 9 与 26 + 25 字的现场图、三异常改名表、SHPR3 的 `0xFF` 对 `0x50` 与 port 选型记录。
+- **开源读法**：对照 `FreeRTOS-Kernel` 的 `portable/GCC/ARM_CM4F/port.c`，看 `xPortPendSVHandler` 怎样保存 9 字软件帧并 `bx r14` 返回；SHPR3、ICSR 与 EXC_RETURN 的位定义仍回 RM0090。
 - **边界**：单平台 F407（Cortex-M4F、`ARM_CM4F`、lab 跑 HSI 16 MHz）；F103 只在「跨平台边界」做机制对照。SysTick 的 LOAD 与寄存器细节在第 11 章，异常进出与 EXC_RETURN 的 8 字帧在第 10 章；队列、信号量与通知留给第 24 章，双 OS 选型留给第 27 章。RT-Thread 部分按 lab 的 Nano 工程写，不把标准版 BSP 的 25 MHz 晶振当本工程事实。
 - **依据锚点**：F2《上下文切换》（`mcu/docs/rtos/freertos/02-context-switch.md`）、F8《移植 FreeRTOS 到霸天虎》（`mcu/docs/rtos/freertos/08-port-f407.md`）、R7《移植 RT-Thread 到霸天虎》（`mcu/docs/rtos/rtthread/07-port-f407.md`）；配置见 `mcu/code/rtos/01-freertos-lab/FreeRTOSConfig.h`，板级见 `mcu/code/rtos/02-rt-thread-lab/board/board.c`，端口选择见 `mcu/code/rtos/01-freertos-lab/Makefile`，向量槽见 `mcu/code/rtos/01-freertos-lab/startup_stm32f407xx.s`。异常进出的 8 字帧见 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)；TCB 偏移 0 与首帧 18 字见 [第 22 章](./22-tasks-tcb-scheduler.md)。
 
 ## 先做出来
 
-不接板，先把四项算在纸上。它们决定你上板后看到的是「切换真的没发生」，还是「名字根本没接上」。
+不接板，先把四项算在纸上；上板后「切换真的没发生」与「名字根本没接上」的区分，就靠这四项。
 
 1. **三异常对应**：FreeRTOS 的 port 层给出三个函数，启动文件的向量表认三个 CMSIS 名，中间靠三行 `#define` 对上。把这张表抄一遍，再数一遍行号：
 
@@ -116,7 +118,7 @@ PendSV 的「请求」不是函数调用，是一个挂起位。`portmacro.h:99-
 #define portNVIC_PENDSVSET_BIT  ( 1UL << 28UL )
 ```
 
-`portYIELD_WITHIN_API()` 的全部动作就是写这一位：`portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;`（`portmacro.h:91`；F2:54,61-62）。`taskYIELD()` 走 `portYIELD()`，中断里走 `portYIELD_FROM_ISR(x)`（`x` 为真才置位）。置位之后当前异常继续返回；等所有更高优先级异常退场，PendSV 才以最低优先级执行。挂起位是「排队」，不是「立即切」。这一点在第 22 章的 tick 三段里已经埋下，这里只补上最后一步。
+`portYIELD_WITHIN_API()` 的全部动作就是写这一位：`portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;`（`portmacro.h:91`；F2:54,61-62）。`taskYIELD()` 走 `portYIELD()`，中断里走 `portYIELD_FROM_ISR(x)`（`x` 为真才置位）。置位之后当前异常继续返回；等所有更高优先级异常退场，PendSV 才以最低优先级执行。挂起位是「排队」，不是「立即切」。
 
 ### 四、软硬分工：硬件 8 字，软件 9 字
 

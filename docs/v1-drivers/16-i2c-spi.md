@@ -11,6 +11,8 @@ platforms: [f407, f103, esp32]
 
 - **问题**：I2C 的 START/STOP/ACK 在电平上怎么定义，为什么数据只能在 SCL 低区变？7 位地址 0x50 上线为什么变成 0xA0/0xA1，0x3C 又为什么常被写成 0x78，读 EEPROM 为什么必须用重复起始、先 STOP 再 START 会丢什么？事件与时钟一侧：F1 与 F4 的 I2C 事件寄存器都叫 SR1/SR2 吗，SB/ADDR/TXE/BTF 各在哪一位，清 ADDR 为什么必须先读 SR1 再读 SR2，CCR/TRISE 怎么从 36 MHz 与 42 MHz 算到 100 kHz 和 400 kHz？EEPROM 的页写与等待：24C02 的 8 字节页写越界后到底盖掉谁，tWR 与 ACK polling 怎么配合？SPI 一侧：移位环为什么“发即是收”，CPOL/CPHA 四种模式里 Mode 0 到底在哪个沿采样，F103 的 72 MHz 与 F407 的 84 MHz 下 BR 分频各能跑多快？最后是实验：E05 与 E07 两块板子各自该量什么，哪些数还只是来源说法？
 - **交付**：能写出 7 位地址与 R/W 拼成的首字节，能把 0x50 与 0x3C 两种写法互转；能按 SR1/SR2 的事件顺序写出一次写事务和一次重复起始读事务，知道 TXE 与 BTF 的分工；能按 PCLK1 算出 F103/F407 的 CCR 与 TRISE；能按 24C02 的页内回绕算出 20 字节连写的最终落点，能用 ACK polling 等 tWR；能配出 Mode 0 的 SPI 主机，按 BR 表选 9 MHz 或 10.5 MHz，能读出 W25Q64 的 0xEF4017 并解释 rx[0] 为什么不是厂商号；能按现象把 NACK、SDA 卡低、ADDR 不清、模式错配、OVR、BSY 提前拉 CS 分到不同的检查动作；能按 E05/E07 的台架留下波形、寄存器和读回记录。
+- **级别**：L2 数据。证据位置：「测量与证据」与「离开检查」；读完留下 E05/E07 的波形解码、寄存器读回与读回数组。
+- **开源读法**：对照 `STM32CubeF4` 的 `Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c`，看 `HAL_I2C_Master_Transmit` 怎样写 DR、清 ADDR、等 BTF 收尾；`DevAddress` 的移位约定与 SR1/SR2 语义仍回本章与 RM0008。
 - **边界**：两平台章加 ESP32 边界。F407 的 I2C1/2/3、42 MHz PCLK1、PB6/PB7 AF4、SR1/SR2 事件链与 SPL 代码来自 S11；F103 的 36 MHz PCLK1、0x801E/0x00B4、PB6/PB7 与重映射、F1 的硬件 I2C 卡忙经验来自根书第 07 章；F103/F407 的 SPI1 分频、Mode 0、W25Q64 读 ID 来自根书第 08 章与 S12。F1 与 F4 的 I2C 事件寄存器同名同位置，这一点按 RM0008 第 26 章与 RM0090 第 27 章的寄存器名核对；F0/F3/L4 的新 I2C 换成 ISR/ICR/TIMINGR，属于跨系列边界，这里未取手册。E05 的 `hardware_status` 是 pending，E07 同样是 pending，两个实验的记录表都为空；这里没有上板读数，所有“预期”都按预期写。AT24C02 的 tWR、W25Q 的页越界行为、DS5319 表 42 的 4.7 kΩ 条件、F1 的卡忙说法都有待复核，正文逐处标注。
 - **依据锚点**：S11（`mcu/docs/stm32/11-i2c.md`）、S12（`mcu/docs/stm32/12-spi.md`）、根书第 07 章（`docs/07-I2C总线.md`）、根书第 08 章（`docs/08-SPI总线.md`）、E05（`mcu/docs/lab/e05-i2c-eeprom.md`）、E07（`mcu/docs/lab/e07-qmi8658.md`）；[第 8 章](./08-architecture-memory-clock.md)的 PCLK1/PCLK2、[第 9 章](./09-gpio.md)的开漏与复用、[第 13 章](./13-uart-framed-protocol.md)的抓包方法、[第 14 章](./14-dma.md)的 DMA 请求映射、[第 15 章](./15-adc-dac-sampling.md)的“来源说法/待复核”写法；RM0008、RM0090、DS5319、AT24C02 与 W25Q64 数据手册均转引自上述来源，这里没有取到手册原件。
 
@@ -256,7 +258,7 @@ CPOL 定空闲电平，CPHA 定第几个沿采样。四种模式不是四套协�
 | 2 | 1 | 0 | 高 | 第 1 沿（下降） | 上升沿 |
 | 3 | 1 | 1 | 高 | 第 2 沿（上升） | 下降沿 |
 
-Mode 0 是 CPOL=0、CPHA=0：空闲低，第一个上升沿采样，数据在下降沿变化。W25Q64、ST7789 和多数器件用 Mode 0；W25Q64 也支持 Mode 3。模式错配不会报错，症状是 MOSI 波形看着正常、从机读到的字节整体错一位，逻辑分析仪对一下空闲电平和采样沿就能破案。
+Mode 0 是 CPOL=0、CPHA=0：空闲低，第一个上升沿采样，数据在下降沿变化。W25Q64、ST7789 和多数器件用 Mode 0；W25Q64 也支持 Mode 3。模式错配不会报错，症状是 MOSI 波形看着正常、从机读到的字节整体错一位，逻辑分析仪对一下空闲电平和采样沿即可定位。
 
 ![SPI 四模式：CPOL 定空闲电平、CPHA 定第几个沿采样，四格对照](/figures/stm32-12-spi-modes.svg)
 

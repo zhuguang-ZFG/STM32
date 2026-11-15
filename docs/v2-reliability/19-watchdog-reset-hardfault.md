@@ -7,12 +7,14 @@ platforms: [f407, f103, esp32]
 
 看门狗防的是"程序不再前进"，复位标志回答"这一次是谁让它重来"，HardFault 取证回答"它死在哪一行"。三件事都容易停在表面：灯又闪了、板子重启了、调试器里断下来了，都不等于你拿到了证据。
 
-两个来源的实验记录仍是"待实测"，第三个来源的 274/274 是宿主 probe。下面把手册规则、公式推导、宿主断言与尚未上板的实验分开写；凡是没有读数的结论，都在原处标出来。
+两个来源的实验记录仍是"待实测"，第三个来源的 274/274 是宿主 probe。手册规则、公式推导、宿主断言与尚未上板的实验分开标注；凡是没有读数的结论，都在原处标出。
 
 ## 本章罗盘
 
 - **问题**：IWDG 与 WWDG 的时间基准差在哪，为什么 IWDG 只罚"太晚"、WWDG 连"太早"也罚？超时公式里的 `(RLR+1)` 少写会差多少，LSI 的 30/60 kHz 与 17/47 kHz 又让同一个 RLR 差出几倍？WWDG 的 58.25 ms 与 131 ms 各自绑定了哪些条件？`RCC_CSR` 为什么必须一次读全再写 `RMVF`，POR 为什么会把 `PINRSTF` 一起置起来？复位记录怎样写到一半被打断也不误导下一次启动？HardFault 的 19 位 CFSR、`FORCED`、两个 VALID 位、32 字节栈帧与 `EXC_RETURN` 怎样串成一条到源码行的链？调试器为什么会关闭看门狗、把现场改掉？ESP32 的四类看门狗里，哪一类能平移到 Cortex-M，哪一类不能？
 - **交付**：能按 `t = (4·2^PR)·(RLR+1)/f_LSI` 给 F103 与 F407 各算一张"设计值/最坏值"表；能写出 IWDG 的 `0xCCCC → 0x5555 → PR/RLR → 0xAAAA` 序列并说清"启动后关不掉"；能按 `0x3F < T < W` 判断 WWDG 何时可以喂；能一次读全 `RCC_CSR` 的 bit31..25、写 `RMVF` 清标志，并按位图解释 POR 与 PINRSTF 的伴随关系；能用 `.noinit`、BKP 或 `RTC_NOINIT_ATTR` 写一条带 magic、版本、掩码与 CRC-16 的复位记录；能写 naked `HardFault_Handler`，从栈帧取 PC，交给 `addr2line`；能说出 F1 与 F4 的调试冻结位和 OpenOCD 的副作用；能解释 ESP32 的 TWDT 为什么是任务级契约。
+- **级别**：L3 可靠。证据位置：「测量与证据」与「离开检查」；读完留下看门狗时间表、复位位图与 HardFault 取证的复算记录。
+- **开源读法**：对照 `CMSIS_6` 的 `CMSIS/Core/Include/core_cm4.h`，看 `SCB_Type` 里 `CFSR`/`HFSR`/`MMFAR`/`BFAR` 的字段与偏移；位定义仍回 ARMv7-M 架构手册与本章的 CFSR 表。
 - **边界**：三平台章。F103 的 LSI、IWDG 与复位位号来自 DS5319、RM0008 与根书第 11 章（来源转引）；F407 的 IWDG/WWDG 公式、`RCC_CSR` 与冻结位来自 DS8626、RM0090 与 S17；HardFault 的寄存器地图、CFSR 分区、栈帧与汇编来自 S16 与 ARMv7-M/CMSIS；ESP32 的四类看门狗、TWDT 与 `esp_reset_reason()` 来自 P13 与 IDF 5.5.2 文档。三个来源都没有留下上板读数：S17 与 P13 的实验表体是"待实测"，S16 的 274/274 是宿主 probe，没有板级故障现场；本工作树缺 `mcu/.trellis/ref/cmsis`，S16 的 CMSIS 逐位对账未复核。RTC 与备份域回链第 11 章，异常进入与优先级回链第 10 章，Flash 参数区回链第 17 章，调试工具与测量方法留给第 20 章。
 - **依据锚点**：根书第 11 章《RTC 与看门狗》（`docs/11-RTC与看门狗.md`，只取看门狗段）、S16《HardFault 与排错》（`mcu/docs/stm32/16-debug-hardfault.md`）、S17《看门狗：任务失去进展之后》（`mcu/docs/stm32/17-watchdog-reset.md`）、P13《看门狗与健康监督》（`mcu/docs/esp32/13-watchdog-health.md`）；[v1 第 11 章](../v1-drivers/11-systick-timebase-rtc.md)、[第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)、[第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](./18-low-power.md)是这里的回链。RM0008、RM0090、DS5319、DS8626、ARM PM0214/PM0056 与 ESP-IDF 文档均转引自上述来源，这里没有取到原件逐页核对。
 

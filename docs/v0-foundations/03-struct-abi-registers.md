@@ -11,6 +11,8 @@ platforms: [f407, f103]
 
 - **问题**：`GPIOF->BSRR` 展开后为什么正好落在 `0x40021418`？一个只有 `a`、`b`、`c` 三个成员、数据宽度合计 6 字节的结构体，为什么 `sizeof` 是 12？为什么硬件寄存器映射不能用位域，也不能随手加 `#pragma pack(1)`？三个问题分别指向成员顺序、对齐填充与编译器自由裁量的边界。
 - **交付**：能拿到一张寄存器地图就写出对应的 `TypeDef`，用 `offsetof`、`sizeof`、`_Static_assert` 三件工具逐成员对账；能手算含填充结构体的每个偏移，并在内存画布上指出洞的位置；能说清结构体映射担保什么、不担保什么，以及为什么位域与 pack 不属于寄存器。
+- **级别**：L0 起步。证据位置：「测量与证据」与「离开检查」；读完留下逐成员偏移与 `sizeof` 的断言对账记录。
+- **开源读法**：翻 `cmsis-device-f4` 的 `Include/stm32f407xx.h` 第 526–537 行 `GPIO_TypeDef`，对照本章逐成员算出的偏移；`__IO` 与布局规则仍回手册与 AAPCS。
 - **边界**：逐成员核对的是 F407 的 `stm32f407xx.h`；F103 的寄存器组不是同一张地图，来源 C4 没有给出它的成员表与偏移，这里不补，寄存器级差异指向卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。结构体按值传参、返回时的寄存器与栈约定属于调用约定，留给[第 4 章](./04-function-pointer-state-machine.md)。来源记录里板上 GDB 对照仍标为待回填，这里不把它写成已完成。位域布局的可移植性只有编译器文档与来源结论，没有跨工具链对照实验。
 - **依据锚点**：C4《结构体与 ABI：一个结构体罩住整组寄存器》（`mcu/docs/c/04-struct-abi.md`）及其取证工程 `mcu/code/c/04-struct-abi/probe.c`、`broken.c`；`stm32f407xx.h` 第 526–537 行的 `GPIO_TypeDef` 定义、RM0090 §8.4 的寄存器地图与 ARM AAPCS 的布局规则均转引自 C4；变量段归属与指针宽度在[第 1 章](./01-c-memory-model.md)，volatile 的访存合同在[第 2 章](./02-c-volatile-ub.md)。
 
@@ -95,6 +97,8 @@ _Static_assert(sizeof(GPIO_TypeDef) == 0x28,
                "GPIO_TypeDef size must be 0x28 (10 x uint32)");
 ```
 
+![手绘板：`GPIO_TypeDef` 的 9 个成员按声明顺序覆盖寄存器块，BSRR 落 0x18；`Padded_t` 与 `Packed_t` 的填充与成员顺序（原理示意，非实拍）](/images/ch03-struct-overlay.png)
+
 ![结构体对齐与填充动画：偏移沿 GPIO_TypeDef 条带逐格数出，Padded_t 重排为 Packed_t 后填充缩短](/anim/struct-alignment.svg)
 
 ### 对齐三规则：成员、结构体、数组
@@ -118,7 +122,7 @@ typedef struct { uint32_t b; uint8_t a; uint8_t c; } Packed_t;
 /* b@0，a@4，c@5；尾部填 2 字节，sizeof=8 */
 ```
 
-第二段里的 `Packed_t` 是来源给“重排后版本”起的名字，它没有使用 `#pragma pack`，省下的 4 字节全部来自成员顺序。宽成员先排、窄成员后排，洞自然变少，这就是“结构体成员从大到小排”省内存的力学原理。
+第二段里的 `Packed_t` 是来源给“重排后版本”起的名字，它没有使用 `#pragma pack`，省下的 4 字节全部来自成员顺序。宽成员先排、窄成员后排，洞自然变少。
 
 ### 填充可视化：洞在哪里
 
@@ -200,7 +204,7 @@ endian: 0x12345678 stored as 78 56 34 12 -> little-endian
 Packed1_t: sizeof = 6  a=0 b=1 c=5   (b 落在 1 = 非对齐访问)
 ```
 
-`b` 从偏移 4 挪到偏移 1，结构体里出现了成员自身对齐要求不被满足的访问。Cortex-M4 上这类访问可能触发 `UsageFault`。pack 的正确用途是协议帧、文件头这类“字节位置由协议规定、与 CPU 对齐无关”的数据结构；寄存器结构体的对齐要求来自硬件总线，加 pack 是画蛇添足。
+`b` 从偏移 4 挪到偏移 1，结构体里出现了成员自身对齐要求不被满足的访问。Cortex-M4 上这类访问可能触发 `UsageFault`。pack 的正确用途是协议帧、文件头这类“字节位置由协议规定、与 CPU 对齐无关”的数据结构；寄存器结构体的对齐要求来自硬件总线，加了 pack 反而把成员压到非对齐偏移。
 
 ### 结构体映射的边界：能担保什么，不能担保什么
 

@@ -11,6 +11,8 @@ platforms: [f407, f103, gd32, esp32]
 
 - **问题**：为什么 PF6 在 `MODER` 里占 bits[13:12]，而 PF6 的灯用 BSRR 的 bit6 与 bit22 控制？为什么不给 `RCC_AHB1ENR` 的 GPIOF 位合闸，写 `MODER` 再读回全是 0？为什么改一个引脚电平要用 `BSRR`，而 `ODR |=` 会偶尔丢一次电平？`MODER=10` 与 `AFR` 为什么必须成对写？输入的施密特触发器修整了什么，而“10~20ms 消抖”为什么查不到手册出处？F103 的 `CRL/CRH`、`AFIO->MAPR` 与 F407 的 `MODER`、`AFR` 哪套配置能互相照抄？共阳灯为什么写低电平才亮？
 - **交付**：能按“时钟→MODER→OTYPER→OSPEEDR→PUPDR→数据”的顺序手写一个引脚的配置，并说出每一位的取值理由；能用一条 `BSRR` 写入完成原子置位或复位，并说清读改写窗口在哪里；能为一个复用功能查表配好 `MODER` 与 `AFR`；能为按键选定上拉还是下拉，并说清消抖放在硬件还是软件；能把 e01 的接线、步骤、预期现象和记录格式复述给同学。
+- **级别**：L0 起步 → L1 驱动。证据位置：「测量与证据」与「离开检查」；读完留下从合闸到数据的配置序列与 e01 的接线、预期现象和记录格式。
+- **开源读法**：读 `libopencm3` 的 `include/libopencm3/stm32/f4/gpio.h` 与 `gpio_common_all.c`，看 `gpio_set`/`gpio_clear` 怎样落到 BSRR；位段语义仍回 RM0090 §8.4。
 - **边界**：四平台章。F407 的偏移、位段与 PF6 演算来自 S3《GPIO：七个寄存器位级图解》与 RM0090 §8.4；F103 的 `CRL/CRH`、AFIO 重映射、PC13–PC15 的 3mA/2MHz/30pF 界限来自根书第 03 章与 RM0008、DS5319；GD32 与 ESP32 只在“跨平台边界”指路，不写没有来源的差异。NVIC/EXTI 的按键中断留给[第 10 章](./10-interrupts-nvic-exti.md)，PWM 调光留给[第 12 章](./12-timers-pwm.md)，I2C/SPI 的引脚配对留给[第 16 章](./16-i2c-spi.md)，实验方法与仪器证据留给[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。e01 的来源记录是 `hardware_status: pending`、实测记录表为空，这里不把它的现象写成已跑读数。
 - **依据锚点**：S3《GPIO：七个寄存器位级图解》（`mcu/docs/stm32/03-gpio.md`）、根书第 03 章《GPIO 与 LED》（`docs/03-GPIO与LED.md`）、E01《点亮霸天虎的 RGB 红灯（寄存器版）》（`mcu/docs/lab/e01-blink.md`）；[第 8 章](./08-architecture-memory-clock.md)的 AHB1 地址与位带、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 7 章](../v0-foundations/07-build-systems-legacy.md)的 `GPIO_Init` 拆解。RM0090、RM0008 与 DS5319 的条文均转引自上述来源。
 
@@ -46,7 +48,7 @@ F407 的 GPIO 挂在 AHB1 上。RCC 的基址是 `0x4002_3800`，`AHB1ENR` 偏�
 RCC_AHB1ENR |= RCC_AHB1ENR_GPIOFEN;   /* bit5：给 GPIOF 合闸 */
 ```
 
-`main.c` 在这行上面的注释只有一句“不先开时钟，下面全白配”。机制是：时钟没到，外设的寄存器读写不生效，写进去不响，读回全是 0。S3 把它列为新手第一大坑，不是修辞。调试器里读回 `GPIOF_MODER` 得到 0，而代码明明写进了 0x1000，这一对矛盾就是“忘开时钟”的指纹。
+`main.c` 在这行上面的注释只有一句“不先开时钟，下面全白配”。机制是：时钟没到，外设的寄存器读写不生效，写进去不响，读回全是 0。S3 把它列为新手第一大坑。调试器里读回 `GPIOF_MODER` 得到 0，而代码明明写进了 0x1000，这一对矛盾就是“忘开时钟”的指纹。
 
 F103 的配置不一样：GPIO 挂在 APB2 上，根书例程用 `RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE)` 开的是 GPIOC。寄存器名与总线都不能从 F4 抄过去。
 
@@ -73,7 +75,7 @@ GPIOF_OSPEEDR &= ~(3UL << (LED_R_PIN * 2));  /* 00 = 低速              */
 GPIOF_PUPDR   &= ~(3UL << (LED_R_PIN * 2));  /* 00 = 无上下拉          */
 ```
 
-“先清零再置位”不是洁癖。两位的格子直接 `|= 1`，原来的 10 或 11 会变成 11；先擦后写才能保证落点是 01。复位后多数引脚是 00（输入），但 PA13/PA14 这类调试脚默认是复用，所以这套写法在哪个引脚上都成立。反过来说，把 PA13/PA14 改成普通 GPIO 再烧录，SWD 就再也连不上，后面所有调试都会失去入口；RM0008 表 36 把 SWDIO 固定在 PA13、SWCLK 固定在 PA14。
+先清零再置位，是因为两位的格子直接 `|= 1` 时，原来的 10 或 11 会变成 11；先擦后写才能保证落点是 01。复位后多数引脚是 00（输入），但 PA13/PA14 这类调试脚默认是复用，所以这套写法在哪个引脚上都成立。反过来说，把 PA13/PA14 改成普通 GPIO 再烧录，SWD 就再也连不上，后面所有调试都会失去入口；RM0008 表 36 把 SWDIO 固定在 PA13、SWCLK 固定在 PA14。
 
 ![GPIO 配置流程动画：合闸、四张表逐格盖章、BSRR 发令](/anim/gpio-config.svg)
 

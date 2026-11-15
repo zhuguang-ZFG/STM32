@@ -17,6 +17,8 @@ platforms: [f103]
 
 - **问题**：PI 的离散式与 Kp/Ki 单位怎么定，单位错为什么等于增益错？误差 −10 rpm 时一个 10 ms 节拍输出多少，负输出为什么不能取绝对值？输出限幅与抗饱和差在哪，条件积分四规则如何挡住 windup？目标斜坡、状态机与故障恢复、控制节拍与串口的分离、调参六步的判据与回退、四指标定义，以及 D 项为什么不进 V1。
 - **交付**：能手算一个控制节拍并解释负输出的方向；把条件积分四规则落成代码分支；画出五态状态机、故障锁存与恢复链（CLEAR→DISABLED→HEARTBEAT→ARMED）；把控制节拍与串口任务的所有权分开（ISR 写桥、主循环收发）；按六步调参表走一遍并说出回退条件；按四指标写验收记录的数据要求（同轴曲线、输入哈希、重复全保留）。
+- **级别**：L4 系统。证据位置：「测量与证据」与「离开检查」；读完留下 PI 一步的手算、条件积分四规则的分支与调参六步的回退条件。
+- **开源读法**：对照 `br3ttb/Arduino-PID-Library` 的 `PID_v1.cpp`，看它在输出饱和时怎样冻结积分；单位、限幅与节拍语义仍回本章公式与 RM0008。
 - **边界**：开环链路（PWM 端点、带符号占空比、斜坡、租约）归 [第 37 章](./37-dc-motor-openloop.md)，编码器量化与回绕归 [第 38 章](./38-encoder-speed-measurement.md)，驱动桥与供电归 [第 36 章](./36-motor-driver-power.md)，DWT 测量归 [v1 第 20 章](../v2-reliability/20-debug-performance.md)，IWDG 归 [v1 第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，任务与队列归 [v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md)。EKF/Kalman 等状态估计不在这里，控制律是纯算术。
 - **依据锚点**：M32 草稿（`plans/2026-11-11-motor-control/chapters-draft/32-直流电机速度闭环.md`）、DESIGN 合同（`:121-130` 单位、`:132` 抗饱和、`:140-162` 状态机/F01–F06、`:85` 耗时预算）、ACC《验收》（`plans/2026-11-11-motor-control/acceptance.md`）。上游对账：RM0008；TB6612 datasheet；`tools/motor_analyze.py`（P3 交付物，标待核）。
 
@@ -76,7 +78,7 @@ F04 的截止期目标 ≤2 ms、周期偏差 ≤1 ms（DESIGN:85），与 [v1 �
 
 10 ms 控制节拍由 TIM4 硬件中断驱动，串口收发放在主循环（或独立任务）：ISR 只写桥，主循环只收发。打印和协议解析只会拖慢主循环，不拉长控制周期。
 
-控制周期被打印拖慢时，解就在这条所有权边界里；上 RTOS 后，控制任务唯一拥有输出（回链 [v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md) 的任务所有权）。IWDG 独立监督：控制任务僵死时由看门狗复位（机制归 [v1 第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，P2 启用后验证，待核）。
+上 RTOS 后，控制任务唯一拥有输出（回链 [v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md) 的任务所有权）。IWDG 独立监督：控制任务僵死时由看门狗复位（机制归 [v1 第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，P2 启用后验证，待核）。
 
 ### 五、调参六步（每步带判据与回退）
 
@@ -152,7 +154,7 @@ F04 的截止期目标 ≤2 ms、周期偏差 ≤1 ms（DESIGN:85），与 [v1 �
 | [simplefoc/arduino-foc](https://github.com/simplefoc/arduino-foc) | 速度环入口 `motor.FOC_move()` | 测量先过低通再进 PI（`lpf_velocity`），帧率由 `motor.loop()` 的调用节拍决定，与这里 60 Hz 定节拍 + rpm_filt 的同款思路 |
 | [SimpleFOC 社区论坛](https://community.simplefoc.com/) | velocity loop / tuning 相关帖 | 实物调试记录：Kp 从 0 逐步加到轻微振荡再回退的整定过程、编码器量化与滤波时间的取舍，与前面的调参六步同一条路径，且都是实物数据 |
 
-对照之后会看到一个共性：社区实现的积分项几乎从不只存 `Ki·e·dt` 的裸累加。要么限幅时冻结（Arduino-PID-Library），要么把积分边界绑到输出限幅上（SimpleFOC）。这里的四规则是同一件事的显式展开。
+社区实现的积分项几乎从不只存 `Ki·e·dt` 的裸累加。要么限幅时冻结（Arduino-PID-Library），要么把积分边界绑到输出限幅上（SimpleFOC）。这里的四规则是同一件事的显式展开。
 
 另一个共性：所有实现都假设调用节拍恒定并在文档里声明，`dt` 不作为每次调用的自由参数。这正是「控制节拍漂移」失败分支的预防措施。
 

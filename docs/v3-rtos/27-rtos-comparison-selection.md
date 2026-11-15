@@ -5,7 +5,7 @@ platforms: [f407]
 
 # 双 OS 对照与选型
 
-第 21 到 26 章把两套内核的机制拆到了源码行；这里不再教机制，只做两件事：把同一条问题的两种答案摆进一张表，再把「下一个项目选谁」的判断过程摊开。对照表里每一行都带条件：优先级方向、级别数量、事件位宽这些数值，换一个配置就变，脱离条件的对照句是迁移事故的第一来源。
+两套内核的机制已在第 21 到 26 章拆到源码行；这一章把同一条问题的两种答案摆进一张表，把「下一个项目选谁」的判断过程摊开。对照表里每一行都带条件：优先级方向、级别数量、事件位宽这些数值，换一个配置就变，脱离条件的对照句是迁移事故的第一来源。
 
 这里没有实测。两套 OS 的切换时延、中断延迟、ROM/RAM 占用、软件包数量、迁移工时，六个来源里都没有可复核的读数；「标准版 32K Flash」「Nano 3K」「通知快一个数量级」「软件包数百个」「省几个月」全部按来源说法（未复核）处置，不进结论。选型结论落在约束、证据与风险上，不落在数字上。
 
@@ -15,6 +15,8 @@ platforms: [f407]
 
 - **问题**：两套内核的优先级方向、级别数量与选优算法都带配置条件；队列、消息队列、邮箱、通知与事件组名字相近，语义并不等价。堆、静态创建、内存池、设备框架、shell 与配置系统决定两边的工程形态，许可证要落到上游文件；TLSF 不在 RT-Thread 内核里。实时性只能按预算公式讨论，测试条件必须写全。选型从硬约束、驱动生态与团队熟悉度三层走；ESP32 的平台绑定、STM32 的组件阈值、决策树的两个修正分支、迁移七坑都按条件判断。
 - **交付**：能按条件复述对照表的每一行（方向、数量、位宽、API 形态），指出哪两处来源说法已被上游核对推翻；能把 FreeRTOS 队列与 RT-Thread 消息队列的语义差别说清（创建时定宽 vs 固定最大块的变长消息）；能算事件组可用位宽并按 tick 位宽给条件；能根据 map 与水位算出资源占用，而不是抄别人的 256 KiB 示例；能按「硬约束→驱动与生态→团队熟悉度」走一遍决策树，说出两个被修正的分支；能把定量说法逐条标注「来源说法(未复核)」并给出替代判据；能列出迁移七坑并先读 `configMAX_PRIORITIES` 再给映射。
+- **级别**：L4 系统。证据位置：「短自测」与「定量说法处置表」；读完留下带配置条件的对照表、两个决策分支的修正与迁移七坑的核对记录。
+- **开源读法**：对照 RT-Thread 的 `src/scheduler_up.c`，看 `rt_thread_ready_priority_group` 与 `rt_thread_ready_table` 在 32 级上下怎样切换；优先级方向与级别数量仍回本章的条件列。
 - **边界**：只做对照与选型，不重教机制。调度细节归 [第 22 章](./22-tasks-tcb-scheduler.md) 与 [第 23 章](./23-context-switch-porting.md)，IPC 归 [第 24 章](./24-queue-semaphore-notification.md)，内存归 [第 25 章](./25-memory-management.md)，设备框架与配置系统归 [第 26 章](./26-device-framework-shell.md)。Zephyr 只保留「Kconfig + Devicetree + 设备模型」的功能定位，其调度器实现细节未复核不写。CMSIS-RTOS2 只写「统一接口不统一实现」。不写任何 µs 级时延断言。六源无实测。
 - **依据锚点**：X0《同概念双实现对照》（`mcu/docs/rtos/compare/00-side-by-side.md`）、X1《选型决策树》（`.../01-choose.md`）、D28《嵌入式系统与 RTOS 生态》（`docs/28-嵌入式系统与RTOS生态.md`，只取选型与边界段）。配置见 `mcu/code/rtos/01-freertos-lab/FreeRTOSConfig.h:23`（`configMAX_PRIORITIES=5`）、`:31`、`:36`；RT-Thread 配置见 `src/Kconfig:94-110`（级别数）与 `components/finsh/Kconfig`。上游对账：FreeRTOS-Kernel 的 [LICENSE.md](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.3.2/LICENSE.md)、[portmacro.h](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.3.2/portable/GCC/ARM_CM4F/portmacro.h)；RT-Thread v5.3.0 的 [LICENSE](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/LICENSE)、[scheduler_up.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/src/scheduler_up.c)、[ipc.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/src/ipc.c)。机制细节分别在 [第 21–26 章](./21-why-rtos.md)。
 
@@ -191,6 +193,6 @@ Zephyr 在这个漏斗里的定位：跨厂商板卡、Kconfig/Devicetree、协�
 
 ## 收束
 
-对照表的价值不在「谁赢了」，在于把「名字相近的 API」背后的语义差摊开：方向、位宽、槽宽、递归、通知，每一处都能在迁移时救回几天排障时间。选型同理：约束、证据、风险三层走完，结论自然浮出来；跳过约束直接比数字，是选型返工的头号原因。
+对照表的价值不在「谁赢了」，在于把「名字相近的 API」背后的语义差摊开：方向、位宽、槽宽、递归、通知。选型同理：约束、证据、风险三层走完再下结论；跳过约束直接比数字，是选型返工的头号原因。
 
 下一卷离开 RTOS，进入多平台与连接：换芯片、换架构、上网络。
