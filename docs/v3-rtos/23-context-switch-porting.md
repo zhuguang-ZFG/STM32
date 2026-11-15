@@ -5,15 +5,15 @@ platforms: [f407]
 
 # 上下文切换与移植
 
-任务 A 和任务 B 各有一个栈，CPU 只有一个。把 A 的 R4–R11 压进 A 的栈、把栈顶写进 A 的 TCB，再从 B 的 TCB 取出栈顶、把 B 的寄存器弹回来——这套动作发生在 PendSV 里。FreeRTOS 把「谁上 CPU」拆成三个异常：SVC 把第一个任务送上去，PendSV 换现场，SysTick 报时。移植一个 Cortex-M4F 工程，核心就是让这三个名字接上向量表，再选对 port 目录。
+任务 A 和任务 B 各有一个栈，CPU 只有一个。把 A 的 R4–R11 压进 A 的栈、把栈顶写进 A 的 TCB，再从 B 的 TCB 取出栈顶、把 B 的寄存器弹回来。这套动作发生在 PendSV 里。FreeRTOS 把「谁上 CPU」拆成三个异常：SVC 把第一个任务送上去，PendSV 换现场，SysTick 报时。移植一个 Cortex-M4F 工程，核心就是让这三个名字接上向量表，再选对 port 目录。
 
-证据先说清：本章没有新的上板读数。F2 的五步 probe、GDB 软件帧，F8 的 `size`/`nm` 与上板状态表，都没有在本仓库留下原始日志或产物：probe 与 `size`/`nm` 标「来源说法(未复核)」，GDB 与上板现象标「未实测」。18 字 = 72 B、26 字 = 104 B、软件帧 9 字、SHPR3 里的 0xFF 与 `0x50 < 0xFF`，由源码与算术得到，标「文档推导」。
+这一章没有新的上板读数。F2 的五步 probe、GDB 软件帧，F8 的 `size`/`nm` 与上板状态表，都没有留下原始日志或产物：probe 和 `size`/`nm` 标「来源说法(未复核)」，GDB 与上板现象标「未实测」。18 字 = 72 B、26 字 = 104 B、软件帧 9 字、SHPR3 里的 0xFF 与 `0x50 < 0xFF` 由源码与算术得到，标「文档推导」。
 
 > 版本口径：本章的 `port.c`、`portmacro.h`、`tasks.c` 行号与宏语义按 FreeRTOS-Kernel V11.1.0 的 GCC/ARM_CM4F 端口对账；根书第 15 章引 V11.3.2，两版行号不混排。F103 的 `ARM_CM3` 只讲机制差异，不把 V11.1.0 的行号套过去。
 
 ## 本章罗盘
 
-- **问题**：SVC、PendSV、SysTick 三个异常各由哪个函数接管，向量表和 `#define` 怎么对上？PendSV 为什么必须最低，`configKERNEL_INTERRUPT_PRIORITY` 为什么已经是不被读取的死宏？挂起位在哪个寄存器、`portYIELD` 到底做了什么？硬件压哪 8 个字、软件补哪 9 个字，恢复时为什么最后一条是 `bx r14`？FPU 行李凭什么用 EXC_RETURN bit4 判断，s0–s15 与 s16–s31 分别归谁？PendSV 的十一条语义步骤是什么，`vTaskSwitchContext` 改了哪个变量？F407 为什么用 `ARM_CM4F`、F103 为什么用 `ARM_CM3`？`0x50` 与 `0xFF` 谁更急，FromISR 的逻辑阈值是 5 还是 80？`xTaskCreate` 堆尽返回什么？奇数优先级断言为什么在 F407 不执行？HardFault 归 FreeRTOS 还是归应用？RT-Thread Nano 的切换文件、异常符号和堆边界符号各是什么？
+- **问题**：任务 A 和任务 B 各有一个栈，CPU 只有一个；换现场的动作发生在 PendSV 里，SVC 把第一个任务送上去，SysTick 负责报时。三个异常各自对应哪个函数、哪一行向量表、哪一条 `#define`？PendSV 必须最低，`configKERNEL_INTERRUPT_PRIORITY` 已经是没人读取的死宏，挂起位在哪个寄存器，`portYIELD` 做了什么？硬件压哪 8 个字、软件补哪 9 个字，恢复时为什么最后一条是 `bx r14`？FPU 行李凭什么用 EXC_RETURN bit4 判断，s0–s15 与 s16–s31 分别归谁？PendSV 的十一条语义步骤里，`vTaskSwitchContext` 改了哪个变量？F407 用 `ARM_CM4F`、F103 用 `ARM_CM3`，`0x50` 与 `0xFF` 谁更急，FromISR 的逻辑阈值是 5 还是 80？还有几个容易漏的边界：`xTaskCreate` 堆尽返回什么，奇数优先级断言为什么在 F407 不执行，HardFault 归 FreeRTOS 还是归应用，RT-Thread Nano 的切换文件、异常符号和堆边界符号各是什么。
 - **交付**：能在纸上画出无 FPU 的 8 + 9 字现场与有 FPU 的 26 + 25 字现场；能把三个异常、三个源码名、三个向量名和三行 `#define` 对上号；能算出 SHPR3 的 PendSV/SysTick 两个字节都是 0xFF，并说清 `0x50 < 0xFF` 的方向；能按内核和 FPU 选出 `ARM_CM4F` 或 `ARM_CM3`；能把 RT-Thread Nano 的 `context_gcc.S`、`PendSV_Handler`/`HardFault_Handler`、`SysTick_Handler` 与 `&__bss_end__`→`&_estack` 讲对。
 - **边界**：单平台 F407（Cortex-M4F、`ARM_CM4F`、lab 跑 HSI 16 MHz）；F103 只在「跨平台边界」做机制对照。SysTick 的 LOAD 与寄存器细节在第 11 章，异常进出与 EXC_RETURN 的 8 字帧在第 10 章；队列、信号量与通知留给第 24 章，双 OS 选型留给第 27 章。RT-Thread 部分按 lab 的 Nano 工程写，不把标准版 BSP 的 25 MHz 晶振当本工程事实。
 - **依据锚点**：F2《上下文切换》（`mcu/docs/rtos/freertos/02-context-switch.md`）、F8《移植 FreeRTOS 到霸天虎》（`mcu/docs/rtos/freertos/08-port-f407.md`）、R7《移植 RT-Thread 到霸天虎》（`mcu/docs/rtos/rtthread/07-port-f407.md`）；配置见 `mcu/code/rtos/01-freertos-lab/FreeRTOSConfig.h`，板级见 `mcu/code/rtos/02-rt-thread-lab/board/board.c`，端口选择见 `mcu/code/rtos/01-freertos-lab/Makefile`，向量槽见 `mcu/code/rtos/01-freertos-lab/startup_stm32f407xx.s`。异常进出的 8 字帧见 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)；TCB 偏移 0 与首帧 18 字见 [第 22 章](./22-tasks-tcb-scheduler.md)。
@@ -90,7 +90,7 @@ SVC 启动的第一个任务，用的就是第 22 章那套伪造首帧：`pxPor
 
 ![FreeRTOS 三异常接管：port.c 的三个处理器经 #define 改名接到向量表 CMSIS 名](/anim/freertos-port.svg)
 
-图的主线是三个源码名到三个向量名的改名，后半还画了 port 选型、两份优先级与 RAM 两套账。图里沿用旧来源口径的两句——「≥80 才许调 FromISR」与「池尽时 xTaskCreate 返回 pdFAIL」——与正文按 V11.1.0 的更正相抵：`0x50` 是 8 位原始值，逻辑阈值是 5；`xTaskCreate` 堆尽返回负的错误码，不是 0。以正文为准。
+图的主线是三个源码名到三个向量名的改名，后半还画了 port 选型、两份优先级与 RAM 两套账。图里沿用旧来源口径的两句（「≥80 才许调 FromISR」与「池尽时 xTaskCreate 返回 pdFAIL」），与正文按 V11.1.0 的更正相抵：`0x50` 是 8 位原始值，逻辑阈值是 5；`xTaskCreate` 堆尽返回负的错误码，不是 0。以正文为准。
 
 ### 二、PendSV 为什么必须最低，配置宏为什么不再是活宏
 
@@ -116,7 +116,7 @@ PendSV 的「请求」不是函数调用，是一个挂起位。`portmacro.h:99-
 #define portNVIC_PENDSVSET_BIT  ( 1UL << 28UL )
 ```
 
-`portYIELD_WITHIN_API()` 的全部动作就是写这一位：`portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;`（`portmacro.h:91`；F2:54,61-62）。`taskYIELD()` 走 `portYIELD()`，中断里走 `portYIELD_FROM_ISR(x)`（`x` 为真才置位）。置位之后当前异常继续返回；等所有更高优先级异常退场，PendSV 才以最低优先级执行。挂起位是「排队」，不是「立即切」——这一点在第 22 章的 tick 三段里已经埋下，本章只补上最后一步。
+`portYIELD_WITHIN_API()` 的全部动作就是写这一位：`portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;`（`portmacro.h:91`；F2:54,61-62）。`taskYIELD()` 走 `portYIELD()`，中断里走 `portYIELD_FROM_ISR(x)`（`x` 为真才置位）。置位之后当前异常继续返回；等所有更高优先级异常退场，PendSV 才以最低优先级执行。挂起位是「排队」，不是「立即切」。这一点在第 22 章的 tick 三段里已经埋下，本章只补上最后一步。
 
 ### 四、软硬分工：硬件 8 字，软件 9 字
 

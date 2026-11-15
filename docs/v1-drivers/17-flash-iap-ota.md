@@ -9,9 +9,9 @@ platforms: [f407, f103, esp32]
 
 ## 本章罗盘
 
-- **问题**：F407 的 1 MB 为什么要切成 12 个大小不等的扇区，扇区 11 从哪个地址开始，参数区为什么不能塞进代码扇区的空隙？F103C8 的 64 KB 为什么是 1 KB 一页、共 64 页，末页地址怎么算，换成大容量型号后 2 KB 一页会改掉哪几个数？两把钥匙 `0x45670123` 与 `0xCDEF89AB` 为什么必须按顺序写，写反了为什么只能等复位？F4 的 PSIZE 为什么不能超过供电电压允许的最高档、又必须和写入宽度配对，F407 上为什么不能选 x64，F103 又为什么只认半字？擦写寿命的 1 万次与 20 年是谁的承诺，参数区怎样做才能在擦到一半断电时仍然读得回旧值？IAP 跳转前为什么要关中断、设 MSP、改 VTOR，跳复位入口而不是 `main` 的理由是什么，App 一侧为什么还要再写一次 VTOR？单槽升级为什么没有回头路，双槽的 A/B 记录、CRC 校验、原子切换与回滚各自管哪一段？ESP32 的分区表、NVS 与 OTA 状态机在来源里是怎么写的，哪些只是来源说法？三个来源里哪些数字是手册规则、哪些是本章的算术、哪些还没有人上板量过？
-- **交付**：能按 1 MB 总和复算 F407 的 12 个扇区，按 64 页复算 F103C8 的页边界；能说出两把钥匙的顺序、F4 的 PSIZE 三档与电压、F1 的半字粒度；能写出 F4 的解锁→扇区擦除→字写入→等 BSY→清 EOP→上锁序列，也能写出 F1 的解锁→页擦除→半字写入序列；能设计一个带魔数、版本、CRC 与默认回退的参数快照，并说清 A/B 两份为什么必须落在不同的擦除单位；能写出 IAP 跳转函数，按向量表第 0 字设 MSP、第 1 字跳复位入口，把 VTOR 指向 App 基址，并解释 PRIMASK 由谁打开；能按 F407 的 480 KB 槽与 F103C8 的 22 KB 槽各画一张双槽表，写出“先写备槽、校验、追加记录、下次启动确认”的切换顺序；能按现象把 LOCK、PSIZE、对齐、WRP、VTOR、MSP、PRIMASK、看门狗与半擦状态分到不同的检查动作；能读懂 ESP32 的分区表字段、NVS 追加写与 OTA 状态表，并指出它们只是 P10 的来源事实。
-- **边界**：两平台 STM32 章加 ESP32 对照。F407 的扇区表、PSIZE、CR/SR 位号、参数区与 IAP 双固件布局来自 S13《S13 内部 Flash 与 IAP》；F103C8 的 1 KB 页、64 页、16 KB Bootloader + 2 KB 参数区 + 46 KB APP 布局、半字编程、两把钥匙与 RDP `0xA5` 来自根书第 12 章；ESP32 的分区表、NVS、OTA 五步与回滚状态机只转写 P10《P10 Flash、分区表、NVS 与 OTA》，不往 STM32 上外推。三个来源都没有本章的上板读数：S13 没有独立工程，根书第 12 章的动手实验是待做清单，P10 的 boot_count 1→5 与回滚日志是 P10 的实物实验自述（声称日志存档，本仓库未见原始日志文件）。S13 正文写“11 个扇区”，同节表格却列出扇区 0–11 共 12 行，本章按 1 MB 总和复算后采用 12 个；根书表把 F4 的编程粒度写成“字节/半字/字/双字”，双字 x64 只在 F42x/F43x 上成立，F407 只有 x8/x16/x32；S13 说擦 128 KB 扇区“最坏几百毫秒”，根书表写 0.4–4 s，两处都未核数据手册原表；F1 的 CR/SR 位号两个来源都没有逐位列出，本章按 RM0008 语义标注为待复核；STM32 的双槽布局与记录格式是本章按扇区/页尺寸做的设计，不是来源里现成的实现；ESP32 的小节只写来源事实，没有核 IDF 原文。GD32 不在本章平台列表，只在跨平台边界里指一句。F407 的 512 KB 型号只用到扇区 7，扇区 8–11 是 1 MB 型号的版图，换芯片先查数据手册。
+- **问题**：F407 的 1 MB 为什么切成 12 个大小不等的扇区，参数区为什么不能塞进代码扇区的空隙？F103C8 的 64 KB 为什么是 1 KB 一页、共 64 页，换大容量型号后 2 KB 一页会改掉哪几个数？两把钥匙为什么必须按顺序写，写反了为什么只能等复位？F4 的 PSIZE 为什么不能超过供电电压、又必须和写入宽度配对，F407 上为什么不能选 x64？擦写寿命的 1 万次与 20 年是谁的承诺，参数区怎样在擦到一半断电时仍读回旧值？IAP 跳转前为什么要关中断、设 MSP、改 VTOR，为什么跳复位入口而不是 `main`？单槽升级为什么没有回头路，双槽的 A/B 记录、CRC、原子切换与回滚各管哪一段？ESP32 的分区表、NVS 与 OTA 状态机哪些只是来源说法？
+- **交付**：能按 1 MB 总和复算 F407 的 12 个扇区，按 64 页复算 F103C8 的页边界；说出两把钥匙的顺序、F4 的 PSIZE 三档与电压、F1 的半字粒度；写出 F4 的解锁→扇区擦除→字写入→等 BSY→清 EOP→上锁序列，以及 F1 的解锁→页擦除→半字写入序列；设计一个带魔数、版本、CRC 与默认回退的参数快照，并说清 A/B 两份为什么必须落在不同的擦除单位；写出 IAP 跳转函数，按向量表第 0 字设 MSP、第 1 字跳复位入口，把 VTOR 指向 App 基址，并解释 PRIMASK 由谁打开；按 F407 的 480 KB 槽与 F103C8 的 22 KB 槽各画一张双槽表，写出「先写备槽、校验、追加记录、下次启动确认」的切换顺序；按现象把 LOCK、PSIZE、对齐、WRP、VTOR、MSP、PRIMASK、看门狗与半擦状态分到不同的检查动作；读懂 ESP32 的分区表字段、NVS 追加写与 OTA 状态表，并指出它们只是 P10 的来源事实。
+- **边界**：两平台 STM32 章加 ESP32 对照。F407 的扇区表、PSIZE、CR/SR 位号、参数区与 IAP 双固件布局来自 S13；F103C8 的 1 KB 页、64 页、16 KB Bootloader + 2 KB 参数区 + 46 KB APP、半字编程、两把钥匙与 RDP `0xA5` 来自根书第 12 章；ESP32 的分区表、NVS、OTA 五步与回滚状态机只转写 P10，不往 STM32 上外推。三个来源都没有本章的上板读数：S13 没有独立工程，根书第 12 章的实验是待做清单，P10 的 boot_count 1→5 与回滚日志只是自述，本仓库未见原始日志。S13 正文写「11 个扇区」，表格却列出 0–11 共 12 行，本章按 1 MB 总和采用 12 个；根书把 F4 编程粒度写成「字节/半字/字/双字」，双字 x64 只在 F42x/F43x 成立，F407 只有 x8/x16/x32；「擦 128 KB 扇区最坏几百毫秒」与根书「0.4–4 s」都未核数据手册；F1 的 CR/SR 位号未逐位列出，标待复核；STM32 双槽布局与记录格式是本章设计，不是来源现成实现；ESP32 小节只写来源事实，没有核 IDF 原文。GD32 只在跨平台边界提一句；F407 的 512 KB 型号只用到扇区 7，换芯片先查数据手册。
 - **依据锚点**：S13（`mcu/docs/stm32/13-flash-iap.md`）、根书第 12 章（`docs/12-Flash与IAP升级.md`）、P10（`mcu/docs/esp32/10-flash-nvs-ota.md`）；[第 6 章](../v0-foundations/06-linker-startup-map.md)的链接脚本与启动、[第 8 章](./08-architecture-memory-clock.md)的存储器地图与时钟、[第 16 章](./16-i2c-spi.md)的 W25Q 外部 Flash、[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)的看门狗与复位、[第 18 章](../v2-reliability/18-low-power.md)的低功耗。RM0008 第 3 章、RM0090 第 3 章、DS5319、PM0056 与 ESP-IDF 文档均转引自上述来源；本章没有取到这些手册与文档的原件，逐处标注“来源说法”或“待复核”。
 
 ## 先做出来
@@ -31,7 +31,7 @@ F103C8：64 KB ÷ 1 KB = 64 页，页号 0–63
 | F407VG（1 MB） | 扇区 16/64/128 KB | 扇区 0，`0x08000000`，16 KB | 单槽放扇区 11，`0x080E0000`，128 KB | `0x08004000`（单槽） | 双槽布局见机制第六节 |
 | F103C8（64 KB） | 页 1 KB | 16 KB，`0x08000000`–`0x08004000` | 2 KB，`0x08004000`–`0x08004800` | `0x08004800` | 本书布局，RM 没有规定这样分 |
 
-押一题再往下读：F407 的 App 如果长到把扇区 11 也用掉了，参数区还能放哪？答案不在“代码扇区的空隙”里——擦参数会连带擦代码。可选的路只有三条：把 App 压回扇区 11 之前、换更大 Flash 的型号、把参数挪到外部 Flash（W25Q 的 SPI 读写在[第 16 章](./16-i2c-spi.md)）。本章第六节的双槽布局会把元数据放到扇区 1，正是为了不让参数和代码共用擦除单位。
+押一题再往下读：F407 的 App 如果长到把扇区 11 也用掉了，参数区还能放哪？答案不在“代码扇区的空隙”里。擦参数会连带擦代码。可选的路只有三条：把 App 压回扇区 11 之前、换更大 Flash 的型号、把参数挪到外部 Flash（W25Q 的 SPI 读写在[第 16 章](./16-i2c-spi.md)）。本章第六节的双槽布局会把元数据放到扇区 1，正是为了不让参数和代码共用擦除单位。
 
 有板的人先做 F407 的最小闭环：确认 App 不占扇区 11，擦 `0x080E0000`，写入 `0xA5A50001`，断电重启后读回，串口打印 `read=0xA5A50001 PASS`。这一步的预期现象是按手册规则推的，不是本章量到的读数；记录表在“测量与证据”里留空。
 
@@ -106,7 +106,9 @@ F4 擦写前还要设并行度 PSIZE（CR bits8–9）。它有两层约束：�
 | 1.8–2.1 V | `00`（x8） | 8 位 | 最低压档 |
 | — | `11`（x64） | 64 位 | 仅 F42x/F43x；F407 不选 |
 
-PSIZE 必须在置 STRT 或 PG 之前设好，并且要和写入宽度配对：PSIZE 设 x16 却按 32 位字写，控制器会置 PGPERR（并行度错误）或 PGSERR（编程序列错误），这一次编程不生效；3.3 V 系统选 x16 并按 16 位写则是合法的，只是并行度低、速度慢。真正会“不报错却写坏数据”的是反方向：PSIZE 选得比供电允许的最高档还高（例如 2.5 V 系统选 x32）。根书表把 F4 的编程粒度笼统写成“字节/半字/字/双字”，双字那一档只属于 F42x/F43x；F407 的可用档就是上表前三行。
+PSIZE 必须在置 STRT 或 PG 之前设好，并且要和写入宽度配对：PSIZE 设 x16 却按 32 位字写，控制器会置 PGPERR（并行度错误）或 PGSERR（编程序列错误），这一次编程不生效；3.3 V 系统选 x16 并按 16 位写则是合法的，只是并行度低、速度慢。
+
+真正会“不报错却写坏数据”的是反方向：PSIZE 选得比供电允许的最高档还高（例如 2.5 V 系统选 x32）。根书表把 F4 的编程粒度笼统写成“字节/半字/字/双字”，双字那一档只属于 F42x/F43x；F407 的可用档就是上表前三行。
 
 F103 没有 PSIZE 这一档可选，中容量与高容量型号的编程粒度都是半字（16 位），地址要 2 字节对齐；一个 32 位值分两次半字写。F1 的擦除粒度是页，F4 是扇区，这是两家 Flash 控制器最根本的差别。
 
@@ -360,7 +362,7 @@ static void jump_to_app(void)
 - **VTOR 与 MSP 都要在跳转前就位**：`__set_MSP(*(uint32_t *)APP_ADDR)` 是从 App 基址显式读第 0 字，不经过 VTOR；动画里“VTOR 必须在 MSP 之前，否则 MSP 从旧表读”的说法比实际机制更强。真正不能省的是：跳转前两者都已设好，且中断全程关着。本章仍按 VTOR→MSP 写，与动画顺序一致，也让此后任何隐式取向量都走 App 的表。
 - **跳复位入口，不跳 `main`**：App 的 `Reset_Handler` 先做 `.data` 拷贝、`.bss` 清零、`SystemInit` 时钟配置，再进 `main`；直接跳 `main` 会跳过这些初始化，全局变量和时钟都停在 Bootloader 的状态。[第 6 章](../v0-foundations/06-linker-startup-map.md)把这段启动序列拆过一遍。
 - **PRIMASK 由谁打开**：S13 的跳转函数把中断关掉后不再打开；根书第 12 章在清空 NVIC 后先 `__enable_irq()` 再跳。两种做法都能工作，但不能两边都不做：如果 Bootloader 不开、App 的启动代码也不开，App 能跑，所有可屏蔽中断却永远不会来。本章的选择是 App 在启动早期自己 `__enable_irq()`，Bootloader 保持关中断到跳转；这样中断第一次进来时，App 的 `.data/.bss` 与时钟已经就位。根书那种“跳转前最后一条开中断”的写法，前提是 NVIC 的使能与挂起都已清空，且外设不再产生新请求。
-- **外设复位是设计选择**：根书在跳转前调 `HAL_RCC_DeInit()` 与 `HAL_DeInit()`，把 Bootloader 用过的外设恢复默认；S13 则把“复不复位”留给 App 决定。两种都可以，关键是 App 不能假设外设处于复位值——串口、定时器、DMA 都要重新初始化。
+- **外设复位是设计选择**：根书在跳转前调 `HAL_RCC_DeInit()` 与 `HAL_DeInit()`，把 Bootloader 用过的外设恢复默认；S13 则把“复不复位”留给 App 决定。两种都可以，关键是 App 不能假设外设处于复位值。串口、定时器、DMA 都要重新初始化。
 
 App 一侧要做的两件事：
 
@@ -400,6 +402,8 @@ F103C8 的 64 KB 双槽布局：
 
 单槽时 App 有 46 KB（`0x08004800`–`0x08010000`）；双槽把 46 KB 切成 22+22+2，代价是每个槽只剩 22 KB。这是双槽的真实成本：换来的是任意一次升级失败都能回旧槽。
 
+![F407 与 F103C8 的双槽布局：F407 元数据在扇区 1，Slot A 扇区 2–7 为 480 KB，Slot B 扇区 8–11 为 512 KB 但实用 480 KB；F103C8 双槽 22+22 KB，单槽 App 46 KB。布局为示意，不按比例](/arch/flash-slots.png)
+
 切换的记录格式可以小到一条结构体：
 
 ```c
@@ -417,7 +421,9 @@ typedef struct {
 } ota_record_t;
 ```
 
-元数据区按追加日志写：每条记录写在下一个空位，`meta_crc` 最后写；启动时从头扫一遍，选 `seq` 最大且 `meta_crc` 通过的那条。写新记录不需要擦旧记录，所以“换槽”这个动作只依赖一条记录的完整性；记录写到一半断电，`meta_crc` 不过，上一条记录仍然有效。元数据页写满后再整理：把最新有效记录搬到新页，擦旧页，序号继续递增。如果改成两份独立快照而不是追加日志，两份必须落在不同的扇区/页，理由和参数区的 A/B 一样。
+元数据区按追加日志写：每条记录写在下一个空位，`meta_crc` 最后写；启动时从头扫一遍，选 `seq` 最大且 `meta_crc` 通过的那条。写新记录不需要擦旧记录，所以“换槽”这个动作只依赖一条记录的完整性；记录写到一半断电，`meta_crc` 不过，上一条记录仍然有效。
+
+元数据页写满后再整理：把最新有效记录搬到新页，擦旧页，序号继续递增。如果改成两份独立快照而不是追加日志，两份必须落在不同的扇区/页，理由和参数区的 A/B 一样。
 
 一次完整的双槽升级：
 
@@ -649,27 +655,37 @@ P10 的 boot_count 与 OTA 回滚是 P10 的自述（声称有实物实验与日
 
 ## 跨平台边界
 
-F407 一侧：1 MB 主 Flash 从 `0x08000000` 起，12 个扇区按 16/64/128 KB 分布，扇区 11 在 `0x080E0000`。单槽 Bootloader 占扇区 0，App 从 `0x08004000` 起；双槽把扇区 1 做元数据，扇区 2–7 与 8–11 分成两个 480 KB 槽。Flash 控制器基址 `0x40023C00`（AHB1 `0x40020000`+`0x3C00`），CR 的 PG/SER/SNB/PSIZE/STRT/LOCK 与 SR 的 EOP/BSY/WRPERR 按 S13 的位号；PSIZE 在 2.7–3.6 V 选 x32，F407 不选 x64。IAP 跳转用 `SCB->VTOR`、`__set_MSP` 与向量表第 1 字；App 的 `SystemInit()` 可能把 VTOR 写回 `0x08000000`，要在 App 里再设一次。擦写关键路径放 `.ramfunc`，链接脚本给 RAM 的 VMA 与 Flash 的 LMA。读保护 `0xAA` 无保护、`0xCC` 是 Level 2 单向门；写保护按扇区。512 KB 的 F407xE 只用到扇区 7，扇区 8–11 是 1 MB 型号的版图。F42x/F43x 才有 x64 与双字编程，换系列先查数据手册，不要把 F407 的配置直接搬过去。
+F407 一侧：1 MB 主 Flash 从 `0x08000000` 起，12 个扇区按 16/64/128 KB 分布，扇区 11 在 `0x080E0000`。单槽 Bootloader 占扇区 0，App 从 `0x08004000` 起；双槽把扇区 1 做元数据，扇区 2–7 与 8–11 分成两个 480 KB 槽。
+
+Flash 控制器基址 `0x40023C00`（AHB1 `0x40020000`+`0x3C00`），CR 的 PG/SER/SNB/PSIZE/STRT/LOCK 与 SR 的 EOP/BSY/WRPERR 按 S13 的位号；PSIZE 在 2.7–3.6 V 选 x32，F407 不选 x64。IAP 跳转用 `SCB->VTOR`、`__set_MSP` 与向量表第 1 字；App 的 `SystemInit()` 可能把 VTOR 写回 `0x08000000`，要在 App 里再设一次。
+
+擦写关键路径放 `.ramfunc`，链接脚本给 RAM 的 VMA 与 Flash 的 LMA。读保护 `0xAA` 无保护、`0xCC` 是 Level 2 单向门；写保护按扇区。
+
+512 KB 的 F407xE 只用到扇区 7，扇区 8–11 是 1 MB 型号的版图。F42x/F43x 才有 x64 与双字编程，换系列先查数据手册，不要把 F407 的配置直接搬过去。
 
 F103 一侧：C8 是 64 KB、中容量、1 KB 一页、64 页，页 63 在 `0x0800FC00`；高密度型号是 2 KB 一页，地址按 `n×0x800` 重算。Flash 控制器基址 `0x40022000`，CR 的 PG/PER/STRT/LOCK 与 SR 的 BSY/PGERR/WRPRTERR/EOP 位号和 F4 不同；编程粒度是半字，没有 PSIZE 与按字节编程。本书布局是 Bootloader 16 KB、参数区 2 KB、App 46 KB；双槽把 App 区切成 22 KB+22 KB+2 KB。IAP 的 App 起点是 `0x08004800`，VTOR 同样要在 App 里写。读保护 `0xA5` 是不保护，其他值启用保护，没有 Level 2；解除保护会整片擦除主 Flash。F103C8 只有 20 KB SRAM，向量表第 0 字的 MSP 检查要用 `0x20000000`–`0x20005000`，不要照抄 F407 的 `0x20020000`。GD32 的 Flash 控制器是另一套寄存器，本章不展开。
 
-ESP32 只划边界。ESP32-S3 没有 STM32 的 FLASH_KEYR/CR/SR，也没有扇区 11 或页 63 这套地址；它的版图由 CSV 分区表管，参数由 NVS 管，升级由 `esp_ota_*` 管。P10 的 16 MB 示例表里，`0x8000` 放分区表，`0x9000` 起放 nvs，`0xE000` 放 otadata，两个 3 MB 的 ota_0/ota_1 轮流坐庄；NVS 按 4096 字节页追加写；OTA 的 NEW/PENDING_VERIFY/VALID/ABORTED 状态机只在 `CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 打开后存在，默认不开时 NEW 与 PENDING_VERIFY 不被使用。这些是 P10 的来源说法，本章没有核 IDF 原文，也没有在 ESP32 上复跑；P10 声称 OTA 回滚做过实物实验并日志存档，但本仓库未见原始日志文件。ESP32 的启动、外设与驱动框架在[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)；低功耗与看门狗分别在[第 18 章](../v2-reliability/18-low-power.md)与[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。
+ESP32 只划边界。ESP32-S3 没有 STM32 的 FLASH_KEYR/CR/SR，也没有扇区 11 或页 63 这套地址；它的版图由 CSV 分区表管，参数由 NVS 管，升级由 `esp_ota_*` 管。P10 的 16 MB 示例表里，`0x8000` 放分区表，`0x9000` 起放 nvs，`0xE000` 放 otadata，两个 3 MB 的 ota_0/ota_1 轮流坐庄；NVS 按 4096 字节页追加写；OTA 的 NEW/PENDING_VERIFY/VALID/ABORTED 状态机只在 `CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 打开后存在，默认不开时 NEW 与 PENDING_VERIFY 不被使用。
+
+这些是 P10 的来源说法，本章没有核 IDF 原文，也没有在 ESP32 上复跑；P10 声称 OTA 回滚做过实物实验并日志存档，但本仓库未见原始日志文件。ESP32 的启动、外设与驱动框架在[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)；低功耗与看门狗分别在[第 18 章](../v2-reliability/18-low-power.md)与[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。
 
 其它分工：W25Q 外部 Flash 的 SPI 读写在[第 16 章](./16-i2c-spi.md)；存储器地图与时钟树在[第 8 章](./08-architecture-memory-clock.md)；链接脚本、VMA/LMA 与启动序列在[第 6 章](../v0-foundations/06-linker-startup-map.md)；长擦除期间的看门狗与复位原因在[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)；低功耗下的 Flash 掉电与唤醒在[第 18 章](../v2-reliability/18-low-power.md)。
 
 ## 社区开源实现
 
-本章的双槽升级、签名、回滚三个概念，有一条现成的参考实现可以逐文件对照——[mcu-tools/mcuboot](https://github.com/mcu-tools/mcuboot)。它是 Zephyr、Mynewt 等多数 RTOS 共用的 bootloader，本章的抽象概念在它那里都是具体文件：
+本章的双槽升级、签名、回滚三个概念，有一条现成的参考实现可以逐文件对照：[mcu-tools/mcuboot](https://github.com/mcu-tools/mcuboot)。它是 Zephyr、Mynewt 等多数 RTOS 共用的 bootloader，本章的抽象概念在它那里都是具体文件：
 
 | 本章概念 | MCUboot 对应物 | 看什么 |
 | --- | --- | --- |
 | 双槽 + 元数据记录 | `bootutil/src/bootutil_public.c` 的 swap state | "原子切换靠什么记录"的工业答案：两槽各自扇区里的 swap 状态字，写到一半断电也能恢复 |
-| 升级路径 | `bootutil/src/loader.c` | swap-move 与 overwrite 两种策略的选择逻辑——本章的单槽对应 overwrite-only（无回头路），双槽对应 swap |
+| 升级路径 | `bootutil/src/loader.c` | swap-move 与 overwrite 两种策略的选择逻辑；本章的单槽对应 overwrite-only（无回头路），双槽对应 swap |
 | 签名验证 | `bootutil/src/image_validate.c` | SHA-256 摘要 + ECDSA/Ed25519 签名链的验证顺序：先验哈希再验签，任一失败进 fallback |
-| 回滚确认 | `bootutil_misc.c` 的 confirm 逻辑 | 试运行槽位必须被 App 显式确认（`image confirm`），超时回滚——对应 ESP32 的 PENDING_VERIFY 语义 |
-| 版图描述 | `boot/zephyr/targets.*` 或各板 dts | 槽位地址、大小以数据结构声明，不散落在代码里——本章的"版图先于代码"思路 |
+| 回滚确认 | `bootutil_misc.c` 的 confirm 逻辑 | 试运行槽位必须被 App 显式确认（`image confirm`），超时回滚；对应 ESP32 的 PENDING_VERIFY 语义 |
+| 版图描述 | `boot/zephyr/targets.*` 或各板 dts | 槽位地址、大小以数据结构声明，不散落在代码里；本章的"版图先于代码"思路 |
 
-ESP32 一侧的社区参考是 [espressif/esp-idf](https://github.com/espressif/esp-idf) 本身：`components/app_update/esp_ota_ops.c`（`esp_ota_begin` 全流程）与 `components/bootloader_support/src/bootloader_utility.c`（otadata 三态选择启动分区）把本章引用的 P10 说法（otadata 三态、`CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 回滚门）落成了可读的源码——本章说"没有核 IDF 原文"，想核的时候从这两个文件进去。STM32 一侧如果不想自己写跳板，社区还有 [RT-Thread 的 OTA 框架](https://github.com/RT-Thread/rt-thread)（FAL 分区抽象 + bootloader 固件）与 ST 官方的 [X-CUBE-SBSFU](https://github.com/STMicroelectronics/x-cube-sbsfu)（双镜像 + 安全启动，代码量大但覆盖了签名加密全套）。这些实现的共性值得记住：**没有哪个生产级 bootloader 把升级状态只放在 RAM 里**——本章失败分支里"复位后重试"的教训，在它们那里都变成了 Flash 里的持久状态字。
+ESP32 一侧的社区参考是 [espressif/esp-idf](https://github.com/espressif/esp-idf) 本身：`components/app_update/esp_ota_ops.c`（`esp_ota_begin` 全流程）与 `components/bootloader_support/src/bootloader_utility.c`（otadata 三态选择启动分区）把本章引用的 P10 说法（otadata 三态、`CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 回滚门）落成了可读的源码；本章说"没有核 IDF 原文"，想核的时候从这两个文件进去。
+
+STM32 一侧如果不想自己写跳板，社区还有 [RT-Thread 的 OTA 框架](https://github.com/RT-Thread/rt-thread)（FAL 分区抽象 + bootloader 固件）与 ST 官方的 [X-CUBE-SBSFU](https://github.com/STMicroelectronics/x-cube-sbsfu)（双镜像 + 安全启动，代码量大但覆盖了签名加密全套）。这些实现的共性值得记住：**没有哪个生产级 bootloader 把升级状态只放在 RAM 里**。本章失败分支里"复位后重试"的教训，在它们那里都变成了 Flash 里的持久状态字。
 
 ## 离开检查
 

@@ -7,6 +7,13 @@
 同一种子 → 字节一致的 SVG → Chromium 截图 → PNG。满足
 `BOOK_REDESIGN_SPEC.md` §11「生成脚本能重建新增资源、不依赖随机数和网络」。
 
+画法参考两个公开项目：[excalidraw/excalidraw](https://github.com/excalidraw/excalidraw)
+的「抖动线 + 手写框 + 高亮条」视觉语法，以及
+[rough-stuff/rough](https://github.com/rough-stuff/rough)
+用随机种子生成确定草图线条的思路（两者均为 MIT）。这里按同样的思路用
+纯 SVG 原语重写，不复制任何项目资产；图上的寄存器、地址与计数一律来自
+对应章节正文，不用装饰性数字。
+
 ## 文件
 
 | 文件 | 作用 |
@@ -14,6 +21,7 @@
 | `hd.py` | 绘图原语库：抖动线 / 手绘框 / 手绘箭头 / 高亮条 / 页面骨架 |
 | `fig_chNN.py` | 每章的图设计（真实寄存器、公式、版本号来自对应章节正文） |
 | `fig_v0_v6.py` | 合并卷 v0 基础篇、v6 实验项目篇的图设计 |
+| `fig_arch_*.py` | 各章静态知识板（DMA 期限、Flash 双槽、AI 防线、对账三关等），PNG 发布到 `docs/public/arch/` |
 | `render.py` | Playwright + Chromium 把 SVG 截成 1152×864 PNG |
 | `embed.py` | 把 `<p align="center">` 图块插到锚点图之后（zh+en 同步） |
 

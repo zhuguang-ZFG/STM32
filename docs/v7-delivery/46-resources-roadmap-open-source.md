@@ -5,15 +5,15 @@ platforms: [generic]
 
 # 资料、学习路线与开源地图
 
-全书最后一章回答三个「往后怎么办」：路线怎么走（三阶段与过关判据）、资料怎么读（手册六类与查手册三步法）、开源怎么用（选仓库、读仓库、提问五件事）。它同时是两本姊妹书学习路线的合并口径——两源在「先学 HAL 还是先学寄存器」上建议相反，本章给出统一口径并声明取舍。
+全书最后一章回答三个「往后怎么办」：路线怎么走（三阶段与过关判据）、资料怎么读（手册六类与查手册三步法）、开源怎么用（选仓库、读仓库、提问五件事）。它同时是两本姊妹书学习路线的合并口径：两源在「先学 HAL 还是先学寄存器」上建议相反，本章给出统一口径并声明取舍。
 
-证据先说清：本章零板级实测。三阶段周数表是**计划表**（文档推导，逐周自测题的答案在 [附录 C](../appendix/C-exercises-answers.md)）；采购价格是估算区间（来源自注「以当日价格为准」）；开源库定位与工具选型按来源卡口径；开源仓库星标数全部带抓取日期 2026-10-26（附录 F 双源同日核对）。BOOT 账与首次点灯的技术正文归 [v1 第 8 章](../v1-drivers/08-architecture-memory-clock.md)、[v1 第 9 章](../v1-drivers/09-gpio.md)，本章只留路线索引。
+这一章没有板级实测。三阶段周数表是**计划表**（文档推导，逐周自测题的答案在 [附录 C](../appendix/C-exercises-answers.md)）；采购价格是估算区间，来源自注「以当日价格为准」；开源库定位与工具选型按来源卡口径；开源仓库星标数全部带抓取日期 2026-10-26（附录 F 双源同日核对）。BOOT 账与首次点灯的技术正文归 [v1 第 8 章](../v1-drivers/08-architecture-memory-clock.md) 与 [v1 第 9 章](../v1-drivers/09-gpio.md)，本章只留路线索引。
 
 > 版本口径：D00《如何学习 STM32》（`docs/00-如何学习STM32.md`）、D20《学习资源与工具链》（`docs/20-学习资源与工具链.md`）、mbF 起步区并入；手册命名六类（RM/DS/PM/AN/UM/ES）按 D20 正文表统一（源章「学习目标五种」的内部不一致在此修正为六类）。手册文档号（DS5319/RM0008/PM0056/CubeF1）与根书注册表一致（附录 E）。
 
 ## 本章罗盘
 
-- **问题**：三阶段（4/6/8 周）的过关判据各是什么，前置知识五块的「够用」标准怎么定？三种开发方式（寄存器/SPL/HAL+LL）六维对比怎么读，两书相反的入门建议怎么统一？手册分六类各查什么，查手册三步法怎么走？工具选型两表（硬件 7 行/软件 10 行）的预算口径是什么？开源仓库怎么选、怎么读、怎么提问？生态数字为什么不带日期就不写？
+- **问题**：三阶段路线（4/6/8 周）的过关判据与前置知识五块的「够用」标准；三种开发方式（寄存器/SPL/HAL+LL）的六维对比，两书相反的入门建议如何统一。手册六类各查什么、三步法怎么走；工具选型两表的预算口径；开源仓库如何选、读、问；生态数字为什么必须带抓取日期。
 - **交付**：能按三阶段表给自己排计划并写出过关判据；能用前置知识表自评「够用即可」；能按统一口径选择入门路线并说出取舍理由；能按六类命名表挑对手册并用三步法查到 TIM1 占空比/PA11 USB/F4 DMA FIFO 三个示例；能给出两板（BluePill 起步线/霸天虎+实战派线）的采购清单；能按提问五件事提一个可回答的问题。
 - **边界**：本章是路线与资料层；BOOT 账、首次点灯、构建命令的技术正文归 v1 各章（本章只留一句话索引）；全量开源仓库表与知识点在 附录 F；手册来源注册表在 附录 E；生态数量口径沿 [第 27 章](../v3-rtos/27-rtos-comparison-selection.md)。视频块、公众号手机阅读版、英文版链接不保留。
 - **依据锚点**：D00、D20（`docs/`）、mbF 起步区（`mcu/mcu-book/book/F-常见问题.md` 并入部分）。上游对账：SPL 停更与 [v1 第 7 章](../v0-foundations/07-build-systems-legacy.md) 口径一致；F1 DMA 无 FIFO/F4 有与 [v1 第 14 章](../v1-drivers/14-dma.md)、[第 33 章](../v4-platforms/33-network-protocol-stack.md) 一致。
@@ -28,7 +28,7 @@ platforms: [generic]
 | 进阶 | 6 周 | 定时器/ADC/DMA/总线/RTOS 入门 | 每个外设一次「押注→测量→对账」记录 |
 | 实战 | 8 周 | 综合项目/交付验收 | 一份交付包（[第 42 章](../v6-labs-projects/42-project-delivery-acceptance.md) 五件套） |
 
-逐周自测题不进正文——题面在源章、答案在 [附录 C](../appendix/C-exercises-answers.md)（按合并章号重排）。
+逐周自测题不进正文。题面在源章、答案在 [附录 C](../appendix/C-exercises-answers.md)（按合并章号重排）。
 
 ### 2. 前置知识五块的「够用」标准
 
@@ -40,13 +40,17 @@ platforms: [generic]
 | 计组 | 内存映射概念 | 流水线/缓存 | 不知道寄存器是内存 |
 | 英语 | 查词典读手册 | 通读 | 手册一页没读过 |
 
-「够用即可」是主流——嵌入式入门最大的坑是把 C 语言学完才敢点灯。
+「够用即可」是主流。嵌入式入门最大的坑是把 C 语言学完才敢点灯。
 
 ## 机制
 
 ### 一、三种开发方式与统一口径
 
-六维对比（寄存器/SPL/HAL+LL+CubeMX）：效率、可移植性、学习曲线、社区资料、维护状态、适用阶段。**SPL 已停止维护**（[v1 第 7 章](../v0-foundations/07-build-systems-legacy.md) 同口径）。两书建议相反：D00 建议「HAL 入门→寄存器对照→LL 优化」，mbF 建议「顺序是寄存器→库」。**本章统一口径：寄存器打底（最小验证矩阵那几行）+ HAL 做产品**——寄存器打底的理由是排错时不黑盒（[v1 第 9 章](../v1-drivers/09-gpio.md) 的寄存器版与 HAL 版对照实验已经教了这一课），HAL 做产品的理由是生态与移植；取舍声明写在这里，后文不再摇摆。
+六维对比（寄存器/SPL/HAL+LL+CubeMX）：效率、可移植性、学习曲线、社区资料、维护状态、适用阶段。
+
+**SPL 已停止维护**（[v1 第 7 章](../v0-foundations/07-build-systems-legacy.md) 同口径）。两书建议相反：D00 建议「HAL 入门→寄存器对照→LL 优化」，mbF 建议「顺序是寄存器→库」。
+
+**本章统一口径：寄存器打底（最小验证矩阵那几行）+ HAL 做产品**。寄存器打底的理由是排错时不黑盒（[v1 第 9 章](../v1-drivers/09-gpio.md) 的寄存器版与 HAL 版对照实验已经教了这一课），HAL 做产品的理由是生态与移植；取舍声明写在这里，后文不再摇摆。
 
 ### 二、手册六类与三步法
 
@@ -59,7 +63,7 @@ platforms: [generic]
 | UM | User Manual | 工具/固件库用法 |
 | ES | Errata Sheet | 已知勘误 |
 
-查手册三步法：①定手册（RM 寄存器/DS 电气/AN 做法）→ ②Ctrl+F 搜寄存器名或位名 → ③读功能描述章的时序与公式。三个检索示例：TIM1 占空比（RM0008 的 CCR1 段）、PA11 的 USB 复用（DS5319 表 5）、F4 DMA 的 FIFO（AN4031 + RM0090——F1 DMA 无 FIFO/突发，F4 有，[v1 第 14 章](../v1-drivers/14-dma.md) 口径）。记忆口诀：**R 看寄存器、D 看数据、A 看应用、U 看工具、E 看坑**。
+查手册三步法：①定手册（RM 寄存器/DS 电气/AN 做法）→ ②Ctrl+F 搜寄存器名或位名 → ③读功能描述章的时序与公式。三个检索示例：TIM1 占空比（RM0008 的 CCR1 段）、PA11 的 USB 复用（DS5319 表 5）、F4 DMA 的 FIFO（AN4031 + RM0090，F1 DMAF1 DMA 无 FIFO/突发，F4 有，[v1 第 14 章](../v1-drivers/14-dma.md) 口径）。记忆口诀：**R 看寄存器、D 看数据、A 看应用、U 看工具、E 看坑**。
 
 ![学习路线三阶段与三道门槛（原理示意）](/figures/sample-00-roadmap-gates.svg)
 
@@ -72,18 +76,18 @@ platforms: [generic]
 | F103 BluePill 起步线 | BluePill 15~30 + ST-Link 克隆 15~40 + 面包板 8~20 + 杜邦线 8~15 | 极简约 60 元；全套约 200~300 元 |
 | F407/ESP32-S3 实战线 | 野火 F407 霸天虎 + 立创实战派 S3（板载 QMI8658/音频/屏） | 按 mbF 装备清单口径（[第 31 章](../v4-platforms/31-esp32-drivers-audio.md) 板级事实） |
 
-价格全部是区间加自注——不是事实数。仪器选型两表（硬件 7 行：调试器/逻辑分析仪/示波器/串口/万用表/功耗计/焊接；软件 10 行：CubeMX/CubeIDE/Keil/IAR/PlatformIO/CLion/VS Code/OpenOCD/KiCad/CubeMonitor/PulseView）预算区间同口径，软件定位与 [v1 第 5 章](../v0-foundations/05-toolchain-four-steps.md)、[v1 第 7 章](../v0-foundations/07-build-systems-legacy.md)、[v1 第 20 章](../v2-reliability/20-debug-performance.md) 一致。
+价格全部是区间加自注。不是事实数。仪器选型两表（硬件 7 行：调试器/逻辑分析仪/示波器/串口/万用表/功耗计/焊接；软件 10 行：CubeMX/CubeIDE/Keil/IAR/PlatformIO/CLion/VS Code/OpenOCD/KiCad/CubeMonitor/PulseView）预算区间同口径，软件定位与 [v1 第 5 章](../v0-foundations/05-toolchain-four-steps.md)、[v1 第 7 章](../v0-foundations/07-build-systems-legacy.md)、[v1 第 20 章](../v2-reliability/20-debug-performance.md) 一致。
 
 ### 四、构建合同与命令组（一句话索引）
 
-四个 IDE 入口汇入同一 CMake preset 的构建合同、OpenOCD 烧录/GDB 六步、PlatformIO 配置、CubeProgrammer 的 RDP 警告（**RDP=0xAA 解保护会整片擦除**）——技术正文归 [v1 第 5 章](../v0-foundations/05-toolchain-four-steps.md)、[v1 第 7 章](../v0-foundations/07-build-systems-legacy.md)、[v1 第 20 章](../v2-reliability/20-debug-performance.md)，本章不重复命令块。
+四个 IDE 入口汇入同一 CMake preset 的构建合同、OpenOCD 烧录/GDB 六步、PlatformIO 配置、CubeProgrammer 的 RDP 警告（**RDP=0xAA 解保护会整片擦除**）。技术正文归 [v1 第 5 章](../v0-foundations/05-toolchain-four-steps.md)、[v1 第 7 章](../v0-foundations/07-build-systems-legacy.md)、[v1 第 20 章](../v2-reliability/20-debug-performance.md)，本章不重复命令块。
 
 ### 五、开源：怎么选、怎么读、怎么问
 
 - **怎么选**：维护活跃度（最近 commit）、license（五族口径见 附录 F）、社区（issue 响应）、与你的芯片匹配（port 层存在性）。
-- **怎么读**：先读 README 的「编译一条命令」、再读目录结构、再读一个最小例程——**归档 vs 镜像**要分清（mirror 不含 issue 讨论）。
-- **怎么问**：提问五件事——版本三元组（SDK/内核 commit/工具链）、最小复现、预期 vs 实际、完整日志、你已经试过什么。
-- **入口仓库一行表**（全量表与 9 条知识点在 附录 F）：FreeRTOS-Kernel、RT-Thread、libopencm3、STM32CubeF4、esp-idf、lwIP、Mbed TLS、OpenOCD、KiCad——星标与 archived 状态以[附录 F](../appendix/F-open-source-community-map.md) 表（2026-10-26）为准。
+- **怎么读**：先读 README 的「编译一条命令」、再读目录结构、再读一个最小例程。**归档 vs 镜像****归档 vs 镜像**要分清（mirror 不含 issue 讨论）。
+- **怎么问**：提问五件事：版本三元组（SDK/内核 commit/工具链）、最小复现、预期 vs 实际、完整日志、你已经试过什么。
+- **入口仓库一行表**（全量表与 9 条知识点在 附录 F）：FreeRTOS-Kernel、RT-Thread、libopencm3、STM32CubeF4、esp-idf、lwIP、Mbed TLS、OpenOCD、KiCad；星标与 archived 状态以[附录 F](../appendix/F-open-source-community-map.md) 表（2026-10-26）为准。
 
 开源库七行对比（HAL/LL、SPL V3.5.0、libopencm3、ChibiOS、Zephyr、RT-Thread、FreeRTOS）的定位描述沿用 D20 表；版本细节带 附录 F 的证据口径。
 

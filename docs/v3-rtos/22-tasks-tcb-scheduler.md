@@ -7,13 +7,13 @@ platforms: [f407]
 
 一个任务从 `xTaskCreate` 返回到第一次拿到 CPU，中间没有一行代码是它自己执行的。内核替它分好栈、填好 TCB，在栈里伪造一套「刚被中断打断」的现场，再把 TCB 挂进就绪表；调度器只在这张表和 tick 之间做选择。本章拆开这三件事：TCB 的第一字段、首帧的 18 个字、以及「谁下一个跑」的两套选法。
 
-证据先说清：F1 的 GDB 首帧、F3 的七步 probe、F1 的串口日志、R1 的 `list_thread` 都没有在本仓库留下可复核的日志或产物，正文按「来源说法(未复核)」或「未实测」标注；首帧 18 字 = 72 B、栈深 128 字 = 512 B、`List_t` 20 B 是由源码与算术得到的「文档推导」。本章没有新的上板读数，待做台架留在「测量与证据」末尾。
+F1 的 GDB 首帧、F3 的七步 probe、F1 的串口日志和 R1 的 `list_thread`，都没有在本仓库留下可复核的日志或产物；正文把它们标成「来源说法(未复核)」或「未实测」。首帧 18 字 = 72 B、栈深 128 字 = 512 B、`List_t` 20 B 由源码与算术推得，标「文档推导」。这一章没有新的上板读数，待做的台架留在「测量与证据」末尾。
 
 > 版本口径：本章全部 FreeRTOS 行号与宏语义按 V11.1.0（`01-freertos-lab` 所用内核与 ARM_CM4F 端口）对账；根书第 15 章引 V11.3.2，两版行号不混排。
 
 ## 本章罗盘
 
-- **问题**：新任务第一次上 CPU 时，栈里凭什么已经有一套「被中断过」的现场？`pxTopOfStack` 为什么必须是 TCB 的第一个字段，在前面加一个字段会坏在哪条指令上？`xTaskCreate` 到底做了几步，第六步是不是「立即切换」？栈深 128 是字节还是字？同优先级任务凭什么轮转？`configMAX_PRIORITIES ≤ 32` 到底约束谁？tick 凭什么每拍只看一眼延时表队首？`vTaskDelay` 为什么不是「等」？RT-Thread 的 `rt_thread` 与 FreeRTOS 的 TCB 怎么对应，选最高优先级的方向为什么相反？
+- **问题**：新任务从 `xTaskCreate` 返回到第一次拿到 CPU，中间没有一行代码是它自己执行的，栈里那套「被中断过」的现场由内核伪造。`pxTopOfStack` 为什么必须是 TCB 的第一个字段，在前面加一个字段会坏在哪条指令上？`xTaskCreate` 到底做了几步，第六步是不是「立即切换」？栈深 128 是字节还是字，同优先级任务凭什么轮转，`configMAX_PRIORITIES ≤ 32` 又约束谁？tick 每拍只看延时表队首的依据是什么，`vTaskDelay` 为什么不是「等」？RT-Thread 的 `rt_thread` 与 FreeRTOS 的 TCB 怎么对应，两边选最高优先级的方向为什么相反？
 - **交付**：能在纸上画出 TCB 前几个字段与首帧 18 字布局，算出 72 B；能逐条讲出 `xTaskCreate` 六步与第六步的条件；能在位图上手算 `31 − CLZ` 与标量扫描；能解释 `vTaskDelay(1)` 的 (0,1] tick；能把 RT-Thread 的 `rt_thread`、32 级单组位图与 `__rt_ffs` 方向讲对。
 - **边界**：单平台 F407（Cortex-M4F，`ARM_CM4F` 端口，lab 跑 HSI 16 MHz）。全部 FreeRTOS 行号与宏语义按 V11.1.0；根书 F103 例程的 128/192/256 字栈、10240 B heap 与 F407 lab 的 256/256/320 字、16 KiB heap 不可互换。PendSV 的软硬栈帧与移植留给第 23 章；队列、信号量与通知留给第 24 章。RT-Thread 部分按 lab 的 `RT_THREAD_PRIORITY_MAX = 32` 写，不把 256 级当本工程事实。
 - **依据锚点**：F1《任务与 TCB》（`mcu/docs/rtos/freertos/01-task-tcb.md`）、F3《调度器》（`mcu/docs/rtos/freertos/03-scheduler.md`）、R1《线程与调度》（`mcu/docs/rtos/rtthread/01-thread-sched.md`）；首帧形状与 TCB 偏移见 F2（`mcu/docs/rtos/freertos/02-context-switch.md`）。lab 配置见 `mcu/code/rtos/01-freertos-lab/FreeRTOSConfig.h` 与 `mcu/code/rtos/02-rt-thread-lab/rtconfig.h`，板级报时见 `mcu/code/rtos/02-rt-thread-lab/board/board.c`。优先级方向与延时语义在 [第 21 章](./21-why-rtos.md) 已建立；SysTick 的 LOAD 算术见 [v1 第 11 章](../v1-drivers/11-systick-timebase-rtc.md)，本章不重列寄存器。
@@ -66,7 +66,7 @@ platforms: [f407]
 
 ### 一、TCB 的第一字段是栈顶
 
-`tskTaskControlBlock` 在 V11.1.0 的 `tasks.c:358` 定义，第一个成员是 `pxTopOfStack`；源码在 `tasks.c:360` 的成员注释里把话说死：这一项必须是 TCB 的第一个成员。`pxTopOfStack` 不是栈底，是当前栈顶——每次切换后，它指向该任务最后一次压栈的位置；栈底是另一个字段 `pxStack`，留给溢出检查。
+`tskTaskControlBlock` 在 V11.1.0 的 `tasks.c:358` 定义，第一个成员是 `pxTopOfStack`；源码在 `tasks.c:360` 的成员注释里把话说死：这一项必须是 TCB 的第一个成员。`pxTopOfStack` 不是栈底，是当前栈顶。每次切换后，它指向该任务最后一次压栈的位置；栈底是另一个字段 `pxStack`，留给溢出检查。
 
 ```c
 typedef struct tskTaskControlBlock
@@ -90,7 +90,7 @@ typedef struct tskTaskControlBlock
 | `pxStack` | 栈底 | 溢出检查与栈水位用 |
 | `pcTaskName` | 任务名 | 长度由 `configMAX_TASK_NAME_LEN` 决定 |
 
-这个顺序不是排版习惯，是汇编级的硬约束。PendSV 里 `ldr r2, [r3]` 取到当前 TCB 后，`stmdb r0!, {r4-r11, r14}` 把软件帧压进任务栈，最后 `str r0, [r2]` 把新栈顶写回 TCB。这里的 `[r2]` 没有字段名，只有偏移 0；恢复时 `ldr r0, [r1]` 也从偏移 0 取新栈顶（`F2:196`）。只要在 `pxTopOfStack` 前面加一个字段，写回就会落进那个字段，恢复时又把字段值当成栈顶指针——第一次切换就会把 PSP 指向错误的位置。TCB 的布局是内核与 port 层之间的 ABI，不是可以随手调整的普通结构体。
+这个顺序不是排版习惯，是汇编级的硬约束。PendSV 里 `ldr r2, [r3]` 取到当前 TCB 后，`stmdb r0!, {r4-r11, r14}` 把软件帧压进任务栈，最后 `str r0, [r2]` 把新栈顶写回 TCB。这里的 `[r2]` 没有字段名，只有偏移 0；恢复时 `ldr r0, [r1]` 也从偏移 0 取新栈顶（`F2:196`）。只要在 `pxTopOfStack` 前面加一个字段，写回就会落进那个字段，恢复时又把字段值当成栈顶指针，第一次切换就会把 PSP 指向错误的位置。TCB 的布局是内核与 port 层之间的 ABI，不是可以随手调整的普通结构体。
 
 顺带一个同名陷阱：`include/task.h:171` 的 `pxTopOfStack` 属于 `TaskStatus_t`，是 `uxTaskGetSystemState()`（填数组）或 `vTaskGetInfo()`（单任务）给外部看的快照（`task.h:158,1139`），不是 TCB；移植层说的偏移 0 永远指 `tasks.c` 里的那个。
 
@@ -136,7 +136,13 @@ F1:164-176 的 GDB 记录把 xPSR 放在 `pxTopOfStack` 指向的第一个字；
 | 5 | 挂就绪表 | `prvAddTaskToReadyList`，挂进 `pxReadyTasksLists[prio]` 的队尾 |
 | 6 | 条件触发调度 | `taskYIELD_ANY_CORE_IF_USING_PREEMPTION( pxNewTCB )`（`tasks.c:87-97,2083-2088`）；只在抢占开启且新任务优先级更高时让出 |
 
-第六步不是无条件立即切换。`taskYIELD_ANY_CORE_IF_USING_PREEMPTION( pxNewTCB )`（`tasks.c:87-97,2083-2088`）在抢占关闭时展开为空；抢占开启时也只在 `pxNewTCB->uxPriority > pxCurrentTCB->uxPriority` 的分支里调用；调用点还在 `if( xSchedulerRunning != pdFALSE )` 之内，调度器没启动时这一步根本不执行。更要注意调用时机：F407 lab 场景 1 的 `scene_start()` 在 `vTaskStartScheduler()` 之前运行（`mcu/code/rtos/01-freertos-lab/main.c:381-382`），这时调度器还没开跑，`xTaskCreate` 不会真正换人。调度器启动时还会创建空闲任务和优先级 4 的定时器任务；定时器任务先跑、随即阻塞在定时器队列上，之后才轮到优先级 2 的 `high`。所以按启动顺序推导，预期串口第一行是 `high` 的日志，这是启动顺序与阻塞关系的结果，不是第六步在创建 `high` 时抢占的功劳。要观察第六步，得在调度器运行后从某个任务里再创建更高优先级的任务。F1:104-111 把这一步写成「high 一建好就抢占」，跳过了「调度器已在跑」这个前提，来源说法(未复核)，不能照搬。
+第六步不是无条件立即切换。`taskYIELD_ANY_CORE_IF_USING_PREEMPTION( pxNewTCB )`（`tasks.c:87-97,2083-2088`）在抢占关闭时展开为空；抢占开启时也只在 `pxNewTCB->uxPriority > pxCurrentTCB->uxPriority` 的分支里调用；调用点还在 `if( xSchedulerRunning != pdFALSE )` 之内，调度器没启动时这一步根本不执行。
+
+更要注意调用时机：F407 lab 场景 1 的 `scene_start()` 在 `vTaskStartScheduler()` 之前运行（`mcu/code/rtos/01-freertos-lab/main.c:381-382`），这时调度器还没开跑，`xTaskCreate` 不会真正换人。
+
+调度器启动时还会创建空闲任务和优先级 4 的定时器任务；定时器任务先跑、随即阻塞在定时器队列上，之后才轮到优先级 2 的 `high`。
+
+所以按启动顺序推导，预期串口第一行是 `high` 的日志，这是启动顺序与阻塞关系的结果，不是第六步在创建 `high` 时抢占的功劳。要观察第六步，得在调度器运行后从某个任务里再创建更高优先级的任务。F1:104-111 把这一步写成「high 一建好就抢占」，跳过了「调度器已在跑」这个前提，来源说法(未复核)，不能照搬。
 
 栈深单位是 `StackType_t`，Cortex-M 上 4 B：128 字 = 512 B，不是 128 B。V11.1.0 ARM_CM4F 的 `typedef portSTACK_TYPE StackType_t` 在 `portmacro.h:58`；F1:106,218 写的是 `:55`，那一行是 `portSTACK_TYPE`。来源说法有误，已按 V11.1.0 源码更正。把 128 字误当 128 B、只分 32 字，栈容量就只剩四分之一。
 
@@ -347,16 +353,16 @@ tick 侧：`SysTick_Handler` 调 `rt_interrupt_enter()` → `rt_tick_increase()`
 
 ## 社区开源实现
 
-本章的概念——TCB、就绪表、优先级位图、上下文切换——在两个最常用的开源内核里就是主干源码文件，值得按章对照读：
+本章的概念（TCB、就绪表、优先级位图、上下文切换）在两个最常用的开源内核里就是主干源码文件，值得按章对照读：
 
 | 仓库 | 文件 | 看什么 |
 | --- | --- | --- |
-| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `tasks.c` | 本章所有抽象的工业实现：`tskTCB` 结构体、`pxReadyTasksLists[]` 每优先级一条链表（对应"约 20 B/级"的 RAM 账）、`xTaskCreate` 先分配栈+TCB 再挂就绪表、`prvAddTaskToReadyList` 是宏而非函数——位图优化路径就在这个宏里 |
-| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `list.c` | `List_t`/`ListItem_t` 的环形双向链表与 `listGET_OWNER_OF_NEXT_ENTRY`——同优先级时间片轮转就是"游标下移一格"，代码只有几行 |
-| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/scheduler_up.c`（v5.0 起由旧 `scheduler.c` 拆分） | RT-Thread 的单核调度器：`rt_schedule()` 取最高优先级线程、就绪表位图用 `__rt_ffs`（CTZ 找最低置位，0 最高——对照失败分支里"方向写反"那条） |
-| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/thread.c` | `rt_thread_create`/`rt_thread_init` 只把线程放进 INIT 态，必须 `rt_thread_startup` 才进调度——对照失败分支"创建后不运行" |
+| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `tasks.c` | 本章所有抽象的工业实现：`tskTCB` 结构体、`pxReadyTasksLists[]` 每优先级一条链表（对应"约 20 B/级"的 RAM 账）、`xTaskCreate` 先分配栈+TCB 再挂就绪表、`prvAddTaskToReadyList` 是宏而非函数；位图优化路径就在这个宏里 |
+| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `list.c` | `List_t`/`ListItem_t` 的环形双向链表与 `listGET_OWNER_OF_NEXT_ENTRY`；同优先级时间片轮转就是"游标下移一格"，代码只有几行 |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/scheduler_up.c`（v5.0 起由旧 `scheduler.c` 拆分） | RT-Thread 的单核调度器：`rt_schedule()` 取最高优先级线程、就绪表位图用 `__rt_ffs`（CTZ 找最低置位，0 最高；对照失败分支里"方向写反"那条） |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/thread.c` | `rt_thread_create`/`rt_thread_init` 只把线程放进 INIT 态，必须 `rt_thread_startup` 才进调度；对照失败分支"创建后不运行" |
 
-两个内核值得对着读同一处：FreeRTOS 的 `configUSE_PORT_OPTIMISED_TASK_SELECTION`（CLZ，≤32 级，失败分支里 `#error` 的来源）与 RT-Thread 的 `__rt_ffs`（标量+位图混合）是同一个问题——"O(1) 找最高优先级"——的两份答案。读完再回看本章机制一节，抽象名词就都有了出处。版本口径：本书取证绑 FreeRTOS V11.x 与 RT-Thread v5.3.0，读源码时选对应 tag。
+两个内核值得对着读同一处：FreeRTOS 的 `configUSE_PORT_OPTIMISED_TASK_SELECTION`（CLZ，≤32 级，失败分支里 `#error` 的来源）与 RT-Thread 的 `__rt_ffs`（标量+位图混合）是同一个问题（"O(1) 找最高优先级"）的两份答案。读完再回看本章机制一节，抽象名词就都有了出处。版本口径：本书取证绑 FreeRTOS V11.x 与 RT-Thread v5.3.0，读源码时选对应 tag。
 
 ## 离开检查
 
