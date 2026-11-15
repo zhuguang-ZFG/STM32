@@ -5,7 +5,7 @@ platforms: [generic]
 
 # 工具链与四步构建
 
-> 电脑是 x86，芯片是 ARM。你按下的每一次编译，都是一群程序在替另一块芯片准备口粮。本章把“一行 C 变成 Flash 里的一串字节”拆成可检查的几件事：谁在运行、谁在干活、库从哪来、四步各留下什么、ELF 怎么读，以及第一次装环境要验收哪五步。
+> 电脑是 x86，芯片是 ARM。每次编译，都是一群程序在替另一块芯片准备机器码。下面按顺序看：谁在运行、谁在干活、库从哪来、四步各留下什么、ELF 怎么读；第一次装环境另附五项验收。
 
 ## 本章罗盘
 
@@ -73,7 +73,7 @@ GCC 用三个词描述“谁在哪台机器上干什么”：
 | `nm` | 符号表：列出 `.elf` 里的符号与地址 | 查 `U` 符号、查 `main` 与弱符号 |
 | `objcopy` | 格式转换：`.elf` 转 `.bin`/`.hex` | 烧录产物 |
 | `objdump` | 反汇编与段信息：`.elf` 转汇编、列节表 | 查 `.text` 大小与地址 |
-| `readelf` | ELF 头、节表、程序头，比 objdump 更专 | 本章的 ELF 解剖 |
+| `readelf` | ELF 头、节表、程序头，比 objdump 更专 | 这里的 ELF 拆解 |
 
 另外两件是 `size` 与 `strings`：`size` 给 `text/data/bss` 三列体积，`strings` 抽固件里的字面量。它们不参与构建，只参与查看。
 
@@ -212,7 +212,7 @@ arm-none-eabi-gcc main.o startup_stm32f407xx.o \
 ```text
 $ arm-none-eabi-objdump -h blink.elf
 Idx Name          Size      VMA       LMA
-  0 .isr_vector   00000188  08000000  08000000    ← 向量表钉在 Flash 起始
+  0 .isr_vector   00000188  08000000  08000000    ← 向量表落在 Flash 起始
   1 .text         0000010c  08000188  08000188    ← 代码紧随其后
   2 .data         00000000  20000000  20000000    ← 变量在 RAM（0x2000_0000）
   3 .bss          00000000  20000000  08000294
@@ -226,7 +226,7 @@ $ arm-none-eabi-nm -n blink.elf | grep -E ' (Reset_Handler|main)$'
 08000230 W Reset_Handler
 ```
 
-- **VMA（Virtual Memory Address）** 是运行时的地址。`.isr_vector` 与 `.text` 在 `0x0800_0000` 段（Flash），`.data`/`.bss` 在 `0x2000_0000` 段（SRAM）。这是链接脚本把“哪块东西放哪块存储”焊死的效果，[第 6 章](./06-linker-startup-map.md)整章讲这个。
+- **VMA（Virtual Memory Address）** 是运行时的地址。`.isr_vector` 与 `.text` 在 `0x0800_0000` 段（Flash），`.data`/`.bss` 在 `0x2000_0000` 段（SRAM）。这是链接脚本把“哪块东西放哪块存储”固定下来的结果，[第 6 章](./06-linker-startup-map.md)整章讲这个。
 - `text 660` = 392（向量表）+ 268（代码）。`bss 1536` 是 `._user_heap_stack` 预留的栈与堆空间，不占 Flash。
 - `Reset_Handler` 是 **W（弱符号）**：启动文件里给了默认实现，用户可以覆盖。芯片复位后 CPU 从 `0x0800_0000` 取向量表第 2 个字跳到这里。
 - `main` 的地址按 `nm` 口径记为 `080001aa`：`nm` 把 Thumb 位抹掉了，给出纯地址。换 `readelf -s` 问同一个符号，会显示 `080001ab`。**`readelf -s` 保留这一位，`nm` 抹掉它**。那一位 1 是 Cortex-M 只跑 Thumb 的标记，不是错位。断点用纯地址，往向量表或函数指针里填地址时用带 1 的形式。
@@ -260,7 +260,7 @@ $ arm-none-eabi-nm -n blink.elf | grep -E ' (Reset_Handler|main)$'
 - **`Entry point address: 0x8000189`**：CPU 复位后不看这个字段（它看向量表），但 GDB 的 `load` 与 `break *0x8000189` 看它。
 - **`Number of program headers: 2` 与 `section headers: 20`**：两套目录各有几项。2 与 20 不相等这件事，就是节表与程序头分工的全部内容。
 
-顺手把“差 1”钉死：来源标本的 `nm` 显示 `08000188 W Reset_Handler`，而 ELF 入口是 `0x8000189`。`0x08000188 | 1 = 0x08000189`。**最低位是 Thumb 状态位，不是地址位**。往向量表和函数指针里填地址时必须带 1，工具之间对照时先抹平。
+顺手把“差 1”说清：来源标本的 `nm` 显示 `08000188 W Reset_Handler`，而 ELF 入口是 `0x8000189`。`0x08000188 | 1 = 0x08000189`。**最低位是 Thumb 状态位，不是地址位**。往向量表和函数指针里填地址时必须带 1，工具之间对照时先抹平。
 
 #### 节表：链接器的抽屉
 
@@ -388,7 +388,7 @@ make
 1. build 是工具链被构建的机器，host 是编译器运行的机器，target 是编译器产码的目标体系。预编译工具链的 build 与 host 通常都是 x86-64 PC，target 是 ARM Cortex-M4，所以叫交叉编译。系统 gcc 的 target 是 x86-64，产出 x86 指令，F407 不认识。`arm` 是 ARM 体系，`none` 是无特定厂商，`eabi` 是面向裸机的嵌入式 ABI。
 2. `.elf` 转 `.bin` 用 `objcopy -O binary`；反汇编用 `objdump -d`；列符号用 `nm`；看体积用 `size`。`as` 负责 `.s` 到 `.o`，`ld` 负责链接，`ar` 负责打静态库，`readelf` 负责 ELF 头、节表与程序头。
 3. glibc 依赖 Linux 系统调用，裸机没有 OS，`write()` 不存在。newlib 把系统相关工作抽成钩子：`_write` 决定字节流往哪写，`_sbrk` 给 `malloc` 增长堆。`printf` 想走串口，要实现 `_write`，把字节写进 UART 寄存器；上层 `printf` 不用改。
-4. `-c` 同时包含编译与汇编两道工序：`cc1` 先出汇编，`as` 再出 `.o`。链接由 `collect2` 代理，它收拾构造函数表后再调用真正的 `ld`，所以链接报错署名 `ld.exe`。
+4. `-c` 同时包含编译与汇编两道工序：`cc1` 先出汇编，`as` 再出 `.o`。链接由 `collect2` 代理，它收拾构造函数表后再调用实际的 `ld`，所以链接报错署名 `ld.exe`。
 5. 四步留下 `.i`（预处理后的 C）、`.s`（汇编）、`.o`（可重定位目标）、`.elf`（可执行）。`main.i` 变大是因为 `#include` 的头文件被整份贴入、宏被展开。`.o` 还没分配最终地址，所以地址栏是 0。`fatal error` 在预处理，`error:` 在编译，`undefined reference` 在链接。
 6. 头五字段：Magic（签名、ELF32/小端）、Class/Type（ELF32、EXEC）、Machine（ARM 与硬浮点 ABI）、Entry（入口地址，GDB 用）、两套目录的计数。程序头 2 条是装载器的装车批次，节表 20 项是链接器与调试器看的抽屉清单。`A` 表示 alloc，没 A 的节烧录时无关；`PROGBITS` 有文件内容，`NOBITS` 只登记不给货；`FileSiz` 是文件里带的字节，`MemSiz` 是运行时要占的字节，差值由 `.bss` 与启动代码补。
 7. 五步：交叉编译器（`arm-none-eabi-gcc --version`）、make（`make --version`）、OpenOCD（`openocd --version`）、ST-Link 驱动（设备管理器无黄色感叹号）、SWD 接线（SWDIO/SWCLK/GND/3.3V 检测）。3.3V 只作检测，板子单独 USB 供电，避免两路电源对供。板上烧录与点灯来源没有记录本机复跑，所以标为未跑。

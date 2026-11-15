@@ -5,9 +5,9 @@ platforms: [generic]
 
 # 资料、学习路线与开源地图
 
-全书最后一章回答三个「往后怎么办」：路线怎么走（三阶段与过关判据）、资料怎么读（手册六类与查手册三步法）、开源怎么用（选仓库、读仓库、提问五件事）。它同时是两本姊妹书学习路线的合并口径：两源在「先学 HAL 还是先学寄存器」上建议相反，本章给出统一口径并声明取舍。
+全书最后一章回答三个「往后怎么办」：路线怎么走（三阶段与过关判据）、资料怎么读（手册六类与查手册三步法）、开源怎么用（选仓库、读仓库、提问五件事）。它同时是两本姊妹书学习路线的合并口径：两源在「先学 HAL 还是先学寄存器」上建议相反，统一口径写在这里并声明取舍。
 
-这一章没有板级实测。三阶段周数表是**计划表**（文档推导，逐周自测题的答案在 [附录 C](../appendix/C-exercises-answers.md)）；采购价格是估算区间，来源自注「以当日价格为准」；开源库定位与工具选型按来源卡口径；开源仓库星标数全部带抓取日期 2026-10-26（附录 F 双源同日核对）。BOOT 账与首次点灯的技术正文归 [v1 第 8 章](../v1-drivers/08-architecture-memory-clock.md) 与 [v1 第 9 章](../v1-drivers/09-gpio.md)，本章只留路线索引。
+这一章没有板级实测。三阶段周数表是**计划表**（文档推导，逐周自测题的答案在 [附录 C](../appendix/C-exercises-answers.md)）；采购价格是估算区间，来源自注「以当日价格为准」；开源库定位与工具选型按来源卡口径；开源仓库星标数全部带抓取日期 2026-10-26（附录 F 双源同日核对）。BOOT 与首次点灯的技术正文归 [v1 第 8 章](../v1-drivers/08-architecture-memory-clock.md) 与 [v1 第 9 章](../v1-drivers/09-gpio.md)，这里只留路线索引。
 
 > 版本口径：D00《如何学习 STM32》（`docs/00-如何学习STM32.md`）、D20《学习资源与工具链》（`docs/20-学习资源与工具链.md`）、mbF 起步区并入；手册命名六类（RM/DS/PM/AN/UM/ES）按 D20 正文表统一（源章「学习目标五种」的内部不一致在此修正为六类）。手册文档号（DS5319/RM0008/PM0056/CubeF1）与根书注册表一致（附录 E）。
 
@@ -15,7 +15,7 @@ platforms: [generic]
 
 - **问题**：三阶段路线（4/6/8 周）的过关判据与前置知识五块的「够用」标准；三种开发方式（寄存器/SPL/HAL+LL）的六维对比，两书相反的入门建议如何统一。手册六类各查什么、三步法怎么走；工具选型两表的预算口径；开源仓库如何选、读、问；生态数字为什么必须带抓取日期。
 - **交付**：能按三阶段表给自己排计划并写出过关判据；能用前置知识表自评「够用即可」；能按统一口径选择入门路线并说出取舍理由；能按六类命名表挑对手册并用三步法查到 TIM1 占空比/PA11 USB/F4 DMA FIFO 三个示例；能给出两板（BluePill 起步线/霸天虎+实战派线）的采购清单；能按提问五件事提一个可回答的问题。
-- **边界**：本章是路线与资料层；BOOT 账、首次点灯、构建命令的技术正文归 v1 各章（本章只留一句话索引）；全量开源仓库表与知识点在 附录 F；手册来源注册表在 附录 E；生态数量口径沿 [第 27 章](../v3-rtos/27-rtos-comparison-selection.md)。视频块、公众号手机阅读版、英文版链接不保留。
+- **边界**：这一章是路线与资料层；BOOT、首次点灯、构建命令的技术正文归 v1 各章（这里只留索引）；全量开源仓库表与知识点在 附录 F；手册来源注册表在 附录 E；生态数量口径沿 [第 27 章](../v3-rtos/27-rtos-comparison-selection.md)。视频块、公众号手机阅读版、英文版链接不保留。
 - **依据锚点**：D00、D20（`docs/`）、mbF 起步区（`mcu/mcu-book/book/F-常见问题.md` 并入部分）。上游对账：SPL 停更与 [v1 第 7 章](../v0-foundations/07-build-systems-legacy.md) 口径一致；F1 DMA 无 FIFO/F4 有与 [v1 第 14 章](../v1-drivers/14-dma.md)、[第 33 章](../v4-platforms/33-network-protocol-stack.md) 一致。
 
 ## 先做出来
@@ -50,7 +50,7 @@ platforms: [generic]
 
 **SPL 已停止维护**（[v1 第 7 章](../v0-foundations/07-build-systems-legacy.md) 同口径）。两书建议相反：D00 建议「HAL 入门→寄存器对照→LL 优化」，mbF 建议「顺序是寄存器→库」。
 
-**本章统一口径：寄存器打底（最小验证矩阵那几行）+ HAL 做产品**。寄存器打底的理由是排错时不黑盒（[v1 第 9 章](../v1-drivers/09-gpio.md) 的寄存器版与 HAL 版对照实验已经教了这一课），HAL 做产品的理由是生态与移植；取舍声明写在这里，后文不再摇摆。
+**全书的统一口径：寄存器打底（最小验证矩阵那几行）+ HAL 做产品**。寄存器打底的理由是排错时不黑盒（[v1 第 9 章](../v1-drivers/09-gpio.md) 的寄存器版与 HAL 版对照实验已经教了这一课），HAL 做产品的理由是生态与移植；取舍声明写在这里，后文不再摇摆。
 
 ### 二、手册六类与三步法
 
@@ -78,9 +78,9 @@ platforms: [generic]
 
 价格全部是区间加自注。不是事实数。仪器选型两表（硬件 7 行：调试器/逻辑分析仪/示波器/串口/万用表/功耗计/焊接；软件 10 行：CubeMX/CubeIDE/Keil/IAR/PlatformIO/CLion/VS Code/OpenOCD/KiCad/CubeMonitor/PulseView）预算区间同口径，软件定位与 [v1 第 5 章](../v0-foundations/05-toolchain-four-steps.md)、[v1 第 7 章](../v0-foundations/07-build-systems-legacy.md)、[v1 第 20 章](../v2-reliability/20-debug-performance.md) 一致。
 
-### 四、构建合同与命令组（一句话索引）
+### 四、构建合同与命令组（索引）
 
-四个 IDE 入口汇入同一 CMake preset 的构建合同、OpenOCD 烧录/GDB 六步、PlatformIO 配置、CubeProgrammer 的 RDP 警告（**RDP=0xAA 解保护会整片擦除**）。技术正文归 [v1 第 5 章](../v0-foundations/05-toolchain-four-steps.md)、[v1 第 7 章](../v0-foundations/07-build-systems-legacy.md)、[v1 第 20 章](../v2-reliability/20-debug-performance.md)，本章不重复命令块。
+四个 IDE 入口汇入同一 CMake preset 的构建合同、OpenOCD 烧录/GDB 六步、PlatformIO 配置、CubeProgrammer 的 RDP 警告（**RDP=0xAA 解保护会整片擦除**）。技术正文归 [v1 第 5 章](../v0-foundations/05-toolchain-four-steps.md)、[v1 第 7 章](../v0-foundations/07-build-systems-legacy.md)、[v1 第 20 章](../v2-reliability/20-debug-performance.md)，这里不重复命令块。
 
 ### 五、开源：怎么选、怎么读、怎么问
 
@@ -93,7 +93,7 @@ platforms: [generic]
 
 ### 六、生态计数口径（重申）
 
-[第 27 章](../v3-rtos/27-rtos-comparison-selection.md) 立的规则在本章重申一次：**数量类陈述（软件包数百个、仓库数千个、用户数）必须带抓取日期与来源，否则不写**。本章与 apF 的全部星标/计数已带日期；你写文档时同样执行。
+[第 27 章](../v3-rtos/27-rtos-comparison-selection.md) 立的规则在这里再明确一次：**数量类陈述（软件包数百个、仓库数千个、用户数）必须带抓取日期与来源，否则不写**。本章与附录 F 的全部星标/计数已带日期；你写文档时同样执行。
 
 ## 测量与证据
 

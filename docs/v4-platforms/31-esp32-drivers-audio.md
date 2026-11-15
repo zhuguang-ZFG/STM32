@@ -11,7 +11,7 @@ ESP32 的外设 API 与 STM32 最大的差别不在功能，在**形态**：驱�
 
 器件细节（ES7210 通道占用、ST7789 引脚、esp_codec_dev 1.3.4）来自立创 wiki 与 managed component 注册表，逐项标待核。`hardware_status` 仍是 `pending`，实验全部未实测。
 
-> 版本口径：ESP-IDF **v5.5.2**；板卡立创实战派 S3（扩展口、SDA=GPIO1/SCL=GPIO2 等以工程代码为准）；esp_codec_dev 是 managed component，版本钉 1.3.4（构建期自动下载，来源待核）。
+> 版本口径：ESP-IDF **v5.5.2**；板卡立创实战派 S3（扩展口、SDA=GPIO1/SCL=GPIO2 等以工程代码为准）；esp_codec_dev 是 managed component，版本锁定 1.3.4（构建期自动下载，来源待核）。
 
 ## 本章罗盘
 
@@ -130,7 +130,7 @@ S3 的边界（`soc_caps.h:242-248` 实取）：**8 通道、4 定时器、14 �
 
 ![手绘板：音频双面范式，含控制面 I2C、数据面 I2S、三笔账一起算、先静音再发声后放开 PA（原理示意，非实拍）](/images/mc31-matrix-audio.png)
 
-E08 的完整播放链（1 kHz 滴声 + 八音符、缓冲减小出现断音）代码就绪（`code_status: ready`），板上现象待实测（`hardware_status: pending`）。测量与证据的完整登记归[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)的实验方法（B4 卷 6，此处只挂账不占位）。
+E08 的完整播放链（1 kHz 滴声 + 八音符、缓冲减小出现断音）代码就绪（`code_status: ready`），板上现象待实测（`hardware_status: pending`）。测量与证据的完整登记归[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)的实验方法（B4 卷 6，这里只留待办，不展开）。
 
 ![E08 音频链路：扩展板上的器件与接法](/images/labs/e08-audio-chain.svg)
 

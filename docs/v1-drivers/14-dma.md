@@ -5,13 +5,13 @@ platforms: [f407, f103]
 
 # DMA
 
-> 中断方式收 1KB，CPU 要被打断一千次；DMA 只打断一次，代价是把“从哪搬到哪、搬多少、已经搬到哪”全部写进寄存器。这一章先拆 F4 的控制器→流→通道路径和 F1 的固定通道，再把 PAR、M0AR、NDTR 三样东西与 DIR 的两位方向对齐；循环模式与双缓冲各讲清“保证什么、不保证什么”，最后把 HAL 的 EN 窗口、UART 的 TC 边界和 ADC 的半字账接到同一张图上。两个来源都没有留下上板读数，本章把手册规则、公式推导与预期现象分开写。
+> 中断方式收 1KB，CPU 要被打断一千次；DMA 只打断一次，代价是把“从哪搬到哪、搬多少、已经搬到哪”全部写进寄存器。下面先拆 F4 的控制器→流→通道路径和 F1 的固定通道，再把 PAR、M0AR、NDTR 三样东西与 DIR 的两位方向对齐；循环模式与双缓冲各讲清“保证什么、不保证什么”，最后把 HAL 的 EN 窗口、UART 的 TC 边界和 ADC 的半字传输接到同一张时序图上。两个来源都没有留下上板读数，正文把手册规则、公式推导与预期现象分开写。
 
 ## 本章罗盘
 
 - **问题**：F407 上 USART1 的接收请求为什么必须落在 DMA2，F103 上同一个 USART1 却落在 DMA1 通道 5？F4 的“流 × 通道”两级选择与 F1 的“一条通道一个固定外设”差在哪，CHSEL 到底选了什么？PAR、M0AR、NDTR 各是什么，为什么“三地址一长度”严格讲只有两个地址，NDTR 数的是字节还是数据项，半字缓冲区里 NDTR 读回 3 又表示已经搬了多少？方向与模式这几处最容易混：DIR 为什么占两位、00/01/10 各是什么方向，为什么内存到内存只有 DMA2 能做；循环模式下 NDTR 归零后发生什么，`长度 − NDTR` 为什么不是累计进度；双缓冲换的是哪一块，为什么它也不保证 CPU 来得及？还有时序与寄存器窗口：HT 与 TC 各在什么时候响，处理期限为什么是硬约束，CHSEL/CIRC/MINC 为什么必须在 EN=0 时改，HAL 的 Init 与 Start 各落哪些寄存器？最后把三个边界对上：DMA 的 TC 与 USART 的 TC 差在哪，IDLE 为什么不是帧边界，ADC 的 NDTR 为什么按半字算，F407 的 CCM 为什么 DMA 够不着，两个来源又留下了哪些读数、哪些只是预期。
 - **交付**：能按“控制器→流→通道”写出 F4 的 USART1_RX 落位并说明每一级的选择依据；能在 F103 上把 USART1_TX/RX 落到 DMA1 的固定通道；能手算 NDTR 与字节数的换算并处理环形回绕；能写出循环模式的位置公式与半区消费的丢弃判据；能解释 DBM/CT 与 HT/TC 半区的差别和共同期限；能把 HAL 的 `HAL_DMA_Init`、`HAL_DMA_Start` 对回手写寄存器；能说清 UART 的 DMAT/DMAR、TC 边界和 ADC 的半字账；能按台架步骤留下 NDTR 轨迹与缓冲区比对记录。
-- **边界**：两平台章。F407 的 8 流 × 8 通道、SxCR 位号、FIFO、DBM、CCM 与 HAL 行号来自 S8《S8 DMA：让数据自己搬家》与根书第 10 章，并按 RM0090 §10.3.3 的语义复核；F103 的 7 通道、固定请求映射、CCR/CNDTR/CPAR/CMAR 与 C8 只有 DMA1 来自根书第 10 章、RM0008 第 13 章与 DS5319。两个来源都没有留下本章的上板读数：S8 的“GDB 里看 NDTR 倒数”是操作指令与预期，根书第 10 章的“动手实验”是待做清单，`03-uart-dma` 的注释也把流/通道取值标成待上板自检。F4 的 USART1_RX = DMA2 Stream5 Channel4（或 Stream2 Channel4）因来源自注未取得 RM0090 请求表正文，标为待复核；F1 的通道号按 RM0008 表 78 的映射使用。RM0090 的章号在不同修订版里会移动（S8 引 §10.3.3，根书第 10 章写“第 9 章”），本章引小节号 §10.3.3，不把表号钉死。GD32 与 ESP32 不在本章平台列表，只在“跨平台边界”里指路。
+- **边界**：两平台章。F407 的 8 流 × 8 通道、SxCR 位号、FIFO、DBM、CCM 与 HAL 行号来自 S8《S8 DMA：让数据自己搬家》与根书第 10 章，并按 RM0090 §10.3.3 的语义复核；F103 的 7 通道、固定请求映射、CCR/CNDTR/CPAR/CMAR 与 C8 只有 DMA1 来自根书第 10 章、RM0008 第 13 章与 DS5319。两个来源都没有留下本章的上板读数：S8 的“GDB 里看 NDTR 倒数”是操作指令与预期，根书第 10 章的“动手实验”是待做清单，`03-uart-dma` 的注释也把流/通道取值标成待上板自检。F4 的 USART1_RX = DMA2 Stream5 Channel4（或 Stream2 Channel4）因来源自注未取得 RM0090 请求表正文，标为待复核；F1 的通道号按 RM0008 表 78 的映射使用。RM0090 的章号在不同修订版里会移动（S8 引 §10.3.3，根书第 10 章写“第 9 章”），本章引小节号 §10.3.3，不引用表号。GD32 与 ESP32 不在本章平台列表，只在“跨平台边界”里指路。
 - **依据锚点**：S8（`mcu/docs/stm32/08-dma.md`）、根书第 10 章（`docs/10-DMA.md`）、工程 `mcu/code/stm32/03-uart-dma/main.c` 与 `mcu/code/common/behavior/circular.h`（只读静态阅读）；[第 8 章](./08-architecture-memory-clock.md)的总线矩阵、CCM 与外设基址，RM0008/RM0090 的定时器 DMA 请求位（`UDE/CCxDE`，第 12 章不展开），[第 13 章](./13-uart-framed-protocol.md)的 DMAT/DMAR 与 TC 边界、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体。RM0090 §10.3.3、RM0008 第 13 章表 78/79、DS5319 与 HAL 源码行号均转引自上述来源。
 
 ## 先做出来
@@ -45,7 +45,7 @@ platforms: [f407, f103]
 
 F407 的 DMA 请求要走三层：先选控制器（DMA1 或 DMA2），再选控制器里的某条流（8 条之一），最后由该流的 `CHSEL[2:0]` 在 8 个通道里选一个。S8 把“流 × 通道”叫二级选择，控制器算作外面前提；落到寄存器上，流是“你写哪一组 `SxCR/NDTR/PAR/M0AR`”，通道是 `SxCR` 的 bit27:25。通道不是一根物理线，而是“这条流接哪根请求线”的选择码。
 
-F103 只有一级：DMA1 的 7 条通道各自焊死一组外设请求，`CCR` 里没有 CHSEL 位。USART1_RX 的请求线只接在通道 5 上，配到通道 4 就永远等不到；通道 4 接的是 USART1_TX。大容量型号有 DMA2 的 5 条通道，但 C8 是中密度，只有 DMA1。
+F103 只有一级：DMA1 的 7 条通道各自固定接一组外设请求，`CCR` 里没有 CHSEL 位。USART1_RX 的请求线只接在通道 5 上，配到通道 4 就一直等不到；通道 4 接的是 USART1_TX。大容量型号有 DMA2 的 5 条通道，但 C8 是中密度，只有 DMA1。
 
 | 项 | F407 | F103（C8） |
 | --- | --- | --- |
@@ -224,11 +224,11 @@ UART 接收的环形缓冲还有一条软件边界：`NDTR` 给出的是“已�
 
 ### 七、总线仲裁与够不着的地方
 
-DMA 是 AHB 上的总线主人，和 CPU、以太网 MAC 等一起挂在总线矩阵上。DMA 搬运不占 CPU 的指令周期，但要与 CPU 争总线；[第 8 章](./08-architecture-memory-clock.md)的访问路线表把这两面并排放：DMA 搬 SRAM 时 CPU 可以同时从 Flash 取指，抢的是同一块 SRAM。DMA 搬运密集时，CPU 取指与访存会排队，跑分变慢不是错觉，是仲裁；F4 的 FIFO 与突发能把多次小传输合并，减少占用，但不能让 DMA 消失。F1/F4 没有 D-Cache，DMA 写进 SRAM 的数据 CPU 直接读就是新值；带 Cache 的 H7/F7 才有维护问题，不在本章范围。
+DMA 是 AHB 上的总线主人，和 CPU、以太网 MAC 等一起挂在总线矩阵上。DMA 搬运不占 CPU 的指令周期，但要与 CPU 争总线；[第 8 章](./08-architecture-memory-clock.md)的访问路线表把这两面并排放：DMA 搬 SRAM 时 CPU 可以同时从 Flash 取指，抢的是同一块 SRAM。DMA 搬运密集时，CPU 取指与访存会排队，跑分变慢不是错觉，是仲裁；F4 的 FIFO 与突发能把多次小传输合并，减少占用，但不能让 DMA 消失。F1/F4 没有 D-Cache，DMA 写进 SRAM 的数据 CPU 直接读就是新值；带 Cache 的 H7/F7 才有维护问题，不在这一章范围。
 
 F407 有一块 DMA 够不着的地方：CCM 在 `0x1000_0000`，64KB，只挂 CPU 的数据总线，不在总线矩阵上。
 
-把接收数组放进 CCM，DMA 访问就没有从机通路可走：这一拍不是搬成功，而是传输出错，`TEIF` 置位、`NDTR` 停在原地。程序若不查 TE、只等 HT/TC，看起来才像“什么都没报、数据静默丢失”；来源的写法只到“静默丢数据”，出错位这一层是本章按总线结构推的，标为待复核。
+把接收数组放进 CCM，DMA 访问就没有从机通路可走：这一拍不是搬成功，而是传输出错，`TEIF` 置位、`NDTR` 停在原地。程序若不查 TE、只等 HT/TC，看起来才像“什么都没报、数据静默丢失”；来源的写法只到“静默丢数据”，出错位这一层是这里按总线结构推的，标为待复核。
 
 链接脚本默认不放，手动加 `.ccmram` 段或 `__attribute__((section(".ccmram")))` 才会遇到。F103 没有 CCM，这条边界不适用；但“缓冲区必须是静态或全局”的规矩两边一样，局部数组在函数返回后失效，DMA 还在往那块栈上写。
 
@@ -334,7 +334,7 @@ GD32 与 ESP32 不在本章平台列表。GD32 的 DMA 控制器命名、通道�
 | [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h` | DMA_Stream_TypeDef 结构体与各流基址宏；本章讲的 `0x18` 步进、`+0x88` 流 5 偏移可以直接在里面验证 |
 | [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c` + 各例程的缓冲区声明 | 带缓存系列（F7/H7）的传输包装如何用 `SCB_CleanDCache_by_Addr`/`InvalidateDCache_by_Addr` 包住每次搬运；ST [AN4838](https://www.st.com/resource/en/application_note/dm00272913-level-1-cache-on-stm32f7-series-and-stm32h7-series-stmicroelectronics.pdf) 的结论：缓冲区对齐到 32 字节 cache line、必要时显式维护缓存，否则就是本章说的"数据静默丢失" |
 
-F407 本身没有 D-Cache，所以本章实验踩不到 cache 一致性；但社区在 F7/H7 上踩过之后总结的规则（缓冲区 32 字节对齐、不要把 DMA 缓冲区放进栈上的局部变量、非对齐访问在地址对齐检查里直接 Fault）值得在写代码时就遵守；迁移到第 34 章的双核平台时这些规则立刻生效。另一个社区共识：读标志永远用 `ISR/HISR`，清标志永远写 `IFCR/HIFCR`。libopencm3 的 [dma.c](https://github.com/libopencm3/libopencm3) 对每个标志都有 `DMA_IFCR_Cxx` 专用宏，就是防有人直接写 ISR。
+F407 本身没有 D-Cache，所以这里的实验踩不到 cache 一致性；但社区在 F7/H7 上踩过之后总结的规则（缓冲区 32 字节对齐、不要把 DMA 缓冲区放进栈上的局部变量、非对齐访问在地址对齐检查里直接 Fault）值得在写代码时就遵守；迁移到第 34 章的双核平台时这些规则立刻生效。另一个社区共识：读标志一律用 `ISR/HISR`，清标志一律写 `IFCR/HIFCR`。libopencm3 的 [dma.c](https://github.com/libopencm3/libopencm3) 对每个标志都有 `DMA_IFCR_Cxx` 专用宏，就是防有人直接写 ISR。
 
 ## 离开检查
 

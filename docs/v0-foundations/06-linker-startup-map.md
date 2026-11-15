@@ -5,11 +5,11 @@ platforms: [f407]
 
 # 链接脚本、启动与 map 体积审计
 
-> 第 5 章把一行 C 送到 `.elf`。这一章翻到链接器的工作台：一张 136 行的图纸决定每个段住哪，一段启动代码把图纸上的门牌读成动作，一份 map 文件记录谁占了哪块地。三件事连起来，固件才从“链接成功”走到“上电能跑、体积有账”。
+> 第 5 章把一行 C 送到 `.elf`。链接器拿到的是一份 136 行的脚本：它决定每个段放在哪，启动代码按脚本把初值搬进 RAM，map 文件记下每个符号占了多少空间。三样东西对上，固件才从“链接成功”走到“上电可运行、体积可核对”。
 
 ## 本章罗盘
 
-- **问题**：136 行链接脚本的契约头、MEMORY、SECTIONS 三段各管什么？向量表为什么必须住 Flash 头排，删掉 `KEEP` 后哪三层证据会同时报警？`.data` 的 VMA 与 LMA 分别给谁看，少写 `AT> FLASH` 为什么能让 660 字节的 bin 涨到 128MB？复位后到 `main` 之间，硬件和软件各做什么？最后是体积审计：`size` 三列、map 三板斧、`nm --size-sort` 怎样把账对到具体符号？
+- **问题**：136 行链接脚本的契约头、MEMORY、SECTIONS 三段各管什么？向量表为什么必须住 Flash 头排，删掉 `KEEP` 后哪三层证据会同时报警？`.data` 的 VMA 与 LMA 分别给谁看，少写 `AT> FLASH` 为什么能让 660 字节的 bin 涨到 128MB？复位后到 `main` 之间，硬件和软件各做什么？最后是体积审计：`size` 三列、map 文件的三块内容、`nm --size-sort` 怎样把体积对到具体符号？
 - **交付**：能逐段读 136 行图纸，指出三段边界；能用 `nm`、`readelf`、map 三条证据判断向量表是否被回收、`.data` 是否搬得动、自定义段是否成了 orphan；能按五站复述启动流程并说出每站失败的样子；能用 size、map、nm 完成一次“先审账再优化”的体积审计。
 - **边界**：单平台 F407（F407ZGT6：1MB Flash、128KB SRAM、64KB CCM）。数字来自 xPack GNU Arm Embedded GCC 15.2.1、binutils 2.45.1 的 `00-blink` 与 `link_probe` 标本；来源没有记录板上复跑，烧录后的现象在本章标为未跑。构建系统与链接旗标留给[第 7 章](./07-build-systems-legacy.md)，SWD 与 GDB 留给[第 20 章](../v2-reliability/20-debug-performance.md)，中断号与外设向量留给[第 10 章][ch10]，Flash 分区与 IAP 留给[第 17 章][ch17]。
 - **依据锚点**：B3《链接脚本：固件的建筑图纸》（`mcu/docs/build/03-linker-script.md`）、B4《启动过程：上电到 main 的每一条指令》（`mcu/docs/build/04-startup.md`）、B5《map 与体积：谁吃了我的 Flash》（`mcu/docs/build/05-map-size.md`）；[第 5 章](./05-toolchain-four-steps.md)的四步构建与 ELF 节表。工具链版本、字节数、地址与 `nm` 输出转引自上述来源。
@@ -37,7 +37,7 @@ nokeep.bin = 268 字节
 - `nm` 里 `g_pfnVectors` 消失，说明符号没有随段留下。
 - bin 头两个字从 `20020000 08000189` 变成 `d040f8df 68014810`：上电硬件读到的“栈顶”成了两条指令的机器码，第一次压栈就死。
 
-这就是本章的主线：**链接器只按图纸办事；图纸少一句话，它不报错，只是安静地给你一个错固件。** 下面把图纸、启动代码和体积账依次翻开。
+链接器只执行脚本里写下的规则。脚本漏掉一条，它不会报错，只会生成一个能链接、不能正常启动的固件。下面把脚本、启动代码和体积核对依次展开。
 
 ## 机制
 
@@ -65,7 +65,7 @@ _Min_Stack_Size = 0x400;                    /* :20 */
 
 - `ENTRY(Reset_Handler)` 只对链接器说话：它写进 ELF 头，也参与 `--gc-sections` 的根集合。芯片不看这一行，芯片看向量表第 2 项；`readelf -h` 的入口与向量表第 2 项是两套口径，第 5 章已经拆过。
 - `_estack` 算出 `0x20000000 + 0x20000 = 0x20020000`。`nm` 给 `20020000 R _estack`，bin 的第一个字也是它。栈向下生长，所以这是 RAM 最后一字节的上一格。
-- `_Min_Heap_Size` 与 `_Min_Stack_Size` 是额度，不是空间。真正的占位在 `._user_heap_stack`：`. = . + _Min_Heap_Size;` 与 `. = . + _Min_Stack_Size;` 把两笔预算记在 RAM 账上（`:122-123`）。
+- `_Min_Heap_Size` 与 `_Min_Stack_Size` 是额度，不是空间。实际占位在 `._user_heap_stack`：`. = . + _Min_Heap_Size;` 与 `. = . + _Min_Stack_Size;` 把两笔预算记进 RAM 占用（`:122-123`）。
 
 MEMORY 圈两块地：
 
@@ -291,7 +291,7 @@ Memory region         Used Size  Region Size  %age Used
 
 5640 能手算：`.data` 4 + `.bss`（4 + 4096）+ `._user_heap_stack`（`0x200 + 0x400 = 1536`）= 5640。把 RAM 改小到 2K，ld 报 `region 'RAM' overflowed by 3592 bytes`，`5640 − 2048 = 3592`。只把栈预算从 `0x400` 撑到 `0x20000`，代码一个没多，ld 点名 `._user_heap_stack` 报 `overflowed by 4616 bytes`，RAM 到 `135688 B = 103.52%`，`135688 − 131072 = 4616`。**栈不够用这件事，在构建窗口里以百分比失败，好过在客户手上以踩内存的形式失败。**
 
-### map 三板斧：户口本怎么翻
+### map 文件：三块内容怎么读
 
 map 文件由 `ld` 的 `-Map=build/blink.map` 生成（Makefile 里的旗标，[第 7 章](./07-build-systems-legacy.md)接线）。三块内容各查一件事：
 
@@ -339,7 +339,7 @@ map 文件由 `ld` 的 `-Map=build/blink.map` 生成（Makefile 里的旗标，[
 | CCM 四态 | `sh probe.sh ccm` | orphan VMA `0x20000004`；bin 134,217,744 字节；补 `AT> FLASH` 后 576 字节；`_siccm` 引用 0 次 |
 | 启动五站 | `objdump -d`、`nm` | 七个字面量；`_sbss == _edata == 0x20000004`；`_ebss = 0x20001008` |
 | size 三列 | `arm-none-eabi-size blink.elf` | 280/12/32（B5）；660/0/1536（第 5 章）；公式 Flash=text+data、RAM=data+bss |
-| map 三板斧 | `-Map=build/blink.map` | Archive member、Memory Map、Discarded input 三块 |
+| map 文件三块内容 | `-Map=build/blink.map` | Archive member、Memory Map、Discarded input 三块 |
 | nm 审计 | `nm -S --size-sort` | 来源给命令与大户类型表，未记录具体符号列表 |
 | 链接器自述 | `--trace`、`ld --verbose` | `thumb/v7e-m+fp/hard` 多架构目录；内置图纸 `ENTRY(_start)` 且无 `MEMORY` |
 | 板上实验 | 烧录、GDB 单步 | 来源未记录本机复跑，待上板 |
@@ -370,7 +370,7 @@ map 文件由 `ld` 的 `-Map=build/blink.map` 生成（Makefile 里的旗标，[
 3. `.data` 的 VMA 与 LMA 分别是什么？谁读 VMA、谁读 LMA？删掉 `AT> FLASH` 后，`nm` 的判据是什么？
 4. 启动五站各做什么？CPACR 漏开会怎样？`main` 真的 return 会去哪？
 5. `size` 三列公式是什么？为什么 data 算两份、bss 只算一份？`._user_heap_stack` 落在哪一列？
-6. map 三板斧各查什么？`nm -S --size-sort` 怎样找大户？为什么优化要先看大项、再谈 `-O` 级别？
+6. map 文件的三块内容各查什么？`nm -S --size-sort` 怎样找大户？为什么优化要先看大项、再谈 `-O` 级别？
 7. 自定义段 `.ccmram` 的四种结局各是什么？为什么补了 `AT> FLASH`，初值还可能到不了 CCM？
 
 <details>
@@ -378,7 +378,7 @@ map 文件由 `ld` 的 `-Map=build/blink.map` 生成（Makefile 里的旗标，[
 
 1. 契约头管入口、栈顶与最小堆栈预算；MEMORY 圈定 Flash 与 RAM 的起止地址；SECTIONS 决定每个段住哪个地块、谁在头排。`ENTRY(Reset_Handler)` 只写进 ELF 头给链接器与调试器看；芯片复位后从 0 号地址读 MSP、从 4 号地址读 PC，向量表第 2 项才是它跳去的地方。
 2. 因为硬件从 `0x08000000` 读栈顶、从 `0x08000004` 读复位入口，向量表必须在 Flash 最前面。删掉 `KEEP` 后，`readelf -S` 里 `.isr_vector` 尺寸变 0 但段名还在；`nm` 里 `g_pfnVectors` 消失；bin 头两个字变成 `d040f8df 68014810`，第一次压栈就死。
-3. VMA 是运行时地址（`.data` 在 `0x20000000`），LMA 是初值在 Flash 的寄存地址（`0x08000218`）。CPU 的 `ldr` 读 VMA，装载器与 `objcopy -O binary` 读 LMA；`_sidata = LOADADDR(.data)` 取的是 LMA。删掉 `AT> FLASH` 后 `_sidata == _sdata`，启动循环把 `_sdata` 拷到 `_sdata`，初值永远搬不到位。
+3. VMA 是运行时地址（`.data` 在 `0x20000000`），LMA 是初值在 Flash 的寄存地址（`0x08000218`）。CPU 的 `ldr` 读 VMA，装载器与 `objcopy -O binary` 读 LMA；`_sidata = LOADADDR(.data)` 取的是 LMA。删掉 `AT> FLASH` 后 `_sidata == _sdata`，启动循环把 `_sdata` 拷到 `_sdata`，初值搬不到位。
 4. 五站：硬件两读（MSP 与 PC）、开 FPU（CPACR 的 CP10/CP11）、搬 `.data`（`_sidata` → `_sdata.._edata`）、清 `.bss`（`_sbss.._ebss` 写 0）、`bl main`。CPACR 漏开时第一条 FPU 指令触发 UsageFault(NOCP)，程序静默卡死。`main` return 后掉进 `.L_hang` 原地转圈，等看门狗或调试器。
 5. `Flash = text + data`，`RAM = data + bss`。data 有初值，初值存 Flash、运行值在 RAM，两份都吃；bss 零初始化，启动时清零，只吃 RAM。`._user_heap_stack` 是检查段，预算进 bss 列，也进 RAM 占用。
 6. Archive member 表查静态库捞了哪些 `.o`；Memory Map 查每个段、符号的地址与大小；Discarded input 查谁被 `gc-sections` 辞退。`nm -S --size-sort` 按符号大小排队，`tail` 看队尾的大户。一个 4KB 未用数组比 `-O2` 到 `-Os` 省的几百字节大一个数量级，所以先砍大项，再谈优化级别。

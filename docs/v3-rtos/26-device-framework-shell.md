@@ -9,7 +9,7 @@ FreeRTOS 把内核之外的一切留给你；RT-Thread 在内核之上叠了三�
 
 这一章没有一条实测读数。六份源材料都没有板级日志；「168 MHz 上纳秒级的调用开销」「整套 msh 约 10–20 KB Flash」是来源说法（未复核），正文不把它们写成测量值。仓库里的 RT-Thread 实验工程 `mcu/code/rtos/02-rt-thread-lab` 是 Nano 式裁剪（`rtconfig.h` 只要内核，没有 `RT_USING_DEVICE` 与 `RT_USING_FINSH`）；设备与 shell 的实验必须切到标准 BSP 或显式打开组件，不能拿这个 lab 固件冒充「已跑通」。
 
-> 版本口径：RT-Thread 按 **v5.3.0** 对账（`include/rtdef.h`、`components/drivers/`、`components/finsh/`、`src/`）；默认 F407 BSP 指 `bsp/stm32/stm32f407-atk-explorer`。旧材料里的 `bsp/stm32f407-zeo` 在 v5.3.0 不存在，本章所有 BSP 路径按真实目录写。
+> 版本口径：RT-Thread 按 **v5.3.0** 对账（`include/rtdef.h`、`components/drivers/`、`components/finsh/`、`src/`）；默认 F407 BSP 指 `bsp/stm32/stm32f407-atk-explorer`。旧材料里的 `bsp/stm32f407-zeo` 在 v5.3.0 不存在，这里的 BSP 路径按真实目录写。
 
 ## 本章罗盘
 
@@ -303,7 +303,7 @@ bsp/stm32/stm32f407-atk-explorer/
 
 三区纪律：板级知识（时钟、堆、引脚、链接脚本）进 `board/`；HAL 包装进 `libraries/`；应用只进 `applications/`。在 `applications/` 里改驱动，换 BSP 时改动全丢。板级与应用解耦靠设备框架做接合层，这是 RT-Thread 工程化的核心纪律。
 
-`pkgs --update` 按 `.config` 拉选中的软件包源码进 `packages/`，版本可在 menuconfig 里钉死（生产固件建议钉版本防上游漂移）。设备框架与 shell 在「选 FreeRTOS 还是 RT-Thread」里占什么分量，见 [第 27 章](./27-rtos-comparison-selection.md) 的对照与选型。
+`pkgs --update` 按 `.config` 拉选中的软件包源码进 `packages/`，版本可在 menuconfig 里锁定（生产固件建议锁定版本防上游漂移）。设备框架与 shell 在「选 FreeRTOS 还是 RT-Thread」里占什么分量，见 [第 27 章](./27-rtos-comparison-selection.md) 的对照与选型。
 
 ## lab 实况：这份固件没有设备框架
 

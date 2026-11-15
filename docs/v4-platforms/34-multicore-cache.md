@@ -5,7 +5,7 @@ platforms: [esp32, f407]
 
 # 多核、Cache 与内存一致性
 
-「多核」这个词在 MCU 世界里藏着两种完全不同的形态：ESP32-S3 是 SMP，一个 FreeRTOS 内核同时管两颗 LX7；STM32H745 是 AMP，两颗核各跑一个内核，共享内存加 HSEM 交换数据。「Cache」则是另一个正交的雷：F407 根本没有 cache，H7 的 M7 带 16+16 KB，S3 靠 cache 窗口执行外部 Flash。这一章把三平台的内存模型排上同一张解剖台，把「DMA 看见的内存 ≠ CPU 看见的内存」讲成一张可执行的方向表，再把 H745 的五层双核契约从旁注展开成契约书。
+「多核」这个词在 MCU 世界里藏着两种完全不同的形态：ESP32-S3 是 SMP，一个 FreeRTOS 内核同时管两颗 LX7；STM32H745 是 AMP，两颗核各跑一个内核，共享内存加 HSEM 交换数据。「Cache」则是另一个正交的雷：F407 根本没有 cache，H7 的 M7 带 16+16 KB，S3 靠 cache 窗口执行外部 Flash。下面把三平台的内存模型放在一起对照，把「DMA 看见的内存 ≠ CPU 看见的内存」讲成一张可执行的方向表，再把 H745 的五层双核契约从旁注展开成契约书。
 
 这一章没有板级实测。上游核对按 **ESP-IDF v5.5.2** 实取：`soc_caps.h:140,145` 的 writeback 支持位与核数、`esp_cache.h:25-38,54-57` 的 msync 方向宏与「经典 ESP32 无 writeback」原话、`cache_ll.h:401-403,501,514` 都已命中。
 
@@ -166,7 +166,7 @@ esp_cache 的方向宏与 STM32 侧一一对应（`esp_cache.h:25-38` 逐行实�
 - 三平台内存模型（无 cache/带 cache/Cache 映射）一张表能画，各自义务说得清。
 - 方向表（TX clean/RX invalidate）与 32 B 独占纪律能落到 CMSIS 调用顺序；未对齐 invalidate 的危害能讲。
 - 「cache 在核内、CM7 在 D1」的归属链与三域分工能白板画。
-- DTCM/CCM 禁区表（地址/原因/手册三列）能钉死，map 核对动作记得住。
+- DTCM/CCM 禁区表（地址/原因/手册三列）能说清，map 核对动作记得住。
 - H745 的 AMP 语义与五层契约能按层冻结、按层注入；「HSEM 不替代屏障」说得清。
 - 「S3 支持 writeback」能用 `soc_caps.h:140` 定谳；msync 与 CMSIS 的方向对照表能互译。
 - MPU 两条解法的取舍与「仓库无实例、设计口径」的诚实边界守得住。

@@ -15,7 +15,7 @@ UM/datasheet 的页码引用（SDIO bit31、CAN 复位值等）未能取件，�
 
 ## 本章罗盘
 
-- **问题**：GD32F4xx 的「工具链零增量」与型号宏选择；RCU 与 RCC 的偏移对照，200M 档三件套（HDEN/HDS 真轮询）与 168M 默认档哪个是官方事实，官方 system 文件为何全文不设 Flash 等待。外设侧：GPIO 改名不改岗之外的 BC/TG，VF103 为何没有；USART 旧偏移表错在哪两处，上游如何定谳。RISC-V 线：VF103 的「隔代布局」，照搬 F4xx RCU 宏第一笔错在哪，108 MHz 是否为超频。内核差异：ECLIC 与 NVIC 的结构差异（无 +16、两维优先级、shv），mtime 与 SysTick 的四点差异，延时为何要「续约」，两套中断号地图为何不能互串。
+- **问题**：GD32F4xx 的「工具链零增量」与型号宏选择；RCU 与 RCC 的偏移对照，200M 档三组配置（HDEN/HDS 真轮询）与 168M 默认档哪个是官方事实，官方 system 文件为何全文不设 Flash 等待。外设侧：GPIO 改名不改岗之外的 BC/TG，VF103 为何没有；USART 旧偏移表错在哪两处，上游如何定谳。RISC-V 线：VF103 的「隔代布局」，照搬 F4xx RCU 宏第一笔错在哪，108 MHz 是否为超频。内核差异：ECLIC 与 NVIC 的结构差异（无 +16、两维优先级、shv），mtime 与 SysTick 的四点差异，延时为何要「续约」，两套中断号地图为何不能互串。
 - **交付**：能说清双线总览（ARM 线改宏名、RISC-V 线换内核）；能复算 200M 档（25/25×400/2）与 108M 档（8÷2×27）并指出 USB 的 44.4 MHz 陷阱；能纠正「官方默认 200MHz」的说法（默认档 168M，200M 是预设函数）；能用上游修正版 USART 偏移表（STAT0@0x00、CTL0@0x0C）与 USART0=0x40011000（APB2）替换旧错表；能画 ECLIC 的四字段布局（cfg/ie/ip/attr/ctl，4 字节间隔）与 shv 两种路径；能算 mtime 的 tick（108M→27 MHz，1ms=27000）并写出先高后低写、高-低-高读与 `cmp += 周期` 三条纪律；能把两套中断号（F4 线 USART0=37 / V 线 USART0=56、EXTI0=25）分开背。
 - **边界**：单线对照章。GD32 与 STM32 的外设寄存器细节只讲「差异点」，完整机制回 [v1 第 8–13 章](../v1-drivers/08-architecture-memory-clock.md) 与 [第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)；迁移方法论归 [第 28 章](./28-chip-migration-differences.md)；UART 协议帧归 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)。手册页码未取件的行带「来源说法待核」。板上实测（CK_OUT0 量频、PF6 翻转、等待拍数）在源章里就是「待上板」状态，本章不改写成结论。
 - **依据锚点**：G0《环境》（`mcu/docs/gd32/00-env.md`）、G1《RCU 时钟》（`.../01-rcu-clock.md`）、G2《GPIO 复用》（`.../02-gpio-af.md`）、G3《USART》（`.../03-usart.md`）、G4《外设差异》（`.../04-periph-diff.md`）、V0《工具链》（`.../05-riscv-toolchain.md`）、V1《CLIC 中断》（`.../06-clic-irq.md`）、V2《108MHz》（`.../07-rcu-108m.md`）、V3《mtime 延时》（`.../08-mtime-delay.md`）、V4《GPIO 最小点灯》（`.../09-gpio-minimal.md`）。上游对账：GD32 官方固件库 [gd32f4xx_usart.h](https://www.gigadevice.com/) `@10d02f4`（`:51-60`）、[gd32f4xx_gpio.h](https://www.gigadevice.com/)（`:52-63`）、[gd32f4xx_rcu.h](https://www.gigadevice.com/)（`:44-57,886-900`）、[system_gd32f4xx.c](https://www.gigadevice.com/)（`:56,:958-996`）；VF103 库 `@bc2be118`（gd32vf103.h、gd32vf103_rcu.h、n200_eclic.h:13-41、n200_timer.h:8-13、system_gd32vf103.c:47-61,750-830）；NMSIS core_feature_eclic.h（`:63,127-128,156,758`）。
@@ -31,11 +31,11 @@ UM/datasheet 的页码引用（SDIO bit31、CAN 复位值等）未能取件，�
 
 ARM 线的「零增量」：`-mcpu/-mthumb/-mfpu/-mfloat-abi` 四旗与 F407 逐字相同。这是 G0 的原话，且由 `gd32f4xx.h` 的型号分支支撑。换库的成本在改名（RCC→RCU、GPIO_BSRR→BOP/BC），不在重学。
 
-### 2. 先把两个旧错误钉在案
+### 2. 两个旧错误
 
 写 ch29 前先立两个上游定谳（都已在官方库实取核对）：
 
-- **USART 偏移表**：旧材料的「CTL0@0x00…DATA@0x18」整体错位。上游 `gd32f4xx_usart.h:51-60` 实际是 **STAT0@0x00、DATA@0x04、BAUD@0x08、CTL0@0x0C、CTL1@0x10、CTL2@0x14、GP@0x18**（另有 STAT1@0x88）。这些偏移与 STM32 的 SR/DR/BRR/CR1–3/GTPR 逐项相同（0x00–0x18）。错的是旧表把 GD32 名称按到别的位置，别误读成 GD32 挪了寄存器。随文的「0x00 永远是主控制寄存器、0x0C 永远是波特率」一并废弃不用。
+- **USART 偏移表**：旧材料的「CTL0@0x00…DATA@0x18」整体错位。上游 `gd32f4xx_usart.h:51-60` 实际是 **STAT0@0x00、DATA@0x04、BAUD@0x08、CTL0@0x0C、CTL1@0x10、CTL2@0x14、GP@0x18**（另有 STAT1@0x88）。这些偏移与 STM32 的 SR/DR/BRR/CR1–3/GTPR 逐项相同（0x00–0x18）。错的是旧表把 GD32 名称按到别的位置，别误读成 GD32 挪了寄存器。随文的「0x00 是主控制寄存器、0x0C 是波特率」一并废弃不用。
 - **USART0 基址**：旧材料写「USART0 = APB1+0x4400」。上游 `gd32f4xx.h:326` 的 `USART_BASE=APB1+0x4400`（0x40004400）是 **USART1**（=STM32 的 USART2）；**USART0 = 0x40011000（APB2，`gd32f4xx_usart.h:47`）**。它与 STM32 USART1 的老地址相同，也和它自己「USART0 中断号挂 APB2」的中断地图一致。
 
 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)已把旧表标为「待复核」，本章按上游版替换。
@@ -47,14 +47,14 @@ ARM 线的「零增量」：`-mcpu/-mthumb/-mfpu/-mfloat-abi` 四旗与 F407 逐
 偏移对照（`gd32f4xx_rcu.h:44-57` 与 G1 逐行一致）：CTL 0x00、PLL 0x04、CFG0 0x08、AHB1EN 0x30、APB1EN 0x40。骨架同 STM32，名字换过。三条实质差异：
 
 1. **PLL1/PLL2 配而不用**：8M 分支把 `PLL1_MUL20|PLL2_MUL20` 写进 CFG1 且使能了 PLL1EN/PLL2EN（`system_gd32f4xx.c:800,803,809`），但两者不在时钟路径。旧章「配了却没使能」说反了。官方还把 PLL2 的等待注释误写成 PLL1（`:810` 附近）；读库要带怀疑。
-2. **200M 档的三件套**：PSC=25/N=400/P=2/Q=9，VCO 400 MHz，复算 25/25×400/2=200；握手是**真轮询**：HDEN 等 HDRF、HDS 等 HDSRF（`:981-987`），顺序 LDOVS→总线分频→PLL 启动等锁→HDEN→HDS→切 SCS（`:958-996`）。USB 的坑：Q=9 → 400/9≈44.4 MHz ≠ 48，USB 时钟走 CK48M 三源（PLLQ/PLLSAIP/IRC48M，`RCU_ADDCTL:410-412`）。
+2. **200M 档的三组配置**：PSC=25/N=400/P=2/Q=9，VCO 400 MHz，复算 25/25×400/2=200；握手是**真轮询**：HDEN 等 HDRF、HDS 等 HDSRF（`:981-987`），顺序 LDOVS→总线分频→PLL 启动等锁→HDEN→HDS→切 SCS（`:958-996`）。USB 的坑：Q=9 → 400/9≈44.4 MHz ≠ 48，USB 时钟走 CK48M 三源（PLLQ/PLLSAIP/IRC48M，`RCU_ADDCTL:410-412`）。
 3. **默认档是 168M**：官方副本 `system_gd32f4xx.c:56` 默认启用 `__SYSTEM_CLOCK_168M_PLL_25M_HXTAL`，200M 三档全部注释着（`:60-61`）；200M 是预设函数 `system_clock_200m_25m_hxtal`（`:936`），上 200M 要自行放开宏。旧章「SystemInit 默认拉到 200MHz」与官方仓库冲突，本章按上游改写。
 
-还有一个官方留白值得记住：官方 system 文件全文**不设 Flash 等待**（检索无 FMC_WS 写入）；GD32F4xx 的 WSCNT 是 4 位 0~15 加 WSEN 使能位，VF103 是 3 位（`gd32vf103_fmc.h:45,64,103`）。档位数字与 UM 页码待核；「168 MHz 零等待」是 F407xx datasheet 的说法，不外推到 200/240 档。
+官方 system 文件还有一处留白：全文**不设 Flash 等待**（检索无 FMC_WS 写入）；GD32F4xx 的 WSCNT 是 4 位 0~15 加 WSEN 使能位，VF103 是 3 位（`gd32vf103_fmc.h:45,64,103`）。档位数字与 UM 页码待核；「168 MHz 零等待」是 F407xx datasheet 的说法，不外推到 200/240 档。
 
 ![GD32 RCU 时钟树动画：PLL 家族与 CK48M 三源](/anim/gd32-rcu-clock.svg)
 
-![GD32 RCU 200M 档：PLL 三件套、PLL1/PLL2 配而不用、CK48M 三源与 168M 默认档](/arch/rcu-tree.png)
+![GD32 RCU 200M 档：PLL 三组参数、PLL1/PLL2 配而不用、CK48M 三源与 168M 默认档](/arch/rcu-tree.png)
 
 CK_OUT0/MCO 同款编码雷区两边同罚：PA8 输出、/1~/5 编码 0/4/5/6/7，写 3 落入**不分频**（`gd32f4xx_rcu.h:886-900`）。「分频比减一」的错误在 ch08 教过，这里是它的 GD32 分身。
 
@@ -76,7 +76,7 @@ GD32F4xx 的 GPIO 十二枚寄存器偏移与 F4 相同（CTL/OMODE/OSPD/PUD/IST
 
 ### 四、VF103：外设像 F1，内核换魂
 
-GD32VF103 的外设地址与 F103 老地址逐条一致：AFIO@0x40010000、EXTI@0x40010400、GPIOA@0x40010800、RCU@0x40021000、FLASH=0x08000000、SRAM=0x20000000（`gd32vf103.h:196-229`）。迁移免改地盘。但 RCU 是**隔代布局**：0x04 是 CFG0 不是 PLL（F4xx 的 `RCU_PLL` 宏在 VF103 头文件根本不存在），PLL 参数拆进 CFG0（PLLMF）+ CFG1（PREDV0）；无电压三件套，只有 DSV（`gd32vf103_rcu.h:45-57`）。照搬 F4xx 的 RCU 宏，第一笔就写错地方。
+GD32VF103 的外设地址与 F103 老地址逐条一致：AFIO@0x40010000、EXTI@0x40010400、GPIOA@0x40010800、RCU@0x40021000、FLASH=0x08000000、SRAM=0x20000000（`gd32vf103.h:196-229`）。迁移免改地盘。但 RCU 是**隔代布局**：0x04 是 CFG0 不是 PLL（F4xx 的 `RCU_PLL` 宏在 VF103 头文件根本不存在），PLL 参数拆进 CFG0（PLLMF）+ CFG1（PREDV0）；无电压三组配置，只有 DSV（`gd32vf103_rcu.h:45-57`）。照搬 F4xx 的 RCU 宏，第一笔就写错地方。
 
 GPIO 也隔代：CTL0/CTL1 每脚 4 位、只有 7 枚寄存器（CTL0/CTL1、ISTAT、OCTL、BOP、BC、LOCK），**没有 TG**（`gd32vf103_gpio.h:53-59`）。
 
@@ -122,7 +122,7 @@ ECLIC（N200 核的中断控制器，地址 0xd2000000，`n200_eclic.h:37`）与
 | USART 偏移表修正版 | 手册级（上游已核） | `gd32f4xx_usart.h@10d02f4:51-60` |
 | USART0=0x40011000（APB2） | 手册级（上游已核） | `gd32f4xx.h:326` + `gd32f4xx_usart.h:47` |
 | 默认档 168M、200M 预设 | 手册级（上游已核） | `system_gd32f4xx.c:56,:60-61,:936` |
-| 200M 三件套真轮询 | 手册级（上游已核） | 同上 `:958-996,:981-987` |
+| 200M 三组配置真轮询 | 手册级（上游已核） | 同上 `:958-996,:981-987` |
 | PLL1/PLL2 配而不用 | 手册级（上游已核） | 同上 `:800,803,809` |
 | BC/TG 独有、VF103 无 TG | 手册级（上游已核） | `gd32f4xx_gpio.h:52-63` / `gd32vf103_gpio.h:53-59` |
 | ECLIC 布局与中断号 | 手册级（上游已核） | `n200_eclic.h:13-41` / `gd32vf103.h:100-170` |
@@ -141,7 +141,7 @@ ECLIC（N200 核的中断控制器，地址 0xd2000000，`n200_eclic.h:37`）与
 | --- | --- | --- |
 | 串口寄存器读写全错位 | 用了旧偏移表（CTL0@0x00） | 对上游 `gd32f4xx_usart.h:51-60` 重排；STAT0 才在 0x00 |
 | 找不到 USART0 | 以为在 APB1+0x4400 | 那是 USART1；USART0=0x40011000（APB2） |
-| 200M 跑不上 | 直接调 200M 预设但默认档 168M；或电压三件套没跟上 | 读回 CFG0/PLL 参数与 SCS 选择；对照 `:958-996` 握手 |
+| 200M 跑不上 | 直接调 200M 预设但默认档 168M；或电压三组配置没跟上 | 读回 CFG0/PLL 参数与 SCS 选择；对照 `:958-996` 握手 |
 | USB 时钟不对 | 以为 Q 分频出 48M | Q=9 → 44.4 MHz；USB 走 CK48M 三源另配 |
 | 中断不触发（VF103） | 按 STM32 习惯填 IRQn 或用 +16 槽偏移 | ECLIC 无 +16；EXTI0=25；检查 clicintie 与 nlbits 分割 |
 | 延时不准或漂移 | `mtimecmp = now + 周期`（读写在两 tick 之间漂） | 改 `mtimecmp += 周期` 续约式；核对 ÷4 分频链 |
@@ -158,7 +158,7 @@ ECLIC（N200 核的中断控制器，地址 0xd2000000，`n200_eclic.h:37`）与
 ## 离开检查
 
 - 能一张表说清两条线的兼容层级（改宏名 vs 换魂）。
-- 200M 档三件套与 168M 默认档的事实分得清，USB 44.4 MHz 的陷阱能指出。
+- 200M 档三组配置与 168M 默认档的事实分得清，USB 44.4 MHz 的陷阱能指出。
 - 上游修正版 USART 偏移表能默写（STAT0@0x00、DATA@0x04、BAUD@0x08、CTL0@0x0C）。
 - ECLIC 的四字段、两维优先级、shv 两种路径能白板画；中断号两套地图不互串。
 - mtime 的四点差异与三条读写纪律能落到代码顺序上。

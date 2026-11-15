@@ -5,7 +5,7 @@ platforms: [esp32]
 
 # Wi-Fi、蓝牙与 ESP-NOW
 
-Wi-Fi 与 BLE 在 ESP32 上是「预编译巨人」：协议栈不开放源码、以库形态链接，你写的是事件回调与状态机。所以这一章的世界观是**事件循环**：`esp_event` 三件套把 Wi-Fi 的状态变化送进你的 handler，handler 不能阻塞。ESP-NOW 是一条旁路：不走 AP、不建 socket，peer 互发小包，适合低延迟的控制面。本章把三条链路拆到 API 行：六步骨架、reason 分诊、退避序列、NVS 依赖、BLE 双栈选择、ESP-NOW 的边界数字。
+Wi-Fi 与 BLE 在 ESP32 上是「预编译巨人」：协议栈不开放源码、以库形态链接，你写的是事件回调与状态机。核心是**事件循环**：`esp_event` 的三个对象把 Wi-Fi 的状态变化送进你的 handler，handler 不能阻塞。ESP-NOW 是一条旁路：不走 AP、不建 socket，peer 互发小包，适合低延迟的控制面。下面把三条链路拆到 API 行：六步结构、reason 分诊、退避序列、NVS 依赖、BLE 双栈选择、ESP-NOW 的边界数字。
 
 这一章没有板级实测。上游核对按 **ESP-IDF v5.5.2** 实取：`esp_wifi_types_generic.h:1062-1065,1154-1160,117,131,166-168`、`esp_netif_types.h:99-100`、`esp_now.h:19-37,118-127,224`、`bt/Kconfig:12-27`、`soc_caps.h:45,594-596` 全部命中，`esp_event_base.h:22-24` 的 handler 四参签名也实取核对。重连耗时、双板互传、测距丢包全部未实测；`wifi:state:` 之类的日志字样只是示意口径，待上板回填；NimBLE 省内存的方向性说法标待核。
 
@@ -13,7 +13,7 @@ Wi-Fi 与 BLE 在 ESP32 上是「预编译巨人」：协议栈不开放源码�
 
 ## 本章罗盘
 
-- **问题**：`esp_event` 三件套是什么，handler 跑在谁的上下文、为何不能阻塞。STA 骨架六步的顺序铁律，`esp_wifi_start` 为何是异步的。连接失败侧：DISCONNECTED 事件的 reason code 如何分诊，4 号码的旧解释错在哪，指数退避序列如何复算，重连逻辑为何不能写在 handler 里。NVS 为何是 Wi-Fi/BT 的第一依赖，两个自愈报错如何处理。蓝牙侧：S3 为何是单模 BLE，Controller/Host/HCI 三层如何分，NimBLE 与 Bluedroid 如何二选一、默认是谁、S3 选 NimBLE 的真实理由，GATT 三级容器与 CCC 订阅机制。ESP-NOW 的三步、peer 结构、上限数字（250/1470/6/20）、双回调签名与信道规则。
+- **问题**：`esp_event` 的三个对象是什么，handler 跑在谁的上下文、为何不能阻塞。STA 六步的顺序要求，`esp_wifi_start` 为何是异步的。连接失败侧：DISCONNECTED 事件的 reason code 如何分诊，4 号码的旧解释错在哪，指数退避序列如何复算，重连逻辑为何不能写在 handler 里。NVS 为何是 Wi-Fi/BT 的第一依赖，两个自愈报错如何处理。蓝牙侧：S3 为何是单模 BLE，Controller/Host/HCI 三层如何分，NimBLE 与 Bluedroid 如何二选一、默认是谁、S3 选 NimBLE 的理由，GATT 三级容器与 CCC 订阅机制。ESP-NOW 的三步、peer 结构、上限数字（250/1470/6/20）、双回调签名与信道规则。
 - **交付**：能画出 Wi-Fi 状态机与事件循环的关系图；能写六步骨架并说出每步失败后果；能把 reason 201/15/202/203 分诊到具体物理原因，指出 4 号码是弃用码；能复算退避序列（1→2→4→8→16→32→60 封顶）；能处理 NVS 的 `NO_FREE_PAGES`/`NEW_VERSION_FOUND` 自愈；能按 `bt/Kconfig` 的 choice 机制选栈并写对符号名；能画 GATT 的 service→characteristic→descriptor 三级与 CCC(0x2902) 订阅；能写 ESP-NOW 三步与 v5.x 回调签名，背出四个上限数字并分诊 `ESP_ERR_ESPNOW_CHAN`。
 - **边界**：单平台 ESP32-S3（单模 BLE）；TCP/IP 协议栈与 socket 语义归[第 33 章](./33-network-protocol-stack.md)（esp_netif→lwIP 的衔接在那里讲）；NVS 的存储机制归 [第 30 章](./30-esp32s3-architecture-boot.md) 的分区表段；FreeRTOS 队列/任务机制回 [v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md)；经典蓝牙（SPP/A2DP）在 S3 上不存在，本章不写。示例日志字样是示意口径。
 - **依据锚点**：E8《Wi-Fi》（`mcu/docs/esp32/08-wifi.md`）、E9《BLE 与 ESP-NOW》（`.../09-bt-espnow.md`）。上游对账：ESP-IDF v5.5.2 的 [esp_wifi_types_generic.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_wifi/include/esp_wifi_types_generic.h)、[esp_netif_types.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_netif/include/esp_netif_types.h)、[esp_now.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_wifi/include/esp_now.h)、[esp_event_base.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_event/include/esp_event_base.h)、[bt/Kconfig](https://github.com/espressif/esp-idf/blob/v5.5.2/components/bt/Kconfig)、[soc_caps.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/soc/esp32s3/include/soc/soc_caps.h)。
@@ -55,7 +55,7 @@ esp_wifi_start();                                  /* ⑥ start（异步） */
 
 ### 一、事件循环：handler 不能阻塞
 
-`esp_event` 三件套：事件循环任务（`esp_event_loop_create_default` 创建的默认任务）、事件基（`WIFI_EVENT`/`IP_EVENT`）、注册的回调。handler 的四参签名（`esp_event_base.h:22-24` 实取）：
+`esp_event` 的三个对象：事件循环任务（`esp_event_loop_create_default` 创建的默认任务）、事件基（`WIFI_EVENT`/`IP_EVENT`）、注册的回调。handler 的四参签名（`esp_event_base.h:22-24` 实取）：
 
 ```c
 void handler(void *arg, esp_event_base_t base, int32_t id, void *data);
@@ -136,7 +136,7 @@ esp_now_send(peer.peer_addr, data, len);
 | 症状 | 第一条假设 | 区分实验 |
 | --- | --- | --- |
 | `nvs_flash_init` 报错 | 页面写满或格式升级 | 按报错走 erase+reinit 自愈路径 |
-| start 后永远收不到 STA_START | 事件循环没建或 handler 没注册 | 检查六步顺序；换 `ESP_EVENT_ANY_ID` 验证 |
+| start 后一直收不到 STA_START | 事件循环没建或 handler 没注册 | 检查六步顺序；换 `ESP_EVENT_ANY_ID` 验证 |
 | connect 立即失败 | start 是异步的，connect 调早了 | 挪进 STA_START 事件分支 |
 | 连不上且 reason=15 | 密码错（四次握手超时） | 重输密码；换认证方式对照 |
 | connect 不上 reason=201 | SSID 不存在或信号弱 | 手机热点对照；看路由器列表 |

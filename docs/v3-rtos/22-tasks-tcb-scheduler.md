@@ -66,7 +66,7 @@ F1 的 GDB 首帧、F3 的七步 probe、F1 的串口日志和 R1 的 `list_thre
 
 ### 一、TCB 的第一字段是栈顶
 
-`tskTaskControlBlock` 在 V11.1.0 的 `tasks.c:358` 定义，第一个成员是 `pxTopOfStack`；源码在 `tasks.c:360` 的成员注释里把话说死：这一项必须是 TCB 的第一个成员。`pxTopOfStack` 不是栈底，是当前栈顶。每次切换后，它指向该任务最后一次压栈的位置；栈底是另一个字段 `pxStack`，留给溢出检查。
+`tskTaskControlBlock` 在 V11.1.0 的 `tasks.c:358` 定义，第一个成员是 `pxTopOfStack`；源码在 `tasks.c:360` 的成员注释里明确写道：这一项必须是 TCB 的第一个成员。`pxTopOfStack` 不是栈底，是当前栈顶。每次切换后，它指向该任务最后一次压栈的位置；栈底是另一个字段 `pxStack`，留给溢出检查。
 
 ```c
 typedef struct tskTaskControlBlock
@@ -92,7 +92,7 @@ typedef struct tskTaskControlBlock
 
 这个顺序不是排版习惯，是汇编级的硬约束。PendSV 里 `ldr r2, [r3]` 取到当前 TCB 后，`stmdb r0!, {r4-r11, r14}` 把软件帧压进任务栈，最后 `str r0, [r2]` 把新栈顶写回 TCB。这里的 `[r2]` 没有字段名，只有偏移 0；恢复时 `ldr r0, [r1]` 也从偏移 0 取新栈顶（`F2:196`）。只要在 `pxTopOfStack` 前面加一个字段，写回就会落进那个字段，恢复时又把字段值当成栈顶指针，第一次切换就会把 PSP 指向错误的位置。TCB 的布局是内核与 port 层之间的 ABI，不是可以随手调整的普通结构体。
 
-顺带一个同名陷阱：`include/task.h:171` 的 `pxTopOfStack` 属于 `TaskStatus_t`，是 `uxTaskGetSystemState()`（填数组）或 `vTaskGetInfo()`（单任务）给外部看的快照（`task.h:158,1139`），不是 TCB；移植层说的偏移 0 永远指 `tasks.c` 里的那个。
+顺带一个同名陷阱：`include/task.h:171` 的 `pxTopOfStack` 属于 `TaskStatus_t`，是 `uxTaskGetSystemState()`（填数组）或 `vTaskGetInfo()`（单任务）给外部看的快照（`task.h:158,1139`），不是 TCB；移植层说的偏移 0 始终指 `tasks.c` 里的那个。
 
 ### 二、首帧是「化妆」：18 个字装成「刚被中断」
 
@@ -172,7 +172,7 @@ do { \
 
 第一步更新最高就绪速查器；第二步把任务的 `xStateListItem` 挂到对应优先级的队尾。
 
-`list.c` 里有两个插入函数，分工明确：`vListInsertEnd` 不排序，插到索引位置之前，就绪表用它；`vListInsert` 按 `xItemValue` 升序找位插入，延时表用它。延时项的 `xItemValue` 是唤醒时刻，所以延时表队首永远是最早该醒的任务。选择时 `listGET_OWNER_OF_NEXT_ENTRY` 从上次位置的下一个取；队尾插入 + 循环取头 = 同优先级的任务天然轮转，时间片不需要额外数据结构。`configUSE_TIME_SLICING = 1` 时，tick 也会给同优先级任务一次轮转机会（`F3:100-112,140-170`）。
+`list.c` 里有两个插入函数，分工明确：`vListInsertEnd` 不排序，插到索引位置之前，就绪表用它；`vListInsert` 按 `xItemValue` 升序找位插入，延时表用它。延时项的 `xItemValue` 是唤醒时刻，所以延时表队首就是最早该醒的任务。选择时 `listGET_OWNER_OF_NEXT_ENTRY` 从上次位置的下一个取；队尾插入 + 循环取头 = 同优先级的任务天然轮转，时间片不需要额外数据结构。`configUSE_TIME_SLICING = 1` 时，tick 也会给同优先级任务一次轮转机会（`F3:100-112,140-170`）。
 
 每个优先级一条 `List_t`，这是实打实的 RAM。F3 用 `configMAX_PRIORITIES = 5` 与 `= 33` 两次 `sizeof` 测量反推 `(660 − 100) ÷ (33 − 5) = 20 B`（`F3:210`）；这是文档推导，默认没有开 list integrity 检查。lab 的 5 级就绪表骨架约 100 B，不含任务自己的 `ListItem_t`。F1:118 的「O(1)」要加限定：优化路径选最高是 O(1)；通用路径最坏要扫过所有非空优先级，最多 `configMAX_PRIORITIES` 次。lab 只有 5 级，扫描很短；级数大时这个差别才明显。
 
@@ -331,7 +331,7 @@ tick 侧：`SysTick_Handler` 调 `rt_interrupt_enter()` → `rt_tick_increase()`
 | 待实测 | F407 lab | RT-Thread `list_thread` 看栈水位；对照 `rt_thread` 字段与就绪组 | | |
 | 待实测 | F407 | 同一板刷 FreeRTOS 与 RT-Thread，GDB 对照两边的就绪组；要观察二级表，另把 RT-Thread 配到 >32 | | |
 
-这些台架都还没做。没有原始输出之前，本章只给源码结构与算术；表中的空白不是「通过」，是「未测」。
+这些台架都还没做。没有原始输出之前，这里只给源码结构与算术；表中的空白不是「通过」，是「未测」。
 
 ## 失败分支
 

@@ -5,7 +5,7 @@ platforms: [f407, esp32]
 
 # 网络与协议栈
 
-MCU 上网络的第一课不是 API，是**边界**：DMA 看见的内存与 CPU 看见的内存不同；lwIP 的 pbuf 是所有权不是指针；TCP 是字节流，帧边界要自己定义；三个平台的 DMA 禁区同名不同址不同原因。这一章把 F407 的以太网 + lwIP 与 ESP32 的 esp_netif→lwIP 摆在同一张解剖台上，按「先写需求、再选硬件」的顺序讲五条路径，把协议栈拆到 pbuf 不变式与 core-locking 边界。
+MCU 上网络先要划清**边界**：DMA 看见的内存与 CPU 看见的内存不同；lwIP 的 pbuf 是所有权不是指针；TCP 是字节流，帧边界要自己定义；三个平台的 DMA 禁区同名不同址不同原因。下面把 F407 的以太网 + lwIP 与 ESP32 的 esp_netif→lwIP 放在一起对照，按「先写需求、再选硬件」的顺序讲五条路径，把协议栈拆到 pbuf 不变式与 core-locking 边界。
 
 这一章没有板级实测。lwIP 按 **2.2.1**（RELEASE）实取核对：`pbuf.h:186-203` 的结构体与 `tot_len` 不变式逐字命中，`opt.h:190,2168,2086` 确认 core-locking 默认开、`LWIP_SOCKET_SELECT=1`、`LWIP_SO_SNDTIMEO=0`，`init.h:53-61` 是版本三段号。
 
@@ -36,7 +36,7 @@ lwIP 子模块 commit `07680c81…` 属于 **ST fork `stm32-mw-lwip`**（lwip-tc
 
 「CubeMX 能勾选 ETH」只说明外设存在，不说明你有 PHY、有磁性件、有引脚预算。**先写需求（带宽/延迟/连接数），再选硬件**。
 
-### 2. 三平台 DMA 禁区，一张表钉死
+### 2. 三平台 DMA 禁区，一张表列清
 
 | 平台 | 禁区 | 原因 | 对策 |
 | --- | --- | --- | --- |
@@ -189,7 +189,7 @@ ESP32 一侧，[espressif/esp-idf](https://github.com/espressif/esp-idf) 把 lwI
 
 - 五路径决策表能按需求走通，「先写需求再选硬件」不是口号。
 - RMII 六组信号能列全，「link 灯亮」的三层排查顺序能设计。
-- 三平台 DMA 禁区表（DTCM/CCM/关 Cache）能钉死，map 核对动作说得清。
+- 三平台 DMA 禁区表（DTCM/CCM/关 Cache）能说清，map 核对动作能复述。
 - TX clean / RX invalidate 方向表与 32 B 独占纪律能落到代码顺序。
 - pbuf 的链结构、`tot_len` 不变式、free 恰好一次能讲透。
 - 三套 API 的线程边界与 IRQ 禁令能回答「中断里能不能发包」。

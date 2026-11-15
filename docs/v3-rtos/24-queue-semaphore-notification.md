@@ -5,26 +5,26 @@ platforms: [f407]
 
 # 队列、信号量与通知
 
-按键中断把键值送进队列，一个任务在 `xQueueReceive` 上等；按键不来，任务睡在队列的接收名单上，CPU 去跑别人。队列、二值信号量、计数信号量、互斥锁、递归互斥锁，在 FreeRTOS 里都是同一个 `QueueDefinition` 的不同配置；任务通知把这条通路缩成 TCB 里的两个数组。本章把这些结构拆到源码行，再算清 E04 的 6000/2500 与三笔 RAM 账。
+按键中断把键值送进队列，一个任务在 `xQueueReceive` 上等；按键不来，任务睡在队列的接收名单上，CPU 去跑别人。队列、二值信号量、计数信号量、互斥锁、递归互斥锁，在 FreeRTOS 里都是同一个 `QueueDefinition` 的不同配置；任务通知把这条通路缩成 TCB 里的两个数组。下面把这些结构拆到源码行，再算清 E04 的 6000/2500 与三处 RAM 开销。
 
-这一章没有新的上板读数。E04 的 `hardware_status` 仍是 `pending`，实测表空着；F6 的五幕模拟与 1312/56/616 按来源说法(未复核)处理；源码摘录与算术标文档推导。`Queue_t=80` 是本仓库 probe 声明过的值，不能当跨工程常数。
+没有新的上板读数。E04 的 `hardware_status` 仍是 `pending`，实测表空着；F6 的五幕模拟与 1312/56/616 按来源说法(未复核)处理；源码摘录与算术标文档推导。`Queue_t=80` 是本仓库 probe 声明过的值，不能当跨工程常数。
 
 > 版本口径：FreeRTOS 的 `queue.c`、`tasks.c`、`semphr.h`、`event_groups.h` 行号与语义按 FreeRTOS-Kernel V11.1.0 对账；RT-Thread 的字段与函数名按 v5.3.0 的 `rtdef.h`、`ipc.c` 对账。根书 F103 例程按 V11.3.2，行号不与本章混排。
 
 ## 本章罗盘
 
-- **问题**：队列、二值/计数信号量、互斥锁和递归互斥锁，在 FreeRTOS 里都是同一个 `QueueDefinition`；`uxQueueType` 是字段还是宏，几种形态靠哪几个字段区分？`xQueueGenericSend` 的三条分支怎么走，为什么 overwrite 要求 `uxLength==1`，等待名单按什么顺序唤醒？FromISR 为什么只能延迟让出，`pxHigherPriorityTaskWoken` 与 `portYIELD_FROM_ISR` 怎么配合，ISR 优先级阈值是多少？互斥锁出生就 give 一次，优先级继承怎么升、怎么落，ISR 里为什么不能 take？任务通知写 TCB 的哪两个字段，事件组在 lab 为什么只有 24 位，软件定时器为什么只有一个守护任务？通知比队列快多少，为什么只写定性结论？最后是三笔账：深度 10、项 16 B 的队列占多少 RAM，1312/56/616/269 各是什么身份，E04 的 6000/2500 怎么算，F5 的「跑满 3000 ms」为什么错，继承数值为什么是 22→20？
+- **问题**：队列、二值/计数信号量、互斥锁和递归互斥锁，在 FreeRTOS 里都是同一个 `QueueDefinition`；`uxQueueType` 是字段还是宏，几种形态靠哪几个字段区分？`xQueueGenericSend` 的三条分支怎么走，为什么 overwrite 要求 `uxLength==1`，等待名单按什么顺序唤醒？FromISR 为什么只能延迟让出，`pxHigherPriorityTaskWoken` 与 `portYIELD_FROM_ISR` 怎么配合，ISR 优先级阈值是多少？互斥锁出生就 give 一次，优先级继承怎么升、怎么落，ISR 里为什么不能 take？任务通知写 TCB 的哪两个字段，事件组在 lab 为什么只有 24 位，软件定时器为什么只有一个守护任务？通知比队列快多少，为什么只写定性结论？最后是三组数：深度 10、项 16 B 的队列占多少 RAM，1312/56/616/269 各是什么身份，E04 的 6000/2500 怎么算，F5 的「跑满 3000 ms」为什么错，继承数值为什么是 22→20？
 - **交付**：能在纸上画出 `QueueDefinition` 的字段分区，说出三种队列/信号量靠哪几个字段区分；逐行读 `prvCopyDataToQueue`，指出单次 memcpy 与指针回绕；写出 `xQueueGenericSend` 的三分支与 overwrite 断言；写出 FromISR 的标准骨架与优先级约束；写出互斥锁继承三步与回落；算清 248 B 与 1312/56/616/269；按 E04 时间线算出 6000/2500，并指出 6500 与 1→3 的错；按 v5.3.0 说出 RT-Thread 的真实字段与函数名。
 - **边界**：单平台 F407（Cortex-M4F、`ARM_CM4F`、lab 跑 HSI 16 MHz、`configMAX_PRIORITIES=5`、heap 16 KiB）。FreeRTOS 结论按 V11.1.0，根书 F103 例程按 V11.3.2，行号不混排。队列集、多通知槽与 8/56 位事件组只在位宽表里点名条件，不展开；E04 只写理论、模型与待实测，完整仪器实验归[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。RT-Thread 只按 v5.3.0 的 IPC 字段与函数名，不把标准版 BSP 的配置当成 lab 事实。通知速度只写「更快，幅度依配置，需同板基准」，来源里的百分比与倍数不采用。
 - **依据锚点**：F4《队列》（`mcu/docs/rtos/freertos/04-queue.md`）、F5《信号量与互斥量》（`mcu/docs/rtos/freertos/05-sem-mutex.md`）、F6《任务通知、事件组与软件定时器》（`mcu/docs/rtos/freertos/06-notify-event-timer.md`）、R2《IPC 全家桶》（`mcu/docs/rtos/rtthread/02-ipc.md`）、E04《优先级反转复现》（`mcu/docs/lab/e04-priority-inversion.md`）。配置见 `mcu/code/rtos/01-freertos-lab/FreeRTOSConfig.h`（`:41-47`、`:62`），lab 场景见 `mcu/code/rtos/01-freertos-lab/main.c` 的场景 2/3/4/6。上游对账：FreeRTOS-Kernel V11.1.0 的 [queue.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/queue.c)、[queue.h](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/include/queue.h)、[semphr.h](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/include/semphr.h)、[event_groups.h](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/include/event_groups.h)、[tasks.c](https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V11.1.0/tasks.c)；RT-Thread v5.3.0 的 [ipc.c](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/src/ipc.c)、[rtdef.h](https://github.com/RT-Thread/rt-thread/blob/v5.3.0/include/rtdef.h)。异常帧与 PendSV 让出见 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) 与 [第 23 章](./23-context-switch-porting.md)；tick 时基见 [v1 第 11 章](../v1-drivers/11-systick-timebase-rtc.md)。
 
 ## 先做出来
 
-不接板，先把四笔账算在纸上。它们决定你上板后看到的是「队列真的没空间」，还是「名字根本没接上」。
+不接板，先算四件事。它们决定你上板后看到的是「队列真的没空间」，还是「名字根本没接上」。
 
-### 1. 三种人生，一张字段表
+### 1. 三种对象，一张字段表
 
-`QueueDefinition` 在同一块内存上解释出队列、信号量与互斥锁。先按用途把字段分三列，再看哪些字段只对某一种人生有意义：
+`QueueDefinition` 在同一块内存上解释出队列、信号量与互斥锁。先按用途把字段分三列，只看哪些字段对某一种对象有意义：
 
 | 字段 | 普通队列 | 二值/计数信号量 | 互斥锁/递归互斥锁 |
 | --- | --- | --- | --- |
@@ -39,9 +39,9 @@ platforms: [f407]
 | `uxItemSize` | 每项字节数 | 0 | 0 |
 | 两条等待名单 | 收发都用 | 只用接收名单 | 只用接收名单 |
 
-这张表的核心不是背字段，而是三个判断：`uxItemSize` 是否为 0、`uxQueueType` 是否为 NULL、`uxMessagesWaiting` 当前是多少。三件事一组合，五种 API 的行为就出来了。
+这张表不用背。判断只有三处：`uxItemSize` 是否为 0、`uxQueueType` 是否为 NULL、`uxMessagesWaiting` 当前是多少。三个值一组合，五种 API 的行为就出来了。
 
-### 2. 环形账：回绕的是指针，不是数据
+### 2. 环形缓冲：回绕的是指针，不是数据
 
 设深度 5、项 16 B，存储区从 `0x2000_1000` 开始：
 
@@ -68,7 +68,7 @@ pcReadFrom 初值 = pcHead + (5-1) × 16 = 0x1040
 
 第三条和第四条常被合成一句「满了就阻塞」。不对：`timeout=0` 的发送根本不进名单，它立即返回错误。只有给了正超时，任务才有资格睡在发送名单上。
 
-### 4. E04 时间线账
+### 4. E04 时间线
 
 三任务：L 优先级 1，t=0 拿锁后做 3000 ms 的真 CPU 工作；M 优先级 2，t=500 起连续占 CPU 到 t=4500；H 优先级 3，t=1000 要同一把锁。
 
@@ -81,7 +81,7 @@ pcReadFrom 初值 = pcHead + (5-1) × 16 = 0x1040
 
 ## 机制
 
-### 一、一个结构体三种人生
+### 一、一个结构体，三种对象
 
 `queue.c` 的 `QueueDefinition` 原文是下面这些字段。注意最后两行是宏，不是结构体成员：`uxQueueType` 只是 `pcHead` 的别名，`queueQUEUE_IS_MUTEX` 只是 `NULL`。
 
@@ -118,7 +118,7 @@ typedef struct QueueDefinition
 
 所以判断「这是不是互斥锁」的表达式 `uxQueueType == queueQUEUE_IS_MUTEX`，展开后就是 `pcHead == NULL`。二值信号量虽然也不存数据，但 `pcHead` 指向自身，不会被误判成互斥锁。这个细节解释了为什么 `uxQueueType` 不需要单独占一个结构体字段：它借用了 `pcHead` 的位子。
 
-三种人生的分工：
+三种对象的区别：
 
 - **普通队列**：`uxItemSize > 0`，`pcHead` 指向数据区，`pcWriteTo` 与 `pcReadFrom` 维护环形位置，两条等待名单都可能非空。
 - **二值/计数信号量**：`uxItemSize == 0`，`pcHead` 非 NULL，`uxMessagesWaiting` 就是计数，`uxLength` 是最大计数。没有数据拷贝，也没有持有者。
@@ -126,11 +126,11 @@ typedef struct QueueDefinition
 
 `uxLength` 是「能装几项」，不是「几字节」。深度 10、项 16 B 的队列，`uxLength=10`、`uxItemSize=16`，数据区 160 B。把 `uxLength` 当字节数是读源码时最常见的一处误读。
 
-`cRxLock`/`cTxLock` 不是任务计数，而是「队列被锁住期间，ISR 取走/塞进了几项」的欠账。调度器挂起时，任务侧会锁队列；此时 ISR 不能直接改等待名单，只能把 `cRxLock`/`cTxLock` 加一。解锁时再按欠账补做 `xTaskRemoveFromEventList`。这两个字段是队列与 ISR 共存的缓冲区，不是给应用读的计数器。
+`cRxLock`/`cTxLock` 记录的是「队列被锁住期间，ISR 取走/塞进了几项」，不是任务计数。调度器挂起时，任务侧会锁队列；此时 ISR 不能直接改等待名单，只能把 `cRxLock`/`cTxLock` 加一。解锁时再按这两个计数补做 `xTaskRemoveFromEventList`。这两个字段是队列与 ISR 共存的缓冲区，不是给应用读的计数器。
 
 ### 二、prvCopyDataToQueue：整项拷贝，指针回绕
 
-发送路径真正搬数据的函数是 `prvCopyDataToQueue`。它只做三件事，按 `uxItemSize` 分成三个分支：
+发送路径搬数据的函数是 `prvCopyDataToQueue`。它按 `uxItemSize` 分成三个分支：
 
 ```c
 /* queue.c V11.1.0；省略 configUSE_MUTEXES 条件编译与 mtCOVERAGE_TEST_MARKER 探针 */
@@ -194,7 +194,7 @@ static BaseType_t prvCopyDataToQueue( Queue_t * const pxQueue,
 
 第一件：`uxItemSize == 0` 时没有数据可拷，只处理计数与互斥锁的持有者。互斥锁分支先调 `xTaskPriorityDisinherit`，再清 `xMutexHolder`。顺序不能反：去继承函数要拿旧持有者的 TCB 指针回落优先级；先把指针清成 NULL，就找不到该回落给谁了。
 
-第二件：普通入队是**单次 memcpy 整项**。`pcWriteTo` 加上 `uxItemSize` 后，只有越过 `pcTail` 才回到 `pcHead`。`pcTail` 是「最后一项之后」的标记，不指向可写数据，也不参与 memcpy。单条数据永远落在一段连续的 `uxItemSize` 字节里，不存在「先写尾部、再写头部」的分段拷贝。F4 的正文写对了；旧测验里的「分两段 memcpy」是错的。
+第二件：普通入队是**单次 memcpy 整项**。`pcWriteTo` 加上 `uxItemSize` 后，只有越过 `pcTail` 才回到 `pcHead`。`pcTail` 是「最后一项之后」的标记，不指向可写数据，也不参与 memcpy。单条数据总落在一段连续的 `uxItemSize` 字节里，不存在「先写尾部、再写头部」的分段拷贝。F4 的正文写对了；旧测验里的「分两段 memcpy」是错的。
 
 第三件：`queueSEND_TO_FRONT` 与 `queueOVERWRITE` 走同一个 else 分支，写的是 `pcReadFrom` 指向的位置，然后把读指针向前移。普通队列用 `xQueueSendToFront` 时，这是「插到队头」；`xQueueOverwrite` 只允许长度 1，此时 `pcReadFrom == pcHead`，写进去的就是唯一槽位。覆盖分支还会先把局部变量 `uxMessagesWaiting` 减一，再在函数末尾统一加一，净效果是计数不变；覆盖是替换，不是新增。少了这一步，长度 1 的队列覆盖一次，计数就会从 1 变成 2，和「唯一槽位」的语义直接矛盾。
 
@@ -245,7 +245,7 @@ configASSERT( !( ( xCopyPosition == queueOVERWRITE ) && ( pxQueue->uxLength != 1
 
 接收侧是镜像：`xQueueReceive` 有数据就拷出并叫醒发送名单；空且超时为 0 返回 `errQUEUE_EMPTY`；空且超时为正则挂进 `xTasksWaitingToReceive`。`xQueuePeek` 只拷出不移除。`uxQueueMessagesWaiting` 与 `uxQueueSpacesAvailable` 读的就是 `uxMessagesWaiting` 与 `uxLength - uxMessagesWaiting`，适合在调试时看水位。
 
-### 四、叫号：按优先级，不按到达顺序
+### 四、唤醒顺序：按优先级，不按到达顺序
 
 等待名单是按优先级排序的链表，不是先进先出队列。任务挂上去时，它的 TCB 里那个 `xEventListItem` 的值被写成
 
@@ -264,7 +264,7 @@ for( pxIterator = ( ListItem_t * ) &( pxList->xListEnd );
 }
 ```
 
-等值时继续往后，所以同优先级的新来者排在已有同优先级项之后。结果就是：不同优先级按优先级叫号，同优先级按到达顺序叫号。这是「RTOS 的公平是重要的先来」这句话的源码依据，不是口号。
+等值时继续往后，所以同优先级的新来者排在已有同优先级项之后。结果就是：不同优先级按优先级唤醒，同优先级按到达顺序唤醒。RTOS 说的「重要的先来」，依据就在这两行。
 
 `xTaskRemoveFromEventList` 摘下名单头部，把任务从事件项上移除、放进就绪表，然后比较：
 
@@ -284,11 +284,11 @@ else
 
 同优先级不触发 `pdTRUE`，因为比较是严格的 `>`。发送者继续跑，被叫醒的同级任务在就绪表里等下一次调度。这也解释了为什么「发送完立刻打印」有时会看到消费者还没跑：不是没叫醒，是没到切换点。
 
-如果调度器被挂起，`xTaskRemoveFromEventList` 不会把任务直接放进就绪表，而是挂到 `xPendingReadyList`；等 `xTaskResumeAll` 再搬。队列的 `cRxLock`/`cTxLock` 欠账机制也在这个窗口里生效。看源码时不要把「叫醒」等同于「立刻运行」，中间隔着调度器和 PendSV。
+如果调度器被挂起，`xTaskRemoveFromEventList` 不会把任务直接放进就绪表，而是挂到 `xPendingReadyList`；等 `xTaskResumeAll` 再搬。队列的 `cRxLock`/`cTxLock` 延迟记账机制也在这个窗口里生效。看源码时不要把「叫醒」等同于「立刻运行」，中间隔着调度器和 PendSV。
 
 ### 五、FromISR：只延迟让出
 
-中断里不能调用普通发送/接收，原因不是「函数更长」，而是两件事做不到：中断上下文没有任务可以挂起，中断中途也不能切换上下文。FromISR 版本把这两件事都改成「记账，出去再结算」。
+中断里不能调用普通发送/接收，跟函数长短无关：中断上下文没有任务可以挂起，中断中途也不能切换上下文。FromISR 版本把这两件事都改成「记账，出去再结算」。
 
 `xQueueGenericSendFromISR` 没有 timeout 参数。队列满时它不等待，直接返回 `errQUEUE_FULL`，丢不丢由调用者决定。队列空时 `xQueueReceiveFromISR` 返回 `pdFALSE`。两者都在 `taskENTER_CRITICAL_FROM_ISR` 里改计数和等待名单，不调用任何可能阻塞的函数。
 
@@ -325,7 +325,7 @@ ISR 优先级约束与 ch10 的 NVIC 配置是同一件事。lab 的 `configPRIO
 
 `xQueueSendFromISR`/`xQueueReceiveFromISR` 之外，`xSemaphoreGiveFromISR` 也走同一条延迟让出路径；任务通知的 `vTaskNotifyGiveFromISR`、`xTaskNotifyFromISR` 也一样带 `pxHigherPriorityTaskWoken`。规则统一：ISR 只记账，出口只切一次。
 
-### 六、宏血缘：信号量与互斥锁都是队列
+### 六、宏定义：信号量与互斥锁都是队列
 
 `semphr.h` 里没有独立的信号量实现，只有三行宏：
 
@@ -341,7 +341,7 @@ ISR 优先级约束与 ch10 的 NVIC 配置是同一件事。lab 的 `configPRIO
     xQueueCreateMutex( queueQUEUE_TYPE_MUTEX )
 ```
 
-`xSemaphoreGive` 的等待时间是 `semGIVE_BLOCK_TIME`，值为 0。它发的是 `NULL`，项大小为 0，所以不拷贝数据，只把计数加一。计数已到 `uxLength` 时，它不阻塞，直接返回失败。这就是「give 永不阻塞」的源码依据：不是信号量特殊，而是宏把 timeout 写死成 0 了。
+`xSemaphoreGive` 的等待时间是 `semGIVE_BLOCK_TIME`，值为 0。它发的是 `NULL`，项大小为 0，所以不拷贝数据，只把计数加一。计数已到 `uxLength` 时，它不阻塞，直接返回失败。「give 不阻塞」的依据在这里：宏把 timeout 写死成 0 了。
 
 `xSemaphoreTake` 展开成 `xQueueSemaphoreTake`。后者先断言 `uxItemSize == 0`，再读 `uxMessagesWaiting`：大于 0 就减一返回；如果 `uxQueueType == NULL`（互斥锁），这条成功路径还会把 `xMutexHolder` 记为当前任务（`pvTaskIncrementMutexHeldCount()`），二值信号量不做这一步。计数等于 0 且是互斥锁时，先做优先级继承，然后挂进接收名单。二值信号量的 `pcHead` 非 NULL，不会走继承分支。
 
@@ -363,7 +363,7 @@ pxNewQueue->u.xSemaphore.uxRecursiveCallCount = 0;
 ( void ) xQueueGenericSend( pxNewQueue, NULL, 0, queueSEND_TO_BACK );
 ```
 
-二值信号量不送这一次，所以初始计数是 0；计数信号量按 `initial` 送。三种人生在创建函数里就分开了，后面的 take/give 只是沿着各自的计数与持有者字段走。
+二值信号量不送这一次，所以初始计数是 0；计数信号量按 `initial` 送。三种对象在创建函数里就分开了，后面的 take/give 只是沿着各自的计数与持有者字段走。
 
 递归互斥锁的 API 是 `xSemaphoreTakeRecursive` / `xSemaphoreGiveRecursive`，不是普通的 take/give。拿锁时如果持有者就是当前任务，`uxRecursiveCallCount++` 后直接返回，不再进队列；给锁时先减层数，只有减到 0 才真正走 `xQueueGenericSend`。lab 的 `FreeRTOSConfig.h` 没有打开 `configUSE_RECURSIVE_MUTEXES`，默认为 0，所以递归互斥锁的宏在这个工程里不编译。要用就显式打开，并且 take/give 成对。
 
@@ -421,7 +421,7 @@ ISR 能安全使用的是二值/计数信号量的 give 和任务通知；互斥
 
 ![优先级反转与继承：H 等锁、M 抢占、L 持锁；继承后 L 临时升到 H 级](/figures/rtos-freertos-05-sem-mutex.svg)
 
-### 八、E04：反转的理论账
+### 八、E04：反转的理论时间线
 
 E04 的 FreeRTOS 剧本在 `mcu/code/rtos/01-freertos-lab/main.c` 的场景 6，优先级 1/2/3；RT-Thread 版优先级是 22/21/20，数值越小越高。两版都用 `cpu_work_ms(3000)` 让 L 真占 CPU，M 用 `busy_until(4500)` 连续忙等，不用 `vTaskDelay`。这一点是实验成立的前提：如果 L 在临界区里 `vTaskDelay(3000)`，它是睡着的，M 抢不抢都不影响它 3 秒后醒来，两版 H 的等待会一样长，什么也证明不了。
 
@@ -438,11 +438,11 @@ E04 的 FreeRTOS 剧本在 `mcu/code/rtos/01-freertos-lab/main.c` 的场景 6，
 
 二值版的 6000 ms 来自 H 从 1000 等到 7000；互斥版的 2500 ms 来自 L 在 1000 时还剩 2500 ms 的工作。F5 原文写「L 才轮到跑满 3000ms」，按字面会把 L 的完成时刻算到 7500 ms，H 的等待算成 6500 ms，与同一份 E04 时间线的「剩余 2500 ms」矛盾。正确说法是：L 在 0–500 ms 已经做了 500 ms，被 M 抢占后停住，恢复时只需再做 2500 ms。
 
-继承只把 H 的等待封顶在「L 把临界区做完」，并不让 H 免等。L 的临界区越长，H 的下限越高；继承不防死锁，优先级天花板才防。这是 E04 思考题的第一问，也是「继承是安全带，不是油门」的准确含义。
+继承只把 H 的等待封顶在「L 把临界区做完」，并不让 H 免等。L 的临界区越长，H 的下限越高；继承不防死锁，优先级天花板才防。这是 E04 思考题的第一问。
 
 RT-Thread 版同剧本：L=22、M=21、H=20，0 最高。H 等锁时，`_rt_mutex_take` 把 owner 的当前优先级从 22 抬到 20；`list_thread` 里能看到 L 的 priority 列变成 20，还锁后回到 22。R2 写的「1 变 3」方向与数值都错：RT-Thread 是数值小者优先，lab 的基数是 22/21/20，不是 1/2/3。继承的数值是 22→20，回落是 20→22。
 
-E04 的证据状态：`hardware_status: pending`，实测记录表全空。上面两个数都是剧本参数推出的理论值，不是串口日志。完整的上板测量、逻辑分析仪打点与双 OS 日志并排，归[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。本章只把账算对，不替 E04 宣布实测。
+E04 的证据状态：`hardware_status: pending`，实测记录表全空。上面两个数都是剧本参数推出的理论值，不是串口日志。完整的上板测量、逻辑分析仪打点与双 OS 日志并排，归[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。这里只把时间线算对，不替 E04 宣布实测。
 
 ![优先级反转与继承动画：三泳道时间线，二值版 H 被 M 间接阻塞，互斥版 L 被抬级后 M 插不进](/anim/priority-inversion.svg)
 
@@ -450,7 +450,7 @@ E04 的证据状态：`hardware_status: pending`，实测记录表全空。上�
 
 ![E04 理论时间线（非实测）：二值版 H 等约 6000 ms，互斥版约 2500 ms，L 在 500 ms 已做 500 ms、剩余 2500 ms](/images/labs/e04-timeline.svg)
 
-### 九、通知、事件组、软件定时器：三条更轻的路
+### 九、通知、事件组、软件定时器
 
 **任务通知**把「等」缩到 TCB 里。每个任务有两个数组（`tasks.c:419-420`）：
 
@@ -463,7 +463,7 @@ lab 的 `configTASK_NOTIFICATION_ARRAY_ENTRIES=1`，所以每个任务只有一�
 
 通知快的原因很具体：没有队列对象、没有 memcpy、没有额外的等待链表项，发送就是写目标 TCB 的两个字段。但它只适合一对一：通知的目标必须是一个确定的任务，不能多播，也不能像队列那样缓存任意长度的数据。`configTASK_NOTIFICATION_ARRAY_ENTRIES` 大于 1 只是给同一个任务多加几个槽，不是多生产者队列。
 
-通知到底快多少？来源中的具体百分比/倍数没有版本、配置与引用，本章不采用。只保留定性判断：少了对象、拷贝与链表操作，通常更快；幅度依配置，取决于队列深度、发送发生在任务还是 ISR、当时是否触发调度。要写数字，就在同一块板上用同一版内核做基准，把配置与测量方法一起写出来。
+通知到底快多少？来源中的具体百分比/倍数没有版本、配置与引用，这里不采用。只保留定性判断：少了对象、拷贝与链表操作，通常更快；幅度依配置，取决于队列深度、发送发生在任务还是 ISR、当时是否触发调度。要写数字，就在同一块板上用同一版内核做基准，把配置与测量方法一起写出来。
 
 **事件组**是位公告栏。`EventBits_t` 就是 `TickType_t`，但高 8 位被内核的控制位占用，可用位数随 tick 宽度变：
 
@@ -484,21 +484,21 @@ lab 的 `configUSE_16_BIT_TICKS=0`（`FreeRTOSConfig.h:42`），`TickType_t` 是
 | 需求 | 首选 | 理由 |
 | --- | --- | --- |
 | 一对一、只传信号或 ≤32 位最新值 | 通知 | 无队列对象、无拷贝；覆盖/计数两种语义 |
-| 一对一、要攒欠账 | 通知 `xTaskNotifyGive` + `ulTaskNotifyTake(pdTRUE/FALSE)` | 计数语义 |
+| 一对一、要累计数 | 通知 `xTaskNotifyGive` + `ulTaskNotifyTake(pdTRUE/FALSE)` | 计数语义 |
 | 多对一、一对多、任意长度数据 | 队列 | 有存储区与两条等待名单 |
 | 多个条件都齐才继续 | 事件组 | ANY/ALL，24 位（lab） |
 | 周期杂务、回调不阻塞 | 软件定时器 | 单守护任务，省每任务栈 |
 | 共享数据排他 | 互斥锁 | 带持有者与继承 |
 | 事件发生通知 | 二值信号量 | 无数据，只发令 |
 
-### 十、RAM 账：248 B 与 1312 B
+### 十、RAM 开销：248 B 与 1312 B
 
 先算队列。深度 10、项 16 B：
 
 ```text
 数据区       10 × 16 = 160 B
 Queue_t                80 B   （本源 probe 声称值，未复核）
-heap_4 块头             8 B   （每笔 malloc 的抽头）
+heap_4 块头             8 B   （每笔 malloc 的额外开销）
 总计                  248 B
 ```
 
@@ -509,7 +509,7 @@ heap_4 块头             8 B   （每笔 malloc 的抽头）
 ```text
 configUSE_TIMERS=1，固定那笔：
   守护任务 TCB      96 B
-  守护任务栈       1032 B   （256 字 × 4，含 heap_4 抽头）
+  守护任务栈       1032 B   （256 字 × 4，含 heap_4 额外开销）
   命令队列          184 B
   ─────────────────────
   合计             1312 B   （一个定时器都没建就要付）
@@ -519,9 +519,9 @@ configUSE_TIMERS=1，固定那笔：
 (16384 - 1312) ÷ 56 = 269.14 → 269
 ```
 
-269 是「整个 16 KiB 池只塞定时器」的上界，不是预算。真实工程还要给任务、栈、队列留空间。1312 B 是固定首付，只用一两个定时器时最不划算；每个定时器 56 B 才是边际成本。另有约 60 B 落在 `.bss`（两条到期表、四个指针、`xLastTime`），不受 `configTOTAL_HEAP_SIZE` 管，这一项同样是来源说法(未复核)。
+269 是「整个 16 KiB 池只塞定时器」的上界，不是预算。真实工程还要给任务、栈、队列留空间。1312 B 是固定开销，只用一两个定时器时最不划算；每个定时器 56 B 才是边际成本。另有约 60 B 落在 `.bss`（两条到期表、四个指针、`xLastTime`），不受 `configTOTAL_HEAP_SIZE` 管，这一项同样是来源说法(未复核)。
 
-### 十一、RT-Thread IPC 对照：一副骨架，五处改名
+### 十一、RT-Thread IPC 对照
 
 RT-Thread v5.3.0 的 IPC 也是「对象头 + 计数/存储 + 挂起名单」，但字段名与方向都和 FreeRTOS 不同：
 
@@ -551,7 +551,7 @@ R2 里有几处名字与口径要按 v5.3.0 改写：
 
 ## 测量与证据
 
-本章的读数分四类，逐条标在表里。没有上板，就没有「实测记录」。
+读数分四类，逐条标在表里。没有上板，就没有「实测记录」。
 
 | 取证项 | 来路 | 读数或结论 | 性质 |
 | --- | --- | --- | --- |
@@ -560,9 +560,9 @@ R2 里有几处名字与口径要按 v5.3.0 改写：
 | 整项 memcpy 与指针回绕 | `queue.c:2420-2425`；F4:85-111 | 单条数据不跨尾拆分；`pcTail` 是尾后标记 | 文档推导 |
 | 发送三分支与 overwrite 断言 | `queue.c:952,967,1170`；F4:119-146 | 长度必须为 1；满且超时 0 返回 `errQUEUE_FULL` | 文档推导 |
 | lab 未定义 `configASSERT` | `FreeRTOSConfig.h`；`FreeRTOS.h:367-372` | 断言在本 lab 展开为空，overwrite 长度约束无运行时检查 | 文档推导 |
-| 优先级叫号与让出 | `tasks.c:5243,5341,5396,5405,7579`；`list.c:192`；F4:148-152 | 名单按优先级；同优先级 FIFO；更高则返回 `pdTRUE` 并置 `xYieldPendings[0]` | 文档推导 |
+| 优先级唤醒与让出 | `tasks.c:5243,5341,5396,5405,7579`；`list.c:192`；F4:148-152 | 名单按优先级；同优先级 FIFO；更高则返回 `pdTRUE` 并置 `xYieldPendings[0]` | 文档推导 |
 | FromISR 语义与优先级阈值 | F4:154-173；`FreeRTOSConfig.h:62`；ch10 | 不阻塞；`errQUEUE_FULL`；逻辑 ≥5 / 原始 0x50 | 文档推导 |
-| 宏血缘与互斥锁出生 | `semphr.h:298,460,735,868`；`queue.c:614-634`；F5:61-131 | take/give/create 都是队列；出生 give 一次 | 文档推导 |
+| 宏定义与互斥锁创建 | `semphr.h:298,460,735,868`；`queue.c:614-634`；F5:61-131 | take/give/create 都是队列；出生 give 一次 | 文档推导 |
 | 继承三步与回落 | `queue.c:1788,2405-2411`；`tasks.c:6580,6683`；F5:104-131 | 判→改→搬；最后一把锁才回落 `uxBasePriority`；二值无继承 | 文档推导 |
 | ISR take 互斥锁 | `semphr.h:675`；`queue.c:2035-2132`；`tasks.c:6696` | 不写 holder、不继承；禁止用法 | 文档推导 |
 | 通知 TCB 字段 | `tasks.c:419-420`；`task.h:2611,2984,3177`；F6:71-84 | `ulNotifiedValue[]`/`ucNotifyState[]`；计数/覆盖两种语义 | 文档推导 |
@@ -604,10 +604,10 @@ R2 里有几处名字与口径要按 v5.3.0 改写：
 | ISR 里 take 互斥锁，之后继承不生效 | `xQueueReceiveFromISR` 不写 holder | `xMutexHolder` 为 NULL 或旧值 | 移出 ISR；中断只 give 信号量/通知 |
 | 二值信号量护共享数据，反转照旧 | 没有持有者与继承 | 创建宏是 Binary 还是 Mutex | 换 `xSemaphoreCreateMutex` |
 | 递归互斥锁 take 两次后死锁/断言 | 用了 `xSemaphoreCreateMutex` 或普通 take/give | 创建宏与 take/give 宏 | 换 Recursive 版本并成对调用 |
-| 通知丢事件 | 用了覆盖语义 | `xTaskNotify` 的 action 与 `ulNotifiedValue` | 要攒欠账改 `xTaskNotifyGive` |
-| 等 bit24 永远等不到 | 事件组位宽条件，lab 只有 bit0–23 | `configUSE_16_BIT_TICKS` 与掩码 | 改用 bit0–23 |
+| 通知丢事件 | 用了覆盖语义 | `xTaskNotify` 的 action 与 `ulNotifiedValue` | 要累计数改 `xTaskNotifyGive` |
+| 等 bit24 一直等不到 | 事件组位宽条件，lab 只有 bit0–23 | `configUSE_16_BIT_TICKS` 与掩码 | 改用 bit0–23 |
 | 定时器回调里 `vTaskDelay`，所有定时器停摆 | 守护任务被堵 | 其它定时器是否集体迟到 | 回调只发通知/置标志 |
-| 以为软件定时器零 RAM | `configUSE_TIMERS=1` 固定 1312 B | map/heap 账 | 按固定首付预算 |
+| 以为软件定时器零 RAM | `configUSE_TIMERS=1` 固定 1312 B | map/heap 占用 | 按固定开销预算 |
 | RT-Thread 找不到 `original_priority` | 字段名与模型记错 | `rtdef.h` 的 `rt_mutex` | 用 `owner/hold/priority/ceiling_priority/taken_list` |
 | RT-Thread 按「1 变 3」解释继承 | 方向与 lab 数值都错 | `list_thread` 的 22/21/20 | 记 0 最高，22→20→22 |
 | E04 二值版把 H 等待算成 6500 ms | 把 L 的剩余工作当成 3000 ms | 时间线 500 ms 已做 | 剩余 2500 ms，等待 6000 ms |
@@ -615,7 +615,7 @@ R2 里有几处名字与口径要按 v5.3.0 改写：
 
 ## 社区开源实现
 
-本章最意外的社区结论是：**信号量、互斥量、事件组在 FreeRTOS 里都不是独立实现**。它们全是队列的皮。按章对照读源码：
+这里最意外的社区结论是：**信号量、互斥量、事件组在 FreeRTOS 里都不是独立实现**。它们全部建在队列上。按章对照读源码：
 
 | 仓库 | 文件 | 看什么 |
 | --- | --- | --- |
@@ -624,11 +624,11 @@ R2 里有几处名字与口径要按 v5.3.0 改写：
 | [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `event_groups.c` | 事件组的置位/等待实现：等待条件不满足时才阻塞，置位后按条件逐个唤醒；对照"事件组位宽条件"失败分支 |
 | [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/ipc.c` | 信号量/互斥量/邮箱/消息队列四个原语的完整实现：`rt_sem_take` 的挂起线程按优先级插队、`rt_mutex` 的 `owner/hold/priority/ceiling_priority/taken_list` 字段；对照失败分支里"字段名与模型记错" |
 
-对照后的共性值得记住：两个内核的阻塞语义都落在"线程挂到对象的等待链表上，事件到来时按优先级唤醒"这一套机制，区别只在 RT-Thread 把四个原语集中在一个 `ipc.c`（约两千行），FreeRTOS 把它们摊进 queue.c 与头文件宏。想快速定位某条失败分支对应的源码行，先搜对象类型名再搜操作函数名，比按目录猜快。
+两个内核的阻塞语义是同一套：线程挂到对象的等待链表上，事件到来时按优先级唤醒。区别只在 RT-Thread 把四个原语集中在一个 `ipc.c`（约两千行），FreeRTOS 把它们摊进 queue.c 与头文件宏。想快速定位某条失败分支对应的源码行，先搜对象类型名再搜操作函数名，比按目录猜快。
 
 ## 离开检查
 
-1. `QueueDefinition` 的三种人生靠哪几个字段区分？`uxQueueType` 是什么？
+1. `QueueDefinition` 的三种用途靠哪几个字段区分？`uxQueueType` 是什么？
 <details><summary>参考答案</summary>`uxItemSize` 是否为 0、`uxQueueType`（即 `pcHead`）是否为 NULL、`uxMessagesWaiting` 当前计数。队列 `uxItemSize>0`；二值/计数信号量 `uxItemSize=0` 且 `pcHead` 非 NULL；互斥锁 `uxItemSize=0` 且 `pcHead=NULL`。`uxQueueType` 不是结构体成员，是 `#define uxQueueType pcHead`。</details>
 
 2. 数据项写到尾端时会不会拆两段？源码怎么回绕？
@@ -683,6 +683,6 @@ R2 里有几处名字与口径要按 v5.3.0 改写：
 <details><summary>参考答案</summary>二值版：H 在 1000 ms 等，L 被 M 压到 4500 ms 才恢复，已做 500 ms，剩余 2500 ms，7000 ms 还锁，H 等 6000 ms。互斥版：L 在 1000 ms 继承到 H 级，做完剩余 2500 ms，3500 ms 还锁，H 等 2500 ms。6500 错在把 L 恢复后的工作当成 3000 ms，忽略了 0–500 ms 已做的 500 ms。RT-Thread 是 0 最高，lab 为 L=22/M=21/H=20，H 等待时 owner 从 22 抬到 20，还锁回 22。</details>
 
 19. 本章哪些读数是来源说法、哪些是未实测？
-<details><summary>参考答案</summary>来源说法(未复核)：F6 的五幕模拟、定时器 1312/56/616/269、`Queue_t=80` 与 heap_4 8 B 头、60 B `.bss`、通知速度的具体百分比/倍数（本章不采用）。未实测：E04 全部实测表与 lab 场景 2/3/4/6 的串口日志。文档推导：源码字段、memcpy/回绕、发送分支、叫号、继承、事件组位宽、RT-Thread 字段与 248 B 的算术。</details>
+<details><summary>参考答案</summary>来源说法(未复核)：F6 的五幕模拟、定时器 1312/56/616/269、`Queue_t=80` 与 heap_4 8 B 头、60 B `.bss`、通知速度的具体百分比/倍数（本章不采用）。未实测：E04 全部实测表与 lab 场景 2/3/4/6 的串口日志。文档推导：源码字段、memcpy/回绕、发送分支、唤醒顺序、继承、事件组位宽、RT-Thread 字段与 248 B 的算术。</details>
 
 <QuizBank chapter="f4-queue" />

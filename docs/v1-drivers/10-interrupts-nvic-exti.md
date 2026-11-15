@@ -5,11 +5,11 @@ platforms: [f407, f103, gd32, esp32]
 
 # 中断、NVIC/EXTI、CLIC 与双核
 
-> 轮询是隔一会儿去门口看有没有快递，中断是快递按门铃。门铃响之后，CPU 不是直接跳进你写的函数：引脚边沿先在 EXTI 变成请求，NVIC 按优先级决定放不放行，内核再从向量表取出地址跳进 ISR。这一章把 F407 的三层链路拆成可复算的地址与位段，用 F103 的 AFIO 与分组对照，最后看 ESP32-S3 的中断分配器、IRAM 纪律与双核分工。标题里的 CLIC 属于 GD32 的 RISC-V 一侧，本章只在跨平台边界指路。
+> 轮询是隔一会儿去门口看有没有快递，中断是快递按门铃。门铃响之后，CPU 不是直接跳进你写的函数：引脚边沿先在 EXTI 变成请求，NVIC 按优先级决定放不放行，内核再从向量表取出地址跳进 ISR。下面把 F407 的三层链路拆成可复算的地址与位段，用 F103 的 AFIO 与分组对照，最后看 ESP32-S3 的中断分配器、IRAM 纪律与双核分工。标题里的 CLIC 属于 GD32 的 RISC-V 一侧，这里只在跨平台边界指路。
 
 ## 本章罗盘
 
-- **问题**：按一下 PF6 的按键，为什么要在 SYSCFG、EXTI、NVIC 和 ISR 里各过一道门？`IRQn = 6` 怎样变成向量槽 22、`ISER[0]` 的 bit6 与 IP 字节 `0xE000E406`？逻辑优先级 5 为什么存成 `0x50`，写成 16 又为什么静默变成最高优先级 0？写 `SCB->AIRCR` 为什么必须带 `0x5FA`？把 `EXTI0_IRQHandler` 名字拼错，为什么中断会永远停在死循环里？ESP32-S3 的中断为什么不是固定向量，`IRAM_ATTR` 与双核分工又在守什么边界？
+- **问题**：按一下 PF6 的按键，为什么要在 SYSCFG、EXTI、NVIC 和 ISR 里各过一道门？`IRQn = 6` 怎样变成向量槽 22、`ISER[0]` 的 bit6 与 IP 字节 `0xE000E406`？逻辑优先级 5 为什么存成 `0x50`，写成 16 又为什么静默变成最高优先级 0？写 `SCB->AIRCR` 为什么必须带 `0x5FA`？把 `EXTI0_IRQHandler` 名字拼错，为什么中断会一直停在死循环里？ESP32-S3 的中断为什么不是固定向量，`IRAM_ATTR` 与双核分工又在守什么边界？
 - **交付**：能从 `IRQn` 推出 ISER 下标、位号与 IP 字节地址；能按 PRIGROUP 表说清抢占与子优先级的切分，并写出带 `0x5FA` 的 AIRCR 值；能用槽号 `IRQn + 16` 与 weak 顶替的 objdump 证据解释 ISR 的落点；能照六步清单配通一条外部中断；能读懂 `esp_intr_alloc` 的源、级、核与 IRAM 标志，并在双核共享数据时选对锁。
 - **边界**：四平台章。F407 的地址、位段、probe 读数来自 S4《NVIC 与 EXTI》与 RM0090、PM0214；F103 的 AFIO、HAL 分组与三把总闸来自根书第 04 章与 RM0008、PM0056；ESP32-S3 的中断分配器、IRAM 纪律与双核分工来自 P4《中断与双核》，Cache 一致性与多核内存模型留给[第 34 章](../v4-platforms/34-multicore-cache.md)；GD32 只写边界，CLIC/ECLIC 的完整对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。SysTick 时基留给[第 11 章](./11-systick-timebase-rtc.md)，UART 中断留给[第 13 章](./13-uart-framed-protocol.md)，RTOS 上下文切换与 FromISR 约束留给[第 23 章](../v3-rtos/23-context-switch-porting.md)、[第 24 章](../v3-rtos/24-queue-semaphore-notification.md)，HardFault 现场留给[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。来源没有记录本章的上板读数，本章不把实验步骤写成已经量到的结果。
 - **依据锚点**：S4《S4 NVIC 与 EXTI：打断的艺术》（`mcu/docs/stm32/04-nvic-exti.md`）、根书第 04 章《中断与 NVIC》（`docs/04-中断与NVIC.md`）、P4《P4 中断与双核：IRAM 纪律与核间分工》（`mcu/docs/esp32/04-irq-dualcore.md`）；[第 8 章](./08-architecture-memory-clock.md)的 PPB 与时钟门控、[第 9 章](./09-gpio.md)的引脚配置、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体、[第 4 章](../v0-foundations/04-function-pointer-state-machine.md)的函数指针数组。PM0214、RM0090、RM0008、PM0056 与 ESP-IDF v5.5.2 的条文均转引自上述来源。
@@ -109,7 +109,7 @@ F407 的优先级寄存器每中断一个字节，但只实现了高 4 位：
   NVIC_PRIO_BITS = 4    <- stm32f407xx.h:49
 ```
 
-所以 `NVIC_SetPriority()` 写进 IP 字节的值是**逻辑优先级左移 4 位**，低 4 位永远是 0。S4 的编码表：
+所以 `NVIC_SetPriority()` 写进 IP 字节的值是**逻辑优先级左移 4 位**，低 4 位总是 0。S4 的编码表：
 
 | 逻辑优先级 | 存入 IP 字节 |
 | --- | --- |
@@ -180,7 +180,7 @@ Idx Name          Size      VMA       LMA       File off  Algn
 ```
 
 - `.isr_vector` 落在 **0x08000000**（Flash 起始），大小 `0x188` = 392 字节 = 98 × 4，与项数吻合；
-- 你在 C 文件里定义 `EXTI0_IRQHandler`，它就是**强符号**，把启动文件里的 weak 默认（`Default_Handler` 死循环）顶替掉。函数名拼错，等于中断永远进死循环；
+- 你在 C 文件里定义 `EXTI0_IRQHandler`，它就是**强符号**，把启动文件里的 weak 默认（`Default_Handler` 死循环）顶替掉。函数名拼错，中断就会一直停在默认死循环里；
 - 槽里装的是 `0x08000189` = 函数地址 `| 1`，最低位是 Thumb 状态位，向量跳转时靠它保持 Thumb 模式。
 
 ### EXTI：选门、设沿、清挂起，六步一条不少
@@ -236,13 +236,13 @@ void EXTI9_5_IRQHandler(void)          /* 强符号顶替 weak 默认 */
 }
 ```
 
-### 进出现场：八个字、一个魔法值
+### 进出现场：八个字与 EXC_RETURN
 
 ![中断现场动画：硬件压栈、取向量、ISR、EXC_RETURN 弹栈](/anim/irq-entry.svg)
 
 进异常的那一刻，内核硬件自动把 **8 个字**压进当前栈：xPSR、PC（返回地址）、LR、R12、R3~R0，正好是 AAPCS 里“调用者可破坏”的那批。ISR 如果还要用 R4~R11，由编译器在 prologue 里补压，所以 ISR 的机器码开头常有一串 `push`。这也是“ISR 要短”的硬约束，不只是风格建议。
 
-进去时 LR 被硬件换成魔法值 **EXC_RETURN**：裸机主循环用 MSP，值是 `0xFFFFFFF9`；若被打断的是跑在 PSP 上的任务（如 RTOS 线程），则是 `0xFFFFFFFD`，两者只差 bit2 的 SPSEL 位（返回 Thread 模式时用 MSP 还是 PSP 弹栈，PM0214）。ISR 末尾一条普通的 `bx lr` 就完成异常返回：硬件认出 LR 里的魔法值，不做普通跳转，而是把之前压栈的 8 个字弹回去，主循环从断点处继续。被打断的代码毫无知觉，这正是共享变量要 `volatile` 的原因（[第 2 章](../v0-foundations/02-c-volatile-ub.md)）。
+进去时 LR 被硬件换成特征值 **EXC_RETURN**：裸机主循环用 MSP，值是 `0xFFFFFFF9`；若被打断的是跑在 PSP 上的任务（如 RTOS 线程），则是 `0xFFFFFFFD`，两者只差 bit2 的 SPSEL 位（返回 Thread 模式时用 MSP 还是 PSP 弹栈，PM0214）。ISR 末尾一条普通的 `bx lr` 就完成异常返回：硬件认出 LR 里的特征值，不做普通跳转，而是把之前压栈的 8 个字弹回去，主循环从断点处继续。被打断的代码毫无知觉，这正是共享变量要 `volatile` 的原因（[第 2 章](../v0-foundations/02-c-volatile-ub.md)）。
 
 ### F103：同一件事的另一套账
 
@@ -272,7 +272,7 @@ F103 的 EXTI 同样按脚号分 16 条线：PA0、PB0、PC0 共用 EXTI0，不�
 
 ![中断分配器：99 条源编号分到 CPU0/CPU1 的 7 级中断](/figures/esp32-04-int-alloc.svg)
 
-STM32 上中断与向量一一对应，`EXTI0_IRQn = 6` 永远落到槽 22。ESP32-S3 是**中断矩阵**：外设的中断源可以路由到某个核的某个中断级，分配发生在运行时。
+STM32 上中断与向量一一对应，`EXTI0_IRQn = 6` 总落到槽 22。ESP32-S3 是**中断矩阵**：外设的中断源可以路由到某个核的某个中断级，分配发生在运行时。
 
 P4 的探针记录：
 
@@ -288,7 +288,7 @@ P4 的探针记录：
 #define IRAM_ATTR _SECTION_ATTR_IMPL(".iram1", __COUNTER__)
 ```
 
-它把代码放进 `.iram1` 段，由链接脚本安排到内部 SRAM 的可执行区。它不是“加速”，是“改变落址”。把 `IRAM_ATTR` 加在 ISR 函数上只是第一步，真正的约束是整条执行链都要可达：ISR 本体、它调用的所有非内联函数、它读到的 rodata（字符串常量、查表、`const` 数组）都要在 IRAM 或 DRAM；不要在里面调 `printf`、`malloc` 或任何可能碰 Flash 的 API，跨 ISR/任务传数据用 `...FromISR` API。
+它把代码放进 `.iram1` 段，由链接脚本安排到内部 SRAM 的可执行区。它不是“加速”，是“改变落址”。把 `IRAM_ATTR` 加在 ISR 函数上只是第一步，约束是整条执行链都要可达：ISR 本体、它调用的所有非内联函数、它读到的 rodata（字符串常量、查表、`const` 数组）都要在 IRAM 或 DRAM；不要在里面调 `printf`、`malloc` 或任何可能碰 Flash 的 API，跨 ISR/任务传数据用 `...FromISR` API。
 
 `ESP_INTR_FLAG_IRAM`（`1<<10`）是声明侧的开关，语义是一句承诺：我保证这个 ISR 在 Cache 关闭时也能跑。系统的回应是“那就不推迟它”。不标这个标志，系统会在 Flash 操作期间推迟该中断，安全但有延迟；标了却有一条链落在 Flash 里，就是直接崩。P4 的 nm 取证把两种命摆在同一张表上：
 
@@ -304,7 +304,7 @@ P4 的探针记录：
 
 `isr_leaky` 的每一条指令都在 IRAM，可它 `callx8` 过去的 `helper_far` 落在 Flash 映射段 `0x42008f1c`；Cache 一关，取指就断在半路。`isr_tight` 的 `call8` 目标 `helper_near` 还在 IRAM 区间内，这才是真的 IRAM-safe。esp32s3 的 IRAM 取指窗口起点是 `0x40374000`，Flash 映射是 `0x42xxxxxx`，常量映射是 `0x3Cxxxxxx`；初代 ESP32 是 `0x400xxxxx` 一片，两代数字不能互抄。
 
-P4 还记了一个链接器的坑：IDF 默认带 `-Wl,--gc-sections`，没人引用的 ISR 会被整段收掉，第一版探针的 nm 里只剩 `app_main` 和 `g_hits`，后来用 `g_isr_table` 钉住符号才保住七个。
+P4 还记了一个链接器的坑：IDF 默认带 `-Wl,--gc-sections`，没人引用的 ISR 会被整段收掉，第一版探针的 nm 里只剩 `app_main` 和 `g_hits`，后来用 `g_isr_table` 保住符号才留下七个。
 
 Cache 关闭窗口的完整机制与多核 Cache 一致性属于[第 34 章](../v4-platforms/34-multicore-cache.md)；本章只记落址判据：ISR 要么整条链进 IRAM，要么老实被推迟。
 
@@ -361,7 +361,7 @@ sh probe.sh          # 构建后用 nm/.map 给七条链归类（需 ESP-IDF v5.
 | 中断进不了内核 | NVIC 没使能，或优先级分组与预期不符 | `ISER` 对应位为 0；AIRCR PRIGROUP 被别处改过 | 用 `NVIC_EnableIRQ` 并核对分组 |
 | 想把 16 当最低优先级，结果它最横 | `(priority << 4) & 0xFF` 在本字节截断，16→`0x00` | 读回 IP 字节是 `0x00` | 逻辑优先级限制在 0~15 |
 | 调 HardFault 优先级没有效果 | HardFault 优先级硬件固定，`IRQn` 枚举里 -13 被跳过 | `IRQn_Type` 中没有 `HardFault_IRQn` | 不设；查 HardFault 现场见[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) |
-| 中断永远停在死循环 | ISR 函数名拼错，weak 默认 `Default_Handler` 没被顶替 | objdump 的槽内容仍指向默认处理函数 | 对照启动文件的 `.word` 行核对函数名 |
+| 中断一直停在死循环 | ISR 函数名拼错，weak 默认 `Default_Handler` 没被顶替 | objdump 的槽内容仍指向默认处理函数 | 对照启动文件的 `.word` 行核对函数名 |
 | EXTI9_5 里分不清是谁触发 | 5~9 号线共用向量，ISR 没查 PR | PR 的 bit5~9 哪一个为 1 | ISR 里按 PR 位分支，再逐位清 |
 | 尾链打开后低优先级插进了高优先级 | 尾链不改变谁有权抢占 | 抢占级数值没有变小 | 改抢占级，不要指望尾链 |
 | `__disable_irq()` 之后仍进了 NMI | PRIMASK 不管 NMI | NMI 是硬件固定优先级 | 这是预期；CSS 的 NMI 要清 CSSC |
@@ -400,7 +400,7 @@ Cache 映射、Cache 关闭窗口与多核一致性见[第 34 章](../v4-platfor
 
 1. EXTI 负责把引脚边沿变成中断请求，NVIC 负责按优先级仲裁并呈递，内核再按向量表取地址跳进 ISR。SYSCFG 是 EXTI 前面的选门开关，决定这条线接哪个端口的同号引脚。加上 ISR 清挂起，就是选门、设沿、放行、清挂起四道门。
 2. 37 / 32 = 1、37 % 32 = 5，使能位在 `ISER[1]` 的 bit5，地址 `0xE000E104`；IP 字节是 `0xE000E400 + 37 = 0xE000E425`。SysTick 是内核异常（`IRQn = -1`），优先级走 SCB 的 SHP 寄存器，不在 NVIC 的 IPR 里。
-3. 5 << 4 = `0x50`，低 4 位永远为 0。写 16 时 `(16 << 4) & 0xFF = 0x00`，读回来当作优先级 0（最高）。越界不报错、不换字节，只在本字节里截断，嵌套关系会悄悄反掉。
+3. 5 << 4 = `0x50`，低 4 位总为 0。写 16 时 `(16 << 4) & 0xFF = 0x00`，读回来当作优先级 0（最高）。越界不报错、不换字节，只在本字节里截断，嵌套关系会悄悄反掉。
 4. PRIGROUP = 5 是 2 位抢占 + 2 位子优先级；写入值 `0x05FA0500`。高 16 位必须带 VECTKEY `0x5FA`，少了它整个写操作被硬件无视；组值 5 放 [10:8]，即 `5 << 8 = 0x500`。
 5. 槽号 = `IRQn + 16`；`EXTI0_IRQn = 6` → 槽 22 → 偏移 `22 × 4 = 0x58`。启动文件的 weak 默认处理函数会被同名的强符号顶替；函数名拼错，强符号不存在，槽里仍是 `Default_Handler`。
 6. 六步：开 GPIOF 时钟、PF6 配输入、开 SYSCFG 时钟、EXTICR2[11:8] = `0x5`、EXTI 的 IMR/RTSR/FTSR bit6、NVIC 设优先级并 `EnableIRQ`。EXTI6 与 5~9 号线共用 `EXTI9_5_IRQn`（槽 39），没有专属向量。ISR 进门第一件事是写 1 清 `EXTI_PR`。

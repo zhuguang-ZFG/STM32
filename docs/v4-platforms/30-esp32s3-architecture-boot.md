@@ -15,7 +15,7 @@ ESP32-S3 上电之后发生的事，是三棒接力：ROM 交给 bootloader，bo
 
 ## 本章罗盘
 
-- **问题**：三棒接力各做什么，卡在哪一棒看哪段日志。`app_main` 不是 main：main task 的优先级、栈、亲和，以及 `TASK_EXTRA_STACK_SIZE` 这层加项为何不能漏。XIP 与 Cache 映射如何改变「代码在哪」，IRAM 纪律从哪来。分区与组件：分区表四列、Offset 为何留空；组件化三板斧与依赖图，main 为何是「自动收集的项目组件」；manifest 管来源与版本，`REQUIRES` 管构建可见性，两层如何接进同一张图。配置与构建：Kconfig 三段论的三个产物，`CONFIG_IDF_TARGET_ESP32S3` 闭环，`idf.py` 各子命令各查哪一层，错目标的 sdkconfig 为何会静默编错芯片。
+- **问题**：三棒接力各做什么，卡在哪一棒看哪段日志。`app_main` 不是 main：main task 的优先级、栈、亲和，以及 `TASK_EXTRA_STACK_SIZE` 这层加项为何不能漏。XIP 与 Cache 映射如何改变「代码在哪」，IRAM 纪律从哪来。分区与组件：分区表四列、Offset 为何留空；组件化的三件事与依赖图，main 为何是「自动收集的项目组件」；manifest 管来源与版本，`REQUIRES` 管构建可见性，两层如何接进同一张图。配置与构建：Kconfig 三段论的三个产物，`CONFIG_IDF_TARGET_ESP32S3` 闭环，`idf.py` 各子命令各查哪一层，错目标的 sdkconfig 为何会静默编错芯片。
 - **交付**：能用日志前缀完成三棒分诊；能说出 main task 三参数的默认值（优先级 1、栈 3584 起、默认 CPU0）并指出栈定义里还有一层加项；能对照 F407 把 XIP 的架构差讲清；能读默认分区表（nvs 0x6000/phy_init 0x1000/factory 1M）并解释 gen_esp32part 的排布；能写一个组件的 `idf_component_register` 并画出依赖图；能区分本地 `components/`、`EXTRA_COMPONENT_DIRS` 与管理组件，并说出同名组件的优先级；能走 `CONFIG_IDF_TARGET_ESP32S3` 从菜单到宏的闭环（`hello_main.c:25` 实例）；能按「配置/组件声明/编译/烧录」分层定位构建问题。
 - **边界**：本章讲架构与工程，不重教 FreeRTOS 机制（[第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md)、[第 23 章](../v3-rtos/23-context-switch-porting.md)）与双 OS 选型（[第 27 章](../v3-rtos/27-rtos-comparison-selection.md) 已定「IDF 自带 FreeRTOS、S3 双核 SMP」口径）；外设驱动与音频归[第 31 章](./31-esp32-drivers-audio.md)，Wi-Fi/BLE/ESP-NOW 归[第 32 章](./32-esp32-wifi-ble-espnow.md)，OTA 的分区双槽细节留到 ch31/ch32 引用处。`sdkconfig` 数值类证据（size 账、890 项）全部标「来源说法(未复核)」。
 - **依据锚点**：E0《环境》（`mcu/docs/esp32/00-env.md`）、E1《架构与启动》（`.../01-arch-boot.md`）、E3《IDF 解剖》（`.../03-idf-anatomy.md`）。上游对账：ESP-IDF v5.5.2 的 [soc_caps.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/soc/esp32s3/include/soc/soc_caps.h)、[app_startup.c](https://github.com/espressif/esp-idf/blob/v5.5.2/components/freertos/app_startup.c)、[startup.c](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_system/startup.c)、[esp_task.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_system/include/esp_task.h)、[esp_system/Kconfig](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_system/Kconfig)、[project.cmake](https://github.com/espressif/esp-idf/blob/v5.5.2/tools/cmake/project.cmake)、[component.cmake](https://github.com/espressif/esp-idf/blob/v5.5.2/tools/cmake/component.cmake)、[kconfig.cmake](https://github.com/espressif/esp-idf/blob/v5.5.2/tools/cmake/kconfig.cmake)、[partitions_singleapp.csv](https://github.com/espressif/esp-idf/blob/v5.5.2/components/partition_table/partitions_singleapp.csv)。仓库实例：`mcu/code/esp32/00-hello`（CMakeLists 目标守卫、`hello_main.c:25` 的 `CONFIG_IDF_TARGET_ESP32S3` 实读命中）。
@@ -111,7 +111,7 @@ factory,  app,  factory, 0x10000, 1M
 
 ![ESP32-S3 默认单 app 分区表：bootloader 0x0、表 0x8000、nvs 0x9000、phy_init 0xF000、factory 0x10000；OTA 双槽另加 ota_0/ota_1 与 otadata](/arch/esp32-partition-map.png)
 
-### 四、组件化三板斧与「main 是自动收集的项目组件」
+### 四、组件化的三件事与「main 是自动收集的项目组件」
 
 每个组件一份 CMakeLists，注册函数是 `idf_component_register`（`component.cmake:443-449` 实取）：
 
@@ -132,7 +132,7 @@ idf_component_register(
 
 [官方 Build System 文档](https://docs.espressif.com/projects/esp-idf/en/v5.5.2/esp32s3/api-guides/build-system.html)给的同名组件搜索优先级从高到低：`components/` → `EXTRA_COMPONENT_DIRS` → `managed_components/` → `$IDF_PATH/components`。要改下载的组件，先复制到 `components/` 再改。
 
-![ESP-IDF 工程解剖：工程源 → 组件图 → app.bin；下方是同名组件的搜索优先级](/arch/idf-anatomy.png)
+![ESP-IDF 工程结构：工程源 → 组件图 → app.bin；下方是同名组件的搜索优先级](/arch/idf-anatomy.png)
 
 ### 五、Kconfig 三段论：菜单 → sdkconfig → 三个产物
 
@@ -156,7 +156,7 @@ idf_component_register(
 
 分层定位法：配置错查 `sdkconfig`/menuconfig；组件关系错查各 `CMakeLists` 的 REQUIRES；编译错查源码与头文件路径；烧录失败查 esptool 的串口与进 boot 模式的 strapping 状态。
 
-### 七、双核默认分工：回链一句话
+### 七、双核默认分工：回链
 
 `SOC_CPU_CORES_NUM=2`（`soc_caps.h:145` 实取）；IDF 自带 FreeRTOS 是 SMP 单实例，PRO_CPU/APP_CPU 只是**默认分工**（main task 默认钉 CPU0），任务可用 `xTaskCreatePinnedToCore` 自选核。SMP 的语义边界与「AMP≠SMP」的对照已在 [第 27 章](../v3-rtos/27-rtos-comparison-selection.md) 定过口径，本章不重新论证。
 
@@ -194,7 +194,7 @@ idf_component_register(
 
 - 三棒分诊口诀能默写，并给每棒一条卡点判据。
 - `app_main` 的三层身份与 main task 三参数（1 / 3584 起 / CPU0）说得清，栈定义里的加项不漏。
-- XIP 与 F407 原地执行的架构差能对照讲，IRAM 纪律的由来一句话到位。
+- XIP 与 F407 原地执行的架构差能对照讲，IRAM 纪律的由来能说清。
 - 默认分区表能画，Offset 留空的排布逻辑说得清。
-- `project.cmake:465` 与组件化三板斧能落到一段能编译的 CMakeLists。
+- `project.cmake:465` 与组件化的三件事能落到一段能编译的 CMakeLists。
 - Kconfig 三段论的三产物与目标守卫两层（CMake + `CONFIG_IDF_TARGET_*`）都能走通闭环。

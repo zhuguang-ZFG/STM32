@@ -90,13 +90,13 @@ C 标准给编译器的授权写在 §5.1.2.3：只要可观察行为不变，�
 
 #### 现场 1：轮询状态位，读一次 vs 每次读
 
-源码只有一处差别：`unsigned int` 与 `volatile unsigned int`。`-O0` 下 `poll_plain` 每圈都真访存，这才是“-O0 能跑”的真相。`-O2` 下 x86-64 把判断依据读到寄存器一次（`testb $1, g_status(%rip)`），没置位就跳进 `.L3: jmp .L3`；M4 那份就是前面看过的 `b .L3`，一条指令的紧死循环，没有访存、没有中断以外的出口。板子看起来活着（SWD 还能连），这段代码永远不会往下走。判断依据被缓存在寄存器里，bit0 后来被硬件置 1，代码不会知道。换 `poll_volatile`，`-O2` 下循环回到每圈访存，x86 是 `testb $1, v_status(%rip)`，M4 是 `ldr r3, [r2, #4]`。
+源码只有一处差别：`unsigned int` 与 `volatile unsigned int`。`-O0` 下 `poll_plain` 每圈都真访存，这才是“-O0 能跑”的真相。`-O2` 下 x86-64 把判断依据读到寄存器一次（`testb $1, g_status(%rip)`），没置位就跳进 `.L3: jmp .L3`；M4 那份就是前面看过的 `b .L3`，一条指令的紧死循环，没有访存、没有中断以外的出口。板子看起来活着（SWD 还能连），这段代码不会往下走。判断依据被缓存在寄存器里，bit0 后来被硬件置 1，代码不会知道。换 `poll_volatile`，`-O2` 下循环回到每圈访存，x86 是 `testb $1, v_status(%rip)`，M4 是 `ldr r3, [r2, #4]`。
 
 ![编译器把 flag 缓存进寄存器，ISR 在内存里写 1；轮询循环因此看不到更新](/figures/c-03-volatile.svg)
 
 #### 现场 2：软件延时，整个循环被删
 
-`delay_plain(unsigned n) { while (n--) {} }` 的 `-O2` 产物只有一条 `ret`（x86-64）或 `bx lr`（Cortex-M4），你写的“500 ms”变成 0 ms。把参数改成 volatile，`delay_volatile` 把计数钉在内存（栈槽），每圈读写：
+`delay_plain(unsigned n) { while (n--) {} }` 的 `-O2` 产物只有一条 `ret`（x86-64）或 `bx lr`（Cortex-M4），你写的“500 ms”变成 0 ms。把参数改成 volatile，`delay_volatile` 把计数固定在内存（栈槽），每圈读写：
 
 ```asm
 delay_volatile:                ; Cortex-M4, -O2
@@ -179,7 +179,7 @@ isr_toggle:
 
 ### UB：编译器拿“你不会越界”当燃料
 
-C 标准把程序行为分成定义良好的、实现定义的、未指定的，第四类是未定义行为：标准直接撒手，行为可以是任何东西，包括“看起来正常工作”。这不是疏忽，是刻意的交易：把某些情形划成不许发生，编译器才能拿这条禁令当优化燃料。
+C 标准把程序行为分成定义良好的、实现定义的、未指定的，第四类是未定义行为：标准直接撒手，行为可以是任何东西，包括“看起来正常工作”。标准把某些情形划成不许发生，编译器才能拿这条禁令当优化燃料。
 
 教科书案例：
 
@@ -187,7 +187,7 @@ C 标准把程序行为分成定义良好的、实现定义的、未指定的，
 int is_bigger_after_inc(int x) { return x + 1 > x; }   /* x = INT_MAX 时溢出，UB */
 ```
 
-数学上这个比较只在 `x = INT_MAX` 时为假，而那一刻 `x + 1` 已经溢出。编译器的推理链很短：你保证不喂我 INT_MAX，那这个比较永远为真，函数可以整段折成 `return 1`。ARM 交叉汇编（arm-none-eabi-gcc 15.2.1，`-mcpu=cortex-m4 -O2`）：
+数学上这个比较只在 `x = INT_MAX` 时为假，而那一刻 `x + 1` 已经溢出。编译器的推理链很短：你保证不喂我 INT_MAX，那这个比较总是为真，函数可以整段折成 `return 1`。ARM 交叉汇编（arm-none-eabi-gcc 15.2.1，`-mcpu=cortex-m4 -O2`）：
 
 ```asm
 is_bigger_after_inc:
@@ -268,7 +268,7 @@ static uint32_t bits_union(float f)
     return pun.u;
 }
 
-/* 读法二：memcpy，标准层面永远合法，优化后就是一条 load */
+/* 读法二：memcpy，标准层面始终合法，优化后就是一条 load */
 static uint32_t bits_memcpy(float f)
 {
     uint32_t u;

@@ -216,7 +216,7 @@ CFSR 是三个子寄存器拼成的：低 8 位 MMFSR、次 8 位 BFSR、高 16 
 | UFSR | 24 | `UNALIGNED` | 未对齐访问 |
 | UFSR | 25 | `DIVBYZERO` | 除以零 |
 
-`MMFAR`/`BFAR` 里的地址不是永远可信：只有 `MMARVALID`/`BFARVALID` 为 1 时才对得上。`IMPRECISERR` 下总线写是缓冲的，出错时 PC 可能已经跑远；`STKERR`/`MSTKERR` 表示入栈本身就错了，`UNSTKERR`/`MUNSTKERR` 表示出栈错了，这两种情况下硬件压的那 8 个字可能不完整，不能直接解引用。
+`MMFAR`/`BFAR` 里的地址不是总可信：只有 `MMARVALID`/`BFARVALID` 为 1 时才对得上。`IMPRECISERR` 下总线写是缓冲的，出错时 PC 可能已经跑远；`STKERR`/`MSTKERR` 表示入栈本身就错了，`UNSTKERR`/`MUNSTKERR` 表示出栈错了，这两种情况下硬件压的那 8 个字可能不完整，不能直接解引用。
 
 ![CFSR 的 19 个位：三个子寄存器、两个 VALID 位](/figures/stm32-16-cfsr-bits.svg)
 
@@ -389,7 +389,7 @@ HardFault 是 Cortex-M 的概念。ESP32 没有 CFSR、HFSR、MMFAR/BFAR，也�
 | IWDG 一上电就复位 | `WDG_SW=0` 的硬件狗先跑，软件还没配置 | 读选项字节；复位发生在初始化之前 | 上电后尽早解锁配置并喂狗，或把 `WDG_SW` 改回 1 |
 | 写完 PR/RLR 不生效 | 没先写 `0x5555` 解锁，或没等 PVU/RVU | 读回 PR/RLR 与写入不符；SR 的 PVU/RVU 仍为 1 | 按 `0xCCCC→0x5555→写→0xAAAA` 重来 |
 | WWDG 一喂就复位 | `T ≥ W`，喂早了 | 读 `WWDG->CR` 的 T 与 CFR 的 W | 等 `T < W` 再喂 |
-| WWDG 永远不复位 | 没开 WWDGEN 或没置 WDGA | 读回 CR/CFR；看 APB1ENR | 开时钟、置 WDGA、在窗口内重装 |
+| WWDG 一直不复位 | 没开 WWDGEN 或没置 WDGA | 读回 CR/CFR；看 APB1ENR | 开时钟、置 WDGA、在窗口内重装 |
 | 看到 `PINRSTF` 就以为按了复位键 | POR 与内部复位都会拉 NRST | 同一次读到的 `PORRSTF`/`IWDGRSTF` | 一次读全，按位图判断 |
 | 复位原因越积越多 | 没写 `RMVF` | 读到的标志多于本次复位 | 读全后写 `RCC_CSR_RMVF` |
 | 复位记录的 CRC 总不对 | 先写 magic 后写体，或写到一半复位 | magic 对但 CRC 错；或 magic 本身不完整 | 先清 magic，最后发布 |

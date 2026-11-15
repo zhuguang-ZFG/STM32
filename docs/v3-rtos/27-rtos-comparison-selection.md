@@ -52,7 +52,7 @@ platforms: [f407]
 
 **数量**。两边都不该写死：FreeRTOS 的级别数由 `configMAX_PRIORITIES` 决定，本 lab 是 5（合法值 0–4，`FreeRTOSConfig.h:23`）；CM4F 端口在开了 `configUSE_PORT_OPTIMISED_TASK_SELECTION` 时位图路径约束上限 32（`portmacro.h`），其他端口各有各的约束。RT-Thread 通过 `src/Kconfig:94-110` 配 8/32/256，默认 32。旧表「RT-Thread 32/256、二级位图」把可配置项写成了固定值。
 
-**算法**。FreeRTOS 单级位图 + CLZ 前导零找最高就绪级（依赖上述优化开关）；RT-Thread 在级别 ≤ 32 时用单级位图 `rt_thread_ready_priority_group`，> 32 才启用二级位图 `rt_thread_ready_table[32]`（`scheduler_up.c:46-51,107-116`）。「一边永远单级、另一边永远二级」的说法不成立。两边的算法都随配置切换。算法细节见 [第 22 章](./22-tasks-tcb-scheduler.md) 的就绪位图一节。
+**算法**。FreeRTOS 单级位图 + CLZ 前导零找最高就绪级（依赖上述优化开关）；RT-Thread 在级别 ≤ 32 时用单级位图 `rt_thread_ready_priority_group`，> 32 才启用二级位图 `rt_thread_ready_table[32]`（`scheduler_up.c:46-51,107-116`）。「一边单级、另一边二级」的说法不成立。两边的算法都随配置切换。算法细节见 [第 22 章](./22-tasks-tcb-scheduler.md) 的就绪位图一节。
 
 ## IPC 对照：名字相近不等于语义等价
 
@@ -125,7 +125,7 @@ Zephyr 在这个漏斗里的定位：跨厂商板卡、Kconfig/Devicetree、协�
 4. **堆 API**：`pvPortMalloc/vPortFree` 与 `rt_malloc/rt_free` 不是一族，交叉释放是内存灾难；迁移时全局替换并核对 free 家族配对。
 5. **静态 API**：`xTaskCreateStatic` 传 TCB + 栈两个缓冲，`rt_thread_init` 传结构 + 栈 + 栈深。参数个数与顺序不同，别按肌肉记忆填。
 6. **事件位宽**：按 tick 位宽重算可用位（8/24/56），32 位写法在 16 位 tick 工程上丢位。
-7. **版本钉住**：两边的字段名、默认值、命令名都随版本变（[第 25 章](./25-memory-management.md) 的 TLSF 与 finsh 命令就是现成案例）；迁移文档写清两边的冻结版本。
+7. **版本锁定**：两边的字段名、默认值、命令名都随版本变（[第 25 章](./25-memory-management.md) 的 TLSF 与 finsh 命令就是现成案例）；迁移文档写清两边的冻结版本。
 
 还有一条 AMP 旁注：STM32H745 这类 M7+M4 双核芯片，常见形态是两核各跑一个内核、共享内存 + HSEM 交换数据。这是 AMP 不是 SMP，「有两颗核」推不出「一个内核管两个核」，双核契约（共享区布局、所有权、屏障、协议）要单独冻结。
 

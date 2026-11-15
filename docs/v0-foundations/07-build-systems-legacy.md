@@ -5,13 +5,13 @@ platforms: [f103, esp32]
 
 # 构建系统与遗留栈
 
-> 第 5 章把一行 C 送过四步，第 6 章把 `.elf` 拆到段、符号与 map。这一章往回退一步，问每次敲下 `make` 时，谁决定哪些文件要重来；再往前走一步，翻老 F1 工程的 SPL：它没有 Handle，也没有 CubeMX，只把寄存器写包进结构体和函数。构建系统的依赖图与 SPL 的封装术看似无关，判读方法却是同一条：先看清谁依赖谁，再谈抽象有没有漏掉一条边。
+> 第 5 章把一行 C 送过四步，第 6 章把 `.elf` 拆到段、符号与 map。往下看两处：每次敲下 `make` 时，谁决定哪些文件要重来；老 F1 工程的 SPL 没有 Handle，也没有 CubeMX，只把寄存器写包进结构体和函数。两件事看着无关，读法一样：依赖边有没有写全，抽象在哪一层结束。
 
 ## 本章罗盘
 
-- **问题**：Make 靠哪三样东西画图，`make -n` 看到的到底是什么，改头文件不重建又缺了哪条边？CMake 为什么不直接构建，而要先“生成”？ESP-IDF 的 `idf_component_register` 与 RT-Thread 的 `SConscript` 为什么是同一副骨架，Kconfig 为什么说与构建系统正交？SPL 一侧：点灯最小闭环少一个文件会怎样，`GPIO_Init` 逐行动了哪几个寄存器、哪几位，SPL 三层又怎样把一个字段翻译成位段？
-- **交付**：能用 `make -n` 与 `touch` 观察局部重建；能写出最小裸机 CMake 骨架并说清工具链文件为何必须在 `project()` 之前；能读懂 IDF 组件声明与 SConscript 的对应；能为 F103 工程钉死 SPL 版本、宏、启动文件与驱动源文件；能按“先清后置、按位段移位”逐行讲 `GPIO_Init`；能用“API → 寄存器”反推法拆任意库函数。
-- **边界**：双平台章。构建系统一侧来自 B7，与芯片无关；SPL 一侧限定 STM32F10x SPL V3.5.0，`GPIO_Init` 的逐行解剖来自 S15 对 F4 版 SPL V1.8.0 的取证，寄存器名逐版本标注，不把 F4 的 `MODER` 套到 F103 的 `CRL/CRH` 上。ESP32 一侧只使用 B7 记录的 ESP-IDF 工作流事实（CMake 组件、Kconfig、`idf.py`），ESP32-S3 的地址、时钟与外设留给卷 4。时钟树、NVIC 与 DMA 通道细节分别留给[第 8 章][ch08]、[第 10 章][ch10]、[第 14 章][ch14]。
+- **问题**：Make 靠哪三样东西画图，`make -n` 看到的到底是什么，改头文件不重建又缺了哪条边？CMake 为什么不直接构建，而要先“生成”？ESP-IDF 的 `idf_component_register` 与 RT-Thread 的 `SConscript` 为什么对应同一类组件，Kconfig 为什么说与构建系统正交？SPL 一侧：点灯最小闭环少一个文件会怎样，`GPIO_Init` 逐行动了哪几个寄存器、哪几位，SPL 三层又怎样把一个字段翻译成位段？
+- **交付**：能用 `make -n` 与 `touch` 观察局部重建；能写出最小裸机 CMake 骨架并说清工具链文件为何必须在 `project()` 之前；能读懂 IDF 组件声明与 SConscript 的对应；能为 F103 工程锁定 SPL 版本、宏、启动文件与驱动源文件；能按“先清后置、按位段移位”逐行讲 `GPIO_Init`；能用“API → 寄存器”反推法拆任意库函数。
+- **边界**：双平台章。构建系统一侧来自 B7，与芯片无关；SPL 一侧限定 STM32F10x SPL V3.5.0，`GPIO_Init` 的逐行拆解来自 S15 对 F4 版 SPL V1.8.0 的取证，寄存器名逐版本标注，不把 F4 的 `MODER` 套到 F103 的 `CRL/CRH` 上。ESP32 一侧只使用 B7 记录的 ESP-IDF 工作流事实（CMake 组件、Kconfig、`idf.py`），ESP32-S3 的地址、时钟与外设留给卷 4。时钟树、NVIC 与 DMA 通道细节分别留给[第 8 章][ch08]、[第 10 章][ch10]、[第 14 章][ch14]。
 - **依据锚点**：B7《构建系统：从手写 Makefile 到 CMake 与 scons》（`mcu/docs/build/07-build-system.md`）、根书第 26 章《STM32F10x 标准外设库（SPL）》（`docs/26-STM32F10x标准外设库SPL.md`）、S15《SPL 标准库解剖：库是怎么封装寄存器的》（`mcu/docs/stm32/15-spl-anatomy.md`）；[第 5 章](./05-toolchain-four-steps.md)的四步构建与[第 6 章](./06-linker-startup-map.md)的链接脚本。命令、版本、字节数与可见现象转引自上述来源；本机没接板的部分在“测量与证据”里标为未跑。
 
 ## 先做出来
@@ -28,7 +28,7 @@ touch main.c && make -n     # 只动 main.c，再干跑
 
 干跑输出要按“出现了哪些目标”读，而不是按行数读：`build/main.o` 因 `main.c` 变新而重建，`build/blink.elf` 与由它派生的 `build/blink.bin`、`build/blink.hex` 沿依赖边跟着重建，启动文件对应的 `build/startup_stm32f407xx.o` 不再重新编译；`all` 是伪目标，末尾那条 `$(SIZE)` 每次都会打印。如果改一个文件后所有 `.o` 都重新出现，说明依赖写成了“所有目标依赖所有源文件”，局部重建已经失效。
 
-`make -n` 不执行命令，只按同一套 mtime 比对把将执行的命令打印出来；`touch` 只改时间、不改内容，Make 仍然认为文件变了。它不读源码，只比较时间。这个观察留下一条判断标准：**构建系统不是“猜你改了什么”，而是“沿图上写明的边，比较两边的时间”。** 后面 CMake、IDF 与 scons 再花哨，也都在维护同一张图。
+`make -n` 不执行命令，只按同一套 mtime 比对把将执行的命令打印出来；`touch` 只改时间、不改内容，Make 仍然认为文件变了。它不读源码，只比较时间。这个观察留下一条判断标准：构建系统不猜你改了什么，它沿图上写明的边，比较两边的时间。后面 CMake、IDF 与 scons 的写法各不相同，维护的都是同一张图。
 
 ## 机制
 
@@ -85,9 +85,9 @@ set(CMAKE_OBJCOPY arm-none-eabi-objcopy)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)   # 不试链接
 ```
 
-两条铁律。第一，工具链文件必须在 `project()` 之前设置，否则 CMake 已经用主机 gcc 探测完环境，编出 x86 的东西。第二，`CMAKE_TRY_COMPILE_TARGET_TYPE` 设成 `STATIC_LIBRARY`，让探测停在编译，不去链接和运行一个 PC 上跑不了的交叉产物。生成层带来两段式命令：`cmake -B build` 生成，`make -C build` 构建。Ninja 只是换一个执行器，依赖图和命令行由生成物决定，人的工作方式不变。CMake 的价值在规模：两百个文件分在二十个目录，用 `add_subdirectory` 递归管理；代价是多一步生成，换了工具链文件不重新生成，构建还在用旧配置。
+两条规则。第一，工具链文件必须在 `project()` 之前设置，否则 CMake 已经用主机 gcc 探测完环境，编出 x86 的东西。第二，`CMAKE_TRY_COMPILE_TARGET_TYPE` 设成 `STATIC_LIBRARY`，让探测停在编译，不去链接和运行一个 PC 上跑不了的交叉产物。生成层带来两段式命令：`cmake -B build` 生成，`make -C build` 构建。Ninja 只是换一个执行器，依赖图和命令行由生成物决定，人的工作方式不变。CMake 的价值在规模：两百个文件分在二十个目录，用 `add_subdirectory` 递归管理；代价是多一步生成，换了工具链文件不重新生成，构建还在用旧配置。
 
-### IDF 与 scons：同一副骨架的两套剪裁
+### IDF 与 scons：两种脚本，同一类组件
 
 ESP-IDF 在 CMake 之上加了“组件”抽象。一个组件是一个目录，含 `CMakeLists.txt`、源码与 `Kconfig`，用 `idf_component_register` 声明自己：
 
@@ -100,7 +100,7 @@ idf_component_register(
 )
 ```
 
-`REQUIRES` 把依赖组件的头文件传递给“依赖我的组件”，`PRIV_REQUIRES` 只给本组件实现用，这是接口与实现分离在构建层的体现。A `REQUIRES` B、B `REQUIRES` A 的循环依赖，标准解法是抽出公共部分进 C，A 和 B 都只依赖 C。IDF 的三层分工是：CMake 管组件，Kconfig 管配置，`idf.py` 负责调度；底层仍然是第 5 章那四步。
+`REQUIRES` 把依赖组件的头文件传递给“依赖我的组件”，`PRIV_REQUIRES` 只给本组件实现用，接口与实现在构建层就分开了。A `REQUIRES` B、B `REQUIRES` A 的循环依赖，标准解法是抽出公共部分进 C，A 和 B 都只依赖 C。IDF 的三层分工是：CMake 管组件，Kconfig 管配置，`idf.py` 负责调度；底层仍然是第 5 章那四步。
 
 RT-Thread 用 scons，一套 Python 写的构建系统，配合同源的 Kconfig：
 
@@ -124,13 +124,13 @@ Kconfig（菜单定义）─menuconfig─> sdkconfig（选择结果）─生成�
                                                           C 代码 #include，#ifdef 走分支
 ```
 
-同一套机制，IDF 叫 `sdkconfig`，RT-Thread 叫 `.config`。**Kconfig 是独立的一维**：构建系统管“怎么编”，依赖图与命令行都在这一维；Kconfig 管“编什么”，哪些组件进、哪些宏开在另一维。两维各自演化，不互相绑死。由此带出一条仓库纪律：`sdkconfig` 是本地构建产物，不该提交；该提交的是 `sdkconfig.defaults`，它是默认值的种子，新人第一次 `idf.py build` 时由它生成本地 `sdkconfig`。
+同一套机制，IDF 叫 `sdkconfig`，RT-Thread 叫 `.config`。**Kconfig 是独立的一维**：构建系统管“怎么编”，依赖图与命令行都在这一维；Kconfig 管“编什么”，哪些组件进、哪些宏开在另一维。两维各自演化，互不绑定。由此带出一条仓库纪律：`sdkconfig` 是本地构建产物，不该提交；该提交的是 `sdkconfig.defaults`，它是默认值的种子，新人第一次 `idf.py build` 时由它生成本地 `sdkconfig`。
 
-### 版本先钉死：只认 V3.5.0
+### 版本锁定：只认 V3.5.0
 
-本章只讲 **STM32F10x Standard Peripheral Library V3.5.0**，ST 的官方产品入口是 **STSW-STM32054**。源码镜像冻结在 commit `afa743577f2784e95be2d5003380fdb84a702519`，它只用于稳定定位文件与目录，不是新的规范来源；寄存器行为仍以 RM0008 和数据手册为准。
+这里只讲 **STM32F10x Standard Peripheral Library V3.5.0**，ST 的官方产品入口是 **STSW-STM32054**。源码镜像冻结在 commit `afa743577f2784e95be2d5003380fdb84a702519`，它只用于稳定定位文件与目录，不是新的规范来源；寄存器行为仍以 RM0008 和数据手册为准。
 
-| 问题 | 本章结论 |
+| 问题 | 这里的结论 |
 | --- | --- |
 | SPL 适合哪些芯片 | 仅 STM32F10x；不要把 F1 的 `stm32f10x_*` 文件复制到 G0、L4、H7 |
 | 新项目是否优先 SPL | 不优先；新系列用 HAL/LL，SPL 用于读懂、维护和迁移旧 F1 工程 |
@@ -237,7 +237,7 @@ void EXTI0_IRQHandler(void)
 }
 ```
 
-逐项对账：`EXTI_Init()` 只配 EXTI 线，GPIO 到 EXTI 的端口映射还要 `GPIO_EXTILineConfig()`；NVIC 分组由 `NVIC_PriorityGroupConfig()` 设定，通道由 `NVIC_Init()` 使能；多个事件可能共用向量，每个 IRQHandler 都要检查真实来源；清除规则按外设不同，USART 的 ORE 仍遵守“读 SR 再读 DR”；ISR 不做阻塞发送、I2C 完整事务、Flash 擦除或长延时，只保存最小证据并交给主循环。NVIC 的仲裁与优先级在[第 10 章][ch10]展开。
+逐项核对：`EXTI_Init()` 只配 EXTI 线，GPIO 到 EXTI 的端口映射还要 `GPIO_EXTILineConfig()`；NVIC 分组由 `NVIC_PriorityGroupConfig()` 设定，通道由 `NVIC_Init()` 使能；多个事件可能共用向量，每个 IRQHandler 都要检查真实来源；清除规则按外设不同，USART 的 ORE 仍遵守“读 SR 再读 DR”；ISR 不做阻塞发送、I2C 完整事务、Flash 擦除或长延时，只保存最小证据并交给主循环。NVIC 的仲裁与优先级在[第 10 章][ch10]展开。
 
 DMA 同样不替你接线。USART1 TX 至少三件事：给 DMA1 开时钟，按 RM0008 请求映射选 DMA1 Channel 4；`DMA_Init()` 配地址、方向、项数、增量和宽度；`USART_DMACmd()` 打开 USART 的 DMA 请求，再 `DMA_Cmd()` 启动通道。关键调用是：
 
@@ -254,7 +254,7 @@ DMA_Cmd(DMA1_Channel4, ENABLE);
 
 ### SPL 三层：基址宏、结构体、位掩码
 
-SPL 的封装术拆成三层基础设施：基址宏把地址变成名字，结构体把一串地址掰成命名字段，位掩码把第 N 位的值变成可读宏；函数只是把三层翻译成寄存器写。
+SPL 的封装分三层：基址宏把地址变成名字，结构体把一串地址拆成命名字段，位掩码把第 N 位的值变成可读宏；函数只是把三层翻译成寄存器写。
 
 ![SPL 三层基础设施：基址宏给名字、结构体收字段、位掩码给位号](/figures/stm32-15-spl-tiers.svg)
 
@@ -263,7 +263,7 @@ SPL 的封装术拆成三层基础设施：基址宏把地址变成名字，结�
 ```c
 #define AHB1PERIPH_BASE  (PERIPH_BASE + 0x00020000UL)   /* = 0x40020000 */
 #define GPIOA_BASE       (AHB1PERIPH_BASE + 0x0000UL)
-#define GPIOA            ((GPIO_TypeDef *) GPIOA_BASE)  /* 结构体指针，不是魔法 */
+#define GPIOA            ((GPIO_TypeDef *) GPIOA_BASE)  /* 结构体指针，指向寄存器基址 */
 
 typedef struct {
   __IO uint32_t MODER;    /* 0x00：模式（2 位/引脚 × 16 引脚） */
@@ -280,11 +280,11 @@ typedef struct {
 #define GPIO_MODER_MODER0_Msk   (0x3UL)   /* 2 位；枚举值即寄存器位段值 */
 ```
 
-`__IO` 就是 `volatile`，寄存器访问每次都要真访存，否则连续两次写可能被合并（第 2 章）。成员顺序与偏移就是 RM0090 的寄存器布局，读 CMSIS 结构体等于读手册的寄存器表，偏移用第 3 章的 `offsetof` 断言核。关键设计是枚举值等于位段值：`GPIO_Mode_IN=0x00`、`GPIO_Mode_OUT=0x01`、`GPIO_Mode_AF=0x02`、`GPIO_Mode_AN=0x03`，所以翻译本质是把枚举值左移到对应引脚的位段，没有查表，只有移位。根书第 26 章按所有权把同一件事分成四层：`stm32f10x.h` 给设备与寄存器定义，外设头给结构体与声明，外设 `.c` 把字段写进寄存器，而时钟、引脚、调用顺序、中断边界、超时和业务状态机归你的工程。三层封装术到第四层收口。
+`__IO` 就是 `volatile`，寄存器访问每次都要真访存，否则连续两次写可能被合并（第 2 章）。成员顺序与偏移就是 RM0090 的寄存器布局，读 CMSIS 结构体等于读手册的寄存器表，偏移用第 3 章的 `offsetof` 断言核。关键设计是枚举值等于位段值：`GPIO_Mode_IN=0x00`、`GPIO_Mode_OUT=0x01`、`GPIO_Mode_AF=0x02`、`GPIO_Mode_AN=0x03`，所以翻译就是把枚举值左移到对应引脚的位段，不查表，只移位。根书第 26 章按所有权把同一件事分成四层：`stm32f10x.h` 给设备与寄存器定义，外设头给结构体与声明，外设 `.c` 把字段写进寄存器，而时钟、引脚、调用顺序、中断边界、超时和业务状态机归你的工程。三层封装，到第四层为止。
 
 ### GPIO_Init 逐行：四段寄存器的位操作
 
-![GPIO_Init 解剖：结构体打包、逐 pin 循环、位偏移、四段寄存器写入](/anim/spl-gpio-init.svg)
+![GPIO_Init 逐行拆解：结构体打包、逐 pin 循环、位偏移、四段寄存器写入](/anim/spl-gpio-init.svg)
 
 ```c
 void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef *init)
@@ -322,13 +322,13 @@ void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef *init)
 3. **移位量由寄存器布局决定**：MODER、OSPEEDR、PUPDR 是 2 位/引脚，移 `pinpos * 2`；OTYPER 是 1 位/引脚，移 `pinpos`。
 4. **枚举值即位段值**：`init->GPIO_Mode` 直接左移，没有查表，因为头文件把枚举定义成了与硬件编码相同的值。
 
-库没有魔法，只有更周全的边界处理：循环多引脚、清旧值、断言。手写版是 `GPIOA->MODER |= (0x01 << (5 * 2))` 这样一行；库版把同一件事包进函数，代价是循环与分支。
+库版比手写多做的只有三件：循环覆盖多引脚、清掉旧位段、参数断言。手写版是 `GPIOA->MODER |= (0x01 << (5 * 2))` 这样一行；库版把同一件事包进函数，代价是循环与分支。
 
 时钟使能也有一个容易被当成“就一句 `|=`”的细节。`RCC_AHB1PeriphClockCmd()` 在写 `AHB1ENR` 之后还补了一句 `(void)RCC->AHB1ENR;` 的读回。RM0090 有一条“外设时钟使能后，访问外设寄存器前需等几个时钟周期生效”。刚 `|=` 完立刻访问外设，可能在时钟还没真正喂到外设的那几个周期里读/写落空，现象是“配置了但没生效”。读回 `RCC->AHB1ENR` 强制一次总线往返，等流水线把写落地再继续；手写时要自己补 `(void)RCC->AHB1ENR;` 或 `__DSB();`。
 
 `assert_param` 则是 Debug 版的参数体检：打开 `USE_FULL_ASSERT` 时参数错误进入 `assert_failed()`，关闭时展开为 `((void)0)`，编译期完全消失。看到程序“卡死”在 `assert_failed` 的死循环，不是硬件挂了，是库在喊参数错了，看调用栈找传错的调用方。
 
-把“GPIO_Init 反推法”带到别的函数上，方法不变：列结构体字段，查手册每个字段对应哪个寄存器位，再对照库源码核对翻译逻辑。`USART_Init` 的 `USART_BaudRate` 落 BRR，`WordLength` 落 CR1.M，`StopBits` 落 CR2.STOP，`Parity` 落 CR1.PCE 与 PS，`Mode` 落 CR1.TE/RE，`HardwareFlowControl` 落 CR3 的 CTSE/RTSE。HAL、LL、RT-Thread 驱动只是换皮，结构体字段名变了、断言宏变了，“结构体打包 + 位操作翻译 + 断言”这三板斧不变。
+把“GPIO_Init 反推法”带到别的函数上，方法不变：列结构体字段，查手册每个字段对应哪个寄存器位，再对照库源码核对翻译逻辑。`USART_Init` 的 `USART_BaudRate` 落 BRR，`WordLength` 落 CR1.M，`StopBits` 落 CR2.STOP，`Parity` 落 CR1.PCE 与 PS，`Mode` 落 CR1.TE/RE，`HardwareFlowControl` 落 CR3 的 CTSE/RTSE。HAL、LL、RT-Thread 驱动只是换皮，结构体字段名变了、断言宏变了，“结构体打包 + 位操作翻译 + 断言”这三件事不变。
 
 至于什么时候用库、什么时候手写：初始化代码启动时跑一次，用库换可读性与防错；中断与性能热路径直接位操作；量产可以混合，配 `-ffunction-sections -fdata-sections` 与 `--gc-sections` 把没用到的库函数在链接时剔除（第 6 章）。
 
@@ -336,11 +336,11 @@ void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef *init)
 
 ## 测量与证据
 
-本章数字与方法来自 B7、根书第 26 章、S15 与第 5、6 章，工具链版本随来源标注。构建系统的命令输出与芯片无关；SPL 的数字来自 GNU Arm 10.3.1 的冻结工程。换版本、换板子，具体读数会变，判读方法不变。
+这里的数字与方法来自 B7、根书第 26 章、S15 与第 5、6 章，工具链版本随来源标注。构建系统的命令输出与芯片无关；SPL 的数字来自 GNU Arm 10.3.1 的冻结工程。换版本、换板子，具体读数会变，判读方法不变。
 
 | 取证项 | 来源命令 | 来源记录里的读数 |
 | --- | --- | --- |
-| Make 干跑 | `make clean && make`；`touch main.c && make -n` | 干跑列出将执行命令但不执行；真构建后再 `touch main.c`，干跑只出现 `main.o` 及依赖它的链接产物，启动文件目标不出现；按目标判读，不按输出长度（来源只记两条连跑的旧干跑序列，本章补一次真构建；未附逐行输出） |
+| Make 干跑 | `make clean && make`；`touch main.c && make -n` | 干跑列出将执行命令但不执行；真构建后再 `touch main.c`，干跑只出现 `main.o` 及依赖它的链接产物，启动文件目标不出现；按目标判读，不按输出长度（来源只记两条连跑的旧干跑序列，这里补一次真构建；未附逐行输出） |
 | 00-blink 依赖图 | 读 `mcu/code/stm32/00-blink/Makefile` | `blink.elf`、`blink.bin`、`flash`、`debug`、`gdb` 五个节点，后三个是伪目标 |
 | 头文件依赖 | 删掉依赖边后 `touch` 头文件 | `main.o` 只写 `main.c`，缺 `stm32f407.h` 的边；解法 `-MMD -MP` 生成 `.d` |
 | CMake 生成 | `cmake -B build`，再 `make -C build` | 两段式：先生成构建文件，再构建 |
@@ -348,11 +348,11 @@ void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef *init)
 | Kconfig | `menuconfig` | `Kconfig → sdkconfig/.config → 宏头`；提交 `sdkconfig.defaults` |
 | SPL 版本 | 包与镜像 | V3.5.0；STSW-STM32054；镜像 commit `afa743577f2784e95be2d5003380fdb84a702519` |
 | SPL 编译 | GNU Arm 10.3.1 | text 1976 B、data 20 B、bss 1028 B；符号表只有一个 `SysTick_Handler` |
-| GPIO_Init 解剖 | S15 的 F4 V1.8.0 取证 | 16 次循环；MODER/OTYPER/OSPEEDR/PUPDR 四段；2 位/引脚移 `pinpos*2`，1 位/引脚移 `pinpos` |
+| GPIO_Init 逐行拆解 | S15 的 F4 V1.8.0 取证 | 16 次循环；MODER/OTYPER/OSPEEDR/PUPDR 四段；2 位/引脚移 `pinpos*2`，1 位/引脚移 `pinpos` |
 | assert 开关 | `USE_FULL_ASSERT` | Debug 进 `assert_failed`；Release 展开 `((void)0)`，零开销 |
-| 板级验收 | PC13 约 1 Hz、`SystemCoreClock` | 来源要求真板复核；本机未接板，本章只到构建闭合 |
+| 板级验收 | PC13 约 1 Hz、`SystemCoreClock` | 来源要求真板复核；本机未接板，只到构建闭合 |
 
-判断“真的会了”：给你一个“改了头文件不重建”的工程，你能先用 `make -n` 证明图上有缺口，再用 `-MMD -MP` 补边；给你一个 CMake 交叉工程，你能从日志里的编译器路径判断工具链文件有没有生效；给你一个旧 F1 工程，你能列出 SPL 版本、两个宏、启动文件、链接脚本和实际参与编译的驱动源文件；给你一个库函数，你能说出它写哪几个寄存器、哪几位，再翻手册核对。
+检验掌握程度：给你一个“改了头文件不重建”的工程，你能先用 `make -n` 证明图上有缺口，再用 `-MMD -MP` 补边；给你一个 CMake 交叉工程，你能从日志里的编译器路径判断工具链文件有没有生效；给你一个旧 F1 工程，你能列出 SPL 版本、两个宏、启动文件、链接脚本和实际参与编译的驱动源文件；给你一个库函数，你能说出它写哪几个寄存器、哪几位，再翻手册核对。
 
 ## 失败分支
 
@@ -374,23 +374,23 @@ void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef *init)
 
 ## 跨平台边界
 
-构建系统这一层与芯片无关，但“两平台共用同一副骨架”要按维度拆开说。依赖图这一维确实共用：一张图按 mtime 决定重建，Make 的三要素、缺头文件边与 `-MMD -MP` 的补法，在 F103 与 ESP32 的工程里都按同一套问题去读。
+构建系统这一层与芯片无关，但“两平台共用同一套机制”要按维度拆开说。依赖图这一维确实共用：一张图按 mtime 决定重建，Make 的三要素、缺头文件边与 `-MMD -MP` 的补法，在 F103 与 ESP32 的工程里都按同一套问题去读。
 
-生成器这一维只对 CMake/IDF 成立：CMake 先产出构建文件再构建，ESP-IDF 在 CMake 之上用 `idf_component_register` 圈组件，这些事实都来自 B7 对 CMake 与 IDF 的记录，本章没有把它们写成 F103 一侧的机制。
+生成器这一维只对 CMake/IDF 成立：CMake 先产出构建文件再构建，ESP-IDF 在 CMake 之上用 `idf_component_register` 圈组件，这些事实都来自 B7 对 CMake 与 IDF 的记录，没有把它们写成 F103 一侧的机制。
 
 配置层这一维按平台各算各的：F103 的 SPL 工程用 `stm32f10x_conf.h` 选择包含哪些驱动头文件，用 `STM32F10X_MD` 与 `USE_STDPERIPH_DRIVER` 两个宏进入真实编译命令；ESP32 的 IDF 工程用 Kconfig 菜单把选择写进 `sdkconfig`，构建时生成 `sdkconfig.h`。同样是“配置决定编什么”，两套机制不同，不能互相搬。
 
-两条栈的所有权也不同。F103 侧的遗留栈是 SPL V3.5.0：版本、`STM32F10X_MD`、`USE_STDPERIPH_DRIVER`、启动文件、链接脚本和 `system_stm32f10x.c` 必须成套；ESP32 侧的工程单位是 ESP-IDF 组件，配置走 Kconfig 与 `sdkconfig`，调度入口是 `idf.py`。把 `stm32f10x_*` 文件搬到 ESP32，或把 ESP-IDF 的组件宏搬到 F1，都不是移植，只是把两套所有权混在一起。
+两套技术栈的所有权也不同。F103 侧的遗留栈是 SPL V3.5.0：版本、`STM32F10X_MD`、`USE_STDPERIPH_DRIVER`、启动文件、链接脚本和 `system_stm32f10x.c` 必须成套；ESP32 侧的工程单位是 ESP-IDF 组件，配置走 Kconfig 与 `sdkconfig`，调度入口是 `idf.py`。把 `stm32f10x_*` 文件搬到 ESP32，或把 ESP-IDF 的组件宏搬到 F1，都不是移植，只是把两套所有权混在一起。
 
-`GPIO_Init` 的逐行解剖也必须按版本读：S15 的取证对象是 F4 V1.8.0，寄存器是 `MODER/OTYPER/OSPEEDR/PUPDR`；F103 的 V3.5.0 走同一套“结构体 + 移位 + 断言”的方法，但落点是 `GPIOx_CRL/CRH`。方法可以带走，寄存器名、位段和时钟使能寄存器不能跨版本搬运。生成器与配置机制之外还有别的平台差异，本章没有逐项取证，留给卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。
+`GPIO_Init` 的逐行拆解也必须按版本读：S15 的取证对象是 F4 V1.8.0，寄存器是 `MODER/OTYPER/OSPEEDR/PUPDR`；F103 的 V3.5.0 走同一套“结构体 + 移位 + 断言”的方法，但落点是 `GPIOx_CRL/CRH`。方法可以带走，寄存器名、位段和时钟使能寄存器不能跨版本搬运。生成器与配置机制之外还有别的平台差异，这里没有逐项取证，留给卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。
 
-| 事项 | 本章的证据范围 | 跨平台时的处理 |
+| 事项 | 取证范围 | 跨平台时的处理 |
 | --- | --- | --- |
 | 依赖图、生成器、配置层 | 依赖图来自 B7 且与芯片无关；生成器记录属 CMake/IDF；配置层 F103 为 `stm32f10x_conf.h` + `STM32F10X_MD`/`USE_STDPERIPH_DRIVER`，ESP32 为 Kconfig → `sdkconfig` | 依赖图共用同一套读法；生成器只按 CMake/IDF 读，不外推到 F103；配置机制各按各的读，不互相搬 |
 | ESP-IDF 工作流 | B7 记录的组件、Kconfig、`idf.py` | ESP32 侧按此读工程；ESP32-S3 的地址、启动与分区见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md) |
 | SPL 版本与宏 | 仅 STM32F10x V3.5.0 | 不复制到其它系列；ESP32 没有 SPL |
-| GPIO 解剖 | S15 的 F4 V1.8.0；F1 的落点是 `GPIOx_CRL/CRH` | 方法复用，寄存器名逐版本对账 |
-| 时钟、引脚、DMA 通道 | 本章不展开 | 见第 8、10、14 章；系列差异与迁移检查表见[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md) |
+| GPIO 拆解 | S15 的 F4 V1.8.0；F1 的落点是 `GPIOx_CRL/CRH` | 方法复用，寄存器名逐版本核对 |
+| 时钟、引脚、DMA 通道 | 不展开 | 见第 8、10、14 章；系列差异与迁移检查表见[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md) |
 | 板级行为 | 来源要求真板复核，本机未接板 | 两平台都只到构建闭合，烧录与波形待上板 |
 
 ## 离开检查
@@ -407,10 +407,10 @@ void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef *init)
 
 1. 目标、依赖、规则。`$@` 是目标名，`$<` 是第一个依赖，`$^` 是所有依赖。`make -n` 不执行命令，只按同一套 mtime 比对把将执行的命令打印出来，所以能看到哪些节点会重建、按什么顺序执行。
 2. `main.c` 变新让 `main.o` 重建，`main.o` 再让 `blink.elf` 与 `blink.bin` 重建；启动文件对应的目标不受影响。改头文件不重建，是因为 `main.o` 的依赖只写了 `main.c`，缺 `stm32f407.h` 这条边；用 `-MMD -MP` 让 gcc 生成 `.d` 依赖文件，再 `-include` 进 Make。
-3. CMake 生成 Makefile 或 Ninja 构建文件，真正的编译链接由生成物执行。工具链文件必须在 `project()` 之前设，否则 CMake 已经用主机 gcc 探测完环境；`CMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY` 让探测停在编译，不去链接和运行 PC 上跑不了的交叉产物。
+3. CMake 生成 Makefile 或 Ninja 构建文件，实际编译链接由生成物执行。工具链文件必须在 `project()` 之前设，否则 CMake 已经用主机 gcc 探测完环境；`CMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY` 让探测停在编译，不去链接和运行 PC 上跑不了的交叉产物。
 4. `REQUIRES` 把依赖组件的头文件传递给依赖我的组件，`PRIV_REQUIRES` 只给本组件实现用。循环依赖的标准解法是抽出公共部分进组件 C，A 与 B 都只依赖 C。构建系统管“怎么编”，Kconfig 管“编什么”，两维正交，同一份 Kconfig 可以喂给 CMake 或 scons。
 5. 至少要有 CMSIS 设备头、`system_stm32f10x.c`、启动文件、链接脚本、`stm32f10x_conf.h`、实际参与编译的 `StdPeriph_Driver/src/*.c`，并定义 `STM32F10X_MD` 与 `USE_STDPERIPH_DRIVER`。缺头文件搜索路径或宏，声明不可见；只加 `inc` 不加 `.c`，链接 undefined；启动文件或密度宏错，中断号与向量表对不上；缺 `SystemInit`，时钟假设不成立。
-6. 逐 pin 循环是因为 `GPIO_Pin` 是 16 位掩码，一次调用可能配多个引脚；先清后置是为了只改目标引脚的位段，保留其他引脚配置；移位量由寄存器布局决定，2 位/引脚移 `pinpos*2`，1 位/引脚移 `pinpos`。三层：基址宏把地址变成名字，结构体把地址掰成字段，位掩码把第 N 位变成可读宏；函数把三层翻译成寄存器写。
+6. 逐 pin 循环是因为 `GPIO_Pin` 是 16 位掩码，一次调用可能配多个引脚；先清后置是为了只改目标引脚的位段，保留其他引脚配置；移位量由寄存器布局决定，2 位/引脚移 `pinpos*2`，1 位/引脚移 `pinpos`。三层：基址宏把地址变成名字，结构体把地址拆成字段，位掩码把第 N 位的值变成可读宏；函数把三层翻译成寄存器写。
 
 </details>
 

@@ -47,11 +47,11 @@ platforms: [generic]
 
 ## 第二层：38 条编号条目（F103 线，D18 原文收编）
 
-五域编号 **C1–C8**（编译链接）、**D1–D7**（下载调试）、**P1–P9**（外设）、**H1–H7**（硬件）、**R1–R7**（RTOS 工具链）：每条 现象/原因/解决 三段与出处列原样保留。本章不重写答案，只把根书章号按 mapping 重排。
+五域编号 **C1–C8**（编译链接）、**D1–D7**（下载调试）、**P1–P9**（外设）、**H1–H7**（硬件）、**R1–R7**（RTOS 工具链）：每条 现象/原因/解决 三段与出处列原样保留。这里不重写答案，只把根书章号按 mapping 重排。
 
 根 03→[ch09](../v1-drivers/09-gpio.md)、根 15→[ch21](../v3-rtos/21-why-rtos.md)/[ch22](../v3-rtos/22-tasks-tcb-scheduler.md)、根 17→[v1 第 20 章](../v2-reliability/20-debug-performance.md)、根 20→[第 46 章](./46-resources-roadmap-open-source.md)、根 26→[v1 第 7 章](../v0-foundations/07-build-systems-legacy.md)。
 
-三条抽查样例钉死其余条目的口径：
+三条抽查样例确定其余条目的口径：
 
 - **BOOT 三模式账**：BOOT0=0 主闪存 0x08000000；BOOT0=1/BOOT1=0 系统存储器 0x1FFFF000；0x1FFFB000 属**互联型 F105/F107**。C8 没有 0x08080000（XL 密度才有）；锁存在复位后第 4 个 SYSCLK 上升沿（[第 28 章](../v4-platforms/28-chip-migration-differences.md) 的 G0 对照）。
 - **串口时钟账**：BRR=0x271 在 PCLK2=72 MHz 对应 115200，同一 BRR 在 8 MHz 下只有 12800；乱码先查时钟前提（[v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)）；HSI 8 MHz 是复位默认。
