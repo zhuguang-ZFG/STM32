@@ -53,6 +53,8 @@ platforms: [generic]
 
 ![手绘板：星标多不等于该读（原理示意，非实拍）](/images/app-f-stars.png)
 
+书、课程与配套代码不在上表：它们不是「源码即文档」，许可也常按正文/代码分列。四类资源的读法与许可边界见[第 46 章](../v7-delivery/46-resources-roadmap-open-source.md)。
+
 ## 二、九个知识点：只有读源码才拿得到
 
 读陌生仓库先问三个问题：**谁在什么时候调用谁**、**数据在内存里长什么样**、**我猜错时会看到什么现象**。九条分两组：跨厂商六条（两书交集取并集）与 ESP-IDF 专三条。
@@ -161,6 +163,8 @@ platforms: [generic]
 - **主路径（第一次通读）**：按目录顺序 ch01 → ch46，每章章首的「先备知识」只引用前面的概念。
 - **加速路径（已有工具链经验）**：ch01 → ch02 → ch03 → ch05 → ch06 → ch10 → ch21 → ch20 → 按目标平台选卷 4 章 → ch27；缺测量证据时退回主路径对应章，不用仿真冒充实板。
 - **专题插入**：维护 SPL 旧工程→[v1 第 7 章](../v0-foundations/07-build-systems-legacy.md)；板级对线→[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)；症状排错→[第 45 章](../v7-delivery/45-troubleshooting-handbook.md)（任意章失败时按症状入口跳转）。
+
+按能力级别自查：L0–L5 的定义、卷章映射与过关证据在[第 46 章](../v7-delivery/46-resources-roadmap-open-source.md)。本附录的仓库按需插入，不按星标顺序通读。
 
 ### 读完的标准
 
