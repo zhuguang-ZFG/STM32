@@ -195,6 +195,8 @@ bx    r14                      ;    异常返回，硬件弹硬件帧
 
 `vTaskSwitchContext` 的 C 侧核心动作只有一步：把 `pxCurrentTCB` 指向最高优先级就绪任务的 TCB（选最高的位图与 CLZ 在第 22 章）。挂起计数、追踪钩子不改变「下一个是谁」；换指针只是决策，实际恢复现场由 PendSV 后面的九步完成。
 
+![手绘板：PendSV 一条线——mrs psp 进来，存 9 字软件帧、写 TCB 偏移 0，BASEPRI 关窗换 pxCurrentTCB，弹 9 字、写 PSP、bx r14；行李牌 bit4 决定硬件弹 8 字还是 26 字（原理示意，非实拍）](/images/ch23-pendsv-line.png)
+
 ![上下文切换动画：TaskA 的硬件帧与 R4–R11 压进自己的栈，栈顶藏进 TCB，换到 TaskB 的栈再弹回](/anim/context-switch.svg)
 
 图里两个任务栈此消彼长，TCB 的 `pxTopOfStack` 各指自己的栈顶，PendSV 标为全系统最低。动画把软件帧画成 R4–R11 八个字，没画第 9 个 EXC_RETURN；完整布局以正文的 9 字布局为准。

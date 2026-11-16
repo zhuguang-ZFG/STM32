@@ -316,9 +316,89 @@ def ch22_first_frame_18_words():
     return f
 
 
+def ch23_pendsv_line():
+    """PendSV switch as one line: save 9 words, swap TCB, restore 9
+    words. FPU baggage rides EXC_RETURN bit4. Facts from ch23
+    (port.c:505-560, F2:107-207, port.c:434-435)."""
+    f = Fig("ch23-pendsv-line",
+            "PendSV 一条线：存 9 字，换 TCB，弹 9 字",
+            title_color=BLUE_D, tag="CH 23 · 上下文切换")
+    f.text(64, 126,
+           "排在全系统最低优先级：所有 ISR 退场后才开始换现场，切换永远压不住中断。",
+           size=19, color=MUTED)
+
+    # ---- save side ----
+    f.card(64, 156, 340, 316, BLUE_D, fill=BLUE_FILL)
+    f.text(84, 188, "保存当前任务", size=19, color=BLUE_D, weight="bold")
+    steps = [("mrs r0, psp", "① 栈顶拿进来"),
+             ("tst r14, #0x10", "③ 行李牌 bit4"),
+             ("stmdb r0!, {r4-r11,r14}", "④ 软件帧 9 字 = 36 B"),
+             ("str r0, [r2]", "⑤ 写回 TCB 偏移 0")]
+    for i, (code, note) in enumerate(steps):
+        y = 216 + i * 62
+        f.pill(84, y - 22, 300, 36, code, BLUE_D, fill=WHITE, size=14.5,
+               text_color=INK)
+        f.text(84, y + 30, note, size=13.5, color=MUTED)
+
+    # ---- switch middle ----
+    f.card(428, 156, 296, 316, AMBER_STROKE, fill=AMBER_PALE)
+    f.text(448, 188, "换人（关窗）", size=19, color=AMBER_STROKE,
+           weight="bold")
+    f.pill(448, 202, 256, 38, "basepri = 0x50", RED, fill=WHITE, size=15)
+    f.text(448, 268, "bl vTaskSwitchContext", size=14.5, color=INK,
+           font=MONO, weight="bold")
+    f.text(448, 294, "⑦ 只换 pxCurrentTCB", size=13.5, color=MUTED)
+    f.pill(448, 314, 256, 38, "basepri = 0", GREEN_D, fill=WHITE,
+           size=15)
+    f.text(448, 380, "⑥⑧ 临界区只护就绪表", size=13.5, color=MUTED)
+    f.text(448, 408, "窗口短，ISR 只被挡一小段", size=13.5, color=MUTED)
+    f.text(448, 444, "r0/r3 先 stmdb 存、后 ldmia 取", size=13,
+           color=MUTED)
+
+    # ---- restore side ----
+    f.card(748, 156, 340, 316, GREEN_D, fill=GREEN_FILL)
+    f.text(768, 188, "恢复新任务", size=19, color=GREEN_D, weight="bold")
+    rsteps = [("ldr r1, [r3]", "⑨ 新 TCB"),
+              ("ldr r0, [r1]", "⑩ 新栈顶（偏移 0）"),
+              ("ldmia r0!, {r4-r11,r14}", "⑪ 弹软件帧 9 字"),
+              ("bx r14", "硬件弹 8 字 / 26 字")]
+    for i, (code, note) in enumerate(rsteps):
+        y = 216 + i * 62
+        f.pill(768, y - 22, 300, 36, code, GREEN_D, fill=WHITE, size=14.5,
+               text_color=INK)
+        f.text(768, y + 30, note, size=13.5, color=MUTED)
+
+    # ---- bottom: lowest priority + baggage legend ----
+    f.panel(64, 500, 560, 100, RED_FILL, amp=1.6)
+    f.rect(64, 500, 560, 100, color=RED, sw=1.8, fill=None, amp=1.6)
+    f.text(88, 532, "为什么排最低：SHPR3 两个字节都写 0xFF", size=15.5,
+           color=RED, weight="bold")
+    f.text(88, 560, "（port.c:434-435，portMIN = 255）；SysTick 只置挂起位",
+           size=14, color=INK)
+    f.text(88, 586, "写 ICSR bit28 = 排队，不是立即切", size=14.5,
+           color=INK)
+
+    f.panel(652, 500, 436, 100, GRAY_FILL, amp=1.6)
+    f.rect(652, 500, 436, 100, color=MUTED, sw=1.6, fill=None, amp=1.6)
+    f.text(676, 532, "行李牌 bit4：0 = 跑过浮点", size=15.5, color=INK,
+           weight="bold")
+    f.text(676, 560, "vstmdbeq r0!, {s16-s31} 补存 16 字", size=14,
+           color=INK, font=MONO)
+    f.text(676, 586, "首帧 EXC_RETURN = 0xFFFFFFFD，bit4 = 1，无行李",
+           size=13.5, color=MUTED)
+
+    f.htext(64, 700, "软件永远补 9 字；硬件弹多少，看行李牌",
+            size=22, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "步骤号取自本章 port.c/F2 的十一条语义转写；流程示意，非 GDB 实拍。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch21-stack-word-ruler": ch21_stack_word_ruler,
     "ch22-first-frame-18-words": ch22_first_frame_18_words,
+    "ch23-pendsv-line": ch23_pendsv_line,
     "ch24-queue-three-contracts": ch24_queue_three_contracts,
 }
 

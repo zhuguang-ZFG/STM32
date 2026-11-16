@@ -11,6 +11,7 @@ from hd import (AMBER_PALE, AMBER_STROKE, BLUE_D, BLUE_FILL, GRAY_FILL,
 
 FIG_DIR = (Path(__file__).resolve().parents[2] / ".temp" / "l0-l5-pass"
            / "figures")
+MONO = "'Consolas','Courier New',monospace"
 
 
 def ch11_three_timebases():
@@ -160,9 +161,67 @@ def ch14_dma_buffer_ownership():
     return f
 
 
+def ch14_ndtr_units():
+    """NDTR counts items, not bytes: '3 left' means 61 bytes (8-bit) or
+    122 bytes (halfword). Facts from ch14 opening table."""
+    f = Fig("ch14-ndtr-units",
+            "NDTR 数的是项，不是字节：还剩 3 是多少？",
+            title_color=BLUE_D, tag="CH 14 · DMA 与缓冲")
+    f.text(64, 126,
+           "同一个「还剩 3」，字节宽度下是已写 61 字节，半字宽度下是已写 122 字节——读 NDTR 先问宽度。",
+           size=19, color=MUTED)
+
+    # ---- left: byte items ----
+    f.card(64, 156, 500, 300, BLUE_D, fill=BLUE_FILL)
+    f.text(84, 190, "F103 USART1_RX · 8 位环形", size=19, color=BLUE_D,
+           weight="bold")
+    f.text(84, 216, "每项 1 字节 · 64 字节环 · NDTR 初值 64", size=14,
+           color=MUTED)
+    f.metric(96, 268, "已写 61 字节", "64 − 3 = 61 项 × 1 B", BLUE_D)
+    f.text(84, 322, "半满点：32 字节 · 115200 8N1 下 ≈ 2.78 ms", size=15,
+           color=INK)
+    f.text(84, 352, "模差位置：(64 − 3) mod 64 = 61", size=14.5,
+           color=INK, font=MONO)
+    f.text(84, 382, "下一圈要从 61 跳回 0——", size=14, color=MUTED)
+    f.text(84, 408, "模差不是累计进度", size=14.5, color=RED,
+           weight="bold")
+
+    # ---- right: halfword items ----
+    f.card(588, 156, 500, 300, GREEN_D, fill=GREEN_FILL)
+    f.text(608, 190, "F407 ADC 环形 · 16 位", size=19, color=GREEN_D,
+           weight="bold")
+    f.text(608, 216, "每项 2 字节 · 64 个采样 · NDTR 初值 64", size=14,
+           color=MUTED)
+    f.metric(620, 268, "已写 122 字节", "64 − 3 = 61 采样 × 2 B", GREEN_D)
+    f.text(608, 322, "半满点：32 采样 = 64 字节", size=15, color=INK)
+    f.text(608, 352, "同一个 NDTR 读数，翻倍的字节", size=14.5, color=INK)
+    f.text(608, 382, "把 NDTR 当字节的下场：", size=14, color=MUTED)
+    f.text(608, 408, "后半段从奇数地址开始切，整体错位", size=14.5,
+           color=RED, weight="bold")
+
+    # ---- bottom: increments + ceiling ----
+    f.panel(64, 486, 1024, 110, AMBER_PALE, amp=1.6)
+    f.rect(64, 486, 1024, 110, color=AMBER_STROKE, sw=1.8, fill=None,
+           amp=1.6)
+    f.text(88, 518, "两次快照之间可能转了不止一圈：增量 = (新位置 − 上次位置 + 长度) mod 长度",
+           size=15.5, color=INK)
+    f.text(88, 546, "整圈丢失模差看不见——错误标志、HT+TC 积压、位置不动却报 TC，宁可丢弃计数，不猜增量",
+           size=14.5, color=MUTED)
+    f.text(88, 576, "NDTR 只有 16 位：一轮最多 65535 项（8 位 65535 B，半字 131070 B），更大的块分段装填",
+           size=14.5, color=MUTED)
+
+    f.htext(64, 700, "项数 × 每项字节 = 已写字节；NDTR 自己不报单位",
+            size=22, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "数字取自本章开头换算表与 dma_consume() 判据；推导口径，非实测。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch11-three-timebases": ch11_three_timebases,
     "ch14-dma-buffer-ownership": ch14_dma_buffer_ownership,
+    "ch14-ndtr-units": ch14_ndtr_units,
 }
 
 if __name__ == "__main__":

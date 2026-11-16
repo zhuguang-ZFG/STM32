@@ -22,8 +22,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from hd import (AMBER_FILL, AMBER_PALE, AMBER_STROKE, BLUE_D,  # noqa: E402
-                BLUE_FILL, GREEN_D, GREEN_FILL, HAND, INK, MUTED, RED,
-                RED_FILL, WHITE, Fig, save)
+                BLUE_FILL, GRAY_FILL, GREEN_D, GREEN_FILL, HAND, INK, MUTED,
+                RED, RED_FILL, WHITE, Fig, save)
 
 MONO = "'Consolas','Courier New',monospace"
 STAGE = Path(__file__).resolve().parents[2] / ".temp" / "l0-l5-pass" / "figures"
@@ -185,9 +185,70 @@ def ch44_error_sorting_bench():
     return f
 
 
+def ch44_verify_decision_tree():
+    """Verify decision tree: where correctness is defined picks the path.
+    Facts from ch44 (AI02 caliber)."""
+    f = Fig("ch44-verify-decision-tree",
+            "验证决策树：一问定路径",
+            title_color=GREEN_D, tag="CH 44 · 对账与幻觉")
+    f.text(64, 126,
+           "树分的是责任，不是难度：这条断言的正确性由谁定义，就走哪条路。",
+           size=19, color=MUTED)
+
+    # ---- root ----
+    f.pill(336, 158, 480, 56, "正确性定义在公共知识，还是在你的板子与责任里？",
+           BLUE_D, fill=WHITE, size=17)
+
+    # ---- three branches ----
+    f.card(64, 268, 340, 210, BLUE_D, fill=BLUE_FILL)
+    f.text(84, 300, "公共知识", size=19, color=BLUE_D, weight="bold")
+    f.text(84, 326, "手册可查、来源可对", size=13.5, color=MUTED)
+    f.text(84, 360, "→ 三问对账", size=16, color=BLUE_D, weight="bold")
+    f.text(84, 392, "名：寄存器/符号叫什么", size=14, color=INK)
+    f.text(84, 418, "位：位号落在哪个寄存器", size=14, color=INK)
+    f.text(84, 444, "序：先开时钟还是先配位", size=14, color=INK)
+
+    f.card(428, 268, 296, 210, GREEN_D, fill=GREEN_FILL)
+    f.text(448, 300, "板卡事实", size=19, color=GREEN_D, weight="bold")
+    f.text(448, 326, "原理图、丝印、实测", size=13.5, color=MUTED)
+    f.text(448, 360, "→ 实测读回", size=16, color=GREEN_D, weight="bold")
+    f.text(448, 392, "引脚翻转了吗", size=14, color=INK)
+    f.text(448, 418, "万用表/示波器读数", size=14, color=INK)
+    f.text(448, 444, "板上的事实手册查不到", size=13.5, color=MUTED)
+
+    f.card(748, 268, 340, 210, RED, fill=RED_FILL)
+    f.text(768, 300, "你的责任", size=19, color=RED, weight="bold")
+    f.text(768, 326, "安全边界、阈值、终审", size=13.5, color=MUTED)
+    f.text(768, 360, "→ 不进 AI", size=16, color=RED, weight="bold")
+    f.text(768, 392, "四条不许碰边界之一", size=14, color=INK)
+    f.text(768, 418, "模型可以建议，不能拍板", size=14, color=INK)
+    f.text(768, 444, "责任全部在你", size=14, color=RED, weight="bold")
+
+    # ---- entry disciplines ----
+    f.panel(64, 508, 1024, 104, GRAY_FILL, amp=1.6)
+    f.rect(64, 508, 1024, 104, color=MUTED, sw=1.6, fill=None, amp=1.6)
+    f.text(88, 540, "两条入口纪律", size=15.5, color=INK, weight="bold")
+    f.text(88, 570, "① 30 秒分类：任何断言先分手册层 / 话语层 / 板卡层",
+           size=14.5, color=INK)
+    f.text(88, 596, "② 贴不出证据默认升级：拿不出出处与判据，按最高成本路径处理",
+           size=14.5, color=INK)
+    f.text(690, 570, "分级：RCC 与模式寄存器一律逐位", size=14, color=MUTED)
+    f.text(690, 596, "应用层抽样 · 纯算法单测", size=14, color=MUTED)
+
+    f.stamp(980, 668, "道歉是文体，不是修正", RED, size=16, angle=-8)
+
+    f.htext(64, 700, "30 秒先分类再动手；回喂三元组才算修正",
+            size=22, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "决策树取自本章 AI02 口径；结构示意，非实测记录。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch41-deadline-hourglasses": ch41_deadline_hourglasses,
     "ch44-error-sorting-bench": ch44_error_sorting_bench,
+    "ch44-verify-decision-tree": ch44_verify_decision_tree,
 }
 
 
