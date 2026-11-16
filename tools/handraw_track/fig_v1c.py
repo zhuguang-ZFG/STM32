@@ -234,10 +234,72 @@ def ch15_sar_twelve_rounds():
     return f
 
 
+def ch17_unlock_psize():
+    """Flash unlock keys and PSIZE tiers. Facts from ch17 (RM0008/RM0090
+    KEYR sequence, PSIZE voltage table, F1 halfword granularity)."""
+    f = Fig("ch17-unlock-psize",
+            "钥匙、PSIZE 与三道锁",
+            title_color=AMBER_STROKE, tag="CH 17 · Flash 与 OTA")
+    f.text(64, 126,
+           "上锁时 PG/SER/STRT 全被硬件忽略；解锁只开控制器——WRP 与 RDP 是另外两把锁。",
+           size=19, color=MUTED)
+
+    # ---- left: key sequence ----
+    f.card(64, 156, 480, 300, BLUE_D, fill=BLUE_FILL)
+    f.text(84, 190, "按顺序写两个手册常数", size=19, color=BLUE_D,
+           weight="bold")
+    f.pill(84, 210, 380, 42, "KEYR ← 0x45670123（KEY1）", BLUE_D,
+           fill=WHITE, size=15, text_color=INK)
+    f.pill(84, 262, 380, 42, "KEYR ← 0xCDEF89AB（KEY2）", BLUE_D,
+           fill=WHITE, size=15, text_color=INK)
+    f.text(84, 332, "顺序或数值不对：保持锁定到下次复位", size=15,
+           color=RED, weight="bold")
+    f.text(84, 360, "写完第二把，CR.LOCK 清零；F4 LOCK=bit31，F1=bit7",
+           size=14, color=INK)
+    f.text(84, 388, "已解锁就不要重复写钥匙", size=14, color=MUTED)
+    f.text(84, 416, "钥匙不是 CMSIS 宏，F1 与 F4 相同", size=13.5,
+           color=MUTED)
+
+    # ---- right: PSIZE table ----
+    f.card(568, 156, 520, 300, GREEN_D, fill=GREEN_FILL)
+    f.text(588, 190, "PSIZE 按供电选最高档（F4）", size=19, color=GREEN_D,
+           weight="bold")
+    tiers = [("2.7–3.6 V", "x32 最高", "x8/x16 也合法"), ("2.1–2.7 V", "x16 最高", ""),
+             ("1.8–2.1 V", "x8 最高", ""), ("x64", "仅 F42x/F43x", "F407 不选")]
+    for i, (vdd, top, note) in enumerate(tiers):
+        y = 224 + i * 40
+        f.text(588, y, vdd, size=14.5, color=INK, font=MONO)
+        f.text(700, y, top, size=14.5, color=GREEN_D, weight="bold")
+        if note:
+            f.text(850, y, note, size=13.5, color=MUTED)
+    f.text(588, 396, "PSIZE 先于 STRT/PG 设好，且要与写宽度配对：", size=14.5,
+           color=INK)
+    f.text(588, 422, "错配 → PGPERR / PGSERR，这次编程不生效", size=14.5,
+           color=RED, weight="bold")
+
+    # ---- bottom: F1 contrast ----
+    f.panel(64, 486, 1024, 110, GRAY_FILL, amp=1.6)
+    f.rect(64, 486, 1024, 110, color=MUTED, sw=1.6, fill=None, amp=1.6)
+    f.text(88, 518, "F103 没有 PSIZE 可选：中/高容量编程粒度都是半字（16 位），地址 2 字节对齐",
+           size=15, color=INK, weight="bold")
+    f.text(88, 548, "一个 32 位值分两次半字写；擦除粒度 F1 是页（1/2 KB）、F4 是扇区（16/64/128 KB）",
+           size=14.5, color=INK)
+    f.text(88, 576, "解锁 ≠ 解保护：WRP 开着的扇区照样擦不动（SR 置 WRPERR），RDP 管调试器能不能读",
+           size=14.5, color=MUTED)
+
+    f.htext(64, 700, "钥匙只是第一道闸；WRP、RDP 各是各的锁，谁也代替不了谁",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "钥匙与档位取自本章 RM0008/RM0090 转写；对照示意，非实测。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch15-adc-dac-chain": adc_dac_chain,
     "ch15-sar-twelve-rounds": ch15_sar_twelve_rounds,
     "ch17-flash-ota-rollback": flash_ota_rollback,
+    "ch17-unlock-psize": ch17_unlock_psize,
 }
 
 if __name__ == "__main__":

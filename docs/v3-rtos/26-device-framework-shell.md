@@ -69,6 +69,8 @@ FreeRTOS 把内核之外的一切留给你；RT-Thread 在内核之上叠了三�
 - **open**（`device.c:222-283`）：设备未激活先 `init`；未打开或 `oflag` 变了才调 `open`，同 flag 重复打开会跳过回调。`RT_EOK` 或 `-RT_ENOSYS` 才 `ref_count++`，其它错误不计数。旧材料「open 让 `ref_count++` 并调 `ops->open`」把顺序说反了。
 
 `rt_device_read/write` 是纯分发：未打开或无回调时框架返回 0 并 `rt_set_errno`（0 不等于成功）；有回调才转发给驱动。`control` 无回调返回 `-RT_ENOSYS`。缓冲、DMA、阻塞语义全在驱动里，且**各驱动不一致**。`read` 的阻塞行为不能跨设备统一假设，block 设备的 `size/pos` 单位还是块。
+![手绘板：ops 两套形态由 RT_USING_DEVICE_OPS 决定——开则共享 ops 表，关则函数指针内联（默认 BSP）；register 一个容器、find 线性比名、open 未激活才 init；read/write 返回带符号 rt_ssize_t（原理示意，非实拍）](/images/ch26-ops-two-forms.png)
+
 
 ## PIN：编号压平与真实宏
 

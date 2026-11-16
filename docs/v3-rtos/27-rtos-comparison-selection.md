@@ -55,6 +55,8 @@ platforms: [f407]
 **数量**。两边都不该写死：FreeRTOS 的级别数由 `configMAX_PRIORITIES` 决定，本 lab 是 5（合法值 0–4，`FreeRTOSConfig.h:23`）；CM4F 端口在开了 `configUSE_PORT_OPTIMISED_TASK_SELECTION` 时位图路径约束上限 32（`portmacro.h`），其他端口各有各的约束。RT-Thread 通过 `src/Kconfig:94-110` 配 8/32/256，默认 32。旧表「RT-Thread 32/256、二级位图」把可配置项写成了固定值。
 
 **算法**。FreeRTOS 单级位图 + CLZ 前导零找最高就绪级（依赖上述优化开关）；RT-Thread 在级别 ≤ 32 时用单级位图 `rt_thread_ready_priority_group`，> 32 才启用二级位图 `rt_thread_ready_table[32]`（`scheduler_up.c:46-51,107-116`）。「一边单级、另一边二级」的说法不成立。两边的算法都随配置切换。算法细节见 [第 22 章](./22-tasks-tcb-scheduler.md) 的就绪位图一节。
+![手绘板：三套坐标系——同一个 5 在 FreeRTOS 偏高、RT-Thread 偏低、填 NVIC 变 0x50；lab 里合法值只有 0–4；选型是平台→生态→熟悉度的三层漏斗（原理示意，非实拍）](/images/ch27-priority-three-worlds.png)
+
 
 ## IPC 对照：名字相近不等于语义等价
 

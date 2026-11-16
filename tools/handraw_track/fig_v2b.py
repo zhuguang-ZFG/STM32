@@ -463,12 +463,141 @@ def ch25_free_merge():
     return f
 
 
+def ch26_ops_two_forms():
+    """rt_device ops has two forms gated by RT_USING_DEVICE_OPS; the
+    register/find/open lifecycle corrections. Facts from ch26
+    (rtdef.h:1408-1424, device.c:67-93,122-126,222-283)."""
+    f = Fig("ch26-ops-two-forms",
+            "设备 ops 两套形态：先看宏开没开",
+            title_color=BLUE_D, tag="CH 26 · 设备框架")
+    f.text(64, 126,
+           "默认 F407 BSP 没开 RT_USING_DEVICE_OPS：函数指针内联进结构体，dev->ops->write 编译不过。",
+           size=19, color=MUTED)
+
+    # ---- left: two forms ----
+    f.card(64, 156, 500, 320, BLUE_D, fill=BLUE_FILL)
+    f.text(84, 190, "宏开（RT_USING_DEVICE_OPS）", size=17, color=BLUE_D,
+           weight="bold")
+    f.text(84, 216, "const struct rt_device_ops *ops", size=14.5,
+           color=INK, font=MONO)
+    f.text(84, 242, "多设备共享一张表，省 RAM", size=14, color=MUTED)
+    f.line(84, 262, 544, 262, color=MUTED, sw=1.4, amp=0.5)
+    f.text(84, 288, "宏关（默认 BSP）", size=17, color=AMBER_STROKE,
+           weight="bold")
+    f.text(84, 314, "init/open/close/read/write/control", size=14.5,
+           color=INK, font=MONO)
+    f.text(84, 340, "内联函数指针，每个实例一份", size=14, color=MUTED)
+    f.text(84, 372, "调用少一次解引用，多占 RAM", size=14, color=MUTED)
+    f.text(84, 404, "画结构图先看这个宏，旧材料两样都画错过", size=14,
+           color=RED, weight="bold")
+    f.text(84, 436, "read/write 返回 rt_ssize_t：带符号，", size=14,
+           color=INK, font=MONO)
+    f.text(84, 460, "正数=字节数，负数=错误码", size=14, color=INK, font=MONO)
+
+    # ---- right: lifecycle three corrections ----
+    f.card(588, 156, 500, 320, GREEN_D, fill=GREEN_FILL)
+    f.text(608, 190, "register / find / open 各归其位", size=18,
+           color=GREEN_D, weight="bold")
+    items = [("register", "挂进一个 Device 容器；", "Char/Block 只是标签，查找不按它"),
+             ("find", "容器链表上线性比名；", "uart1/i2c1 是 BSP 与应用的契约名"),
+             ("open", "未激活才 init；同 flag 重复打开", "跳过回调；ref_count 只在 RT_EOK 或"),
+             ("", "-RT_ENOSYS 才加；其它错误不计数", "")]
+    for i, (a, b, c) in enumerate(items):
+        y = 224 + i * 58
+        if a:
+            f.text(608, y, a, size=15, color=GREEN_D, weight="bold",
+                   font=MONO)
+            f.text(608, y + 22, b, size=13.5, color=INK)
+            f.text(608, y + 40, c, size=13.5, color=INK)
+    f.text(608, 444, "read/write 未打开或无回调 → 返回 0 并", size=13.5,
+           color=MUTED)
+    f.text(608, 464, "rt_set_errno：0 不等于成功", size=13.5, color=MUTED)
+
+    # ---- bottom ----
+    f.panel(64, 506, 1024, 92, RED_FILL, amp=1.6)
+    f.rect(64, 506, 1024, 92, color=RED, sw=1.8, fill=None, amp=1.6)
+    f.text(88, 538, "旧材料三处写反：ops 当无条件成员、ref_count 先加后判、read 返回 rt_size_t 丢错误通道",
+           size=15, color=RED, weight="bold")
+    f.text(88, 568, "缓冲、DMA、阻塞语义全在驱动里且各驱动不一致——read 的阻塞行为不能跨设备统一假设",
+           size=14, color=MUTED)
+
+    f.htext(64, 700, "名字是契约：按名查找线性就够，设备就几十个",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "取自本章 rtdef.h/device.c 行号取证（RT-Thread 5.3.0）；结构示意。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
+def ch27_priority_three_worlds():
+    """Same number 5, three coordinate systems, three fates. Facts from
+    ch27 (lab configMAX_PRIORITIES=5, RT-Thread 0-highest, NVIC 0-highest)."""
+    f = Fig("ch27-priority-three-worlds",
+            "三套坐标系：同一个 5，三种命运",
+            title_color=RED, tag="CH 27 · RTOS 对照选型")
+    f.text(64, 126,
+           "FreeRTOS 数值大=高，RT-Thread 数值小=高，NVIC 数值小=急——方向随内核，不能当通则。",
+           size=19, color=MUTED)
+
+    # ---- three worlds ----
+    f.card(64, 156, 336, 260, BLUE_D, fill=BLUE_FILL)
+    f.text(84, 190, "FreeRTOS", size=20, color=BLUE_D, weight="bold")
+    f.text(84, 216, "数值大 = 高", size=15, color=MUTED)
+    f.metric(96, 268, "5", "偏高（越大越靠前）", BLUE_D)
+    f.text(84, 322, "lab：configMAX_PRIORITIES = 5", size=14, color=INK,
+           font=MONO)
+    f.text(84, 350, "合法值只有 0–4；5 本身越界", size=14.5, color=RED,
+           weight="bold")
+    f.text(84, 386, "CM4F 开位图优化才约束 ≤32", size=13.5, color=MUTED)
+
+    f.card(424, 156, 336, 260, GREEN_D, fill=GREEN_FILL)
+    f.text(444, 190, "RT-Thread", size=20, color=GREEN_D, weight="bold")
+    f.text(444, 216, "数值小 = 高（0 最高）", size=15, color=MUTED)
+    f.metric(456, 268, "5", "偏低（越小越靠前）", GREEN_D)
+    f.text(444, 322, "Kconfig 可配 8/32/256，默认 32", size=14,
+           color=INK, font=MONO)
+    f.text(444, 350, "「总是 256 级」已被上游核对推翻", size=14.5,
+           color=MUTED)
+    f.text(444, 386, "≤32 单级位图，>32 才二级", size=13.5, color=MUTED)
+
+    f.card(784, 156, 304, 260, AMBER_STROKE, fill=AMBER_PALE)
+    f.text(804, 190, "NVIC", size=20, color=AMBER_STROKE, weight="bold")
+    f.text(804, 216, "数值小 = 急", size=15, color=MUTED)
+    f.metric(816, 268, "0x50", "逻辑 5 左移 4 位", AMBER_STROKE)
+    f.text(804, 322, "任务优先级数字填 NVIC，", size=14, color=INK)
+    f.text(804, 350, "方向还要再反一次", size=14.5, color=RED, weight="bold")
+    f.text(804, 386, "IP 字节只实现高 4 位", size=13.5, color=MUTED)
+
+    # ---- funnel ----
+    f.panel(64, 446, 1024, 150, GRAY_FILL, amp=1.6)
+    f.rect(64, 446, 1024, 150, color=MUTED, sw=1.6, fill=None, amp=1.6)
+    f.text(88, 478, "选型是三层漏斗，不是打分表", size=15.5, color=INK,
+           weight="bold")
+    f.text(88, 508, "① 平台绑定：ESP32 用 IDF 自带 FreeRTOS，Wi-Fi/BLE/电源/S3 SMP 深度耦合，换内核成本远大于收益",
+           size=14, color=INK)
+    f.text(88, 536, "② 生态其次：联网+存储+UI+OTA 产品 RT-Thread 标准版省自建；纯控制器 FreeRTOS 极简内核更贴",
+           size=14, color=INK)
+    f.text(88, 564, "③ 团队熟悉度：都不占优时用熟悉的——RTOS 的主要风险来自「不熟悉」；「不要组件→标准版」是错的",
+           size=14, color=INK)
+    f.text(88, 588, "「安全认证→静态 FreeRTOS」也是错的：静态化消灭运行期分配失败，不等于通过认证",
+           size=13.5, color=MUTED)
+
+    f.htext(64, 700, "迁移第一刀：先读 configMAX_PRIORITIES 与级别配置，再写映射表",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "取自本章三套坐标与迁移坑清单（lab 配置口径）；对照示意，非实测。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch21-stack-word-ruler": ch21_stack_word_ruler,
     "ch22-first-frame-18-words": ch22_first_frame_18_words,
     "ch23-pendsv-line": ch23_pendsv_line,
     "ch24-queue-three-contracts": ch24_queue_three_contracts,
     "ch25-free-merge": ch25_free_merge,
+    "ch26-ops-two-forms": ch26_ops_two_forms,
+    "ch27-priority-three-worlds": ch27_priority_three_worlds,
 }
 
 
