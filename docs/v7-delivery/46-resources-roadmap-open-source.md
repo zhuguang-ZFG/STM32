@@ -97,7 +97,7 @@ L0 与 L1 都引用第 9 章：L0 只要求点灯闭环，L1 要求中断、定�
 | F103 BluePill 起步线 | BluePill 15~30 + ST-Link 克隆 15~40 + 面包板 8~20 + 杜邦线 8~15 | 极简约 60 元；全套约 200~300 元 |
 | F407/ESP32-S3 实战线 | 野火 F407 霸天虎 + 立创实战派 S3（板载 QMI8658/音频/屏） | 按 mbF 装备清单口径（[第 31 章](../v4-platforms/31-esp32-drivers-audio.md) 板级事实） |
 
-价格全部是区间加自注。不是事实数。仪器选型两表（硬件 7 行：调试器/逻辑分析仪/示波器/串口/万用表/功耗计/焊接；软件 10 行：CubeMX/CubeIDE/Keil/IAR/PlatformIO/CLion/VS Code/OpenOCD/KiCad/CubeMonitor/PulseView）预算区间同口径，软件定位与 [v1 第 5 章](../v0-foundations/05-toolchain-four-steps.md)、[v1 第 7 章](../v0-foundations/07-build-systems-legacy.md)、[v1 第 20 章](../v2-reliability/20-debug-performance.md) 一致。
+价格全部是区间加自注。不是事实数。仪器选型两表（硬件 7 行：调试器/逻辑分析仪/示波器/串口/万用表/功耗计/焊接；软件 11 行：CubeMX/CubeIDE/Keil/IAR/PlatformIO/CLion/VS Code/OpenOCD/KiCad/CubeMonitor/PulseView）预算区间同口径，软件定位与 [v1 第 5 章](../v0-foundations/05-toolchain-four-steps.md)、[v1 第 7 章](../v0-foundations/07-build-systems-legacy.md)、[v1 第 20 章](../v2-reliability/20-debug-performance.md) 一致。
 
 ### 四、构建合同与命令组（索引）
 
@@ -147,15 +147,15 @@ L0 与 L1 都引用第 9 章：L0 只要求点灯闭环，L1 要求中断、定�
 | 三阶段 4/6/8 周 | 文档推导（计划表） | D00:163-201 计数自洽 |
 | 前置知识五块表 | 文档推导（教学标定） | D00:109-117 |
 | L0–L5 级别与卷章映射 | 文档推导（教学标定） | 与 CONTENT_GUIDE 的 L0–L5 口径一致；每级都有证据与下一级缺口 |
-| 社区书/课/文集/片段星标 | 来源说法（GitHub API，2026-11-15） | 8 个仓库当日复核；和 apF 的 2026-10-26 快照不同日 |
+| 社区书/课/文集/片段星标 | 来源说法（GitHub API，2026-11-15） | 8 个仓库当日复核；和 附录 F 的 2026-10-26 快照不同日 |
 | 开源书/课程许可 | 来源原文（仓库根许可文件） | MIT/Apache-2.0/BSD-2-Clause/GPL-3.0/CC BY-SA 4.0/CC BY 4.0 逐仓读原文 |
 | 采购价格区间 | 来源说法 | 自注「以当日价格为准」 |
 | SPL 停更 | 手册级 | 与 [v1 第 7 章](../v0-foundations/07-build-systems-legacy.md) 一致 |
 | 手册六类命名 | 手册级 | ST 文档体系（修正源章「五种」内部不一致） |
 | 查手册三步法三示例 | 手册级 | 检索路径可复现 |
-| 开源库七行对比 | 手册级（定位） | 版本细节归 apF |
+| 开源库七行对比 | 手册级（定位） | 版本细节归 附录 F |
 | 工具选型价格 | 来源说法待核 | 区间估算 |
-| 星标/生态计数 | 来源说法（带日期 2026-10-26） | apF 双源同日核对 |
+| 星标/生态计数 | 来源说法（带日期 2026-10-26） | 附录 F 双源同日核对 |
 
 ## 失败分支
 
