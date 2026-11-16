@@ -2,8 +2,11 @@
 """Mechanical check for AI-flavoured writing in this repo's Markdown.
 
 Catches only what is decidable by pattern: stock phrases, marketing verbs,
-performative honesty, decision glyphs standing in for words, and emoji in
-headings. Rhythm, rule-of-three, and paragraph flow stay with human reading.
+performative honesty, chat-register meta-talk (adapted from the baibaiAIGC
+checklist; its rewriter itself is deliberately redundant — see the
+evaluation note in docs/superpowers/plans — and is not used on this repo),
+decision glyphs standing in for words, and emoji in headings. Rhythm,
+rule-of-three, and paragraph flow stay with human reading.
 
     python3 tools/slop_lint.py                     # the whole repo
     python3 tools/slop_lint.py docs/03-GPIO与LED.md
@@ -98,6 +101,14 @@ RULES: dict[str, list[str]] = {
         r"不吹不黑",
         r"划重点",
         r"干货(满满|分享)",
+    ],
+    "聊天腔元话语": [
+        r"如果你愿意",
+        r"可以改成",
+        r"帮你(改|调)(好|一下)",
+        r"建议(你|可以)这样",
+        r"(这里|下面)是(改|重)写后的",
+        r"候选(版本|标题)",
     ],
     "英文 AI 词典": [
         r"\bdelv(e|es|ed|ing)\b",
