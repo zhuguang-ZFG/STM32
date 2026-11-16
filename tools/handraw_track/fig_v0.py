@@ -1,0 +1,303 @@
+# -*- coding: utf-8 -*-
+"""Knowledge-track plates for ch01-ch03 (L0 起步).
+
+Every number and label is copied from the chapter it belongs to; the plates
+are explanatory diagrams, not measurements or board photos. Deterministic:
+same code -> same SVG bytes -> same PNG pixels.
+"""
+from pathlib import Path
+
+from hd import (AMBER_PALE, AMBER_STROKE, BLUE_D, BLUE_FILL, GREEN_D,
+                GREEN_FILL, INK, MUTED, RED, RED_FILL, WHITE, Fig, save)
+
+STAGE = Path(__file__).resolve().parents[2] / ".temp" / "l0-l5-pass" / "figures"
+MONO = "'Consolas','Courier New',monospace"
+
+
+def ch01_memory_two_addresses():
+    """Flash holds the .data backup; RAM holds the runtime copy."""
+    f = Fig("ch01-memory-two-addresses",
+            "一个变量，两个地址：Flash 备份与 RAM 本体",
+            title_color=BLUE_D, tag="CH 01 · 启动与内存")
+    f.text(64, 126,
+           ".data 的初值备份烧在 Flash，运行时本体住 RAM；上电后由 Reset_Handler 逐字搬过去。",
+           size=19, color=MUTED)
+
+    # ---- Flash warehouse ----
+    f.card(64, 160, 500, 340, BLUE_D, fill=BLUE_FILL)
+    f.text(84, 194, "Flash 仓库 · 0x08000000", size=21, color=BLUE_D,
+           weight="bold")
+    f.text(84, 220, "烧录时只带 .data 的初值备份", size=14, color=MUTED)
+    f.pill(84, 234, 460, 36, "0x08000000 · .isr_vector · 392 B", BLUE_D,
+           fill=WHITE, size=15)
+    f.text(84, 296, "0x080002a0 · LMA · 文件里真有的 12 B", size=15,
+           color=AMBER_STROKE, weight="bold")
+    bytes12 = ["05", "00", "00", "00",
+               "01", "00", "00", "00",
+               "68", "69", "00", "00"]
+    for i, b in enumerate(bytes12):
+        x = 84 + i * 38
+        color = GREEN_D if i < 4 else (AMBER_STROKE if i < 8 else BLUE_D)
+        f.rect(x, 308, 38, 50, color=color, fill=WHITE, sw=1.8, double=False)
+        f.text(x + 19, 341, b, size=15, color=INK, anchor="middle", font=MONO)
+    for cx, label in ((160, "g_init = 5"), (312, "g_flag = 1"),
+                      (464, 'g_msg = "hi"')):
+        f.text(cx, 378, label, size=14, color=INK, anchor="middle")
+    f.text(84, 406, "FileSiz 0x0000c：备份 12 B 随固件烧进 Flash", size=14,
+           color=INK)
+    f.text(84, 430, ".bss 初值全 0，文件里不占字节（NOBITS）", size=14,
+           color=MUTED)
+    f.text(84, 462, "上电后谁搬？看下面的搬运条。", size=14, color=GREEN_D,
+           weight="bold")
+    f.text(84, 486, "改链接脚本或换芯片，LMA 与大小都会变。", size=13,
+           color=MUTED)
+
+    # ---- RAM residence ----
+    f.card(588, 160, 500, 340, GREEN_D, fill=GREEN_FILL)
+    f.text(608, 194, "RAM 住所 · 0x20000000", size=21, color=GREEN_D,
+           weight="bold")
+    f.text(608, 220, "运行时本体住这里；地址向上增大 ↑", size=14, color=MUTED)
+    f.text(608, 242, "0x20020000 · _estack（RAM 顶）", size=13, color=MUTED)
+    f.rect(608, 250, 460, 48, color=RED, fill=RED_FILL, sw=2.0, double=False)
+    f.text(624, 272, "栈：最小 1 KB（_Min_Stack_Size = 0x400）", size=15,
+           color=RED, weight="bold")
+    f.text(624, 290, "向下长 ↓", size=13, color=RED)
+    f.rect(608, 306, 460, 32, color=MUTED, fill=WHITE, sw=1.8, dash="7 6",
+           double=False)
+    f.text(838, 328, "堆与栈尚未碰面的空地", size=14, color=MUTED,
+           anchor="middle")
+    f.rect(608, 346, 460, 48, color=AMBER_STROKE, fill=AMBER_PALE, sw=2.0,
+           double=False)
+    f.text(624, 368, "堆：最小 512 B（_Min_Heap_Size = 0x200）", size=15,
+           color=AMBER_STROKE, weight="bold")
+    f.text(624, 386, "从 _ebss 之后向上长 ↑", size=13, color=AMBER_STROKE)
+    f.rect(608, 402, 460, 32, color=AMBER_STROKE, fill=WHITE, sw=2.0,
+           double=False)
+    f.text(624, 424, ".bss 32 B：启动时清零（文件里 0 B）", size=14, color=INK)
+    f.rect(608, 442, 460, 32, color=GREEN_D, fill=WHITE, sw=2.0, double=False)
+    f.text(624, 464, '.data 12 B：g_init / g_flag / g_msg="hi"', size=14,
+           color=INK)
+    f.text(608, 490, "0x20000000 · 0x2000000c · 0x2000002c", size=12.5,
+           color=MUTED)
+
+    # ---- the mover ----
+    f.card(64, 516, 1024, 56, AMBER_STROKE, fill=AMBER_PALE)
+    f.arrow(88, 544, 148, 544, color=AMBER_STROKE, sw=2.6, bend=0.0, head=9)
+    f.text(168, 551,
+           "上电后 Reset_Handler 逐字读 Flash、写 RAM；.bss 另行清零，不搬。",
+           size=17, color=INK, weight="bold")
+
+    # ---- readelf ledger ----
+    f.card(64, 588, 1024, 110, BLUE_D, fill=WHITE)
+    f.text(84, 618,
+           "readelf 第二条 LOAD：VirtAddr 0x20000000（RAM） / "
+           "PhysAddr 0x080002a0（Flash）", size=15, color=INK)
+    f.text(84, 646,
+           "FileSiz 0x0000c（12 B） < MemSiz 0x00002c（44 B：.data 12 + .bss 32）",
+           size=15, color=INK)
+    f.text(84, 674,
+           "判读形状：VMA 落 0x2000xxxx，LMA 落 0x0800xxxx，文件里的货比 RAM 里少。",
+           size=14, color=MUTED)
+
+    f.htext(576, 730,
+            "烧录文件只带初值备份；RAM 里的 5，要等 Reset_Handler 搬完才可信。",
+            size=22, color=INK, weight="bold", anchor="middle", hl=True)
+    f.text(576, 762,
+           "数字取自本章 mem_probe.elf 与 readelf 输出；布局示意，非实测。",
+           size=15, color=MUTED, anchor="middle")
+    return f
+
+
+def ch02_volatile_contract():
+    """Three optimizer moves, the volatile withdrawal, and CMSIS types."""
+    f = Fig("ch02-volatile-contract",
+            "编译器看不见的写：volatile 的合同",
+            title_color=GREEN_D, tag="CH 02 · volatile 与寄存器")
+    f.text(64, 126,
+           "优化器按 as-if 删改普通内存；硬件寄存器在程序之外改变，合同要写进类型。",
+           size=19, color=MUTED)
+
+    f.text(64, 172, "① 优化器的三项授权（对硬件寄存器都是错的）", size=20,
+           color=BLUE_D, weight="bold")
+    cards = [
+        (64, "缓存", "多次读合成一次",
+         ["poll_plain：整函数只读一次", "循环变成 .L3: b .L3 死转"],
+         BLUE_D, BLUE_FILL, "copy"),
+        (410, "删除", "写了没人再读的赋值",
+         ["delay_plain：-O2 只剩 ret / bx lr", "一千圈延时在产物里没有存在过"],
+         GREEN_D, GREEN_FILL, "trash"),
+        (756, "合并", "连续两次置位合成一次",
+         ["cfg_plain：三次读-改-写", "并成一次 orr #7"],
+         AMBER_STROKE, AMBER_PALE, "merge"),
+    ]
+    for x, name, sub, lines, color, fill, icon in cards:
+        f.card(x, 188, 324, 150, color, fill=fill)
+        f.text(x + 20, 222, name, size=22, color=color, weight="bold")
+        f.text(x + 20, 248, sub, size=14, color=MUTED)
+        f.multi(x + 20, 282, lines, size=14, color=INK, lh=24)
+        if icon == "copy":
+            f.icon_copy(x + 266, 204, 40, color)
+        elif icon == "trash":
+            f.icon_trash(x + 266, 204, 40, color)
+        else:
+            f.icon_merge(x + 266, 204, 40, color)
+
+    f.text(64, 372, "② volatile 只收回这三项授权，不保证原子", size=20,
+           color=GREEN_D, weight="bold")
+    f.card(64, 388, 620, 160, GREEN_D, fill=GREEN_FILL)
+    f.multi(84, 420, [
+        "每次使用都必须真实访存：不许缓存、不许删、不许凭空造。",
+        "poll_volatile：循环回到每圈一条 ldr r3, [r2, #4]。",
+    ], size=15, color=INK, lh=27)
+    f.text(84, 492,
+           "读-改-写三步仍可被中断打断：isr_toggle 三条指令、两个间隙。",
+           size=14, color=RED, weight="bold")
+    f.text(84, 522, "要原子性：临界区、BSRR 一类外设侧原子入口，或内存屏障。",
+           size=13.5, color=MUTED)
+
+    f.card(704, 388, 384, 160, RED, fill=RED_FILL)
+    f.text(724, 418, "三次写被折叠", size=17, color=RED, weight="bold")
+    f.text(724, 446, "普通结构体：", size=13.5, color=MUTED)
+    f.text(724, 470, "ldr / orr #7 / str", size=15, color=INK, font=MONO)
+    f.text(724, 498, "字段带 __IO：三组 ldr/orr/str", size=14, color=GREEN_D,
+           weight="bold")
+    f.text(724, 526, "硬件要三个动作，少发就不生效。", size=13, color=MUTED)
+
+    f.text(64, 572, "③ CMSIS 用类型写合同：__I / __O / __IO", size=20,
+           color=AMBER_STROKE, weight="bold")
+    types = [
+        (64, "__I", "volatile const", "程序只读，硬件随时可能改",
+         BLUE_D, BLUE_FILL),
+        (410, "__O", "volatile", "只写，语义上强调写", GREEN_D, GREEN_FILL),
+        (756, "__IO", "volatile", "读和写都可能被硬件改变",
+         AMBER_STROKE, AMBER_PALE),
+    ]
+    for x, name, expands, meaning, color, fill in types:
+        f.card(x, 588, 324, 96, color, fill=fill)
+        f.text(x + 20, 622, name, size=21, color=color, weight="bold",
+               font=MONO)
+        f.text(x + 92, 620, expands, size=14.5, color=INK, font=MONO)
+        f.text(x + 20, 656, meaning, size=13.5, color=MUTED)
+
+    f.text(64, 708,
+           "GPIO_TypeDef 整组寄存器用 __IO；只读的 IDR / SR 用 const volatile。",
+           size=15, color=INK)
+    f.htext(576, 740,
+            "volatile 改的是访问方式，不改段归属、地址，也不改原子性。",
+            size=20, color=INK, weight="bold", anchor="middle", hl=True)
+    f.text(576, 768,
+           "汇编对照取自本章 -O0 / -O2 产物；布局示意，非实测。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
+def ch03_struct_overlay():
+    """GPIO_TypeDef offsets over the register block, plus padding."""
+    f = Fig("ch03-struct-overlay",
+            "结构体罩住寄存器块：偏移、对齐与填充",
+            title_color=BLUE_D, tag="CH 03 · 寄存器与结构体")
+    f.text(64, 126,
+           "GPIOF_BASE = 0x40021400；声明顺序即偏移顺序，BSRR 在 0x18，整个结构体 0x28。",
+           size=19, color=MUTED)
+
+    f.text(64, 170, "① 寄存器地图 → 结构体偏移", size=20, color=BLUE_D,
+           weight="bold")
+    regs = [
+        ("MODER", "0x00", 80), ("OTYPER", "0x04", 80), ("OSPEEDR", "0x08", 80),
+        ("PUPDR", "0x0C", 80), ("IDR", "0x10", 80), ("ODR", "0x14", 80),
+        ("BSRR", "0x18", 80), ("LCKR", "0x1C", 80), ("AFR[2]", "0x20-0x24", 160),
+    ]
+    x = 64
+    for name, off, w in regs:
+        color = AMBER_STROKE if name == "BSRR" else BLUE_D
+        fill = AMBER_PALE if name == "BSRR" else WHITE
+        f.rect(x, 186, w, 56, color=color, fill=fill, sw=2.0, double=False)
+        f.text(x + w / 2, 210, name, size=14 if w > 80 else 13,
+               color=INK, anchor="middle", weight="bold")
+        f.text(x + w / 2, 232, off, size=13, color=MUTED, anchor="middle")
+        x += w
+
+    f.card(884, 186, 204, 80, AMBER_STROKE, fill=AMBER_PALE)
+    f.text(900, 212, "BSRR：第 7 格", size=15, color=AMBER_STROKE,
+           weight="bold")
+    f.text(900, 234, "6 × 4 B = 0x18", size=14, color=INK)
+    f.text(900, 256, "sizeof = 0x28", size=14, color=INK)
+
+    f.text(64, 296,
+           "GPIOF_BASE 0x40021400 + 0x18 = 0x40021418；地址按 4 字节对齐递增。",
+           size=15, color=INK)
+    f.text(64, 320,
+           "_Static_assert 同时钉住 offsetof(BSRR) 与 sizeof(GPIO_TypeDef)。",
+           size=14, color=MUTED)
+
+    f.text(64, 360, "② 对齐与填充：Padded_t 12 B，Packed_t 8 B", size=20,
+           color=GREEN_D, weight="bold")
+    f.text(64, 388, "Padded_t { uint8_t a; uint32_t b; uint8_t c; }",
+           size=15, color=GREEN_D, weight="bold")
+    cells = [("a", 0, GREEN_D), ("x", 1, MUTED), ("x", 2, MUTED),
+             ("x", 3, MUTED), ("b", 4, BLUE_D), ("b", 5, BLUE_D),
+             ("b", 6, BLUE_D), ("b", 7, BLUE_D), ("c", 8, GREEN_D),
+             ("x", 9, MUTED), ("x", 10, MUTED), ("x", 11, MUTED)]
+    for i, (label, off, color) in enumerate(cells):
+        x = 64 + i * 60
+        f.rect(x, 400, 60, 50, color=color,
+               fill=AMBER_PALE if label == "x" else WHITE, sw=1.8,
+               double=False)
+        f.text(x + 30, 433, label, size=16, color=INK, anchor="middle",
+               weight="bold", font=MONO)
+        f.text(x + 30, 466, str(off), size=12, color=MUTED, anchor="middle")
+
+    f.card(820, 388, 268, 128, GREEN_D, fill=GREEN_FILL)
+    f.text(838, 416, "Padded_t", size=17, color=GREEN_D, weight="bold")
+    f.multi(838, 444, ["sizeof = 12", "a@0  b@4  c@8",
+                       "洞 1：a 后 3 B", "洞 2：c 后 3 B"], size=13.5,
+            color=INK, lh=22)
+
+    f.text(64, 524, "Packed_t { uint32_t b; uint8_t a; uint8_t c; }",
+           size=15, color=BLUE_D, weight="bold")
+    cells2 = [("b", 0), ("b", 1), ("b", 2), ("b", 3),
+              ("a", 4), ("c", 5), ("x", 6), ("x", 7)]
+    for i, (label, off) in enumerate(cells2):
+        x = 64 + i * 60
+        color = BLUE_D if label == "b" else (GREEN_D if label in "ac" else MUTED)
+        f.rect(x, 536, 60, 50, color=color,
+               fill=AMBER_PALE if label == "x" else WHITE, sw=1.8,
+               double=False)
+        f.text(x + 30, 569, label, size=16, color=INK, anchor="middle",
+               weight="bold", font=MONO)
+        f.text(x + 30, 602, str(off), size=12, color=MUTED, anchor="middle")
+
+    f.card(820, 524, 268, 104, BLUE_D, fill=BLUE_FILL)
+    f.text(838, 552, "Packed_t", size=17, color=BLUE_D, weight="bold")
+    f.multi(838, 580, ["sizeof = 8", "b@0  a@4  c@5",
+                       "省下的 4 B 来自成员顺序"], size=13.5, color=INK,
+            lh=22)
+
+    f.text(64, 652,
+           "arr[1] − arr[0] = 12 B：尾部填充保证 sizeof 含在 stride 里，数组不歪。",
+           size=15, color=INK)
+    f.htext(576, 706,
+            "偏移由声明顺序、4 字节宽度与对齐规则共同决定；位域与 pack 不进寄存器映射。",
+            size=20, color=INK, weight="bold", anchor="middle", hl=True)
+    f.text(576, 740,
+           "偏移与 sizeof 取自本章 _Static_assert；布局示意，非实测。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
+FIGS = {
+    "ch01-memory-two-addresses": ch01_memory_two_addresses,
+    "ch02-volatile-contract": ch02_volatile_contract,
+    "ch03-struct-overlay": ch03_struct_overlay,
+}
+
+
+if __name__ == "__main__":
+    import sys
+
+    STAGE.mkdir(parents=True, exist_ok=True)
+    names = sys.argv[1:] or list(FIGS)
+    for n in names:
+        fig = FIGS[n]()
+        save(fig, str(STAGE / (n + ".svg")))
+        print("wrote", STAGE / (n + ".svg"))

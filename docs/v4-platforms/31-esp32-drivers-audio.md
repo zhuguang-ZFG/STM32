@@ -5,17 +5,21 @@ platforms: [esp32]
 
 # ESP32 外设、驱动框架与音频链路
 
-ESP32 的外设 API 与 STM32 最大的差别不在功能，在**形态**：驱动是事件驱动的框架层（UART 的事件队列、SPI 的事务队列、I2C 的句柄模型），GPIO 有两条路由（IO_MUX 专线与 GPIO Matrix 总机），LEDC 是两级配置的 PWM 专职外设。本章按「GPIO→UART→SPI/I2C→LEDC→音频链路」的顺序拆，每个驱动给「三层缓冲/事务队列/句柄」这类结构性的东西，板级常数（引脚号、器件地址）全部标注来源。
+ESP32 的外设 API 与 STM32 最大的差别不在功能，在**形态**：驱动是事件驱动的框架层（UART 的事件队列、SPI 的事务队列、I2C 的句柄模型），GPIO 有两条路由（IO_MUX 专线与 GPIO Matrix 总机），LEDC 是两级配置的 PWM 专职外设。按「GPIO→UART→SPI/I2C→LEDC→音频链路」走一遍，每个驱动给「三层缓冲/事务队列/句柄」这类结构性的东西，板级常数（引脚号、器件地址）全部标注来源。
 
-证据先说清：本章零板级实测。上游核对按 **ESP-IDF v5.5.2** 实取（`uart.h:71-95,121`、`spi_master.h:42,75,82,84`、`spi_common.h:78`、`i2c_master.h:31,50,118,131,208`、`ledc.h:181,295,480,494,520`、`hal/ledc_types.h:139-142`、`soc_caps.h:177,242-248,425` 全部命中）；工程实例 `mcu/code/esp32` 的 `04main`/`05main` 行号逐字核对（QMI8658 六轴链路、I2S 音频链路的全部行号精确命中）。器件细节（ES7210 通道占用、ST7789 引脚、esp_codec_dev 1.3.4）来自立创 wiki 与 managed component 注册表，逐项标待核。`hardware_status: pending`，实验全部「未实测」。
+这里没有板级实测。上游核对按 **ESP-IDF v5.5.2** 实取：`uart.h:71-95,121`、`spi_master.h:42,75,82,84`、`spi_common.h:78`、`i2c_master.h:31,50,118,131,208`、`ledc.h:181,295,480,494,520`、`hal/ledc_types.h:139-142`、`soc_caps.h:177,242-248,425` 全部命中；工程实例 `mcu/code/esp32` 的 `04main`/`05main` 行号逐字核对，QMI8658 六轴链路与 I2S 音频链路的行号都精确命中。
 
-> 版本口径：ESP-IDF **v5.5.2**；板卡立创实战派 S3（扩展口、SDA=GPIO1/SCL=GPIO2 等以工程代码为准）；esp_codec_dev 是 managed component，版本钉 1.3.4（构建期自动下载，来源待核）。
+器件细节（ES7210 通道占用、ST7789 引脚、esp_codec_dev 1.3.4）来自立创 wiki 与 managed component 注册表，逐项标待核。`hardware_status` 仍是 `pending`，实验全部未实测。
+
+> 版本口径：ESP-IDF **v5.5.2**；板卡立创实战派 S3（扩展口、SDA=GPIO1/SCL=GPIO2 等以工程代码为准）；esp_codec_dev 是 managed component，版本锁定 1.3.4（构建期自动下载，来源待核）。
 
 ## 本章罗盘
 
-- **问题**：IO_MUX 与 GPIO Matrix 怎么分工，「任意引脚」的四个前提是什么，45=22+23 与 `SOC_GPIO_PIN_COUNT=49` 的口径差在哪？哪些脚被 PSRAM 与 strapping 占了？UART 事件驱动的三层缓冲在哪三层，三个溢出点是什么，事件与数据的边界在哪，`timeout_flag` 是什么？SPI 的两级模型与事务队列怎么用，异步事务的 buffer 生命周期谁管？I2C 新驱动为什么是句柄模型，`transmit_receive` 末参是什么单位，7 位地址要不要左移？LEDC 两级配置怎么配，S3 的边界（通道数/位宽/模式）与经典 ESP32 差在哪，改占空比为什么要 update？音频为什么分控制面与数据面，MCLK=256×fs 怎么算，三笔账（码率/MCLK/信封）各是多少，缓冲容量怎么定？
-- **交付**：能用「有效焊盘+能力+未占用+板卡引出」判断一个脚能不能用；能背 S3 的占用脚清单；能按 v5.5.2 签名写出 `uart_driver_install` 六参数并解释事件≠数据；能写出 SPI 总线/设备两级配置与 I2C 句柄三步；能算 LEDC 的分辨率×频率跷跷板并指出 S3 的 8 通道/14 位/仅低速边界；能复算音频三笔账（512 kbps、4.096 MHz、10 ms）并给出缓冲容量算法；能把「学时序手写、做产品用框架」落到一个对照表上。
-- **边界**：单平台 ESP32-S3；UART 的协议帧设计归 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)，SPI/I2C 的时序原理归 [v1 第 16 章](../v1-drivers/16-i2c-spi.md)，PWM 的占空比语义归 [v1 第 12 章](../v1-drivers/12-timers-pwm.md)——本章只讲 ESP32 驱动框架与它们的差异。器件级常数（屏/六轴/编解码器）都是「那块板+那颗器件」的具体值，不是通用常数。启动与工程归 [第 30 章](./30-esp32s3-architecture-boot.md)；无线归第 32 章。
+- **问题**：IO_MUX 与 GPIO Matrix 的分工，「任意引脚」的四个前提，45=22+23 与 `SOC_GPIO_PIN_COUNT=49` 的口径差，以及 PSRAM 与 strapping 占用的脚。UART 事件驱动的三层缓冲与三个溢出点，事件与数据的边界，`timeout_flag` 的判帧作用。SPI 两级模型与事务队列，异步事务的 buffer 生命周期；I2C 新驱动的句柄模型，`transmit_receive` 末参单位与 7 位地址是否左移。LEDC 两级配置，S3 的通道数/位宽/模式边界，改占空比为何要 update；音频的控制面与数据面，MCLK=256×fs 的算法，码率/MCLK/信封三项计算与缓冲容量。
+- **交付**：能用「有效焊盘+能力+未占用+板卡引出」判断一个脚能不能用；能背 S3 的占用脚清单；能按 v5.5.2 签名写出 `uart_driver_install` 六参数并解释事件≠数据；能写出 SPI 总线/设备两级配置与 I2C 句柄三步；能算 LEDC 的分辨率×频率跷跷板并指出 S3 的 8 通道/14 位/仅低速边界；能复算音频三项计算（512 kbps、4.096 MHz、10 ms）并给出缓冲容量算法；能把「学时序手写、做产品用框架」落到一个对照表上。
+- **级别**：L4 系统。证据位置：「测量与证据」与「离开检查」；读完留下「任意引脚四前提」的判脚清单与音频三项计算的复算记录。
+- **开源读法**：对照 `arduino-esp32` 的 `cores/esp32/esp32-hal-*.c`，看 Arduino 风格的 API 怎样落到 IDF 驱动上；寄存器与时序语义仍回本章引用的 IDF 头文件。
+- **边界**：单平台 ESP32-S3；UART 的协议帧设计归 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)，SPI/I2C 的时序原理归 [v1 第 16 章](../v1-drivers/16-i2c-spi.md)，PWM 的占空比语义归 [v1 第 12 章](../v1-drivers/12-timers-pwm.md)。这里只讲 ESP32 驱动框架与它们的差异。器件级常数（屏/六轴/编解码器）都是「那块板+那颗器件」的具体值，不是通用常数。启动与工程归 [第 30 章](./30-esp32s3-architecture-boot.md)；无线归[第 32 章](./32-esp32-wifi-ble-espnow.md)。
 - **依据锚点**：E2《GPIO 矩阵》（`mcu/docs/esp32/02-gpio-matrix.md`）、E5《UART 驱动》（`.../05-uart-driver.md`）、E6《SPI/I2C 驱动》（`.../06-spi-i2c-driver.md`）、E7《Timer 与 LEDC》（`.../07-timer-ledc.md`）、E12《音频链路》（`.../12-audio-path.md`）、LAB8《音频播放》（`mcu/docs/lab/e08-audio-play.md`）。上游对账：ESP-IDF v5.5.2 的 [uart.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_driver_uart/include/driver/uart.h)、[spi_master.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_driver_spi/include/driver/spi_master.h)、[spi_common.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_driver_spi/include/driver/spi_common.h)、[i2c_master.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_driver_i2c/include/driver/i2c_master.h)、[ledc.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_driver_ledc/include/driver/ledc.h)、[i2s_std.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/esp_driver_i2s/include/driver/i2s_std.h)、[soc_caps.h](https://github.com/espressif/esp-idf/blob/v5.5.2/components/soc/esp32s3/include/soc/soc_caps.h)。工程实例：`mcu/code/esp32` 的 `04main`（QMI8658）、`05main`（音频：`:18` SAMPLE_RATE 16000、`:19` BLOCK_FRAMES 160、`:92` 引脚、`:95` MCLK 多倍、`:126` MCLK 值）。
 
 ## 先做出来
@@ -24,12 +28,12 @@ ESP32 的外设 API 与 STM32 最大的差别不在功能，在**形态**：驱�
 
 「ESP32 任意 IO 都能当 UART TX」这句话有四个前提，缺一个就不成立：
 
-1. **有效焊盘**：S3 的物理 GPIO 是 0~21 + 26~48 共 **45 个**（22~25 不存在）；`SOC_GPIO_PIN_COUNT=49` 是**编号上限**不是个数——45=22+23 的算术与 49 的编号口径并存。
+1. **有效焊盘**：S3 的物理 GPIO 是 0~21 + 26~48 共 **45 个**（22~25 不存在）；`SOC_GPIO_PIN_COUNT=49` 是**编号上限**不是个数。45=22+23 的算术与 49 的编号口径并存。
 2. **能力**：该信号在该脚有路由（IO_MUX 专线或 GPIO Matrix 可达）。
 3. **未占用**：IO35/36/37 被八线 PSRAM 占用（N16R8 模组）；GPIO0/45/46 是 strapping 脚（上电采样，GPIO0 还兼任 BOOT）。
-4. **板卡引出**：扩展口只引出部分脚——工程实例里扩展口用的是 GPIO10/11。
+4. **板卡引出**：扩展口只引出部分脚。工程实例里扩展口用的是 GPIO10/11。
 
-「一碰就崩」的物理层失败发生在第 3 条：碰了 PSRAM 占用脚不是驱动报错，是总线翻转、系统崩——这种错没有异常可抓。
+「一碰就崩」的物理层失败发生在第 3 条：碰了 PSRAM 占用脚不是驱动报错，是总线翻转、系统崩。这种错没有异常可抓。
 
 ### 2. 三秒换脚（LEDC quick win）
 
@@ -39,7 +43,9 @@ ESP32 的外设 API 与 STM32 最大的差别不在功能，在**形态**：驱�
 
 ### 一、两条路由与焊盘属性
 
-S3 的 GPIO 有两条路由：**IO_MUX 专线**（高速外设直连，如 Flash/PSRAM 的专属脚）与 **GPIO Matrix 总机**（任意脚互连，走一拍开关矩阵）。高速信号走专线，普通外设走总机。**焊盘属性是独立的一维**：上下拉、驱动强度、开漏、（S3 的）毛刺过滤由焊盘电路管，与路由无关——API 全部存在（`gpio.h:82,172,199,365` 实取 `gpio_reset_pin`/`gpio_set_direction`/`gpio_set_pull_mode`/`gpio_set_drive_capability`）；「毛刺过滤是 S3 新增」属手册层说法，标待核。
+S3 的 GPIO 有两条路由：**IO_MUX 专线**（高速外设直连，如 Flash/PSRAM 的专属脚）与 **GPIO Matrix 总机**（任意脚互连，走一拍开关矩阵）。高速信号走专线，普通外设走总机。
+
+**焊盘属性是独立的一维**：上下拉、驱动强度、开漏、（S3 的）毛刺过滤由焊盘电路管，与路由无关。API 全部存在（`gpio.h:82,172,199,365` 实取 `gpio_reset_pin`/`gpio_set_direction`/`gpio_set_pull_mode`/`gpio_set_drive_capability`）；「毛刺过滤是 S3 新增」属手册层说法，标待核。
 
 ![GPIO 矩阵路由动画：IO_MUX 专线与 GPIO Matrix 总机的分工](/anim/gpio-matrix-routing.svg)
 
@@ -58,7 +64,9 @@ uart_driver_install(UART_NUM_1,
     0);     /* intr_alloc_flags */
 ```
 
-数据走**三层**：硬件 FIFO（S3 是 128 字节，`soc_caps.h:425`）→ 驱动 ring buffer → 用户 buffer。三个溢出点对应两类事件：FIFO 满未搬 → `UART_BUFFER_FULL`；FIFO 溢出（硬件丢字节）→ `UART_FIFO_OVF`；ring buffer 满 → 数据被拒收。**事件≠数据**：`UART_DATA` 事件只带元数据（`uart_event_t` 的 `size` 与 `timeout_flag`，`uart.h:91-95`），字节躺在 ring buffer 里，`uart_read_bytes` 才取走。`timeout_flag` 是「RX TOUT 时间内没有新数据」的标志——**IDF 版的 IDLE 判帧**：协议帧边界靠它，与 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md) 的 IDLE 判帧同构，只是这边用软件超时实现。
+数据走**三层**：硬件 FIFO（S3 是 128 字节，`soc_caps.h:425`）→ 驱动 ring buffer → 用户 buffer。三个溢出点对应两类事件：FIFO 满未搬 → `UART_BUFFER_FULL`；FIFO 溢出（硬件丢字节）→ `UART_FIFO_OVF`；ring buffer 满 → 数据被拒收。
+
+**事件≠数据**：`UART_DATA` 事件只带元数据（`uart_event_t` 的 `size` 与 `timeout_flag`，`uart.h:91-95`），字节躺在 ring buffer 里，`uart_read_bytes` 才取走。`timeout_flag` 是「RX TOUT 时间内没有新数据」的标志，也就是**IDF 版的 IDLE 判帧**：协议帧边界靠它，与 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md) 的 IDLE 判帧同构，只是这边用软件超时实现。
 
 ![UART 事件驱动动画：ISR 搬运、事件队列、任务处理](/anim/idf-uart-events.svg)
 
@@ -66,7 +74,11 @@ uart_driver_install(UART_NUM_1,
 
 ### 三、SPI：两级模型与事务队列
 
-SPI 驱动分**总线**与**设备**两级：总线用 `spi_bus_initialize`（MOSI/MISO/SCLK + `SPI_DMA_CH_AUTO=3` 自动 DMA 通道，`spi_common.h:78`——注意总线配置结构在 `spi_common.h` 不是 spi_master.h），每设备一个 `spi_device_interface_config_t`（`spi_master.h:75,82,84`：`clock_speed_hz`、`spics_io_num`、`queue_size`）。`queue_size` 是**事务队列深度**：把多个 `spi_transaction_t` 提交进队列，驱动按序执行，轮询 `spi_device_get_trans_result` 收结果——半双工/异步事务的 buffer 生命周期必须覆盖传输期（提交的 buffer 在事务完成前不许动）。DC 与 CS 是两条线：DC（数据/命令）对屏类设备是 `pre_cb` 里翻的电平，CS 由 `spics_io_num` 交给驱动。ST7789 的刷屏账：320×240×2=153600 B/帧，40 MHz→5 MB/s（40e6/8 的**算术**，不是实测）→ 约 30.72 ms/帧，60 fps（16.7 ms）吃紧——引脚与初始化序列是屏级常数，标 wiki 待核。
+SPI 驱动分**总线**与**设备**两级：总线用 `spi_bus_initialize`（MOSI/MISO/SCLK + `SPI_DMA_CH_AUTO=3` 自动 DMA 通道，`spi_common.h:78`。注意总线配置结构在 `spi_common.h` 不是 spi_master.h），每设备一个 `spi_device_interface_config_t`（`spi_master.h:75,82,84`：`clock_speed_hz`、`spics_io_num`、`queue_size`）。
+
+`queue_size` 是**事务队列深度**：把多个 `spi_transaction_t` 提交进队列，驱动按序执行，轮询 `spi_device_get_trans_result` 收结果。半双工/异步事务的 buffer 生命周期必须覆盖传输期（提交的 buffer 在事务完成前不许动）。DC 与 CS 是两条线：DC（数据/命令）对屏类设备是 `pre_cb` 里翻的电平，CS 由 `spics_io_num` 交给驱动。
+
+ST7789 的刷屏计算：320×240×2=153600 B/帧，40 MHz→5 MB/s（40e6/8 的**算术**，不是实测）→ 约 30.72 ms/帧，60 fps（16.7 ms）吃紧。引脚与初始化序列是屏级常数，标 wiki 待核。
 
 ### 四、I2C：句柄模型与「末参是毫秒」
 
@@ -84,15 +96,21 @@ i2c_master_bus_add_device(bus_handle, &dev_cfg, &dev_handle);
 i2c_master_transmit_receive(dev_handle, reg, 1, buf, 6, -1);  /* 末参 xfer_timeout_ms */
 ```
 
-两个易错：**末参是毫秒超时**（`xfer_timeout_ms`，`:208`），不是标志；**7 位地址不左移**——8 位手册地址先右移一位（0xD4>>1=0x6A），工程 `04main:44-45` 的 0x6a 就是这么来的。QMI8658 六轴链路（`04main` 全行号核对）：WHO_AM_I(0x00)=0x05 验身份 → CTRL 链配置量程 → 状态位 0x2e 就绪 → AX_L(0x35) 连读 12 字节；灵敏度算术 ±4g→32768/4=8192 LSB/g、±512 dps→32768/512=64 LSB/(°/s) 成立；寄存器键值是器件手册级常数，标待核。
+两个易错：**末参是毫秒超时**（`xfer_timeout_ms`，`:208`），不是标志；**7 位地址不左移**：8 位手册地址先右移一位（0xD4>>1=0x6A），工程 `04main:44-45` 的 0x6a 就是这么来的。
+
+QMI8658 六轴链路（`04main` 全行号核对）：WHO_AM_I(0x00)=0x05 验身份 → CTRL 链配置量程 → 状态位 0x2e 就绪 → AX_L(0x35) 连读 12 字节；灵敏度算术 ±4g→32768/4=8192 LSB/g、±512 dps→32768/512=64 LSB/(°/s) 成立；寄存器键值是器件手册级常数，标待核。
 
 ### 五、LEDC：两级配置与 S3 边界
 
-LEDC 是**定时器→通道**两级：timer 定频率与分辨率，channel 绑 GPIO 与占空比。S3 的边界（`soc_caps.h:242-248` 实取）：**8 通道、4 定时器、14 位位宽、仅低速模式**——经典 ESP32 的 16 通道/高速模式结论不能搬。分辨率×频率跷跷板：`f = 时钟 / 2^位数`，80 MHz APB 下 5 kHz/10 位、50 Hz/14 位、>20 kHz/≤10 位三档代数可行。**改占空比要 update**：`ledc_set_duty` 与 `ledc_update_duty` 是两个 API（`ledc.h:181,295`）——set 写影子寄存器，update 才生效（双缓冲）；硬件 fade 不占 CPU（`ledc_fade_func_install`→`ledc_set_fade_with_time`→`ledc_fade_start`，`:480,494,520`；`LEDC_FADE_NO_WAIT/WAIT_DONE` 枚举在 `hal/ledc_types.h:139-142`，**不是 driver/ledc.h**）。
+LEDC 是**定时器→通道**两级：timer 定频率与分辨率，channel 绑 GPIO 与占空比。
+
+S3 的边界（`soc_caps.h:242-248` 实取）：**8 通道、4 定时器、14 位位宽、仅低速模式**。经典 ESP32 的 16 通道/高速模式结论不能搬。分辨率×频率跷跷板：`f = 时钟 / 2^位数`，80 MHz APB 下 5 kHz/10 位、50 Hz/14 位、>20 kHz/≤10 位三档代数可行。
+
+**改占空比要 update**：`ledc_set_duty` 与 `ledc_update_duty` 是两个 API（`ledc.h:181,295`）。set 写影子寄存器，update 才生效（双缓冲）；硬件 fade 不占 CPU（`ledc_fade_func_install`→`ledc_set_fade_with_time`→`ledc_fade_start`，`:480,494,520`；`LEDC_FADE_NO_WAIT/WAIT_DONE` 枚举在 `hal/ledc_types.h:139-142`，**不是 driver/ledc.h**）。
 
 ![LEDC 定时器与通道两级动画](/anim/ledc-timer-channel.svg)
 
-### 六、音频链路：控制面 + 数据面 + 三笔账
+### 六、音频链路：控制面、数据面与三项计算
 
 「能出声」是两面的合成：**控制面走 I2C**（ES8311 编解码器、ES7210 ADC 的寄存器配置，经 esp_codec_dev 组件），**数据面走 I2S**（样本流）。工程 `05main` 的行号表（全部实读命中）：
 
@@ -100,25 +118,27 @@ LEDC 是**定时器→通道**两级：timer 定频率与分辨率，channel 绑
 | --- | --- | --- |
 | 采样率/块 | `:18-19` | 16000 Hz、BLOCK_FRAMES=160 |
 | I2C 引脚 | `:72` | SDA=GPIO1、SCL=GPIO2 |
-| 扩展器/PA | `:78,81` | PCA9557@0x19、PA_EN 在扩展器 bit1——**不在 ESP32 的 GPIO** |
+| 扩展器/PA | `:78,81` | PCA9557@0x19、PA_EN 在扩展器 bit1，**不在 ESP32 的 GPIO** |
 | I2S 引脚 | `:92` | mclk=38/bclk=14/ws=13/dout=45 |
 | MCLK 多倍/值 | `:95,:126` | `I2S_MCLK_MULTIPLE_256` → MCLK=256×16000=**4096000 Hz** |
 
-三笔账一起算：码率 16k×16×2 = **512 kbps**（stereo 双槽）；MCLK = 256×fs = **4.096 MHz**；10 ms 信封 = 16000×0.01 = **160 帧**（=BLOCK_FRAMES）。ES8311 是单声道 DAC——单声道内容走 stereo 双槽位，两槽填同一份样本。**纪律三段：先静音（写 codec mute），再发声（I2S 送数据），后放开 PA（扩展器位）**——顺序反了就是爆音。延迟账：BLOCK_FRAMES/fs × 2 = 10 ms×2 = 往返约 20 ms + codec 内部几 ms；缓冲容量 = 采样率 × 容忍延迟 × 2（16 kHz×50 ms=800 样本，双倍余量 1600）；「150 ms 觉察回声感/300 ms 没法说话」是心理声学经验口径，标待核。
+三项一起算：码率 16k×16×2 = **512 kbps**（stereo 双槽）；MCLK = 256×fs = **4.096 MHz**；10 ms 信封 = 16000×0.01 = **160 帧**（=BLOCK_FRAMES）。ES8311 是单声道 DAC，单声道内容走 stereo 双槽位，两槽填同一份样本。
+
+**纪律三段：先静音（写 codec mute），再发声（I2S 送数据），后放开 PA（扩展器位）**。顺序反了就是爆音。延迟计算：BLOCK_FRAMES/fs × 2 = 10 ms×2 = 往返约 20 ms + codec 内部几 ms；缓冲容量 = 采样率 × 容忍延迟 × 2（16 kHz×50 ms=800 样本，双倍余量 1600）；「150 ms 觉察回声感/300 ms 没法说话」是心理声学经验口径，标待核。
 
 ![ESP32 音频链路动画：控制面 I2C + 数据面 I2S](/anim/esp32-audio-path.svg)
 
-![I2S 时钟账：MCLK/BCLK/LRCLK 的倍数关系](/figures/esp32-12-i2s-clock.svg)
+![I2S 时钟关系：MCLK/BCLK/LRCLK 的倍数关系](/figures/esp32-12-i2s-clock.svg)
 
-![手绘板：音频双面范式——控制面 I2C、数据面 I2S、三笔账一起算、先静音再发声后放开 PA（原理示意）](/images/mc31-matrix-audio.png)
+![手绘板：音频双面范式，含控制面 I2C、数据面 I2S、三项一起算、先静音再发声后放开 PA（原理示意，非实拍）](/images/mc31-matrix-audio.png)
 
-E08 的完整播放链（1 kHz 滴声 + 八音符、缓冲减小出现断音）代码就绪（`code_status: ready`），板上现象待实测（`hardware_status: pending`）——测量与证据的完整登记归第 40 章的实验方法（B4 卷 6，此处只挂账不占位）。
+E08 的完整播放链（1 kHz 滴声 + 八音符、缓冲减小出现断音）代码就绪（`code_status: ready`），板上现象待实测（`hardware_status: pending`）。测量与证据的完整登记归[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)的实验方法（B4 卷 6，这里只留待办，不展开）。
 
 ![E08 音频链路：扩展板上的器件与接法](/images/labs/e08-audio-chain.svg)
 
 ### 七、学时序手写，做产品用框架
 
-E6 收尾的对照表，落进本章收束：
+E6 收尾的对照表，汇总到这里：
 
 | 场景 | 手写时序（学原理） | 框架（做产品） |
 | --- | --- | --- |
@@ -138,7 +158,7 @@ E6 收尾的对照表，落进本章收束：
 | I2C 句柄三步/毫秒超时/7 位不左移 | 手册级（上游已核） | `i2c_master.h:31,50,118,131,208` |
 | S3 LEDC 8 通道/14 位/仅低速 | 手册级（上游已核） | `soc_caps.h:242-248` |
 | fade API 链与枚举落点 | 手册级（上游已核） | `ledc.h:480,494,520` + `hal/ledc_types.h:139-142` |
-| 音频三笔账（512kbps/4.096MHz/160 帧） | 文档推导（算术全复算） | 16k×16×2、256×16k、16k×0.01 |
+| 音频三项计算（512kbps/4.096MHz/160 帧） | 文档推导（算术全复算） | 16k×16×2、256×16k、16k×0.01 |
 | 04main/05main 行号表 | 手册级（工程实读命中） | 仓库逐行核对 |
 | ST7789/FT6336G/ES7210 器件细节 | 来源说法待核 | 立创 wiki + 器件手册 |
 | 「150ms/300ms」延迟阈值 | 来源说法待核 | 心理声学经验口径 |
@@ -162,16 +182,16 @@ E6 收尾的对照表，落进本章收束：
 
 ## 社区开源实现
 
-本章讲的驱动安装模型（driver_install + 事件队列 + 收发函数）与音频缓冲纪律，最权威的参考实现就是 ESP-IDF 自身的组件与例程——读官方源码比读二手教程可靠得多：
+前面讲的驱动安装模型（driver_install + 事件队列 + 收发函数）与音频缓冲纪律，参考实现在 ESP-IDF 自身的组件与例程里：
 
 | 仓库 | 文件 | 看什么 |
 | --- | --- | --- |
-| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/esp_driver_i2s/i2s_std.c` + `include/driver/i2s_std.h` | I2S 标准模式驱动的完整实现：`I2S_STD_CLK_DEFAULT_CONFIG`/`I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG` 宏封装、MCLK 细分计算——v5.x 起 I2S 重设计，旧 `driver/i2s.h` 已弃用 |
-| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `examples/peripherals/i2s/i2s_basic/i2s_std` | 官方 I2S 收发最小例程：DMA 缓冲配置、回调里只搬数据不做重活——对照本章三层缓冲模型 |
-| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/esp_driver_ledc/include/driver/ledc.h` + `examples/peripherals/ledc/ledc_basic` | LEDC 驱动头文件与例程：`ledc_set_duty`+`ledc_update_duty` 成对出现的证据、fade 服务安装顺序——对照失败分支"改 duty 不生效" |
-| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `examples/peripherals/uart/uart_events` | UART 事件驱动例程：`uart_driver_install` 的事件队列与 FIFO_OVF 事件处理——对照失败分支"UART 丢字节" |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/esp_driver_i2s/i2s_std.c` + `include/driver/i2s_std.h` | I2S 标准模式驱动的完整实现：`I2S_STD_CLK_DEFAULT_CONFIG`/`I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG` 宏封装、MCLK 细分计算。v5.x 起 I2S 重设计，旧 `driver/i2s.h` 已弃用 |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `examples/peripherals/i2s/i2s_basic/i2s_std` | 官方 I2S 收发最小例程：DMA 缓冲配置、回调里只搬数据不做重活。对照前面的三层缓冲模型 |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/esp_driver_ledc/include/driver/ledc.h` + `examples/peripherals/ledc/ledc_basic` | LEDC 驱动头文件与例程：`ledc_set_duty`+`ledc_update_duty` 成对出现的证据、fade 服务安装顺序。对照失败分支"改 duty 不生效" |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `examples/peripherals/uart/uart_events` | UART 事件驱动例程：`uart_driver_install` 的事件队列与 FIFO_OVF 事件处理。对照失败分支"UART 丢字节" |
 
-三个值得记的社区口径：一，v5.3 起驱动拆成 `esp_driver_*` 独立组件（esp_driver_i2s/ledc/uart/gpio…），旧 `components/driver` 里的单一头文件查不到了，报"找不到头文件"先补 `REQUIRES`；二，官方例程的事件回调里从不做耗时工作，数据都丢队列给任务——这与本章"事件≠数据"的口径一致；三，音频方向社区另有 [espressif/esp-adf](https://github.com/espressif/esp-adf)（Audio Development Framework，element/pipeline 模型），那是本章三层缓冲之上的完整框架，学完本章再看它分层就不吃力。
+三个值得记的社区口径：一，v5.3 起驱动拆成 `esp_driver_*` 独立组件（esp_driver_i2s/ledc/uart/gpio…），旧 `components/driver` 里的单一头文件查不到了，报"找不到头文件"先补 `REQUIRES`；二，官方例程的事件回调里从不做耗时工作，数据都丢队列给任务。这与前面「事件≠数据」的口径一致；三，音频方向社区另有 [espressif/esp-adf](https://github.com/espressif/esp-adf)（Audio Development Framework，element/pipeline 模型），那是前面三层缓冲之上的完整框架，学完这些再看它分层就不吃力。
 
 ## 离开检查
 
@@ -179,5 +199,5 @@ E6 收尾的对照表，落进本章收束：
 - 三层缓冲、三个溢出点、事件≠数据、timeout_flag 判帧能画成一张图。
 - SPI 两级与事务队列、I2C 句柄三步与毫秒超时、7 位不左移能落到代码。
 - S3 的 LEDC 边界（8/4/14/仅低速）与双缓冲 update 纪律记得住。
-- 音频三笔账（512 kbps / 4.096 MHz / 160 帧）当场复算；三段纪律（静音→数据→PA）能说出为什么。
+- 音频三项计算（512 kbps / 4.096 MHz / 160 帧）当场复算；三段纪律（静音→数据→PA）能说出为什么。
 - 板级常数与通用常数的边界分得清：引脚号、器件地址、阈值各自标什么来源。

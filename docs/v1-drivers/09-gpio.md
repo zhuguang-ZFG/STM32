@@ -5,18 +5,20 @@ platforms: [f407, f103, gd32, esp32]
 
 # GPIO
 
-> 点灯是仪式，也是体检。一盏灯亮不亮，同时检验四件事：外设时钟有没有合闸、四张配置表有没有配对、数据是写进了 ODR 还是 BSRR、板子的接法到底高有效还是低有效。这一章把 GPIO 拆成“开时钟、配四维、写数据”三步，在 F407 的 PF6 与 F103 的 PC13 上各走一遍，再把复用、输入采样与消抖的边界划清楚。
+> 点灯是最小的例程，也能检验四件事：外设时钟有没有使能、四个配置寄存器有没有配对、数据是写进了 ODR 还是 BSRR、板子的接法到底高有效还是低有效。下面把 GPIO 拆成“开时钟、配置四个寄存器、写数据”三步，在 F407 的 PF6 与 F103 的 PC13 上各走一遍，再把复用、输入采样与消抖的边界划清楚。
 
 ## 本章罗盘
 
-- **问题**：为什么 PF6 在 `MODER` 里占 bits[13:12]，而 PF6 的灯用 BSRR 的 bit6 与 bit22 控制？为什么不给 `RCC_AHB1ENR` 的 GPIOF 位合闸，写 `MODER` 再读回全是 0？为什么改一个引脚电平要用 `BSRR`，而 `ODR |=` 会偶尔丢一次电平？`MODER=10` 与 `AFR` 为什么必须成对写？输入的施密特触发器修整了什么，而“10~20ms 消抖”为什么查不到手册出处？F103 的 `CRL/CRH`、`AFIO->MAPR` 与 F407 的 `MODER`、`AFR` 哪套账能互相照抄？共阳灯为什么写低电平才亮？
+- **问题**：为什么 PF6 在 `MODER` 里占 bits[13:12]，而 PF6 的灯用 BSRR 的 bit6 与 bit22 控制？为什么不给 `RCC_AHB1ENR` 的 GPIOF 位合闸，写 `MODER` 再读回全是 0？为什么改一个引脚电平要用 `BSRR`，而 `ODR |=` 会偶尔丢一次电平？`MODER=10` 与 `AFR` 为什么必须成对写？输入的施密特触发器修整了什么，而“10~20ms 消抖”为什么查不到手册出处？F103 的 `CRL/CRH`、`AFIO->MAPR` 与 F407 的 `MODER`、`AFR` 哪套配置能互相照抄？共阳灯为什么写低电平才亮？
 - **交付**：能按“时钟→MODER→OTYPER→OSPEEDR→PUPDR→数据”的顺序手写一个引脚的配置，并说出每一位的取值理由；能用一条 `BSRR` 写入完成原子置位或复位，并说清读改写窗口在哪里；能为一个复用功能查表配好 `MODER` 与 `AFR`；能为按键选定上拉还是下拉，并说清消抖放在硬件还是软件；能把 e01 的接线、步骤、预期现象和记录格式复述给同学。
-- **边界**：四平台章。F407 的偏移、位段与 PF6 演算来自 S3《GPIO：七个寄存器位级图解》与 RM0090 §8.4；F103 的 `CRL/CRH`、AFIO 重映射、PC13–PC15 的 3mA/2MHz/30pF 界限来自根书第 03 章与 RM0008、DS5319；GD32 与 ESP32 只在“跨平台边界”指路，不写没有来源的差异。NVIC/EXTI 的按键中断留给[第 10 章](./10-interrupts-nvic-exti.md)，PWM 调光留给[第 12 章](./12-timers-pwm.md)，I2C/SPI 的引脚配对留给[第 16 章](./16-i2c-spi.md)，实验方法与仪器证据留给[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。e01 的来源记录是 `hardware_status: pending`、实测记录表为空，本章不把它的现象写成已跑读数。
-- **依据锚点**：S3《GPIO：七个寄存器位级图解》（`mcu/docs/stm32/03-gpio.md`）、根书第 03 章《GPIO 与 LED》（`docs/03-GPIO与LED.md`）、E01《点亮霸天虎的 RGB 红灯（寄存器版）》（`mcu/docs/lab/e01-blink.md`）；[第 8 章](./08-architecture-memory-clock.md)的 AHB1 门牌与位带、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 7 章](../v0-foundations/07-build-systems-legacy.md)的 `GPIO_Init` 解剖。RM0090、RM0008 与 DS5319 的条文均转引自上述来源。
+- **级别**：L0 起步 → L1 驱动。证据位置：「测量与证据」与「离开检查」；读完留下从合闸到数据的配置序列与 e01 的接线、预期现象和记录格式。
+- **开源读法**：读 `libopencm3` 的 `include/libopencm3/stm32/f4/gpio.h` 与 `gpio_common_all.c`，看 `gpio_set`/`gpio_clear` 怎样落到 BSRR；位段语义仍回 RM0090 §8.4。
+- **边界**：四平台章。F407 的偏移、位段与 PF6 演算来自 S3《GPIO：七个寄存器位级图解》与 RM0090 §8.4；F103 的 `CRL/CRH`、AFIO 重映射、PC13–PC15 的 3mA/2MHz/30pF 界限来自根书第 03 章与 RM0008、DS5319；GD32 与 ESP32 只在“跨平台边界”指路，不写没有来源的差异。NVIC/EXTI 的按键中断留给[第 10 章](./10-interrupts-nvic-exti.md)，PWM 调光留给[第 12 章](./12-timers-pwm.md)，I2C/SPI 的引脚配对留给[第 16 章](./16-i2c-spi.md)，实验方法与仪器证据留给[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。e01 的来源记录是 `hardware_status: pending`、实测记录表为空，这里不把它的现象写成已跑读数。
+- **依据锚点**：S3《GPIO：七个寄存器位级图解》（`mcu/docs/stm32/03-gpio.md`）、根书第 03 章《GPIO 与 LED》（`docs/03-GPIO与LED.md`）、E01《点亮霸天虎的 RGB 红灯（寄存器版）》（`mcu/docs/lab/e01-blink.md`）；[第 8 章](./08-architecture-memory-clock.md)的 AHB1 地址与位带、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 7 章](../v0-foundations/07-build-systems-legacy.md)的 `GPIO_Init` 拆解。RM0090、RM0008 与 DS5319 的条文均转引自上述来源。
 
 ## 先做出来
 
-这一章的开局不烧板，先读代码：打开来源工程的 `mcu/code/stm32/00-blink/main.c`，把 `main()` 里配置段每一行注释成“这是在填哪张表”。填完对着这张底表核一遍：
+这里先不烧板，先读代码：打开来源工程的 `mcu/code/stm32/00-blink/main.c`，把 `main()` 里配置段每一行注释成“这是在填哪张表”。填完对着这张底表核一遍：
 
 | main.c 里的一行 | 填的是哪张表 | 动的是哪几位 |
 | --- | --- | --- |
@@ -34,9 +36,11 @@ platforms: [f407, f103, gd32, esp32]
 1. 霸天虎的 RGB 灯是共阳接法，点亮红灯靠写高电平还是写低电平？
 2. 不写 `RCC_AHB1ENR` 的 GPIOF 位，直接写 `GPIOF_MODER`，再读回来会看到什么？
 
-押错了不丢人，改过来就是这一章的收益。来源记录的 e01 状态是 `code_status: ready`、`hardware_status: pending`，实测记录表一行没填；所以下面给的是步骤、预期现象与记录格式，不是已经量到的读数。
+押错不要紧，改过来就是收获。来源记录的 e01 状态是 `code_status: ready`、`hardware_status: pending`，实测记录表一行没填；所以下面给的是步骤、预期现象与记录格式，不是已经量到的读数。
 
 ## 机制
+
+![手绘板：GPIO 三步——合闸 RCC_AHB1ENR bit5、四张表逐格填 PF6、BSRR 纯赋值发令；ODR 读改写有中断插队窗口（原理示意，非实拍）](/images/ch09-gpio-breaker-tables.png)
 
 ### 时钟先行：外设没有合闸，寄存器只是橱窗
 
@@ -46,9 +50,9 @@ F407 的 GPIO 挂在 AHB1 上。RCC 的基址是 `0x4002_3800`，`AHB1ENR` 偏�
 RCC_AHB1ENR |= RCC_AHB1ENR_GPIOFEN;   /* bit5：给 GPIOF 合闸 */
 ```
 
-`main.c` 在这行上面的注释只有一句“不先开时钟，下面全白配”。机制是：时钟没到，外设的寄存器读写不生效，写进去不响，读回全是 0。S3 把它列为新手第一大坑，不是修辞。调试器里读回 `GPIOF_MODER` 得到 0，而代码明明写进了 0x1000，这一对矛盾就是“忘开时钟”的指纹。
+`main.c` 在这行上面的注释只有一句“不先开时钟，下面全白配”。机制是：时钟没到，外设的寄存器读写不生效，写进去不响，读回全是 0。S3 把它列为新手第一大坑。调试器里读回 `GPIOF_MODER` 得到 0，而代码明明写进了 0x1000，这一对矛盾就是“忘开时钟”的指纹。
 
-F103 的账不一样：GPIO 挂在 APB2 上，根书例程用 `RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE)` 开的是 GPIOC。寄存器名与总线都不能从 F4 抄过去。
+F103 的配置不一样：GPIO 挂在 APB2 上，根书例程用 `RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE)` 开的是 GPIOC。寄存器名与总线都不能从 F4 抄过去。
 
 开完时钟还有一个容易漏的动作：等门控真正生效。F4 版 SPL 的 `RCC_AHB1PeriphClockCmd()` 在写完 `AHB1ENR` 后补了一次 `(void)RCC->AHB1ENR;` 读回，手写代码要自己补这次读回或 `__DSB()`；[第 7 章](../v0-foundations/07-build-systems-legacy.md)拆过这段。
 
@@ -73,7 +77,7 @@ GPIOF_OSPEEDR &= ~(3UL << (LED_R_PIN * 2));  /* 00 = 低速              */
 GPIOF_PUPDR   &= ~(3UL << (LED_R_PIN * 2));  /* 00 = 无上下拉          */
 ```
 
-“先清零再置位”不是洁癖。两位的格子直接 `|= 1`，原来的 10 或 11 会变成 11；先擦后写才能保证落点是 01。复位后多数引脚是 00（输入），但 PA13/PA14 这类调试脚默认是复用，所以这套写法在哪个引脚上都成立。反过来说，把 PA13/PA14 改成普通 GPIO 再烧录，SWD 就再也连不上，后面所有调试都会失去入口；RM0008 表 36 把 SWDIO 钉在 PA13、SWCLK 钉在 PA14。
+先清零再置位，是因为两位的格子直接 `|= 1` 时，原来的 10 或 11 会变成 11；先擦后写才能保证落点是 01。复位后多数引脚是 00（输入），但 PA13/PA14 这类调试脚默认是复用，所以这套写法在哪个引脚上都成立。反过来说，把 PA13/PA14 改成普通 GPIO 再烧录，SWD 就再也连不上，后面所有调试都会失去入口；RM0008 表 36 把 SWDIO 固定在 PA13、SWCLK 固定在 PA14。
 
 ![GPIO 配置流程动画：合闸、四张表逐格盖章、BSRR 发令](/anim/gpio-config.svg)
 
@@ -89,17 +93,17 @@ F103 的速度档是 2/10/50MHz，F407 是 2/25/50/100MHz，数字不能互抄�
 
 - `IDR`（§8.4.5）：只读，引脚上此刻的真实电平。
 - `ODR`（§8.4.6）：可读可写，输出寄存器。
-- `BSRR`（§8.4.7）：只写。低 16 位置位（BS），高 16 位复位（BR）；写 1 生效，写 0 无影响；读它永远返回 0。
+- `BSRR`（§8.4.7）：只写。低 16 位置位（BS），高 16 位复位（BR）；写 1 生效，写 0 无影响；读它总返回 0。
 
 `GPIOF_ODR |= (1UL << 6);` 这行 C 编译出来是三条指令：
 
 ```asm
-ldr  r0, [r1]        ; ① 读出整本账
+ldr  r0, [r1]        ; ① 读出 ODR
 orr  r0, r0, #0x40   ; ② 改自己那一位
-str  r0, [r1]        ; ③ 整本写回
+str  r0, [r1]        ; ③ 写回 ODR
 ```
 
-读与写之间有一个窗口。中断若在这时改了 ODR 的另一位，返回后主循环把 ① 时刻的旧值整本写回，中断的改动被冲掉。症状是偶尔丢一次电平，一周出现一回，很难查。`BSRR` 没有读、没有改，一条 `str` 原子完成，写 0 又不影响别的位，连掩码都省了。`main.c` 就是这么发令的：
+读与写之间有一个窗口。中断若在这时改了 ODR 的另一位，返回后主循环把 ① 时刻的旧值整体写回，中断的改动被覆盖。症状是偶尔丢一次电平，一周出现一回，很难查。`BSRR` 没有读、没有改，一条 `str` 原子完成，写 0 又不影响别的位，连掩码都省了。`main.c` 就是这样写的：
 
 ```c
 GPIOF_BSRR = (1UL << (LED_R_PIN + 16));  /* BR6 = 0x00400000：拉低，红灯亮 */
@@ -118,7 +122,7 @@ PC13 的 ODR 位按这个式子算；[第 8 章](./08-architecture-memory-clock.
 
 HAL 的 `HAL_GPIO_WritePin()` 底层同样落到 BSRR，所以“用库还是手写”在这里不影响原子性结论；根书把 HAL 与直接 BSRR 并排放过，两种写法都原子，ODR 的读改写两种写法都有窗口。
 
-### 推挽与开漏：能推能拉，还是只会拉
+### 推挽与开漏：两种输出级的驱动能力
 
 | | 推挽（PP） | 开漏（OD） |
 | --- | --- | --- |
@@ -132,7 +136,7 @@ I2C 的 SDA 必须开漏加外部上拉：总线上挂着主机和多个从机�
 
 能否接 5V 只看数据手册那一列的 FT 标记，不是“STM32 都耐 5V”。根书的自测就拿 PA0 举例：数据手册没标 FT 的脚，不能直接接 5V 传感器，来源也不给“大概没事”的电流数。
 
-### 复用：MODER 开门，AFR 选号
+### 复用：MODER 选择复用模式，AFR 选择功能号
 
 引脚默认听 ODR/IDR 的（通用 IO）。`MODER` 写成 10 后，数据线改接片上外设；接哪一个由复用寄存器决定。F407 每个脚 4 位，`AFRL` 管 pin0~7、`AFRH` 管 pin8~15，选 AF0~AF15。哪个脚能当什么、是 AF 几，只有数据手册的复用功能表说了算（F407 在 Table 9），别背，查。
 
@@ -157,7 +161,7 @@ F103 没有逐脚 AF 号。它用 AFIO 的 `MAPR` 做整组重映射，例如把
 
 按键的极性由接法决定：上拉加按键接地，空闲高、按下低、下降沿有效；下拉加按键接 VCC，空闲低、按下高、上升沿有效。F1 的内部上拉阻值是 30~50kΩ，只是弱上拉，负责给空闲定电平，不负责给外设供电。
 
-消抖是器件之外的事，两条路：硬件 RC（0.1µF 电容加电阻，或施密特触发器）和软件定时采样（连续 N 次一致才认）。根书把话说得很直：常说的 10~20ms 消抖时间是经验值，RM0008 与 DS5319 都没有给出这个数，别把它当手册规定。软件版骨架：
+消抖是器件之外的事，两条路：硬件 RC（0.1µF 电容加电阻，或施密特触发器）和软件定时采样（连续 N 次一致才认）。根书的说法很明确：常说的 10~20ms 消抖时间是经验值，RM0008 与 DS5319 都没有给出这个数，别把它当手册规定。软件实现的基本结构：
 
 ```c
 static uint8_t key_scan(GPIO_TypeDef *port, uint16_t pin)
@@ -170,11 +174,11 @@ static uint8_t key_scan(GPIO_TypeDef *port, uint16_t pin)
 }
 ```
 
-轮询还有一条边界：主循环每轮塞进 100ms 阻塞任务，再短按按键，就会漏检或延迟。根书的实验三专门暴露这个现象，删掉阻塞后重测；解法留给[第 10 章](./10-interrupts-nvic-exti.md)的 EXTI 边沿。本章只把边界画出来，不假装轮询能扛住一切。
+轮询还有一条边界：主循环每轮加入 100ms 阻塞任务，再短按按键，就会漏检或延迟。根书的实验三专门暴露这个现象，删掉阻塞后重测；解法留给[第 10 章](./10-interrupts-nvic-exti.md)的 EXTI 边沿。这里只把边界写清楚，不把轮询说成能覆盖所有情况。
 
-### F1 与 F4：两套寄存器账
+### F1 与 F4：两套寄存器配置
 
-同一件事，两代芯片用了两套账。F407 是本章的主线，F103 的差异集中在这张表：
+同一件事，两代芯片用了两套寄存器配置。F407 是主线，F103 的差异集中在这张表：
 
 | 事项 | STM32F407 | STM32F103 |
 | --- | --- | --- |
@@ -195,7 +199,7 @@ F103 的引脚还有电气界限，换封装要重查：PA0 是 LQFP48 的第 10
 
 ![霸天虎 RGB 灯原理：共阳接 3.3V，PF6/PF7/PF8 低电平点亮](/images/labs/e01-rgb-led.svg)
 
-步骤来自 E01，本章不改命令：
+步骤来自 E01，命令照原样：
 
 1. 构建：`cd code/stm32/00-blink && make`，检查 `build/blink.elf` 生成。
 2. 烧录：`make flash`，等日志出现 `Verified OK`。
@@ -205,16 +209,16 @@ F103 的引脚还有电气界限，换封装要重查：PA0 是 LQFP48 的第 10
 
 预期现象也来自来源：默认固件红灯约 1Hz，软件延时，±30% 属正常，精准时基留给[第 11 章](./11-systick-timebase-rtc.md)；改短延时后明显急促；换引脚后对应颜色闪烁。改参数前先押一个数：延时砍到五分之一，灯会快几倍？答案在秒表上。
 
-三个排障口径也一并带上：`Verified OK` 但灯不亮，先查引脚号是不是 PF6（教程串板常写成 PF9/PA8）；灯常亮不闪，查有没有进 `while`、延时有没有被优化掉，`-O0` 与 `delay` 循环体里的 `__asm__ volatile ("nop")` 是兜底，去掉那一条才真会被删（[第 2 章](../v0-foundations/02-c-volatile-ub.md)）；改完代码现象不变，多半只 `make` 没 `make flash`。
+三个排障口径也一并带上：`Verified OK` 但灯不亮，先查引脚号是不是 PF6（教程串板常写成 PF9/PA8）；灯常亮不闪，查有没有进 `while`、延时有没有被优化掉，`-O0` 与 `delay` 循环体里的 `__asm__ volatile ("nop")` 都能阻止这个循环被删除，去掉那一条才真会被优化掉（[第 2 章](../v0-foundations/02-c-volatile-ub.md)）；改完代码现象不变，多半只 `make` 没 `make flash`。
 
 ## 测量与证据
 
-本章没有可引用的板上读数：e01 的记录表在来源里是空的，`hardware_status` 标的是 `pending`。能对账的是来源里已经写死的位段、地址与界限。
+没有可引用的板上读数：e01 的记录表在来源里是空的，`hardware_status` 标的是 `pending`。能对账的是来源里已经写死的位段、地址与界限。
 
 | 取证项 | 来源命令或位置 | 来源记录里的读数 |
 | --- | --- | --- |
 | 寄存器偏移 | S3 板卡事实（RM0090 §8.4） | MODER 0x00 / OTYPER 0x04 / OSPEEDR 0x08 / PUPDR 0x0C / IDR 0x10 / ODR 0x14 / BSRR 0x18 / LCKR 0x1C / AFRL 0x20 / AFRH 0x24 |
-| 门牌 | S3，CMSIS 头文件逐项核对 | GPIOF = 0x40021400、RCC = 0x40023800、AHB1ENR 偏移 0x30 |
+| 地址 | S3，CMSIS 头文件逐项核对 | GPIOF = 0x40021400、RCC = 0x40023800、AHB1ENR 偏移 0x30 |
 | PF6 位段 | S3 的 PF6 演算 | `MODER` bits[13:12]；先清 0x3000 再置 0x1000 |
 | BSRR 发令 | `main.c` 的 `while` 循环 | `1 << 22` = 0x00400000 拉低；`1 << 6` = 0x00000040 拉高 |
 | PA9 复用 | S3 的 USART1_TX 演算 | `MODER[19:18] = 10`；`AFRH[7:4] = 0x7`（AF7） |
@@ -223,7 +227,7 @@ F103 的引脚还有电气界限，换封装要重查：PA0 是 LQFP48 的第 10
 | F103 限流电阻 | 根书第 03 章例程 | (3.3 − 2.0) / 0.005 = 260，取 270Ω；估算值 |
 | 消抖时间 | 根书第 03 章 | 10~20ms 为经验值，RM0008 与 DS5319 未规定 |
 | 锁序列 | 根书第 03 章（RM0008 §9.2.7） | 写 1、写 0、写 1，读两次，第二次 LCKK = 1 |
-| e01 板上现象 | E01 记录 | `hardware_status: pending`；实测记录表为空，本章未跑 |
+| e01 板上现象 | E01 记录 | `hardware_status: pending`；实测记录表为空，这里未跑 |
 
 e01 的记录格式照抄来源，日期与结果留空，等第一次实跑填：
 
@@ -246,7 +250,7 @@ make flash      # 日志出现 Verified OK 才算写完
 
 | 现象 | 原因 | 区分证据 | 下一动作 |
 | --- | --- | --- | --- |
-| 外设寄存器写进去读回 0 | GPIOF 时钟没开 | 读回值与写入无关；使能 `AHB1ENR` bit5 后恢复 | 先合闸再配置，见本章“时钟先行” |
+| 外设寄存器写进去读回 0 | GPIOF 时钟没开 | 读回值与写入无关；使能 `AHB1ENR` bit5 后恢复 | 先合闸再配置，见“时钟先行” |
 | 灯常亮不闪 | 没进 `while`，或延时循环被优化掉 | 反汇编里 `delay` 被内联或删除；`-O0` 下恢复 | 保留 `__asm__ volatile ("nop")`，用 `volatile` 参数 |
 | 偶尔丢一次电平 | `ODR` 读改写被中断插队 | 反汇编是 ldr/orr/str 三条 | 改位一律用 `BSRR` 纯赋值 |
 | 按位或赋值写 `BSRR` 后多了不该置的位 | `BSRR` 只写、读回为 0，按位或等价于直接赋值，x 里混入的位会一起生效 | 反汇编里先 `ldr` 读回 0，再 `orr`、`str` | `BSRR` 只做纯赋值，不做读改写 |
@@ -257,30 +261,32 @@ make flash      # 日志出现 Verified OK 才算写完
 | F1 的灯写 1 不亮 | PC13 共阳低有效，或 PC13 不能当电流源 | 写 0 亮；外接灯接 PC13 电流不够 | 板载灯写 0；外接灯改 PA0 串 270Ω |
 | F1 重映射无效 | 没开 AFIO 时钟，或写错了 `MAPR` 组 | `AFIO->MAPR` 读回不是目标编码 | 先开 AFIO 时钟，再按组写 `MAPR` |
 | 锁写了三次仍能改配置 | 序列出错，或第二次读回 `LCKK` 不是 1 | 读 `LCKR` 的 `LCKK` 位 | 掩码不变，重走写 1、写 0、写 1 与两次读 |
-| 换到 F103 照抄 `MODER` 编不过 | 两代寄存器结构不同 | 头文件里没有 `MODER` 成员 | 按 `CRL/CRH` 与 `BRR` 重写，见本章对照表 |
+| 换到 F103 照抄 `MODER` 编不过 | 两代寄存器结构不同 | 头文件里没有 `MODER` 成员 | 按 `CRL/CRH` 与 `BRR` 重写，见对照表 |
 
 ## 跨平台边界
 
-F407 这一侧，本章的偏移、位段与 PF6 演算都来自 RM0090 §8.4 与 S3；同系列换型号时，寄存器名与位段仍要按 RM0090 的对应章节重查，不能凭“都是 F4”补一个没读过的位。
+F407 这一侧，偏移、位段与 PF6 演算都来自 RM0090 §8.4 与 S3；同系列换型号时，寄存器名与位段仍要按 RM0090 的对应章节重查，不能凭“都是 F4”补一个没读过的位。
 
 F103 这一侧，共用的是“配置 + 数据 + 复用”三分法，不共用寄存器名与编码：配置走 `CRL/CRH`，复位有独立的 `BRR`，换脚走 AFIO 的 `MAPR` 整组重映射，速度档只有 2/10/50MHz，GPIO 时钟在 APB2。电气界限也要按数据手册重查：PC13–PC15 的 3mA/2MHz/30pF 与封装脚位绑定，换封装后第 2 脚、第 10 脚都可能变。
 
-GD32 只划边界。来源 S3 的延伸把对照指向 G2（`mcu/docs/gd32/02-gpio-af.md`）；G2 的记录是“改名不改岗”：GD32F4xx 的同一组偏移上换成了 `CTL`/`OMODE`/`OSPD`/`PUD`/`ISTAT`/`OCTL`/`BOP`，基址与编码不变，另有两个 STM32F4 没有的寄存器 `BC` 与 `TG`。这些差异的来源是 G2 对 `gd32f4xx_gpio.h` 的读数，本章不复述细节；GD32 系列的完整对照与 ARM/RISC-V 两条线见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。
+GD32 只划边界。来源 S3 的延伸把对照指向 G2（`mcu/docs/gd32/02-gpio-af.md`）；G2 的记录是“改名不改岗”：GD32F4xx 的同一组偏移上换成了 `CTL`/`OMODE`/`OSPD`/`PUD`/`ISTAT`/`OCTL`/`BOP`，基址与编码不变，另有两个 STM32F4 没有的寄存器 `BC` 与 `TG`。这些差异的来源是 G2 对 `gd32f4xx_gpio.h` 的读数，这里不复述细节；GD32 系列的完整对照与 ARM/RISC-V 两条线见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。
 
-ESP32 这一侧，本章没有取证来源，不写寄存器差异。ESP32-S3 的架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)，外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)；不要把这边的 `MODER`、`BSRR`、`AFR` 名字带过去，也不要假设引脚复用是同一套模型。芯片迁移的通用检查表（引脚、时钟、外设能力）在[第 28 章](../v4-platforms/28-chip-migration-differences.md)。
+ESP32 这一侧，这里没有取证来源，不写寄存器差异。ESP32-S3 的架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)，外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)；不要把这边的 `MODER`、`BSRR`、`AFR` 名字带过去，也不要假设引脚复用是同一套模型。芯片迁移的通用检查表（引脚、时钟、外设能力）在[第 28 章](../v4-platforms/28-chip-migration-differences.md)。
 
 ## 社区开源实现
 
-本章教的概念在生产开源代码里随处可见。下面几处值得逐文件精读——不是抄代码，是看同一个问题别人怎么解：
+这些概念在生产开源代码里随处可见。下面几处值得逐文件精读，看同一个问题别人怎么解：
 
 | 仓库 | 文件 | 看什么 |
 | --- | --- | --- |
-| [libopencm3/libopencm3](https://github.com/libopencm3/libopencm3) | `include/libopencm3/stm32/f4/gpio.h` + `gpio_common_all.c` | 寄存器级 GPIO 的薄封装：`gpio_set`/`gpio_clear` 直接写 BSRR/BSRRH，`gpio_toggle` 用 ODR 异或——对照本章的 BSRR 原子性与 ODR 读改写陷阱 |
-| [cpq/bare-metal-programming-guide](https://github.com/cpq/bare-metal-programming-guide) | `main.c` + `README.md` | 无框架 GCC 裸机点灯：宏封装 BSRR 写法、链接脚本与启动代码的极简实现——v0/v1 概念的最小综合 |
-| [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c` | HAL 怎么包装同一组寄存器：`HAL_GPIO_WritePin` 调 BSRR、`HAL_GPIO_TogglePin` 用 ODR 异或——同一功能的两种抽象层级 |
-| [STMicroelectronics/cmsis-device-f4](https://github.com/STMicroelectronics/cmsis-device-f4) | `Include/stm32f407xx.h` | 寄存器结构体与位域定义——本章讲的所有地址与偏移都在这一个头文件里 |
+| [libopencm3/libopencm3](https://github.com/libopencm3/libopencm3) | `include/libopencm3/stm32/f4/gpio.h` + `gpio_common_all.c` | 寄存器级 GPIO 的薄封装：`gpio_set`/`gpio_clear` 直接写 BSRR/BSRRH，`gpio_toggle` 用 ODR 异或；对照 BSRR 原子性与 ODR 读改写陷阱 |
+| [cpq/bare-metal-programming-guide](https://github.com/cpq/bare-metal-programming-guide) | `main.c` + `README.md` | 无框架 GCC 裸机点灯：宏封装 BSRR 写法、链接脚本与启动代码的极简实现，是 v0/v1 概念的最小综合 |
+| [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c` | HAL 怎么包装同一组寄存器：`HAL_GPIO_WritePin` 调 BSRR、`HAL_GPIO_TogglePin` 用 ODR 异或；同一功能的两种抽象层级 |
+| [STMicroelectronics/cmsis-device-f4](https://github.com/STMicroelectronics/cmsis-device-f4) | `Include/stm32f407xx.h` | 寄存器结构体与位域定义；这里讲的所有地址与偏移都在这一个头文件里 |
 
-社区讨论最集中的两点：BSRR 优于 ODR 的原子性论证（中断上下文防踩踏），以及 F1 的 AFIO 重映射与 F4 的 AFR 逐脚编号在移植时的坑。入门级步骤教程（如 [Controllers Tech 的 GPIO 寄存器教程](https://controllerstech.com/stm32-gpio-output-configuration-register/)）可以当快查用，但最可靠的参考仍然是 [RM0090 §8.4 GPIO 寄存器](https://www.st.com/resource/en/reference_manual/rm0090-stm32f405415-stm32f407417-stm32f427437-and-stm32f429439-advanced-armbased-32bit-mcus-stmicroelectronics.pdf) 与 datasheet 的复用表。
+社区讨论最集中的两点：BSRR 优于 ODR 的原子性论证（中断上下文防踩踏），以及 F1 的 AFIO 重映射与 F4 的 AFR 逐脚编号在移植时的坑。
+
+入门级步骤教程（如 [Controllers Tech 的 GPIO 寄存器教程](https://controllerstech.com/stm32-gpio-output-configuration-register/)）可以当快查用，但最可靠的参考仍然是 [RM0090 §8.4 GPIO 寄存器](https://www.st.com/resource/en/reference_manual/rm0090-stm32f405415-stm32f407417-stm32f427437-and-stm32f429439-advanced-armbased-32bit-mcus-stmicroelectronics.pdf) 与 datasheet 的复用表。
 
 ## 离开检查
 
@@ -298,7 +304,7 @@ ESP32 这一侧，本章没有取证来源，不写寄存器差异。ESP32-S3 �
 
 1. 时钟没到时，外设寄存器读写不生效，写进去不响、读回全是 0；所以“代码写了 0x1000、读回 0”这一对矛盾就是忘开时钟的指纹。F407 的 GPIOF 在 `RCC_AHB1ENR` 的 bit5。
 2. 三张两位的表里都占 bits[13:12]（6×2）。先 `&= ~(3 << 12)` 擦成 00，再对 `MODER` 置 `1 << 12` 得 01，`OTYPER` 的 bit6 写 0 得推挽，`OSPEEDR` 与 `PUPDR` 保持 00。先清零是因为两位格子里的旧值可能是 10 或 11，直接或 1 会落成 11；复位后调试脚还是复用，不能假设默认就是 00。
-3. `ldr` 读、`orr` 改、`str` 写回三条。中断插在 `ldr` 与 `str` 之间改了另一位，返回后旧值整本写回，改动被冲掉。`BSRR` 一条 `str` 完成，没有读、没有改，且写 0 不影响其它位，所以中断无从插足。
+3. `ldr` 读、`orr` 改、`str` 写回三条。中断插在 `ldr` 与 `str` 之间改了另一位，返回后旧值整体写回，改动被冲掉。`BSRR` 一条 `str` 完成，没有读、没有改，且写 0 不影响其它位，所以中断无从插足。
 4. 共阳时阳极接 3.3V，引脚拉低才有灌电流；`BSRR` 高 16 位是复位（BR），写 1 把引脚拉低，灯亮。低 16 位是置位（BS），写 1 拉高，灯灭。
 5. 推挽有上 PMOS 与下 NMOS，高电平主动推向 VDD、低电平主动拉到 GND；开漏只有下 NMOS，只能拉低，高电平靠外部上拉。I2C 总线上多个设备都可能拉低，推挽会一推一拉对轰短路，开漏加上拉实现线与。
 6. `MODER[19:18] = 10` 进复用模式，`AFRH[7:4] = 0x7` 选 AF7；AF 号必须查数据手册复用表。F103 没有逐脚 AF 号，要先开 AFIO 时钟，再写 `AFIO->MAPR` 做整组重映射。

@@ -1,0 +1,327 @@
+# -*- coding: utf-8 -*-
+"""V2e hand-drawn plates: ch09 GPIO breaker-tables-command, ch12 counter
+three knobs, ch13 COBS paper tape.
+
+Facts pinned verbatim from the chapters. ch09: RCC 0x4002_3800, AHB1ENR
+offset 0x30, GPIOF bit5; PF6 bits[13:12], clear 0x3000 then set 0x1000;
+MODER=01 OTYPER=0 OSPEEDR=00 PUPDR=00; BSRR bit6 BS6 0x00000040 / bit22
+BR6 0x00400000, write-only; ODR |= compiles to ldr/orr/str; common-anode
+3.3V lights on low; MODER=10 pairs with AFR, PA9 AF7 USART1_TX; PA13/PA14
+stay SWD; F103 CRL/CRH on APB2, AFIO MAPR remap. e01 hardware_status
+pending. ch12: PSC=83 ARR=999 CCR=500, 84MHz/84=1MHz, 1MHz/1000=1kHz 1ms,
+500/1000=50%; APB1=/4 PCLK1=42MHz, TIM3=42x2=84MHz (manual rule);
+f=TIMclk/((PSC+1)(ARR+1)); OC1M=110 OC1PE=1 CC1E=1; input capture copies
+CNT into CCR on edge, TIM2 32-bit free-run 1 count=1us, TIM3 measuring
+itself reads delta 0. e03 pending. ch13: length-prefix / escape / COBS
+recovery costs; raw<254 overhead fixed 1; INFO seq=7 raw 01 01 07 00 00
+00 CC B0 -> wire 04 01 01 07 01 01 03 CC B0 00 (8+1+1=10); 6+64+2=72 ->
+73 -> 74; CRC-16/CCITT-FALSE check 0x29B1; EMPTY/COLLECT/DISCARD, oversize
+at 73, timeout 100ms; lost frame-tail swallows next frame, retry sends a
+lone 0x00 first; ack-enqueue before execute. e02 pending.
+No board measurements; layouts are schematic.
+
+Deterministic: hd.Fig seeds its own RNG; re-running gives the same SVG.
+"""
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from hd import (AMBER_PALE, AMBER_STROKE, BLUE_D, BLUE_FILL,  # noqa: E402
+                GREEN_D, GREEN_FILL, HAND, INK, MUTED, RED, RED_FILL,
+                WHITE, Fig, save)
+
+MONO = "'Consolas','Courier New',monospace"
+STAGE = Path(__file__).resolve().parents[2] / ".temp" / "l0-l5-pass" / "figures"
+
+
+def knife_switch(f, cx, cy, color):
+    """Open knife switch: two terminals, lever lifted off the right one."""
+    f.circle(cx - 45, cy, 6, color=color, sw=2.0, fill=WHITE)
+    f.circle(cx + 45, cy, 6, color=color, sw=2.0, fill=color)
+    f.line(cx - 80, cy, cx - 51, cy, color=color, sw=2.2)
+    f.line(cx + 51, cy, cx + 80, cy, color=color, sw=2.2)
+    f.line(cx - 45, cy, cx + 34, cy - 38, color=color, sw=2.6)
+
+
+def ch09_gpio_breaker_tables():
+    f = Fig("ch09-gpio-breaker-tables", "GPIO：先合闸，再填表，后发令",
+            title_color=BLUE_D, tag="CH 09 · GPIO")
+    f.text(64, 126, "时钟没到，寄存器只是橱窗：写进去不响，读回全是 0。",
+           size=19, color=MUTED)
+
+    # ---- row 1: breaker / four tables / BSRR command ----
+    f.card(54, 150, 300, 230, BLUE_D, fill=BLUE_FILL)
+    f.text(70, 184, "① 合闸", size=20, color=BLUE_D, weight="bold")
+    knife_switch(f, 204, 240, BLUE_D)
+    f.text(204, 292, "RCC_AHB1ENR bit5", size=15, color=INK,
+           anchor="middle", weight="bold")
+    f.text(70, 322, "RCC 0x4002_3800", size=14, color=INK, font=MONO)
+    f.text(70, 346, "AHB1ENR 偏移 0x30", size=14, color=INK)
+    f.text(70, 370, "没合闸：写不响，读回全 0", size=14, color=RED)
+
+    f.card(378, 150, 360, 230, GREEN_D, fill=GREEN_FILL)
+    f.text(394, 184, "② 四张表，每脚两格", size=20, color=GREEN_D,
+           weight="bold")
+    tables = [("MODER", "2 位", "01"), ("OTYPER", "1 位", "0"),
+              ("OSPEEDR", "2 位", "00"), ("PUPDR", "2 位", "00")]
+    for i, (name, width, val) in enumerate(tables):
+        y = 214 + i * 26
+        f.text(394, y, name, size=15, color=INK, weight="bold", font=MONO)
+        f.text(530, y, width, size=14, color=MUTED)
+        f.text(620, y, val, size=15, color=GREEN_D, weight="bold",
+               font=MONO)
+    f.text(394, 326, "PF6 占 bits[13:12]（6×2）", size=15, color=INK)
+    f.text(394, 352, "先清 0x3000，再置 0x1000", size=15, color=INK,
+           weight="bold")
+    f.text(394, 374, "直接 |=1：10/11 会落成 11", size=14, color=MUTED)
+
+    f.card(762, 150, 336, 230, AMBER_STROKE, fill=AMBER_PALE)
+    f.text(778, 184, "③ BSRR 发令", size=20, color=AMBER_STROKE,
+           weight="bold")
+    f.text(778, 214, "只写：写 1 生效，写 0 无影响", size=15, color=INK)
+    f.pill(778, 228, 150, 40, "bit6 BS6 拉高", GREEN_D, fill=WHITE, size=15)
+    f.pill(940, 228, 142, 40, "bit22 BR6 拉低", RED, fill=WHITE, size=15)
+    f.text(778, 300, "BS6 = 0x00000040", size=14, color=INK, font=MONO)
+    f.text(778, 324, "BR6 = 0x00400000", size=14, color=INK, font=MONO)
+    f.text(778, 352, "共阳接 3.3V：拉低才亮", size=15, color=INK,
+           weight="bold")
+    f.text(778, 374, "读回恒 0，只做纯赋值", size=14, color=MUTED)
+
+    # ---- row 2: ODR read-modify-write window + AF pairing ----
+    f.card(54, 400, 660, 180, RED, fill=RED_FILL)
+    f.text(70, 432, "ODR |= 编译成三条指令", size=20, color=RED,
+           weight="bold")
+    for x, label in ((80, "ldr"), (216, "orr"), (352, "str")):
+        f.pill(x, 452, 96, 40, label, RED, fill=WHITE, size=17)
+    f.arrow(180, 472, 212, 472, color=RED, sw=2.2, bend=0.0, head=7)
+    f.arrow(316, 472, 348, 472, color=RED, sw=2.2, bend=0.0, head=7)
+    f.text(128, 512, "读", size=13, color=MUTED, anchor="middle")
+    f.text(264, 512, "改", size=13, color=MUTED, anchor="middle")
+    f.text(400, 512, "写回", size=13, color=MUTED, anchor="middle")
+    f.arrow(332, 545, 332, 502, color=RED, sw=2.4, bend=0.0, head=8)
+    f.text(332, 564, "中断", size=14, color=RED, anchor="middle",
+           weight="bold")
+    f.text(70, 568, "症状：偶尔丢一次电平", size=15, color=RED,
+           weight="bold")
+    f.text(480, 462, "中断插队改另一位 →", size=15, color=RED)
+    f.text(480, 488, "旧值整体写回，改动被覆盖", size=15, color=INK)
+    f.text(480, 524, "BSRR 一条 str 原子完成", size=15, color=GREEN_D,
+           weight="bold")
+    f.text(480, 550, "写 0 无影响，连掩码都省", size=14, color=MUTED)
+
+    f.card(738, 400, 360, 180, GREEN_D, fill=GREEN_FILL)
+    f.text(754, 432, "复用要成对", size=20, color=GREEN_D, weight="bold")
+    f.pill(754, 448, 150, 38, "MODER=10", BLUE_D, fill=WHITE, size=16)
+    f.pill(920, 448, 150, 38, "AFR 选号", BLUE_D, fill=WHITE, size=16)
+    f.text(754, 514, "只写 AFR：章盖了门没开", size=15, color=INK)
+    f.text(754, 540, "只改 MODER：接进的是 AF0", size=15, color=INK)
+    f.text(754, 566, "PA9 → AF7 = USART1_TX", size=15, color=INK,
+           weight="bold")
+
+    # ---- row 3: F103 boundary + SWD verdict ----
+    f.card(54, 600, 780, 96, BLUE_D, fill=BLUE_FILL)
+    f.text(70, 632, "F103 另一套：CRL/CRH · GPIO 时钟在 APB2", size=16,
+           color=INK)
+    f.text(70, 664, "换脚走 AFIO MAPR 整组重映射，先开 AFIO 时钟", size=16,
+           color=INK)
+    f.stamp(960, 648, "PA13/PA14 留给 SWD", RED, size=17, angle=-6)
+
+    f.htext(54, 738, "先合闸，再填四张表；改位用 BSRR 纯赋值",
+            size=22, color=INK, weight="bold", hl=True)
+    f.text(576, 764,
+           "位段与地址转引自 RM0090 §8.4 · e01 hardware_status pending · 布局示意，非实测",
+           size=15, color=MUTED, anchor="middle")
+    return f
+
+
+def ch12_counter_three_knobs():
+    f = Fig("ch12-counter-three-knobs", "一只计数器，三个旋钮",
+            title_color=GREEN_D, tag="CH 12 · 定时器与 PWM")
+    f.text(64, 126, "PSC 定步速，ARR 定圈长，CCR 定翻点；频率的算式里没有 CCR。",
+           size=19, color=MUTED)
+
+    # ---- row 1: CNT ramp + CCR line + PWM wave; three knob cards ----
+    f.card(54, 150, 700, 250, GREEN_D, fill=GREEN_FILL)
+    f.text(70, 182, "CNT 从 0 数到 ARR，CCR 画一条开关线", size=19,
+           color=GREEN_D, weight="bold")
+    f.stroke([(90, 300), (390, 212)], color=GREEN_D, sw=2.4)
+    f.line(390, 212, 390, 300, color=GREEN_D, sw=2.4)
+    f.stroke([(390, 300), (690, 212)], color=GREEN_D, sw=2.4)
+    f.line(690, 212, 690, 300, color=GREEN_D, sw=2.4)
+    f.text(82, 316, "0", size=14, color=MUTED)
+    f.text(640, 206, "ARR=999", size=14, color=GREEN_D, weight="bold")
+    f.line(90, 256, 700, 256, color=AMBER_STROKE, sw=2.0, dash="7 5")
+    f.text(700, 248, "CCR=500", size=14, color=AMBER_STROKE,
+           anchor="end", weight="bold")
+    # PWM high while CNT < CCR: first half of each 300px period is top.
+    f.stroke([(90, 330), (240, 330), (240, 370), (390, 370), (390, 330),
+              (540, 330), (540, 370), (690, 370)], color=GREEN_D, sw=2.4,
+             amp=0.5)
+    f.text(90, 394, "PA6：1kHz · 高电平 0.5ms · CNT < CCR 输出有效电平",
+           size=14, color=MUTED)
+
+    knobs = [
+        (150, "PSC = 83", "84MHz ÷ 84 = 1MHz", BLUE_D, BLUE_FILL),
+        (234, "ARR = 999", "1MHz ÷ 1000 = 1kHz · 1ms", GREEN_D, GREEN_FILL),
+        (318, "CCR = 500", "500/1000 = 50%，只动占空比", AMBER_STROKE,
+         AMBER_PALE),
+    ]
+    for y, name, note, color, fill in knobs:
+        f.card(778, y, 320, 74, color, fill=fill)
+        f.text(794, y + 30, name, size=22, color=color, weight="bold")
+        f.text(794, y + 58, note, size=15, color=INK)
+
+    # ---- row 2: real TIMclk + input capture ----
+    f.card(54, 420, 560, 160, BLUE_D, fill=BLUE_FILL)
+    f.text(70, 452, "先问真实的 TIMclk", size=19, color=BLUE_D,
+           weight="bold")
+    f.text(70, 482, "APB1=/4：PCLK1=42MHz，TIM3 = 42×2 = 84MHz", size=15,
+           color=INK)
+    f.text(70, 508, "×2 是手册规则；按 42MHz 算，频率正好差一倍", size=15,
+           color=INK)
+    f.pill(70, 522, 470, 40, "f = TIMclk / ((PSC+1)×(ARR+1))", BLUE_D,
+           fill=WHITE, size=16)
+    f.text(70, 574, "两个 +1：硬件从 0 数到 PSC、从 0 数到 ARR", size=14,
+           color=MUTED)
+
+    f.card(638, 420, 460, 160, AMBER_STROKE, fill=AMBER_PALE)
+    f.text(654, 452, "反过来用：输入捕获", size=19, color=AMBER_STROKE,
+           weight="bold")
+    f.text(654, 482, "边沿一到，硬件把 CNT 抄进 CCR", size=15, color=INK)
+    f.text(654, 508, "TIM2 32 位自由计数：1 计数 = 1µs", size=15,
+           color=INK)
+    f.text(654, 540, "拿 TIM3 测自己：差值恒为 0", size=15, color=RED,
+           weight="bold")
+    f.text(654, 566, "两次捕获差值 × 计数周期 = 脉宽", size=14, color=MUTED)
+
+    # ---- row 3: three bits + resolution tradeoff ----
+    f.card(54, 600, 600, 96, RED, fill=RED_FILL)
+    f.text(70, 632, "三位一个不能少：OC1M=110 · OC1PE=1 · CC1E=1", size=16,
+           color=INK, weight="bold")
+    f.text(70, 664, "少了 CC1E：定时器照跑、中断照进，引脚没波形", size=15,
+           color=RED)
+    f.pill(700, 612, 380, 40, "一圈 ARR+1 格 = 占空比档位", AMBER_STROKE,
+           fill=AMBER_PALE, size=16)
+    f.text(700, 676, "频率越高，格子越少，档位越粗", size=14, color=MUTED)
+
+    f.htext(54, 738, "频率看 PSC/ARR，占空比看 CCR；先核 TIMclk 再落位",
+            size=22, color=INK, weight="bold", hl=True)
+    f.text(576, 764,
+           "参数为公式推导 · APB×2 为手册规则 · e03 hardware_status pending · 布局示意，非实测",
+           size=15, color=MUTED, anchor="middle")
+    return f
+
+
+def byte_cells(f, x0, y, values, w, gap, fills, outline, size=18):
+    for i, v in enumerate(values):
+        x = x0 + i * (w + gap)
+        f.rect(x, y, w, 50, color=outline, sw=2.0, fill=fills[i],
+               double=False)
+        f.text(x + w / 2, y + 32, v, size=size, color=INK,
+               anchor="middle", weight="bold", font=MONO)
+
+
+def ch13_cobs_paper_tape():
+    f = Fig("ch13-cobs-paper-tape", "字节纸带：0x00 是唯一的剪口",
+            title_color=BLUE_D, tag="CH 13 · UART 与帧协议")
+    f.text(64, 126,
+           "UART 只保证逐位传输，不知道命令在哪结束；边界要写进字节流本身。",
+           size=19, color=MUTED)
+
+    # ---- row 1: three framing methods and their loss costs ----
+    f.card(54, 150, 330, 150, RED, fill=RED_FILL)
+    f.text(70, 182, "长度前缀", size=18, color=RED, weight="bold")
+    f.text(70, 212, "帧头写「后面还有 N 字节」", size=14, color=INK)
+    f.text(70, 240, "丢一字节：长度字段错位", size=14, color=RED)
+    f.text(70, 264, "之后每一帧都按错的长度切", size=14, color=RED)
+
+    f.card(408, 150, 330, 150, AMBER_STROKE, fill=AMBER_PALE)
+    f.text(424, 182, "转义 SLIP/HDLC", size=18, color=AMBER_STROKE,
+           weight="bold")
+    f.text(424, 212, "保留帧标志，出现就转义", size=14, color=INK)
+    f.text(424, 240, "等下一个标志重新对齐", size=14, color=INK)
+    f.text(424, 264, "最坏情况数据长度翻倍", size=14, color=AMBER_STROKE)
+
+    f.card(762, 150, 330, 150, GREEN_D, fill=GREEN_FILL)
+    f.text(778, 182, "COBS（本协议）", size=18, color=GREEN_D,
+           weight="bold")
+    f.text(778, 212, "数据里的 0 全换掉", size=14, color=INK)
+    f.text(778, 240, "0x00 只当帧尾，等 0 对齐", size=14, color=GREEN_D,
+           weight="bold")
+    f.text(778, 264, "raw<254：开销恒为 1 字节", size=14, color=INK)
+
+    # ---- row 2: the worked 10-byte example ----
+    f.card(54, 320, 1044, 210, BLUE_D, fill=BLUE_FILL)
+    f.text(70, 352, "手算一帧：INFO seq=7 → 8 raw + 1 COBS + 1 帧尾 = 10 字节",
+           size=18, color=BLUE_D, weight="bold")
+    f.text(1082, 352, "绿=码字 · 红=帧尾 0x00", size=13, color=MUTED,
+           anchor="end")
+    raw = ["01", "01", "07", "00", "00", "00", "CC", "B0"]
+    raw_fills = [WHITE, WHITE, WHITE, AMBER_PALE, AMBER_PALE, AMBER_PALE,
+                 WHITE, WHITE]
+    byte_cells(f, 80, 364, raw, 90, 6, raw_fills, BLUE_D)
+    fields = [(125, "version"), (221, "type"), (365, "seq=7"),
+              (557, "length=0"), (749, "CRC")]
+    for cx, label in fields:
+        f.text(cx, 432, label, size=13, color=MUTED, anchor="middle")
+    f.text(870, 388, "raw 8 字节", size=15, color=INK, weight="bold")
+    f.text(870, 412, "CRC 0xB0CC", size=14, color=INK, font=MONO)
+    f.text(870, 436, "检查值 0x29B1", size=13, color=MUTED)
+    f.arrow(450, 442, 450, 458, color=BLUE_D, sw=2.2, bend=0.0, head=7)
+    f.text(480, 456, "按 0 切段，段前放「段长+1」", size=14, color=BLUE_D)
+    wire = ["04", "01", "01", "07", "01", "01", "03", "CC", "B0", "00"]
+    wire_fills = [GREEN_FILL, WHITE, WHITE, WHITE, GREEN_FILL, GREEN_FILL,
+                  GREEN_FILL, WHITE, WHITE, RED_FILL]
+    byte_cells(f, 80, 466, wire, 86, 8, wire_fills, BLUE_D)
+
+    # ---- row 3: three-state machine + lost-tail cost ----
+    f.card(54, 550, 640, 150, GREEN_D, fill=GREEN_FILL)
+    f.text(70, 582, "三态状态机：逐字节喂", size=19, color=GREEN_D,
+           weight="bold")
+    f.pill(80, 598, 120, 40, "EMPTY", GREEN_D, fill=WHITE, size=16)
+    f.pill(280, 598, 140, 40, "COLLECT", GREEN_D, fill=WHITE, size=16)
+    f.pill(500, 598, 140, 40, "DISCARD", RED, fill=WHITE, size=16)
+    f.arrow(204, 618, 276, 618, color=GREEN_D, sw=2.2, bend=0.0, head=7)
+    f.text(240, 608, "非零", size=12, color=MUTED, anchor="middle")
+    f.arrow(424, 618, 496, 618, color=RED, sw=2.2, bend=0.0, head=7)
+    f.text(460, 608, "满73/超时", size=12, color=MUTED, anchor="middle")
+    f.arrow(350, 650, 142, 650, color=BLUE_D, sw=2.2, bend=-0.10, head=8)
+    f.text(246, 678, "0x00：解码", size=13, color=BLUE_D, anchor="middle")
+    f.arrow(570, 656, 142, 668, color=AMBER_STROKE, sw=2.2, bend=-0.10,
+            head=8)
+    f.text(356, 694, "0x00：丢弃结束", size=13, color=AMBER_STROKE,
+           anchor="middle")
+
+    f.card(718, 550, 380, 150, RED, fill=RED_FILL)
+    f.text(734, 582, "丢帧尾的代价", size=19, color=RED, weight="bold")
+    f.text(734, 612, "丢的恰是帧尾 0：下一帧被当残段吞掉", size=15,
+           color=RED)
+    f.text(734, 640, "主机重试前先单独发一个 0x00", size=15, color=INK,
+           weight="bold")
+    f.pill(734, 656, 348, 38, "确认先于执行：入队成功才执行", RED,
+           fill=WHITE, size=14)
+
+    f.htext(54, 738, "0x00 只当帧尾；丢了字节，等下一个 0 重新对齐",
+            size=22, color=INK, weight="bold", hl=True)
+    f.text(576, 764,
+           "帧布局源码静态 · 样例独立复算 · e02 hardware_status pending · 布局示意，非实测",
+           size=15, color=MUTED, anchor="middle")
+    return f
+
+
+FIGS = {
+    "ch09-gpio-breaker-tables": ch09_gpio_breaker_tables,
+    "ch12-counter-three-knobs": ch12_counter_three_knobs,
+    "ch13-cobs-paper-tape": ch13_cobs_paper_tape,
+}
+
+
+if __name__ == "__main__":
+    names = sys.argv[1:] or list(FIGS)
+    STAGE.mkdir(parents=True, exist_ok=True)
+    for n in names:
+        f = FIGS[n]()
+        save(f, str(STAGE / (n + ".svg")))
+        print("wrote", STAGE / (n + ".svg"))

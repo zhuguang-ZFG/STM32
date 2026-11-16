@@ -7,34 +7,36 @@ platforms: [f407, f103, esp32]
 
 看门狗防的是"程序不再前进"，复位标志回答"这一次是谁让它重来"，HardFault 取证回答"它死在哪一行"。三件事都容易停在表面：灯又闪了、板子重启了、调试器里断下来了，都不等于你拿到了证据。
 
-两个来源的实验记录仍是"待实测"，第三个来源的 274/274 是宿主 probe。本章把手册规则、公式推导、宿主断言与尚未上板的实验分开写；凡是没有读数的结论，都在原处标出来。
+两个来源的实验记录仍是"待实测"，第三个来源的 274/274 是宿主 probe。手册规则、公式推导、宿主断言与尚未上板的实验分开标注；凡是没有读数的结论，都在原处标出。
 
 ## 本章罗盘
 
-- **问题**：IWDG 与 WWDG 的时间基准差在哪，为什么一只只罚"太晚"、另一只连"太早"也罚？超时公式里的 `(RLR+1)` 少写会差多少，LSI 的 30/60 kHz 与 17/47 kHz 又让同一个 RLR 差出几倍？WWDG 的 58.25 ms 与 131 ms 各自绑定了哪些条件？`RCC_CSR` 为什么必须一次读全再写 `RMVF`，POR 为什么会把 `PINRSTF` 一起置起来？复位记录怎样写到一半被打断也不误导下一次启动？HardFault 的 19 位 CFSR、`FORCED`、两个 VALID 位、32 字节栈帧与 `EXC_RETURN` 怎样串成一条到源码行的链？调试器为什么会把狗关掉、把现场改掉？ESP32 的四类狗里，哪一类能平移到 Cortex-M，哪一类不能？
+- **问题**：IWDG 与 WWDG 的时间基准差在哪，为什么 IWDG 只罚"太晚"、WWDG 连"太早"也罚？超时公式里的 `(RLR+1)` 少写会差多少，LSI 的 30/60 kHz 与 17/47 kHz 又让同一个 RLR 差出几倍？WWDG 的 58.25 ms 与 131 ms 各自绑定了哪些条件？`RCC_CSR` 为什么必须一次读全再写 `RMVF`，POR 为什么会把 `PINRSTF` 一起置起来？复位记录怎样写到一半被打断也不误导下一次启动？HardFault 的 19 位 CFSR、`FORCED`、两个 VALID 位、32 字节栈帧与 `EXC_RETURN` 怎样串成一条到源码行的链？调试器为什么会关闭看门狗、把现场改掉？ESP32 的四类看门狗里，哪一类能平移到 Cortex-M，哪一类不能？
 - **交付**：能按 `t = (4·2^PR)·(RLR+1)/f_LSI` 给 F103 与 F407 各算一张"设计值/最坏值"表；能写出 IWDG 的 `0xCCCC → 0x5555 → PR/RLR → 0xAAAA` 序列并说清"启动后关不掉"；能按 `0x3F < T < W` 判断 WWDG 何时可以喂；能一次读全 `RCC_CSR` 的 bit31..25、写 `RMVF` 清标志，并按位图解释 POR 与 PINRSTF 的伴随关系；能用 `.noinit`、BKP 或 `RTC_NOINIT_ATTR` 写一条带 magic、版本、掩码与 CRC-16 的复位记录；能写 naked `HardFault_Handler`，从栈帧取 PC，交给 `addr2line`；能说出 F1 与 F4 的调试冻结位和 OpenOCD 的副作用；能解释 ESP32 的 TWDT 为什么是任务级契约。
-- **边界**：三平台章。F103 的 LSI、IWDG 与复位位号来自 DS5319、RM0008 与根书第 11 章（来源转引）；F407 的 IWDG/WWDG 公式、`RCC_CSR` 与冻结位来自 DS8626、RM0090 与 S17；HardFault 的寄存器地图、CFSR 分区、栈帧与汇编来自 S16 与 ARMv7-M/CMSIS；ESP32 的四类狗、TWDT 与 `esp_reset_reason()` 来自 P13 与 IDF 5.5.2 文档。三个来源都没有留下上板读数：S17 与 P13 的实验表体是"待实测"，S16 的 274/274 是宿主 probe，没有板级故障现场；本工作树缺 `mcu/.trellis/ref/cmsis`，S16 的 CMSIS 逐位对账未复核。RTC 与备份域回链第 11 章，异常进入与优先级回链第 10 章，Flash 参数区回链第 17 章，调试工具与测量方法留给第 20 章。
-- **依据锚点**：根书第 11 章《RTC 与看门狗》（`docs/11-RTC与看门狗.md`，只取看门狗段）、S16《HardFault 与排错》（`mcu/docs/stm32/16-debug-hardfault.md`）、S17《看门狗：任务失去进展之后》（`mcu/docs/stm32/17-watchdog-reset.md`）、P13《看门狗与健康监督》（`mcu/docs/esp32/13-watchdog-health.md`）；[v1 第 11 章](../v1-drivers/11-systick-timebase-rtc.md)、[第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)、[第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](./18-low-power.md)是本章的回链。RM0008、RM0090、DS5319、DS8626、ARM PM0214/PM0056 与 ESP-IDF 文档均转引自上述来源，本章没有取到原件逐页核对。
+- **级别**：L3 可靠。证据位置：「测量与证据」与「离开检查」；读完留下看门狗时间表、复位位图与 HardFault 取证的复算记录。
+- **开源读法**：对照 `CMSIS_6` 的 `CMSIS/Core/Include/core_cm4.h`，看 `SCB_Type` 里 `CFSR`/`HFSR`/`MMFAR`/`BFAR` 的字段与偏移；位定义仍回 ARMv7-M 架构手册与本章的 CFSR 表。
+- **边界**：三平台章。F103 的 LSI、IWDG 与复位位号来自 DS5319、RM0008 与根书第 11 章（来源转引）；F407 的 IWDG/WWDG 公式、`RCC_CSR` 与冻结位来自 DS8626、RM0090 与 S17；HardFault 的寄存器地图、CFSR 分区、栈帧与汇编来自 S16 与 ARMv7-M/CMSIS；ESP32 的四类看门狗、TWDT 与 `esp_reset_reason()` 来自 P13 与 IDF 5.5.2 文档。三个来源都没有留下上板读数：S17 与 P13 的实验表体是"待实测"，S16 的 274/274 是宿主 probe，没有板级故障现场；本工作树缺 `mcu/.trellis/ref/cmsis`，S16 的 CMSIS 逐位对账未复核。RTC 与备份域回链第 11 章，异常进入与优先级回链第 10 章，Flash 参数区回链第 17 章，调试工具与测量方法留给第 20 章。
+- **依据锚点**：根书第 11 章《RTC 与看门狗》（`docs/11-RTC与看门狗.md`，只取看门狗段）、S16《HardFault 与排错》（`mcu/docs/stm32/16-debug-hardfault.md`）、S17《看门狗：任务失去进展之后》（`mcu/docs/stm32/17-watchdog-reset.md`）、P13《看门狗与健康监督》（`mcu/docs/esp32/13-watchdog-health.md`）；[v1 第 11 章](../v1-drivers/11-systick-timebase-rtc.md)、[第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)、[第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 18 章](./18-low-power.md)是这里的回链。RM0008、RM0090、DS5319、DS8626、ARM PM0214/PM0056 与 ESP-IDF 文档均转引自上述来源，这里没有取到原件逐页核对。
 
 ## 先做出来
 
-先不接调试器，把三笔账算在纸上，再去板上读一次复位原因。
+先不接调试器，把三项算在纸上，再去板上读一次复位原因。
 
-1. **超时账**：F407 取 /64、RLR=999，按 32 kHz 算 2.00 s；按 47 kHz 算 1.36 s，按 17 kHz 算 3.76 s。F103 取 /64、RLR=624，按 40 kHz 算 1.00 s；按 60 kHz 算 0.67 s，按 30 kHz 算 1.33 s。两个平台的"1 秒"不是同一个 RLR。
-2. **窗口账**：F103 在 PCLK1=36 MHz、/8、T=0x7F 时，一拍 910.2 µs，64 拍 58.25 ms；W=0x50 时，从 0x7F 数到 0x50 要 47 拍（约 42.8 ms），按 `0x3F < T < W`，合法刷新区间是 `0x40 ≤ T < 0x50`。
-3. **复位账**：读一次 `RCC->CSR`，把 bit31..25 原样记下来，再写 `RMVF`（bit24）清掉。POR 会同时置 `PORRSTF` 与 `PINRSTF`；看到 `PINRSTF` 就说"有人按了复位键"，会把电源上电认错。
+1. **超时**：F407 取 /64、RLR=999，按 32 kHz 算 2.00 s；按 47 kHz 算 1.36 s，按 17 kHz 算 3.76 s。F103 取 /64、RLR=624，按 40 kHz 算 1.00 s；按 60 kHz 算 0.67 s，按 30 kHz 算 1.33 s。两个平台的"1 秒"不是同一个 RLR。
+2. **窗口计算**：F103 在 PCLK1=36 MHz、/8、T=0x7F 时，一拍 910.2 µs，64 拍 58.25 ms；W=0x50 时，从 0x7F 数到 0x50 要 47 拍（约 42.8 ms），按 `0x3F < T < W`，合法刷新区间是 `0x40 ≤ T < 0x50`。
+3. **复位原因**：读一次 `RCC->CSR`，把 bit31..25 原样记下来，再写 `RMVF`（bit24）清掉。POR 会同时置 `PORRSTF` 与 `PINRSTF`；看到 `PINRSTF` 就说"有人按了复位键"，会把电源上电认错。
 
-三笔账都能用纸笔复算，不需要示波器。它们对上了，才轮到上板看真实复位时刻。
+三项都能用纸笔复算，不需要示波器。它们对上了，才轮到上板看真实复位时刻。
 
-S16 的 `probe.sh` 可以在没有板子的机器上跑：第 1 段用宿主模型执行断言，第 3、4 段用 `arm-none-eabi-` 工具链做反汇编、`addr2line` 与字节学。本章把该目录复制到临时目录重跑，得到 274/274；第 2 段的 CMSIS 逐位对账因本工作树缺 `mcu/.trellis/ref/cmsis` 而跳过，39 条位号"逐位一致"未复核。这是实测记录，但测的是宿主模型与机器码，不是板上的 HardFault 现场。
+S16 的 `probe.sh` 可以在没有板子的机器上跑：第 1 段用宿主模型执行断言，第 3、4 段用 `arm-none-eabi-` 工具链做反汇编、`addr2line` 与字节学。这里把该目录复制到临时目录重跑，得到 274/274；第 2 段的 CMSIS 逐位对账因本工作树缺 `mcu/.trellis/ref/cmsis` 而跳过，39 条位号"逐位一致"未复核。这是实测记录，但测的是宿主模型与机器码，不是板上的 HardFault 现场。
 
 ## 机制
 
-### 一、两只狗：一只只罚太晚，一只早晚都罚
+### 一、IWDG 与 WWDG：一个只罚超时，一个早晚都罚
 
 IWDG 的时钟是片内 LSI，和主时钟无关。主时钟跑飞、PLL 失锁、代码把系统时钟改坏，LSI 仍在数。代价是频率不准：F103 典型 40 kHz，数据手册给 30/60 kHz 两端；F407 典型 32 kHz，给 17/47 kHz 两端。同一个 RLR，在两颗芯片上的超时差 25%，在同一颗芯片的两端能差一倍以上。
 
-WWDG 的时钟是 PCLK1，跟着 APB1 走。它准，但主时钟坏了它也会坏；它管的是"节奏"：喂得太晚复位，喂得太早也复位。两只狗可以同时开：IWDG 兜底"还活着"，WWDG 检查"这一圈是不是按顺序走完"。
+WWDG 的时钟是 PCLK1（来自 APB1）。它准，但主时钟坏了它也会坏；它检查固定窗口：喂得太晚复位，喂得太早也复位。两个看门狗可以同时启用：IWDG 负责确认"还活着"，WWDG 检查"这一圈是不是按顺序走完"。
 
 | 项 | IWDG | WWDG |
 | --- | --- | --- |
@@ -74,7 +76,7 @@ PR 有 8 个编码，只有 7 档：0–6 是 /4、/8、/16、/32、/64、/128�
 t = (4 × 2^PR) × (RLR + 1) / f_LSI
 ```
 
-RLR 是重装值，计数器从 RLR 减到 0 一共 RLR+1 个计数。`14-pwr` 的超时表把 512 ms 写成 511 ms、把 32768 ms 写成 32760 ms，漏的就是这个 +1；根书第 11 章的另一处又写了 `(RLR+1)`，两种口径不能并存。本章一律按 +1 算。
+RLR 是重装值，计数器从 RLR 减到 0 一共 RLR+1 个计数。`14-pwr` 的超时表把 512 ms 写成 511 ms、把 32768 ms 写成 32760 ms，漏的就是这个 +1；根书第 11 章的另一处又写了 `(RLR+1)`，两种口径不能并存。一律按 +1 算。
 
 | 平台 | PR | RLR | 设计值（典型 LSI） | 最坏值（LSI 区间） |
 | --- | --- | --- | --- | --- |
@@ -101,7 +103,7 @@ t_WWDG = t_PCLK1 × 4096 × 2^WDGTB × (T[5:0] + 1)
 
 F103 的例子：PCLK1=36 MHz、WDGTB=3（/8）、T=0x7F。一拍 `4096×8/36 MHz = 910.2 µs`，`(0x7F & 0x3F) + 1 = 64` 拍，超时 58.25 ms。W=0x50 时，从 0x7F 数到 0x50 要 47 拍；第一个合法刷新点是 0x4F，约 43.7 ms 后。58.25 ms 离开"36 MHz、/8、T=0x7F"这三个条件就不成立。
 
-F407 的例子：复位后不改时钟树，PCLK1=16 MHz、/8、T=0x7F。一拍 2.048 ms，64 拍 131 ms；W=0x5F 时，从 0x7F 数到 0x5E 要 33 拍（约 67.6 ms），之后才进窗口。131 ms 同样绑着"16 MHz、/8"；把 F103 的 36 MHz 数字搬到 F407，或者反过来，都是错数。
+F407 的例子：复位后不改时钟树，PCLK1=16 MHz、/8、T=0x7F。一拍 2.048 ms，64 拍 131 ms；W=0x5F 时，从 0x7F 数到 0x5E 要 33 拍（约 67.6 ms），之后才进窗口。131 ms 同样绑着"16 MHz、/8"；把 F103 的 36 MHz 数字套到 F407，或者反过来，都是错数。
 
 ```c
 RCC->APB1ENR |= RCC_APB1ENR_WWDGEN;
@@ -114,13 +116,15 @@ if (t > 0x3FU && t < 0x5FU) {
 }
 ```
 
-窗口外的轮询直接返回，不"为了保命"硬喂。喂早了会立刻复位，这一口不是保命，是催命。
+窗口外的轮询直接返回，不为保命而提前刷新。提前刷新会立刻复位，不能起到保命作用。
 
 ![WWDG 的刷新窗口：早喂、晚喂都复位](/figures/stm32-17-watchdog-reset.svg)
 
 图中只画 WWDG：T 在 W 及以上（早喂）刷新复位，T 跌到 `0x3F`（晚喂）也复位，只有落在 `0x3F < T < W` 内才喂得成功；窗口宽度由 W 决定，超时由 PCLK1、WDGTB 与 T 共同决定。
 
 ### 四、复位源是位图，不是枚举
+
+![手绘板：RCC_CSR 七盏复位灯会同亮，先拍照留证再按 RMVF；IWDG 独自倒计时，WWDG 只在窗口里喂（原理示意，非实拍）](/images/ch19-reset-cause-fusebox.png)
 
 `RCC_CSR` 的高 7 位是复位标志，bit24 是 `RMVF`。它们不是"最后一次复位原因"的枚举，而是一张可以多位同置的位图。
 
@@ -140,7 +144,7 @@ RCC->CSR |= RCC_CSR_RMVF;            /* 写 1 清全部标志 */
 
 标志会累积，读完不写 `RMVF` 就一直留着，下一次复位分不清新旧；先读全再清，才能把同一次复位里同时置起的多位一起记下来。F407 的 `RCC_CSR` 在 `0x40023874`，F103 在 `0x40021024`；用 `RCC->CSR` 就不必记地址。
 
-`LPWRRSTF` 与 `BORRSTF` 是电源侧的证据，`SFTRSTF` 是软件复位，`IWDGRSTF`/`WWDGRSTF` 才是两只狗。复位原因只说明哪一类源触发了复位，不告诉你"为什么"；后者要靠复位记录。
+`LPWRRSTF` 与 `BORRSTF` 是电源侧的证据，`SFTRSTF` 是软件复位，`IWDGRSTF`/`WWDGRSTF` 才分别对应 IWDG 与 WWDG。复位原因只说明哪一类源触发了复位，不告诉你"为什么"；后者要靠复位记录。
 
 ### 五、复位记录：magic、版本、掩码与 CRC-16
 
@@ -172,7 +176,7 @@ for (unsigned i = 0; i < 4; i++) dst->bytes[i] = body[i];  /* 最后发布 magic
 | BKP（备份寄存器） | 复位、Standby，VBAT 有电时掉主电也能留 | VBAT 也掉电 | F103 10×16 bit；F407 20×32 bit；12 字节在 F103 上要占 6 个寄存器 |
 | `RTC_NOINIT_ATTR`（ESP32） | 软件复位、看门狗复位、Deep sleep | 冷上电（内容不确定） | RTC 内存；同样要 magic/版本/CRC 三关 |
 
-F103 与 F407 的备份域写法、VBAT 与 BKP 容量见[第 11 章](../v1-drivers/11-systick-timebase-rtc.md)。如果记录要落 Flash 参数区，擦写寿命与掉电保护是另一套规则，见[第 17 章](../v1-drivers/17-flash-iap-ota.md)；本章不重讲 Flash 编程时序。
+F103 与 F407 的备份域写法、VBAT 与 BKP 容量见[第 11 章](../v1-drivers/11-systick-timebase-rtc.md)。如果记录要落 Flash 参数区，擦写寿命与掉电保护是另一套规则，见[第 17 章](../v1-drivers/17-flash-iap-ota.md)；这里不重讲 Flash 编程时序。
 
 ![复位闭环：故障、超时、复位原因与重启记录必须对得上](/figures/watchdog-reset-evidence.svg)
 
@@ -180,7 +184,7 @@ F103 与 F407 的备份域写法、VBAT 与 BKP 容量见[第 11 章](../v1-driv
 
 ### 六、HardFault：从 CFSR 到源码行
 
-HardFault 是异常升级的终点。MemManage、BusFault、UsageFault 没使能或处理不当时，会升级成 HardFault；`HFSR.FORCED`（bit30）置位说明"这是升级案，真凶在 CFSR 里"。三个可配置故障的使能位在 `SHCSR`：`MEMFAULTENA`(16)、`BUSFAULTENA`(17)、`USGFAULTENA`(18)。异常进入、优先级与向量表的机制见[第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)；本节只讲取证。
+HardFault 是异常升级的终点。MemManage、BusFault、UsageFault 没使能或处理不当时，会升级成 HardFault；`HFSR.FORCED`（bit30）置位说明"这是升级案，真凶在 CFSR 里"。三个可配置故障的使能位在 `SHCSR`：`MEMFAULTENA`(16)、`BUSFAULTENA`(17)、`USGFAULTENA`(18)。异常进入、优先级与向量表的机制见[第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)；这里只讲取证。
 
 故障寄存器都挂在 `SCB`（基址 `0xE000ED00`）下：
 
@@ -216,7 +220,7 @@ CFSR 是三个子寄存器拼成的：低 8 位 MMFSR、次 8 位 BFSR、高 16 
 | UFSR | 24 | `UNALIGNED` | 未对齐访问 |
 | UFSR | 25 | `DIVBYZERO` | 除以零 |
 
-`MMFAR`/`BFAR` 里的地址不是永远可信：只有 `MMARVALID`/`BFARVALID` 为 1 时才对得上。`IMPRECISERR` 下总线写是缓冲的，出错时 PC 可能已经跑远；`STKERR`/`MSTKERR` 表示入栈本身就错了，`UNSTKERR`/`MUNSTKERR` 表示出栈错了，这两种情况下硬件压的那 8 个字可能不完整，不能直接解引用。
+`MMFAR`/`BFAR` 里的地址不是总可信：只有 `MMARVALID`/`BFARVALID` 为 1 时才对得上。`IMPRECISERR` 下总线写是缓冲的，出错时 PC 可能已经跑远；`STKERR`/`MSTKERR` 表示入栈本身就错了，`UNSTKERR`/`MUNSTKERR` 表示出栈错了，这两种情况下硬件压的那 8 个字可能不完整，不能直接解引用。
 
 ![CFSR 的 19 个位：三个子寄存器、两个 VALID 位](/figures/stm32-16-cfsr-bits.svg)
 
@@ -277,13 +281,13 @@ arm-none-eabi-addr2line -e build/firmware.elf 0x0800008E
 
 ![HardFault 取证全流程：CFSR 定性、VALID 取址、栈帧取 PC、addr2line 对行](/anim/hardfault-forensics.svg)
 
-![手绘板：HardFault 判读阶梯——先存 BFAR/MMFAR 再存 CFSR 与有效位，同时保住 EXC_RETURN 与异常栈；BFARVALID=1 才保留 BFAR 地址；STKERR/IMPRECISERR 时帧或 PC 不可信，可信基本帧的 PC 在 frame[6]，同一份 ELF 才能 addr2line（原理示意）](/images/ch18-hardfault-ladder.png)
+![手绘板：HardFault 判读阶梯，CFSR 定性、VALID 取址、栈帧取 PC（原理示意，非实拍）](/images/ch18-hardfault-ladder.png)
 
 流水线的每一步都有失效条件：CFSR 可能只说明"升级了"，VALID 位为 0 时地址不可信，栈帧可能不完整，`-O2` 下行号可能漂移。
 
 ### 七、调试器会把故障现场改掉
 
-调试器连着时，内核被停住，看门狗是否继续数由 `DBGMCU` 的冻结位决定。F1 的惯用位号是 `DBGMCU_CR` 的 bit8（IWDG）与 bit9（WWDG）；F4 是 `DBGMCU_APB1_FZ`（`0xE0042008`）的 bit11（WWDG）与 bit12（IWDG）。调试器的启动脚本常把这两位置 1，断点停住时狗不叫。
+调试器连着时，内核被停住，看门狗是否继续数由 `DBGMCU` 的冻结位决定。F1 的惯用位号是 `DBGMCU_CR` 的 bit8（IWDG）与 bit9（WWDG）；F4 是 `DBGMCU_APB1_FZ`（`0xE0042008`）的 bit11（WWDG）与 bit12（IWDG）。调试器的启动脚本常把这两位置 1，断点停住时看门狗不会复位。
 
 ```c
 /* F1 */
@@ -294,11 +298,11 @@ DBGMCU->APB1FZ |= (1U << 11) | (1U << 12);
 
 HAL 的 `__HAL_DBGMCU_FREEZE_IWDG()` 与 `__HAL_DBGMCU_FREEZE_WWDG()` 会按系列选寄存器。麻烦在于冻结位属于调试域，普通系统复位不保证清掉：F4 的 `DBGMCU_APB1_FZ` 明确只被上电复位清零。调试会话结束后直接测"卡死后会不会复位"，得到的"没复位"不代表代码对了。
 
-ESP32 侧的副作用更直接：OpenOCD 在断点处会关掉 IWDT 与 TWDT 的硬件定时器，离开断点后也不会再打开。只要 JTAG 还连着 OpenOCD，这两只狗在整个调试会话里（直到复位前）就等于没装。
+ESP32 侧的副作用更直接：OpenOCD 在断点处会关掉 IWDT 与 TWDT 的硬件定时器，离开断点后也不会再打开。只要 JTAG 还连着 OpenOCD，这两个看门狗在整个调试会话里（直到复位前）就等于没启用。
 
 复位实验的固定流程是：烧录、断开调试器、板子断电再上电、再发故障命令。"调试下从不复位"是假阴性，不是证据。调试链路与工具侧细节留给第 20 章。
 
-### 八、ESP32：四类狗与任务级契约
+### 八、ESP32：四类看门狗与任务级契约
 
 ESP32 没有 STM32 的 IWDG/WWDG 这对组合，它把监督拆成四类：
 
@@ -339,16 +343,16 @@ HardFault 是 Cortex-M 的概念。ESP32 没有 CFSR、HFSR、MMFAR/BFAR，也�
 
 ## 测量与证据
 
-本章的读数按来路分四类：实测记录、来源说法(未复核)、文档推导、未实测。下表逐项标出来路；没有一条是本章的上板读数。
+读数按来路分四类：实测记录、来源说法(未复核)、文档推导、未实测。下表逐项标出来路；没有一条是上板读数。
 
 ### 读数来路表
 
 | 取证项 | 来路 | 读数或结论 | 性质 |
 | --- | --- | --- | --- |
-| IWDG 超时账 | 本章按 `(4·2^PR)·(RLR+1)/f_LSI` 复算；LSI 取 DS5319 与 DS8626 的范围 | RLR=999、/64：F407 2.000 s（32 kHz）、1.362–3.765 s（47/17 kHz）；F103 1.600 s（40 kHz）、1.067–2.133 s | 文档推导 |
+| IWDG 超时计算 | 这里按 `(4·2^PR)·(RLR+1)/f_LSI` 复算；LSI 取 DS5319 与 DS8626 的范围 | RLR=999、/64：F407 2.000 s（32 kHz）、1.362–3.765 s（47/17 kHz）；F103 1.600 s（40 kHz）、1.067–2.133 s | 文档推导 |
 | LSI 频率范围 | DS5319 表 25（F103 30/40/60 kHz）、DS8626 表 35（F407 17/32/47 kHz），经根书第 11 章与 S17 转引，未核原件 | 两颗芯片的典型值与两端 | 来源说法(未复核) |
-| WWDG 58.25 ms | 本章按 4096×8/36 MHz×64 复算；条件 PCLK1=36 MHz、/8、T=0x7F | 910.2 µs/拍；58.25 ms | 文档推导 |
-| WWDG 131 ms | 本章按 4096×8/16 MHz×64 复算；条件 PCLK1=16 MHz、/8、T=0x7F | 2.048 ms/拍；131 ms | 文档推导 |
+| WWDG 58.25 ms | 这里按 4096×8/36 MHz×64 复算；条件 PCLK1=36 MHz、/8、T=0x7F | 910.2 µs/拍；58.25 ms | 文档推导 |
+| WWDG 131 ms | 这里按 4096×8/16 MHz×64 复算；条件 PCLK1=16 MHz、/8、T=0x7F | 2.048 ms/拍；131 ms | 文档推导 |
 | RCC_CSR 位图 | RM0008/RM0090 的 RCC 章，经根书第 11 章与 S17 转引，未核原件 | bit31..25 七类标志 + RMVF bit24；POR 伴随 PINRSTF；内部复位拉 NRST ≥20 µs | 文档推导 |
 | 复位记录格式 | S17 `record.c` 与 `.noinit (NOLOAD)` 链接脚本（设计常量） | magic 0x57444731、版本 1、掩码、CRC-16；写序三句 | 文档推导 |
 | HardFault 寄存器与栈帧 | S16 `probe.c`/`fault_ctx.c` 与 ARMv7-M/CMSIS 规则 | CFSR 19 位、PC@24、EXC_RETURN bit2、栈帧 32 字节 | 文档推导 |
@@ -359,7 +363,7 @@ HardFault 是 Cortex-M 的概念。ESP32 没有 CFSR、HFSR、MMFAR/BFAR，也�
 | P13 实验记录 | `13-watchdog` 实验记录表，表体「待实测」 | 无读数 | 未实测 |
 | ESP32 TWDT 时间线 | P13 按 2000 ms 超时、500 ms 期限、1000 ms 宽限期推的模型 | worker 过期约 t0+2.6–2.8 s；监督自停约 t0+2.15–2.25 s | 文档推导 |
 | 调试冻结位 | S17 第七节、根书第 11 章；F4 的 bit11/12 来自 RM0090 §38.16.4 转引；F1 的 bit8/9 未核 RM0008 原件 | IWDG/WWDG 各一位；F4 只被上电复位清零 | 来源说法(未复核) |
-| 本章台架 | 实验设计尚未执行 | 待实测 | 未实测 |
+| 这里的台架 | 实验设计尚未执行 | 待实测 | 未实测 |
 
 能互相对上的只有手册位、算术与机器码：2.000 s 是 1000×64/32000 算出来的，58.25 ms 是 4096×8×64/36e6 算出来的，`f3ef 8009` 是从交叉编译输出里读出来的。它们都不能证明某块板上的 LSI 真是 32 kHz，也不能证明某次 HardFault 真的抓到了 PC。要补上后者，得按下面的台架留下复位时刻、`RCC_CSR` 原值与故障现场。
 
@@ -371,7 +375,7 @@ HardFault 是 Cortex-M 的概念。ESP32 没有 CFSR、HFSR、MMFAR/BFAR，也�
 4. **HardFault 现场**：在 F407 上触发空指针写与栈溢出，记录 `CFSR`、`HFSR`、`BFAR`、栈帧 PC 与 `addr2line` 行号；在 RTOS 任务里再触发一次，确认 `EXC_RETURN` 的 bit2。
 5. **ESP32 TWDT**：故障固件下分别停 worker 与停监督，记录 panic 时刻、`esp_reset_reason()` 原始值与 `RTC_NOINIT_ATTR` 记录。
 
-这些台架都还没做。没有读数之前，本章只给判据与记录方法。
+这些台架都还没做。没有读数之前，这里只给判据与记录方法。
 
 | 日期 | 平台/板卡 | 故障输入 | 原始结果 | 结论 |
 | --- | --- | --- | --- | --- |
@@ -384,12 +388,12 @@ HardFault 是 Cortex-M 的概念。ESP32 没有 CFSR、HFSR、MMFAR/BFAR，也�
 | 现象 | 原因 | 区分证据 | 下一动作 |
 | --- | --- | --- | --- |
 | 超时比算的短 | LSI 跑在 47 kHz（或 60 kHz）而不是典型值 | 按最坏值重算；读回 PR/RLR | 按最快 LSI 留喂狗余量 |
-| F103 的 1 秒配方搬到 F407 变成 1.25 s | LSI 40 kHz 与 32 kHz 不同 | 同一 RLR 在两颗芯片上的账 | 按目标芯片重算 RLR |
+| F103 的 1 秒配方搬到 F407 变成 1.25 s | LSI 40 kHz 与 32 kHz 不同 | 同一 RLR 在两颗芯片上的计算 | 按目标芯片重算 RLR |
 | 超时表比正确值少 1 ms/8 ms | 漏了 `(RLR+1)` | 512 ms 写成 511 ms、32768 ms 写成 32760 ms | 公式补 +1 |
-| IWDG 一上电就复位 | `WDG_SW=0` 的硬件狗先跑，软件还没配置 | 读选项字节；复位发生在初始化之前 | 上电后尽早解锁配置并喂狗，或把 `WDG_SW` 改回 1 |
+| IWDG 一上电就复位 | `WDG_SW=0` 的硬件看门狗先跑，软件还没配置 | 读选项字节；复位发生在初始化之前 | 上电后尽早解锁配置并喂狗，或把 `WDG_SW` 改回 1 |
 | 写完 PR/RLR 不生效 | 没先写 `0x5555` 解锁，或没等 PVU/RVU | 读回 PR/RLR 与写入不符；SR 的 PVU/RVU 仍为 1 | 按 `0xCCCC→0x5555→写→0xAAAA` 重来 |
 | WWDG 一喂就复位 | `T ≥ W`，喂早了 | 读 `WWDG->CR` 的 T 与 CFR 的 W | 等 `T < W` 再喂 |
-| WWDG 永远不复位 | 没开 WWDGEN 或没置 WDGA | 读回 CR/CFR；看 APB1ENR | 开时钟、置 WDGA、在窗口内重装 |
+| WWDG 一直不复位 | 没开 WWDGEN 或没置 WDGA | 读回 CR/CFR；看 APB1ENR | 开时钟、置 WDGA、在窗口内重装 |
 | 看到 `PINRSTF` 就以为按了复位键 | POR 与内部复位都会拉 NRST | 同一次读到的 `PORRSTF`/`IWDGRSTF` | 一次读全，按位图判断 |
 | 复位原因越积越多 | 没写 `RMVF` | 读到的标志多于本次复位 | 读全后写 `RCC_CSR_RMVF` |
 | 复位记录的 CRC 总不对 | 先写 magic 后写体，或写到一半复位 | magic 对但 CRC 错；或 magic 本身不完整 | 先清 magic，最后发布 |
@@ -434,7 +438,7 @@ F103 没有 FPU 扩展栈帧，`EXC_RETURN` 只有 F1/F9/FD 三个值；F407 的
 8. HardFault 的栈帧有多大？PC 在哪个偏移？`EXC_RETURN` 的 bit2 怎么选 MSP/PSP？
 9. `IMPRECISERR` 与 `STKERR` 各会让哪一步取证失效？
 10. 调试器怎样制造"从不复位"的假阴性？F1 与 F4 的冻结位分别在哪？
-11. ESP32 的四类狗各管什么？TWDT 为什么不是"写键值寄存器"？
+11. ESP32 的四类看门狗各管什么？TWDT 为什么不是"写键值寄存器"？
 
 <details>
 <summary>对照答案</summary>

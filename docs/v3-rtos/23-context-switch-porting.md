@@ -5,24 +5,26 @@ platforms: [f407]
 
 # 上下文切换与移植
 
-任务 A 和任务 B 各有一个栈，CPU 只有一个。把 A 的 R4–R11 压进 A 的栈、把栈顶写进 A 的 TCB，再从 B 的 TCB 取出栈顶、把 B 的寄存器弹回来——这套动作发生在 PendSV 里。FreeRTOS 把「谁上 CPU」拆成三个异常：SVC 把第一个任务送上去，PendSV 换现场，SysTick 报时。移植一个 Cortex-M4F 工程，核心就是让这三个名字接上向量表，再选对 port 目录。
+任务 A 和任务 B 各有一个栈，CPU 只有一个。把 A 的 R4–R11 压进 A 的栈、把栈顶写进 A 的 TCB，再从 B 的 TCB 取出栈顶、把 B 的寄存器弹回来。这套动作发生在 PendSV 里。FreeRTOS 把「谁上 CPU」拆成三个异常：SVC 把第一个任务送上去，PendSV 换现场，SysTick 报时。移植一个 Cortex-M4F 工程，核心就是让这三个名字接上向量表，再选对 port 目录。
 
-证据先说清：本章没有新的上板读数。F2 的五步 probe、GDB 软件帧，F8 的 `size`/`nm` 与上板状态表，都没有在本仓库留下原始日志或产物：probe 与 `size`/`nm` 标「来源说法(未复核)」，GDB 与上板现象标「未实测」。18 字 = 72 B、26 字 = 104 B、软件帧 9 字、SHPR3 里的 0xFF 与 `0x50 < 0xFF`，由源码与算术得到，标「文档推导」。
+这里没有新的上板读数。F2 的五步 probe、GDB 软件帧，F8 的 `size`/`nm` 与上板状态表，都没有留下原始日志或产物：probe 和 `size`/`nm` 标「来源说法(未复核)」，GDB 与上板现象标「未实测」。18 字 = 72 B、26 字 = 104 B、软件帧 9 字、SHPR3 里的 0xFF 与 `0x50 < 0xFF` 由源码与算术得到，标「文档推导」。
 
-> 版本口径：本章的 `port.c`、`portmacro.h`、`tasks.c` 行号与宏语义按 FreeRTOS-Kernel V11.1.0 的 GCC/ARM_CM4F 端口对账；根书第 15 章引 V11.3.2，两版行号不混排。F103 的 `ARM_CM3` 只讲机制差异，不把 V11.1.0 的行号套过去。
+> 版本口径：`port.c`、`portmacro.h`、`tasks.c` 的行号与宏语义按 FreeRTOS-Kernel V11.1.0 的 GCC/ARM_CM4F 端口对账；根书第 15 章引 V11.3.2，两版行号不混排。F103 的 `ARM_CM3` 只讲机制差异，不把 V11.1.0 的行号套过去。
 
 ## 本章罗盘
 
-- **问题**：SVC、PendSV、SysTick 三个异常各由哪个函数接管，向量表和 `#define` 怎么对上？PendSV 为什么必须最低，`configKERNEL_INTERRUPT_PRIORITY` 为什么已经是不被读取的死宏？挂起位在哪个寄存器、`portYIELD` 到底做了什么？硬件压哪 8 个字、软件补哪 9 个字，恢复时为什么最后一条是 `bx r14`？FPU 行李凭什么用 EXC_RETURN bit4 判断，s0–s15 与 s16–s31 分别归谁？PendSV 的十一条语义步骤是什么，`vTaskSwitchContext` 改了哪个变量？F407 为什么用 `ARM_CM4F`、F103 为什么用 `ARM_CM3`？`0x50` 与 `0xFF` 谁更急，FromISR 的逻辑阈值是 5 还是 80？`xTaskCreate` 堆尽返回什么？奇数优先级断言为什么在 F407 不执行？HardFault 归 FreeRTOS 还是归应用？RT-Thread Nano 的切换文件、异常符号和堆边界符号各是什么？
+- **问题**：任务 A 和任务 B 各有一个栈，CPU 只有一个；换现场的动作发生在 PendSV 里，SVC 把第一个任务送上去，SysTick 负责报时。三个异常各自对应哪个函数、哪一行向量表、哪一条 `#define`？PendSV 必须最低，`configKERNEL_INTERRUPT_PRIORITY` 已经是没人读取的死宏，挂起位在哪个寄存器，`portYIELD` 做了什么？硬件压哪 8 个字、软件补哪 9 个字，恢复时为什么最后一条是 `bx r14`？FPU 行李凭什么用 EXC_RETURN bit4 判断，s0–s15 与 s16–s31 分别归谁？PendSV 的十一条语义步骤里，`vTaskSwitchContext` 改了哪个变量？F407 用 `ARM_CM4F`、F103 用 `ARM_CM3`，`0x50` 与 `0xFF` 谁更急，FromISR 的逻辑阈值是 5 还是 80？还有几个容易漏的边界：`xTaskCreate` 堆尽返回什么，奇数优先级断言为什么在 F407 不执行，HardFault 归 FreeRTOS 还是归应用，RT-Thread Nano 的切换文件、异常符号和堆边界符号各是什么。
 - **交付**：能在纸上画出无 FPU 的 8 + 9 字现场与有 FPU 的 26 + 25 字现场；能把三个异常、三个源码名、三个向量名和三行 `#define` 对上号；能算出 SHPR3 的 PendSV/SysTick 两个字节都是 0xFF，并说清 `0x50 < 0xFF` 的方向；能按内核和 FPU 选出 `ARM_CM4F` 或 `ARM_CM3`；能把 RT-Thread Nano 的 `context_gcc.S`、`PendSV_Handler`/`HardFault_Handler`、`SysTick_Handler` 与 `&__bss_end__`→`&_estack` 讲对。
+- **级别**：L4 系统。证据位置：「测量与证据」与「离开检查」；读完留下 8 + 9 与 26 + 25 字的现场图、三异常改名表、SHPR3 的 `0xFF` 对 `0x50` 与 port 选型记录。
+- **开源读法**：对照 `FreeRTOS-Kernel` 的 `portable/GCC/ARM_CM4F/port.c`，看 `xPortPendSVHandler` 怎样保存 9 字软件帧并 `bx r14` 返回；SHPR3、ICSR 与 EXC_RETURN 的位定义仍回 RM0090。
 - **边界**：单平台 F407（Cortex-M4F、`ARM_CM4F`、lab 跑 HSI 16 MHz）；F103 只在「跨平台边界」做机制对照。SysTick 的 LOAD 与寄存器细节在第 11 章，异常进出与 EXC_RETURN 的 8 字帧在第 10 章；队列、信号量与通知留给第 24 章，双 OS 选型留给第 27 章。RT-Thread 部分按 lab 的 Nano 工程写，不把标准版 BSP 的 25 MHz 晶振当本工程事实。
 - **依据锚点**：F2《上下文切换》（`mcu/docs/rtos/freertos/02-context-switch.md`）、F8《移植 FreeRTOS 到霸天虎》（`mcu/docs/rtos/freertos/08-port-f407.md`）、R7《移植 RT-Thread 到霸天虎》（`mcu/docs/rtos/rtthread/07-port-f407.md`）；配置见 `mcu/code/rtos/01-freertos-lab/FreeRTOSConfig.h`，板级见 `mcu/code/rtos/02-rt-thread-lab/board/board.c`，端口选择见 `mcu/code/rtos/01-freertos-lab/Makefile`，向量槽见 `mcu/code/rtos/01-freertos-lab/startup_stm32f407xx.s`。异常进出的 8 字帧见 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)；TCB 偏移 0 与首帧 18 字见 [第 22 章](./22-tasks-tcb-scheduler.md)。
 
 ## 先做出来
 
-不接板，先把四笔账算在纸上。它们决定你上板后看到的是「切换真的没发生」，还是「名字根本没接上」。
+不接板，先把四项算在纸上；上板后「切换真的没发生」与「名字根本没接上」的区分，就靠这四项。
 
-1. **三异常账**：FreeRTOS 的 port 层给出三个函数，启动文件的向量表认三个 CMSIS 名，中间靠三行 `#define` 对上。把这张表抄一遍，再数一遍行号：
+1. **三异常对应**：FreeRTOS 的 port 层给出三个函数，启动文件的向量表认三个 CMSIS 名，中间靠三行 `#define` 对上。把这张表抄一遍，再数一遍行号：
 
    | 异常 | 干什么 | 源码函数（`port.c`） | 向量槽（`startup_stm32f407xx.s`） | CMSIS 名 |
    | --- | --- | --- | --- | --- |
@@ -32,17 +34,17 @@ platforms: [f407]
 
    三行映射在 `FreeRTOSConfig.h:75-77`。F8:116,268 写的是 `74-77`，但 `:74` 是注释行「端口映射」，不是 `#define`；差一行，改配置时容易把注释当宏。
 
-2. **帧长账**：一次切换保存多少字，取决于这趟有没有 FPU 行李。先把无 FPU 的账算死，再把 FPU 那一列加上：
+2. **帧长**：一次切换保存多少字，取决于这趟有没有 FPU 行李。先确定无 FPU 的帧长，再把 FPU 那一列加上：
 
    | 现场 | 硬件帧 | 软件帧 | 合计 |
    | --- | --- | --- | --- |
    | 无 FPU，运行中保存 | 8 字 = 32 B（R0–R3、R12、LR、PC、xPSR） | 9 字 = 36 B（R4–R11 + EXC_RETURN） | 17 字 = 68 B |
-   | 无 FPU，新任务首帧 | 8 字 | 9 字 | 18 字 = 72 B（多 1 个对齐字，见第 22 章） |
+   | 无 FPU，新任务首帧 | 8 字 | 9 字 | 18 字 = 72 B（多 1 个对齐字，见[第 22 章](./22-tasks-tcb-scheduler.md)） |
    | 有 FPU，运行中保存 | 26 字 = 104 B（8 核心字 + s0–s15 + FPSCR + 1 对齐） | 25 字 = 100 B（9 字 + s16–s31） | 51 字 = 204 B |
 
    新任务首帧的 `EXC_RETURN` 固定为 `0xFFFFFFFD`，bit4 = 1，所以没有 FPU 扩展帧，是 18 字而不是 26 字；26 字是任务跑过浮点、被切走时硬件扩展帧的长度，不是首帧。
 
-3. **优先级账**：PendSV 与 SysTick 的槽位都在 SHPR3，port 启动时把两个字节都写成 0xFF；`configMAX_SYSCALL_INTERRUPT_PRIORITY` 是 `0x50`，逻辑 5。把三个表示放在一张表里，别把原始值当逻辑值：
+3. **优先级**：PendSV 与 SysTick 的槽位都在 SHPR3，port 启动时把两个字节都写成 0xFF；`configMAX_SYSCALL_INTERRUPT_PRIORITY` 是 `0x50`，逻辑 5。把三个表示放在一张表里，别把原始值当逻辑值：
 
    | 项 | 原始值 | 逻辑优先级 | 方向 |
    | --- | --- | --- | --- |
@@ -52,14 +54,14 @@ platforms: [f407]
 
    `0x50 < 0xFF` 才是正确的大小关系：数值更小的 syscall 阈值更急。能调 `...FromISR()` 的是逻辑优先级 ≥ 5（原始值 ≥ `0x50`）的中断；逻辑 0–4 的中断不受 `BASEPRI` 屏蔽，不许碰 FreeRTOS API。
 
-4. **port 选型账**：F407 用 `ARM_CM4F`，F103 用 `ARM_CM3`。MCU 参数、FPU 开关与 port 目录是一组绑定关系，改一个就要改另一个：
+4. **port 选型**：F407 用 `ARM_CM4F`，F103 用 `ARM_CM3`。MCU 参数、FPU 开关与 port 目录是一组绑定关系，改一个就要改另一个：
 
    | 目标 | 内核 | FPU | port 目录 | 编译参数 | 选错的后果 |
    | --- | --- | --- | --- | --- | --- |
    | F407 | Cortex-M4F | 单精度 | `portable/GCC/ARM_CM4F` | `-mfpu=fpv4-sp-d16 -mfloat-abi=hard` | 拿 `ARM_CM4`：编译过，切换不保存浮点寄存器，任务间互相踩 |
    | F103 | Cortex-M3 | 无 | `portable/GCC/ARM_CM3` | `-mcpu=cortex-m3 -mthumb` | 拿 `ARM_CM4F`：编译过，调度器启动进 HardFault |
 
-   这四笔账只需要源码、启动文件与算术，不需要板子；后面每个机制都可以回到这四行对账。
+   这四项只需要源码、启动文件与算术，不需要板子；后面每个机制都可以回到这四行核对。
 
 ## 机制
 
@@ -90,7 +92,7 @@ SVC 启动的第一个任务，用的就是第 22 章那套伪造首帧：`pxPor
 
 ![FreeRTOS 三异常接管：port.c 的三个处理器经 #define 改名接到向量表 CMSIS 名](/anim/freertos-port.svg)
 
-图的主线是三个源码名到三个向量名的改名，后半还画了 port 选型、两份优先级与 RAM 两套账。图里沿用旧来源口径的两句——「≥80 才许调 FromISR」与「池尽时 xTaskCreate 返回 pdFAIL」——与正文按 V11.1.0 的更正相抵：`0x50` 是 8 位原始值，逻辑阈值是 5；`xTaskCreate` 堆尽返回负的错误码，不是 0。以正文为准。
+图的主线是三个源码名到三个向量名的改名，后半还画了 port 选型、两份优先级与 RAM 两套数据。图里沿用旧来源口径的两句（「≥80 才许调 FromISR」与「池尽时 xTaskCreate 返回 pdFAIL」），与正文按 V11.1.0 的更正相抵：`0x50` 是 8 位原始值，逻辑阈值是 5；`xTaskCreate` 堆尽返回负的错误码，不是 0。以正文为准。
 
 ### 二、PendSV 为什么必须最低，配置宏为什么不再是活宏
 
@@ -116,7 +118,7 @@ PendSV 的「请求」不是函数调用，是一个挂起位。`portmacro.h:99-
 #define portNVIC_PENDSVSET_BIT  ( 1UL << 28UL )
 ```
 
-`portYIELD_WITHIN_API()` 的全部动作就是写这一位：`portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;`（`portmacro.h:91`；F2:54,61-62）。`taskYIELD()` 走 `portYIELD()`，中断里走 `portYIELD_FROM_ISR(x)`（`x` 为真才置位）。置位之后当前异常继续返回；等所有更高优先级异常退场，PendSV 才以最低优先级执行。挂起位是「排队」，不是「立即切」——这一点在第 22 章的 tick 三段里已经埋下，本章只补上最后一步。
+`portYIELD_WITHIN_API()` 的全部动作就是写这一位：`portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;`（`portmacro.h:91`；F2:54,61-62）。`taskYIELD()` 走 `portYIELD()`，中断里走 `portYIELD_FROM_ISR(x)`（`x` 为真才置位）。置位之后当前异常继续返回；等所有更高优先级异常退场，PendSV 才以最低优先级执行。挂起位是「排队」，不是「立即切」。
 
 ### 四、软硬分工：硬件 8 字，软件 9 字
 
@@ -131,21 +133,21 @@ str   r0, [r2]             ; 新栈顶写进 TCB 偏移 0
 
 ![PendSV 软硬分工：硬件压 8 字，软件补 R4–R11 与 EXC_RETURN 共 9 字；换 TCB 后先弹 9 字、写 PSP，再 bx r14，首帧 18 字](/arch/context-switch.png)
 
-图把硬件侧写成「免费」：8 个寄存器压栈由异常入场完成；返回时由 EXC_RETURN 决定用哪个栈。软件侧一条 `stmdb r0!, {r4-r11, r14}` 存 9 字，末尾的 `r14` 就是 EXC_RETURN；恢复时先弹 9 字、把新栈顶写回 PSP，再 `bx r14`。图里也画了 TCB 换指针、`msr psp, r0` 与首帧 18 字的账。
+图把硬件侧写成「免费」：8 个寄存器压栈由异常入场完成；返回时由 EXC_RETURN 决定用哪个栈。软件侧一条 `stmdb r0!, {r4-r11, r14}` 存 9 字，末尾的 `r14` 就是 EXC_RETURN；恢复时先弹 9 字、把新栈顶写回 PSP，再 `bx r14`。图里也画了 TCB 换指针、`msr psp, r0` 与首帧 18 字的布局。
 
-`str r0, [r2]` 为什么敢按偏移 0 写？因为 `pxTopOfStack` 必须是 TCB 的第一个成员，这是第 22 章讲过的 ABI 硬约束；恢复时 `ldr r0, [r1]` 也从偏移 0 取新栈顶。硬件帧的 8 字布局与 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) 的异常入场动画是同一份账，本章不重画。
+`str r0, [r2]` 为什么敢按偏移 0 写？因为 `pxTopOfStack` 必须是 TCB 的第一个成员，这是第 22 章讲过的 ABI 硬约束；恢复时 `ldr r0, [r1]` 也从偏移 0 取新栈顶。硬件帧的 8 字布局与 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) 的异常入场动画是同一套布局，这里不重画。
 
 ### 五、FPU 行李：EXC_RETURN bit4 是行李牌
 
 Cortex-M4F 的异常帧有两档：任务没跑过浮点，EXC_RETURN bit4 = 1，硬件只压 8 字核心帧；任务跑过浮点，bit4 = 0，硬件扩展帧带 s0–s15 与 FPSCR，共 26 字。软件这边，PendSV 先用 `tst r14, #0x10` 看 bit4，再用 `it eq` + `vstmdbeq r0!, {s16-s31}` 补存 s16–s31（16 字 = 64 B）；bit4 = 1 时两条条件指令直接跳过。恢复时同样：`vldmiaeq r0!, {s16-s31}` 只在有行李时执行。
 
-分工的根是 AAPCS：s0–s15 是调用者保存，硬件顺手压；s16–s31 是被调者保存，软件补。完整的 FPU 现场是硬件 26 字扩展帧加软件 25 字（9 字核心帧 + 16 字 s16–s31），共 51 字。新任务首帧的 EXC_RETURN 是 `0xFFFFFFFD`，bit4 = 1，所以首帧没有 FPU 行李，是 18 字；等它第一次真正用浮点、再被切走，才会出现 26 + 25 字的那笔账。
+分工的根是 AAPCS：s0–s15 是调用者保存，硬件顺手压；s16–s31 是被调者保存，软件补。完整的 FPU 现场是硬件 26 字扩展帧加软件 25 字（9 字核心帧 + 16 字 s16–s31），共 51 字。新任务首帧的 EXC_RETURN 是 `0xFFFFFFFD`，bit4 = 1，所以首帧没有 FPU 行李，是 18 字；等它第一次真正用浮点、再被切走，才会出现 26 + 25 字的布局。
 
 M4F 还有懒堆叠：FPCCR 的 LSPEN 默认开，异常入场时硬件先给 FPU 帧**预留空间**，真用到浮点才写数，不用浮点的中断省下这笔开销。这就是「先占座、后写真」；EXC_RETURN bit4 是这趟有没有行李的牌子（`F2:103-105,116-119,264`）。图与文字都是原理示意，没有示波器或 GDB 读数。
 
 ### 六、PendSV 的十一条语义步骤
 
-V11.1.0 ARM_CM4F 的 `xPortPendSVHandler`（`port.c:505-560`）是 naked 内联汇编。下面按 F2:107-207 的语义转写，② 与 ⑥ 是教学写法：源码 ② 写 `ldr r3, pxCurrentTCBConst`，⑥ 写 `mov r0, %0` 并在操作数里代入 `configMAX_SYSCALL_INTERRUPT_PRIORITY`，编出来是 `#80`（即 `0x50`）。字节账不要按这段转写算。
+V11.1.0 ARM_CM4F 的 `xPortPendSVHandler`（`port.c:505-560`）是 naked 内联汇编。下面按 F2:107-207 的语义转写，② 与 ⑥ 是教学写法：源码 ② 写 `ldr r3, pxCurrentTCBConst`，⑥ 写 `mov r0, %0` 并在操作数里代入 `configMAX_SYSCALL_INTERRUPT_PRIORITY`，编出来是 `#80`（即 `0x50`）。字节数不要按这段转写算。
 
 ```asm
 mrs   r0, psp                  ; ① 当前任务的栈顶
@@ -191,13 +193,13 @@ bx    r14                      ;    异常返回，硬件弹硬件帧
 | ⑩ | 弹 9 字 + 条件弹 FPU | 与 ③④ 相反的顺序 |
 | ⑪ | 写 PSP + `bx r14` | 硬件按 EXC_RETURN 弹 8 或 26 字 |
 
-`vTaskSwitchContext` 的 C 侧核心动作只有一步：把 `pxCurrentTCB` 指向最高优先级就绪任务的 TCB（选最高的位图与 CLZ 在第 22 章）。挂起计数、追踪钩子不改变「下一个是谁」；换指针是决策，PendSV 后面的九步是执行。
+`vTaskSwitchContext` 的 C 侧核心动作只有一步：把 `pxCurrentTCB` 指向最高优先级就绪任务的 TCB（选最高的位图与 CLZ 在第 22 章）。挂起计数、追踪钩子不改变「下一个是谁」；换指针只是决策，实际恢复现场由 PendSV 后面的九步完成。
 
 ![上下文切换动画：TaskA 的硬件帧与 R4–R11 压进自己的栈，栈顶藏进 TCB，换到 TaskB 的栈再弹回](/anim/context-switch.svg)
 
-图里两个任务栈此消彼长，TCB 的 `pxTopOfStack` 各指自己的栈顶，PendSV 标为全系统最低。动画把软件帧画成 R4–R11 八个字，没画第 9 个 EXC_RETURN；完整布局以本节的 9 字账为准。
+图里两个任务栈此消彼长，TCB 的 `pxTopOfStack` 各指自己的栈顶，PendSV 标为全系统最低。动画把软件帧画成 R4–R11 八个字，没画第 9 个 EXC_RETURN；完整布局以正文的 9 字布局为准。
 
-F2:158-178,337 还给过一笔「27 条指令、正文 90 B + 两条 nop 6 B + 字面量 4 B + 两条 nop 4 B = 104 B」的字节账。仓库里没有那段 `objdump` 原文，这条 NOP=6 字节的账只能标「来源说法(未复核)」，待拿到反汇编原文再核；能确认的只有一条：一次切换走一段直线代码，没有循环，`tst/it` 是条件执行，不改变控制流。
+F2:158-178,337 还给过一笔「27 条指令、正文 90 B + 两条 nop 6 B + 字面量 4 B + 两条 nop 4 B = 104 B」的字节数据。仓库里没有那段 `objdump` 原文，这条 NOP=6 字节的记录只能标「来源说法(未复核)」，待拿到反汇编原文再核；能确认的只有一条：一次切换走一段直线代码，没有循环，`tst/it` 是条件执行，不改变控制流。
 
 ### 七、port 选型：`ARM_CM4F` 与 `ARM_CM3`
 
@@ -228,15 +230,15 @@ INC := -I. -I$(FREERTOS_KERNEL)/include \
 | IP/SHPR 原始值 | `0x50` | 高 4 位有效，5 左移 4 位 |
 | 十进制打印 | 80 | 只是 `0x50` 的十进制，不是逻辑 80 |
 
-正确的大小关系是 `0x50 < 0xFF`：syscall 阈值数值更小、urgency 更高。能调 `...FromISR()` 的中断，逻辑优先级必须 ≥ 5（原始值 ≥ `0x50`）；逻辑 0–4 比阈值更急，`BASEPRI = 0x50` 盖不住它们，不许调 FreeRTOS API。`R15:46` 与 `CFG:61-62` 是这条账的锚点。
+正确的大小关系是 `0x50 < 0xFF`：syscall 阈值数值更小、urgency 更高。能调 `...FromISR()` 的中断，逻辑优先级必须 ≥ 5（原始值 ≥ `0x50`）；逻辑 0–4 比阈值更急，`BASEPRI = 0x50` 盖不住它们，不许调 FreeRTOS API。`R15:46` 与 `CFG:61-62` 是这条规则的锚点。
 
-F8 在这一节有三处说法互相打架，全部不能照抄：
+F8 有三处说法互相矛盾，全部不能照抄：
 
-| 来源位置 | 原文说法 | 问题 | 本章写法 |
+| 来源位置 | 原文说法 | 问题 | 正文写法 |
 | --- | --- | --- | --- |
 | F8:160,296 | 优先级数值 ≥ 80 才允许调 FromISR | 把 8 位原始值 80 当逻辑优先级 | 逻辑阈值 5，原始阈值 `0x50` |
 | F8:164 | 配成比内核「高」（数值更小）是错的 | 与正确关系相反 | `0x50 < 0xFF` 才是对的 |
-| F8:274 | 数值大于才对，却给出 `0x50 < 255` | 一句话内自相矛盾 | 以 `0x50 < 0xFF` 为准 |
+| F8:274 | 数值大于才对，却给出 `0x50 < 255` | 同一句话内自相矛盾 | 以 `0x50 < 0xFF` 为准 |
 
 三处禁抄的理由不是措辞，而是比较对象不同：逻辑值跟逻辑值比，原始值跟原始值比；把 `0x50` 的十进制 80 当逻辑值，就会写出无法配置的阈值。
 
@@ -251,7 +253,7 @@ if( xTaskCreate( task, "name", 256, NULL, 2, NULL ) != pdPASS )
 }
 ```
 
-写成 `== pdFAIL` 的代码永远不进失败分支，因为 −1 不等于 0；随后任务没建出来，程序却以为成功，现象是「高优先级任务一直不跑」。
+写成 `== pdFAIL` 的代码不会进失败分支，因为 −1 不等于 0；随后任务没建出来，程序却以为成功，现象是「高优先级任务一直不跑」。
 
 `port.c:405-415` 的优先级断言也要分清分支：`configASSERT( ucMaxSysCallPriority )` 与「阈值不能超出实现的优先级位宽」这两条在 F407 上会执行；「阈值必须为偶数」的那条只在 `ulImplementedPrioBits == 8` 的分支里执行。F407 只实现 4 个优先级位（`configPRIO_BITS = 4`，`CFG:18`），不走 8 位分支。F2:89,305 把三条并列成「F407 通用三连断言」，是来源说法有误，已按 `port.c:405-415` 更正；不要写成 F407 开机一定查奇数。
 
@@ -299,7 +301,7 @@ lab 的板级事实也要按 `board.c` 写：HSI 16 MHz，不走 PLL（`board.c:
 
 ## 测量与证据
 
-本章能复算的只有源码结构与算术；没有一条是本仓库的上板读数。读数按来路分四类：实测记录、来源说法(未复核)、文档推导、未实测。下表逐项标出来路。
+能复算的只有源码结构与算术；没有一条是本仓库的上板读数。读数按来路分四类：实测记录、来源说法(未复核)、文档推导、未实测。下表逐项标出来路。
 
 ### 读数来路表
 
@@ -316,15 +318,15 @@ lab 的板级事实也要按 `board.c` 写：HSI 16 MHz，不走 PLL（`board.c:
 | HardFault 归属 | `startup_stm32f407xx.s:100,208`；`port.c:125,234`；`R7:145` | port 不实现 HardFault；启动文件 weak；只有任务 return 的 `prvTaskExitError` | 文档推导 |
 | RT-Thread 符号与堆边界 | `Makefile:75,128`；`board.c:10-11,38-40,73-78,94` | `context_gcc.S`；`PendSV_Handler`/`HardFault_Handler`；`SysTick_Handler`；`&__bss_end__`→`&_estack` | 文档推导 |
 | RT-Thread lab 时钟与 tick | `board.c:5,90-92`；`rtconfig.h:18` | HSI 16 MHz；LOAD 15999；VAL 0；CTRL 0x7 | 文档推导 |
-| F2 五步 probe | `F2:153-178,337`；`probe.sh` | 27 条指令 / 104 B / 两条 nop 6 B 的字节账；仓库无反汇编原文 | 来源说法(未复核) |
+| F2 五步 probe | `F2:153-178,337`；`probe.sh` | 27 条指令 / 104 B / 两条 nop 6 B 的字节数；仓库无反汇编原文 | 来源说法(未复核) |
 | F2 GDB 软件帧 | `F2:226-243` | `stepi`、`x/9xw`、`$r0+36 == $psp` 的目击清单；无 GDB 日志 | 未实测 |
 | F8 `size`/`nm` | `F8:41,131-136,199,204-206` | 43156/2168/19208 = 64532；三个 `T` 符号地址；无构建产物 | 来源说法(未复核) |
 | F8 上板状态表 | `F8:244` | `make flash` 后串口 `vTaskList`；待回填 | 未实测 |
-| 本章板级实验 | 未执行 | 待实测 | 未实测 |
+| 这里的板级实验 | 未执行 | 待实测 | 未实测 |
 
-`size` 的三段 43156/2168/19208 合计 64532 是构建产物（来源说法(未复核)），不是板上读数；`bss 19208` 也不是 F407 的总 RAM。F407 的 192 KB RAM 由 128 KB SRAM 与 64 KB CCM 组成，19208 B 只是零初始化段，`data 2168` 还要从 Flash 拷进 RAM，MSP 栈另有预算（`F8:41,199,204-206`）。把 `bss` 当「FreeRTOS 占了 19 KB」或当「总 RAM」都会把账算错。
+`size` 的三段 43156/2168/19208 合计 64532 是构建产物（来源说法(未复核)），不是板上读数；`bss 19208` 也不是 F407 的总 RAM。F407 的 192 KB RAM 由 128 KB SRAM 与 64 KB CCM 组成，19208 B 只是零初始化段，`data 2168` 还要从 Flash 拷进 RAM，MSP 栈另有预算（`F8:41,199,204-206`）。把 `bss` 当「FreeRTOS 占了 19 KB」或当「总 RAM」都会把数字算错。
 
-F2 的 NOP=6 字节账同样缺原文：`90 + 6 + 4 + 4 = 104` 里的 6 B 来自两条 nop，`4 B` 是 `pxCurrentTCBConst` 字面量，最后的 `4 B` 是补齐对齐；没有 `objdump` 原文，这条账只能标「来源说法(未复核)」，不能当校验过的字节账（`F2:158-178,337`）。
+F2 的 NOP=6 字节记录同样缺原文：`90 + 6 + 4 + 4 = 104` 里的 6 B 来自两条 nop，`4 B` 是 `pxCurrentTCBConst` 字面量，最后的 `4 B` 是补齐对齐；没有 `objdump` 原文，这条记录只能标「来源说法(未复核)」，不能当校验过的字节数（`F2:158-178,337`）。
 
 ### 待做台架
 
@@ -338,7 +340,7 @@ F2 的 NOP=6 字节账同样缺原文：`90 + 6 + 4 + 4 = 104` 里的 6 B 来自
 | 待实测 | F407 lab | 用 `objdump` 保存 PendSV 的反汇编，核对 27 条、90 B 正文与两处 nop 填充 | | |
 | 待实测 | F407 lab | RT-Thread Nano：`nm` 查 `PendSV_Handler`/`HardFault_Handler`，`list_thread` 看线程表，核对 LOAD=15999 | | |
 
-这些台架都还没做。没有原始输出之前，本章只给源码结构与算术；表中的空白不是「通过」，是「未测」。
+这些台架都还没做。没有原始输出之前，这里只给源码结构与算术；表中的空白不是「通过」，是「未测」。
 
 ## 失败分支
 
@@ -359,7 +361,7 @@ F2 的 NOP=6 字节账同样缺原文：`90 + 6 + 4 + 4 = 104` 里的 6 B 来自
 
 ## 跨平台边界
 
-F103 与 F407 的三异常接管是同一套机制：SVC 启动第一个任务、PendSV 切换、SysTick 报时，向量名与 `#define` 映射的形状相同。差别在 port：F103 是 Cortex-M3，用 `ARM_CM3`，没有 FPU，异常帧永远只有 8 字核心帧，软件帧仍是 9 字，没有 s16–s31 的 16 字行李；F407 是 Cortex-M4F，用 `ARM_CM4F`，硬浮点 ABI，任务跑过浮点后切换要保存 26 字硬件扩展帧与 25 字软件帧。
+F103 与 F407 的三异常接管是同一套机制：SVC 启动第一个任务、PendSV 切换、SysTick 报时，向量名与 `#define` 映射的形状相同。差别在 port：F103 是 Cortex-M3，用 `ARM_CM3`，没有 FPU，异常帧只有 8 字核心帧，软件帧仍是 9 字，没有 s16–s31 的 16 字行李；F407 是 Cortex-M4F，用 `ARM_CM4F`，硬浮点 ABI，任务跑过浮点后切换要保存 26 字硬件扩展帧与 25 字软件帧。
 
 | 维度 | F103 | F407 |
 | --- | --- | --- |
@@ -371,11 +373,11 @@ F103 与 F407 的三异常接管是同一套机制：SVC 启动第一个任务�
 | 现场 | 8 字硬件 + 9 字软件，无 FPU 行李 | 8 或 26 字硬件 + 9 或 25 字软件 |
 | 选错 port | 用 `ARM_CM4F`：调度器启动进 HardFault | 用 `ARM_CM4`：切换丢浮点寄存器 |
 
-![F103/Cortex-M3 的 PSP 与 MSP：任务栈用 PSP，异常用 MSP；硬件压 8 个寄存器 = 32 B，M3 无浮点扩展帧（原理示意，非实拍）](/images/ch15-psp-msp.png)
+![手绘板：F103/Cortex-M3 的 PSP 与 MSP：任务栈用 PSP，异常用 MSP；硬件压 8 个寄存器 = 32 B，M3 无浮点扩展帧（原理示意，非实拍）](/images/ch15-psp-msp.png)
 
 图是根书 F103/M3 的原理示意：任务 A 的 PSP 指向自己的栈，IRQ 入场时硬件在 A 的栈里压 R0–R3、R12、LR、PC、xPSR 共 8 字 = 32 B；进入 ISR 后用 MSP，PendSV 若接着切换，再保存 R4–R11 并把 PSP 存进 TCB。M3 没有 FPU 扩展帧，图下的「8 个寄存器 = 32 B」只适用于这一档；F407 跑过浮点后要按 26 字扩展帧算。图没有按地址或容量比例画，是原理示意，不是实拍。
 
-根书 F103 例程用的是 `ARM_CM3` 与 V11.3.2，栈深是 128/192/256 字，与 F407 lab 的 256/256/320 字、V11.1.0 行号不互通。本章的 F103 结论只到「同机制、无 FPU 行李、port 换 `ARM_CM3`」这一层，不把 F407 的行号套过去。
+根书 F103 例程用的是 `ARM_CM3` 与 V11.3.2，栈深是 128/192/256 字，与 F407 lab 的 256/256/320 字、V11.1.0 行号不互通。F103 的结论只到「同机制、无 FPU 行李、port 换 `ARM_CM3`」这一层，不把 F407 的行号套过去。
 
 ## 离开检查
 
@@ -396,7 +398,7 @@ F103 与 F407 的三异常接管是同一套机制：SVC 启动第一个任务�
 15. RT-Thread Nano 的四件套是什么？切换文件、切换符号、SysTick 符号、堆边界符号各是什么？
 16. RT-Thread lab 的时钟与 SysTick LOAD 是多少？「Nano 约 3KB」是什么性质的说法？
 17. `size` 三段 43156/2168/19208 说明什么？`bss 19208` 是总 RAM 吗？
-18. 本章哪些读数是「来源说法(未复核)」或「未实测」？为什么不能写成板上实测？
+18. 哪些读数是「来源说法(未复核)」或「未实测」？为什么不能写成板上实测？
 
 <details>
 <summary>对照答案</summary>
@@ -412,12 +414,12 @@ F103 与 F407 的三异常接管是同一套机制：SVC 启动第一个任务�
 9. 无 FPU 运行现场 8 + 9 = 17 字 = 68 B；新任务首帧多 1 个对齐字，18 字 = 72 B。有 FPU 的运行现场 26 字硬件 + 25 字软件 = 51 字 = 204 B。
 10. F407 用 `ARM_CM4F`，F103 用 `ARM_CM3`。F407 拿 `ARM_CM4` 会丢浮点寄存器；F103 拿 `ARM_CM4F` 编译过、调度器启动进 HardFault。
 11. `0x50` 更急，逻辑 5 对逻辑 15；`0x50 < 0xFF`。能调 `...FromISR()` 的逻辑阈值是 5（原始值 `0x50`）。F8:160,296 的「≥80」、F8:164 的「更小是错的」、F8:274 的「大于才对却给 0x50<255」三处互相打架，全部不能照抄。
-12. 返回 `errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY`（负值）。`pdFAIL` 是 0，负值不等于 0，写 `== pdFAIL` 永远不进失败分支；要写 `!= pdPASS`。
+12. 返回 `errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY`（负值）。`pdFAIL` 是 0，负值不等于 0，写 `== pdFAIL` 不会进失败分支；要写 `!= pdPASS`。
 13. 奇数检查在 `port.c:405-415` 里只处于 `ulImplementedPrioBits == 8` 的分支；F407 只实现 4 个优先级位（`configPRIO_BITS = 4`），不走该分支。F2:89,305 把三条断言并列成 F407 通用三连，来源说法有误；阈值非 0 与不超出位宽这两条仍会执行。
 14. `HardFault_Handler` 归应用：ARM_CM4F port 不实现它，启动文件 `:100` 的槽位在 `:208` 是 weak 别名，默认落到 `Default_Handler` 死循环。FreeRTOS 只提供任务 `return` 的 `prvTaskExitError`（`port.c:234`），那不是 HardFault 处理器。
 15. 四件套：内核源码（`src/` + `libcpu/arm/cortex-m4`）、`rtconfig.h`、`board.c`、异常接管。切换文件是 `context_gcc.S`（不是 `context_rvds.S`）；切换符号是 `PendSV_Handler`、`HardFault_Handler`；SysTick 符号是 `board.c` 里的 `SysTick_Handler`；堆边界是 `&__bss_end__` → `&_estack`（不是 `HEAP_BEGIN`/`HEAP_END`）。
 16. HSI 16 MHz（`board.c:5`）；`LOAD = 16000000 / 1000 - 1 = 15999`，`VAL = 0`，`CTRL = 0x7`（`board.c:90-92`）。「Nano 约 3KB」是来源说法(未复核)，不是固定值；25 MHz 是标准版母本 BSP 的晶振，不是本 lab。
 17. 43156/2168/19208 合计 64532 是构建产物的三段（来源说法(未复核)），不是板上读数；`bss 19208` 只是零初始化段，不是 F407 的总 RAM。F407 的 192 KB = 128 KB SRAM + 64 KB CCM，`data 2168` 还要占 RAM，MSP 栈另有预算。
-18. F2 五步 probe 与 F8 的 `size`/`nm` 是「来源说法(未复核)」；F2 GDB 软件帧与 F8 上板状态表是「未实测」；本章没有新的板级实验。仓库里没有这些实验的原始日志或产物，不能写成 F407 板上实测。
+18. F2 五步 probe 与 F8 的 `size`/`nm` 是「来源说法(未复核)」；F2 GDB 软件帧与 F8 上板状态表是「未实测」；这里没有新的板级实验。仓库里没有这些实验的原始日志或产物，不能写成 F407 板上实测。
 
 </details>

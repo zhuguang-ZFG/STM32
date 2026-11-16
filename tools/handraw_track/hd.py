@@ -33,6 +33,14 @@ GRAY_FILL = "#E7E4DB"
 MUTED = "#6E6B60"
 WHITE = "#FFFFFF"
 
+# Soft tints for large panels. Outlines stay saturated; the tint carries the
+# panel without turning the plate into a wall of white boxes.
+BLUE_FILL = "#E8F0F9"
+GREEN_FILL = "#E8F1E9"
+AMBER_PALE = "#FBF0D2"
+RED_FILL = "#F8E6E1"
+SHADOW = "#E4DCC9"
+
 # Keep Latin in Segoe Print; give CJK a brush/kai fallback instead of the
 # geometric YaHei sans. The PNGs are committed, so this only affects renders.
 HAND = ("'Segoe Print','STKaiti','KaiTi','Microsoft YaHei',"
@@ -66,13 +74,16 @@ class Fig:
     """One 1152x864 handraw figure."""
 
     def __init__(self, seed: str, title: str, title_color: str = INK,
-                 badge: str = "原理示意 / 非实拍"):
+                 badge: str = "原理示意 / 非实拍", tag: str | None = None,
+                 grid: bool = True):
         self.rng = random.Random(seed)
         self.seed = seed
         self.body: list[str] = []
         self.title = title
         self.title_color = title_color
         self.badge = badge
+        self.tag = tag
+        self.grid = grid
 
     # -- low level ------------------------------------------------------
     def _wob(self, x0, y0, x1, y1, amp=1.6):
@@ -213,6 +224,177 @@ class Fig:
         self.stroke([(a[0], a[1]), (x, y), (b[0], b[1])], color=color, sw=3.0,
                     amp=0.8)
 
+    # -- cards, tags, metric blocks ------------------------------------
+    def card(self, x, y, w, h, color, fill=WHITE, sw=2.4, shadow=True,
+             offset=6):
+        """Panel with a soft offset shadow; reads as a card, not a box."""
+        if shadow:
+            self.panel(x + offset, y + offset, w, h, SHADOW, amp=1.6)
+        self.panel(x, y, w, h, fill, amp=1.8)
+        self.rect(x, y, w, h, color=color, sw=sw, fill=None, double=False,
+                  amp=1.8)
+
+    def pill(self, x, y, w, h, label, color, fill=None, text_color=None,
+             size=16, weight="bold"):
+        self.panel(x, y, w, h, fill or WHITE, amp=1.4)
+        self.rect(x, y, w, h, color=color, sw=2.0, fill=None, double=False,
+                  amp=1.4)
+        self.text(x + w / 2, y + h / 2 + size * 0.36, label, size=size,
+                  color=text_color or color, anchor="middle", weight=weight)
+
+    def metric(self, x, y, value, label, color, value_size=34, label_size=15):
+        self.text(x, y, value, size=value_size, color=color, weight="bold")
+        self.text(x, y + label_size + 8, label, size=label_size, color=MUTED)
+
+    def section(self, x, y, num, label, color, size=21):
+        """Numbered section heading with a small filled circle."""
+        self.circle(x + 13, y - size * 0.34, 15, color=color, sw=1.8,
+                    fill=color)
+        self.text(x + 13, y - size * 0.34 + 5, num, size=13, color=WHITE,
+                  anchor="middle", weight="bold", halo=False)
+        self.text(x + 38, y, label, size=size, color=color, weight="bold")
+
+    def stamp(self, x, y, label, color=RED, size=20, angle=-11):
+        """Rotated ink stamp, used sparingly for a hard verdict."""
+        self.body.append(
+            f'<g transform="rotate({angle} {x} {y})">'
+            f'<rect x="{x - 116}" y="{y - 30}" width="232" height="60" rx="8" '
+            f'fill="none" stroke="{color}" stroke-width="3" opacity="0.9"/>'
+            f'<text x="{x}" y="{y + 7}" font-family="{HAND}" font-size="{size}" '
+            f'font-weight="bold" text-anchor="middle" fill="{color}">'
+            f'{esc(label)}</text></g>'
+        )
+
+    # -- pictograms -----------------------------------------------------
+    def chip(self, x, y, w, h, color, label=None, size=20, pins=4):
+        """MCU / package pictogram: body, notch and pins on both sides."""
+        self.rect(x, y, w, h, color=color, sw=2.4, fill=WHITE, double=False)
+        self.circle(x + 14, y + 14, 4, color=color, sw=1.4, fill=color)
+        for i in range(pins):
+            py = y + h * (i + 1) / (pins + 1)
+            self.line(x - 12, py, x, py, color=color, sw=2.0, amp=0.3)
+            self.line(x + w, py, x + w + 12, py, color=color, sw=2.0, amp=0.3)
+        if label:
+            self.text(x + w / 2, y + h / 2 + size * 0.36, label, size=size,
+                      color=color, anchor="middle", weight="bold")
+
+    def clockface(self, x, y, r, color, label=None, hand=(-1, 2),
+                  label_size=15):
+        self.circle(x, y, r, color=color, sw=2.2, fill=WHITE)
+        for i in range(12):
+            a = math.tau * i / 12
+            self.line(x + math.cos(a) * (r - 7), y + math.sin(a) * (r - 7),
+                      x + math.cos(a) * (r - 2), y + math.sin(a) * (r - 2),
+                      color=MUTED, sw=1.0, amp=0.1)
+        self.line(x, y, x + hand[0] * r * 0.48, y - hand[1] * r * 0.44,
+                  color=color, sw=2.2, amp=0.3)
+        self.line(x, y, x + r * 0.52, y + r * 0.18, color=color, sw=1.8,
+                  amp=0.3)
+        self.circle(x, y, 3, color=color, sw=1.0, fill=color)
+        if label:
+            self.text(x, y + r + label_size + 6, label, size=label_size,
+                      color=MUTED, anchor="middle")
+
+    def gear(self, x, y, r, color, teeth=8):
+        for i in range(teeth):
+            a = math.tau * i / teeth
+            self.line(x + math.cos(a) * (r - 4), y + math.sin(a) * (r - 4),
+                      x + math.cos(a) * (r + 7), y + math.sin(a) * (r + 7),
+                      color=color, sw=3.0, amp=0.2)
+        self.circle(x, y, r, color=color, sw=2.2, fill=WHITE)
+        self.circle(x, y, r * 0.38, color=color, sw=1.8, fill=None)
+
+    def wave(self, x, y, w, h, color, kind="sine", cycles=2, duty=0.5,
+             sw=2.4):
+        pts = []
+        n = max(24, cycles * 16)
+        for i in range(n + 1):
+            t = i / n
+            if kind == "square":
+                yy = h if (t * cycles) % 1 < duty else 0
+            elif kind == "pwm":
+                yy = h if (t * cycles) % 1 < duty else 0
+            else:
+                yy = (1 - math.sin(t * math.tau * cycles)) * h / 2
+            pts.append((x + w * t, y + yy))
+        self.stroke(pts, color=color, sw=sw, amp=0.5)
+
+    def doc(self, x, y, w, h, color, label=None, size=15):
+        fold = min(24, w * 0.18)
+        self.stroke([(x, y), (x + w, y), (x + w, y + h - fold),
+                     (x + w - fold, y + h), (x, y + h)], color=color,
+                    sw=2.2, close=True, fill=WHITE)
+        self.line(x + w, y + h - fold, x + w - fold, y + h - fold,
+                  color=color, sw=1.8)
+        self.line(x + w - fold, y + h - fold, x + w - fold, y + h,
+                  color=color, sw=1.8)
+        if label:
+            self.text(x + w / 2, y + h / 2 + size * 0.34, label, size=size,
+                      color=color, anchor="middle", weight="bold")
+
+    def icon_copy(self, x, y, s, color):
+        self.rect(x, y, s * 0.56, s * 0.68, color=color, sw=1.8,
+                  fill=WHITE, double=False)
+        self.rect(x + s * 0.30, y + s * 0.22, s * 0.56, s * 0.68,
+                  color=color, sw=1.8, fill=WHITE, double=False)
+
+    def icon_trash(self, x, y, s, color):
+        self.line(x, y + s * 0.18, x + s * 0.8, y + s * 0.18, color=color,
+                  sw=2.2)
+        self.line(x + s * 0.2, y + s * 0.18, x + s * 0.26, y + s * 0.82,
+                  color=color, sw=2.0)
+        self.line(x + s * 0.6, y + s * 0.18, x + s * 0.54, y + s * 0.82,
+                  color=color, sw=2.0)
+        self.line(x + s * 0.26, y + s * 0.82, x + s * 0.54, y + s * 0.82,
+                  color=color, sw=2.0)
+        self.line(x + s * 0.3, y + s * 0.06, x + s * 0.5, y + s * 0.06,
+                  color=color, sw=2.0)
+
+    def icon_merge(self, x, y, s, color):
+        self.arrow(x, y + s * 0.12, x + s * 0.44, y + s * 0.5, color=color,
+                   sw=2.0, bend=0, head=7)
+        self.arrow(x + s * 0.8, y + s * 0.12, x + s * 0.56, y + s * 0.5,
+                   color=color, sw=2.0, bend=0, head=7)
+        self.arrow(x + s * 0.5, y + s * 0.5, x + s * 0.5, y + s * 0.9,
+                   color=color, sw=2.0, bend=0, head=7)
+
+    def gate(self, x, y, w, h, color, num):
+        """Door pictogram with a number plate; the EXTI chain reads as gates."""
+        self.rect(x, y, w, h, color=color, sw=2.4, fill=WHITE)
+        self.rect(x + 18, y + 18, w - 36, h - 18, color=color, sw=1.8,
+                  fill=None, double=False)
+        self.circle(x + w - 38, y + h / 2, 4, color=color, sw=1.2, fill=color)
+        self.pill(x + 6, y + 6, 26, 24, num, color, fill=WHITE, size=13)
+
+    def envelope(self, x, y, w, h, color, label=None, size=15):
+        self.rect(x, y, w, h, color=color, sw=2.0, fill=WHITE, double=False)
+        self.line(x, y, x + w / 2, y + h * 0.56, color=color, sw=1.6)
+        self.line(x + w, y, x + w / 2, y + h * 0.56, color=color, sw=1.6)
+        if label:
+            self.text(x + w / 2, y + h * 0.82, label, size=size, color=color,
+                      anchor="middle", weight="bold")
+
+    def motor(self, x, y, s, color, label="M"):
+        self.circle(x + s * 0.42, y + s * 0.48, s * 0.32, color=color, sw=2.2,
+                    fill=WHITE)
+        self.text(x + s * 0.42, y + s * 0.58, label, size=s * 0.34,
+                  color=color, anchor="middle", weight="bold")
+        self.line(x + s * 0.74, y + s * 0.48, x + s * 0.96, y + s * 0.48,
+                  color=color, sw=2.4)
+        for i in range(4):
+            a = math.tau * i / 4 + 0.5
+            self.line(x + s * 0.42 + math.cos(a) * s * 0.38,
+                      y + s * 0.48 + math.sin(a) * s * 0.38,
+                      x + s * 0.42 + math.cos(a) * s * 0.48,
+                      y + s * 0.48 + math.sin(a) * s * 0.48,
+                      color=color, sw=1.8)
+
+    def magnifier(self, x, y, s, color):
+        self.circle(x + s * 0.38, y + s * 0.38, s * 0.28, color=color, sw=2.4,
+                    fill=WHITE)
+        self.line(x + s * 0.58, y + s * 0.62, x + s * 0.9, y + s * 0.94,
+                  color=color, sw=3.0)
+
     # -- text -----------------------------------------------------------
     def text(self, x, y, s, size=26, color=INK, anchor="start", weight="normal",
              font=HAND, ls=None, halo=True):
@@ -251,13 +433,38 @@ class Fig:
     # -- chrome ---------------------------------------------------------
     def chrome(self):
         """Paper, title, footer badge."""
-        self.body.insert(0, f'<rect width="{W}" height="{H}" fill="{PAPER}"/>')
+        if self.grid:
+            self.body.insert(
+                0,
+                '<defs><pattern id="dotgrid" width="24" height="24" '
+                'patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.1" '
+                'fill="#DED4BE"/></pattern></defs>'
+                f'<rect width="{W}" height="{H}" fill="{PAPER}"/>'
+                f'<rect width="{W}" height="{H}" fill="url(#dotgrid)" '
+                'opacity="0.36"/>'
+            )
+        else:
+            self.body.insert(0, f'<rect width="{W}" height="{H}" fill="{PAPER}"/>')
+        tsize = 46
         if self.title:
             # auto-shrink long titles so they never clip the canvas
             # (Segoe Print runs ~25% wider than the estimator, so pad it)
-            tsize = 46
             while text_w(self.title, tsize) * 1.30 > W - 80 and tsize > 28:
                 tsize -= 2
+        if self.tag:
+            tw = text_w(self.tag, 15) + 30
+            # long centered titles reach into the top-left corner; park the
+            # tag bottom-left instead of letting the title overwrite it
+            tag_right = 56 + text_w(self.tag, 15) * 1.25 + 30
+            title_left = (W / 2 - text_w(self.title, tsize) * 0.85 / 2
+                          if self.title else W)
+            ty = 30 if title_left >= tag_right + 12 else H - 60
+            self.panel(56, ty, tw, 30, PAPER, amp=1.2)
+            self.rect(56, ty, tw, 30, color=MUTED, sw=1.4, fill=None,
+                      double=False, amp=1.2)
+            self.text(56 + tw / 2, ty + 21, self.tag, size=15, color=MUTED,
+                      anchor="middle", weight="bold", halo=False)
+        if self.title:
             self.text(W / 2, 74, self.title, size=tsize, color=self.title_color,
                       anchor="middle", weight="bold", halo=False)
             # hand underline swash

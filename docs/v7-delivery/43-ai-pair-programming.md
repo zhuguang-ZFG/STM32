@@ -5,26 +5,28 @@ platforms: [generic]
 
 # AI 结对开发与提示词工作流
 
-AI 结对的第一课不是提示词技巧，是**分工**：模型擅长生成与改写，你负责正确性定义与验证——「结对不是代笔」。本章按「定位 → 工单 → 工具」三段展开：先立工作观（模型输出是分布，不是事实），再给提示词的三段式与六类代签决定，最后讲工具流（MCP 是协议，不是第四个工具）。所有工具事实挂来源卡（访问日期 2026-10-27），版本化行为带时点限定。
+AI 结对首先要定的是**分工**：模型擅长生成与改写，你负责正确性定义与验证，也就是「结对不是代笔」。下面按「定位 → 工单 → 工具」三段展开：先立工作观（模型输出是分布，不是事实），再给提示词的三段式与六类代签决定，最后讲工具流（MCP 是协议，不是第四个工具）。所有工具事实挂来源卡（访问日期 2026-10-27），版本化行为带时点限定。
 
-证据先说清：本章零板级实测，工具事实全部来自 15 张 ai-* 来源卡的快照（官方文档，accessed 2026-10-27）；「三次一致性实验」「A/B 对照」是教学设计，无读数；MCP 规范细节（版本 2026-07-28、reference servers 7 个）按快照转写，生态数字随时间变化。板名口径：野火 F407 霸天虎（旧稿「霸道者」是错名，本章统一）。
+这里没有板级实测。工具事实全部来自 15 张 ai-* 来源卡的快照（官方文档，访问日期 2026-10-27）；「三次一致性实验」与「A/B 对照」是教学设计，没有读数；MCP 规范细节（版本 2026-07-28、reference servers 7 个）按快照转写，生态数字会随时间变化。板名统一为野火 F407 霸天虎；旧稿的「霸道者」是错名。
 
 > 版本口径：工具快照 **2026-10-27**（VS Code 文档 2026-10-21 重组 Agents 章节；Cursor v3.6 2026-05-29、v3.23 2026-10-01；MCP 规范版本 2026-07-28，2025-12 捐赠 Linux Foundation AAIF）。来源卡登记见 附录 E 的 ai-* 条目。寄存器事实（GPIOF/BSRR/TIM7EN）与 [v1 第 9 章](../v1-drivers/09-gpio.md) 已核口径一致。
 
 ## 本章罗盘
 
-- **问题**：AI 在嵌入式开发里「能做什么/不能做什么」的分界线在哪，为什么寄存器代码处在中间地带？三次一致性实验怎么设计，为什么说「模型输出是分布不是事实」？弱提示的四个雷各堵什么缺口，三段式（上下文/约束/验收）怎么救？哪些决定可以交给 AI 代签，哪些永远不行？MCP 的三方（Host/Client/Server）与三类原语（Resources/Prompts/Tools）是什么，「一 server 一 client」的授权颗粒度意味着什么？三层防线（软约束/工具闸门/硬门禁）怎么配？生产凭据为什么永不进 agent 环境？
+- **问题**：AI 在嵌入式开发里能做什么、不能做什么，寄存器代码为什么处在中间地带；三次一致性实验如何说明「模型输出是分布不是事实」。弱提示的四个缺口与三段式工单；六类代签决定里哪些能交给 AI，哪些必须人工确认。MCP 的三方拓扑、三类原语与「一 server 一 client」的授权颗粒度；三层防线与权限四问，生产凭据为什么不进 agent 环境。
 - **交付**：能按五维分工表划清人与模型的责任；能跑一次一致性实验并写下「分布」结论；能把弱提示改写成三段式工单；能用六类代签清单做评审归类；能画出 MCP 拓扑并说清授权颗粒度；能配三层防线并写出权限四问。
-- **边界**：本章讲 AI 工具的用法与防线；幻觉的类型学与对账流程归[第 44 章](./44-manual-reconciliation-hallucination.md)；本书自己的生产管线（研究→计划→写作→门禁）也在 ch44；工具选型清单归[第 46 章](./46-resources-roadmap-open-source.md)；GPIO 寄存器与点灯机制归 [v1 第 9 章](../v1-drivers/09-gpio.md)。
+- **边界**：内容限于 AI 工具的用法与防线；幻觉的类型学与对账流程归[第 44 章](./44-manual-reconciliation-hallucination.md)；这套书的生产管线（研究→计划→写作→门禁）也在 ch44；工具选型清单归[第 46 章](./46-resources-roadmap-open-source.md)；GPIO 寄存器与点灯机制归 [v1 第 9 章](../v1-drivers/09-gpio.md)。
 - **依据锚点**：AI00《结对不捉鬼》（`mcu/docs/ai/00-pair-not-ghost.md`）、AI01《提示词模式》（`.../01-prompt-patterns.md`）、AI03《工具流 MCP》（`.../03-toolflow-mcp.md`）。上游对账：mcu manifest 的 15 张 ai-* 来源卡（accessed 2026-10-27）；仓库实例 `mcu/code/esp32/05-audio-play/main/main.c:126`（MCLK=4096000 打印行）与 `:81`（PCA9557 0x19 bit1 控功放注释，与 [第 31 章](../v4-platforms/31-esp32-drivers-audio.md) 的音频口径一致）。
 
 ## 先做出来
 
 ### 1. 一致性实验：同一个问题问三次
 
-互不可见的三个会话，同一道题：「STM32F407 的 GPIOF 挂哪条总线，使能位是哪个？」三次回答里 GPIOF 基地址 0x40021400、AHB1、`RCC_AHB1ENR` bit5（GPIOFEN）是稳定的——因为这是高频训练语料；换一道低频题（某颗冷门芯片的某个寄存器位），分布就散开了。**模型输出是分布，不是事实**——这个实验的全部价值是让你亲手看到这一点。实验纪律：会话互不可见、语料密度决定稳定性、三次不一致的地方必须人工查手册（第 44 章 的对账流程）。
+互不可见的三个会话，同一道题：「STM32F407 的 GPIOF 挂哪条总线，使能位是哪个？」三次回答里 GPIOF 基地址 0x40021400、AHB1、`RCC_AHB1ENR` bit5（GPIOFEN）是稳定的，因为这是高频训练语料；换一道低频题（某颗冷门芯片的某个寄存器位），分布就散开了。
 
-### 2. 一条真提示词的解剖
+**模型输出是分布，不是事实**。这个实验的全部价值是让你亲手看到这一点。实验纪律：会话互不可见、语料密度决定稳定性、三次不一致的地方必须人工查手册（[第 44 章](./44-manual-reconciliation-hallucination.md)的对账流程）。
+
+### 2. 一条真提示词的拆解
 
 弱提示：「帮我写个点灯程序」。它堵不住三个缺口：上下文（哪块板哪颗芯）、约束（寄存器还是 HAL、共阳还是共阴）、验收（怎么算写对了）。三段式改写：
 
@@ -34,9 +36,9 @@ AI 结对的第一课不是提示词技巧，是**分工**：模型擅长生成�
 [验收]   编译零警告；烧录后 PF6 输出低电平（万用表量）；说明 BSRR 的写法
 ```
 
-三段式不是仪式：每一段都在堵一个真实的失败模式。板卡事实有三个来源（原理图/丝印/实测读回）——提示词里的板卡事实要标来源（[第 40 章](../v6-labs-projects/40-lab-method-instruments.md) 的身份读回是裁决书）。
+三段式不是仪式：每一段都在堵一个真实的失败模式。板卡事实有三个来源（原理图/丝印/实测读回）。提示词里的板卡事实要标来源（[第 40 章](../v6-labs-projects/40-lab-method-instruments.md) 的身份读回可作为确认依据）。
 
-![提示词解剖动画：上下文/约束/验收三段各堵一个缺口](/anim/ai-prompt-anatomy.svg)
+![提示词拆解动画：上下文/约束/验收三段各堵一个缺口](/anim/ai-prompt-anatomy.svg)
 
 ## 机制
 
@@ -50,7 +52,7 @@ AI 结对的第一课不是提示词技巧，是**分工**：模型擅长生成�
 | 排查 | 列可能原因清单 | 按清单实测归因 |
 | 责任 | 无 | **全部在你** |
 
-三句官方红线（快照 2026-10-27）：VS Code 的分工句、GitHub 的「Logs do not replace review」、You remain responsible。检查清单两份：**能** 4 条（样板代码、解释概念、批量重命名、格式转换）；**不能** 4 条（替你验证、替你读板、替你担责、替你决定安全边界）。中间地带是寄存器代码——能生成，但**永远带对账条件**（正确性一半在公共知识，一半在你的板子）。
+三句官方红线（快照 2026-10-27）：VS Code 的分工句、GitHub 的「Logs do not replace review」、You remain responsible。检查清单两份：**能** 4 条（样板代码、解释概念、批量重命名、格式转换）；**不能** 4 条（替你验证、替你读板、替你担责、替你决定安全边界）。中间地带是寄存器代码：能生成，但**必须带对账条件**（正确性一半在公共知识，一半在你的板子）。
 
 ### 二、六类代签决定
 
@@ -58,15 +60,21 @@ AI 结对的第一课不是提示词技巧，是**分工**：模型擅长生成�
 
 ### 三、工具地图与 MCP
 
-2026-10-27 快照的四格：VS Code（代理模式 + Chat）、GitHub Copilot（agent loop：推理→行动→验证；cloud agent 59 分钟/单仓库单分支；CCR 覆盖逾 90% C/C++ 文件类型）、Claude Code（`edits files, runs commands`；CLAUDE.md 是 context not enforced configuration；可管道 `tail -200 app.log | claude -p`）、Cursor（Agent=Instructions+Tools+Model；Checkpoints 归 Git；Run Modes 三档；「Auto-review is not a security boundary」）。**界面会变，方法论不变**——每格事实挂来源卡，版本化行为带「截至 2026-10-27」。
+2026-10-27 快照的四格：VS Code（代理模式 + Chat）、GitHub Copilot（agent loop：推理→行动→验证；cloud agent 59 分钟/单仓库单分支；CCR 覆盖逾 90% C/C++ 文件类型）、Claude Code（`edits files, runs commands`；CLAUDE.md 是 context not enforced configuration；可管道 `tail -200 app.log | claude -p`）、Cursor（Agent=Instructions+Tools+Model；Checkpoints 归 Git；Run Modes 三档；「Auto-review is not a security boundary」）。
 
-MCP 是协议，不是第四个工具：**三方**（Hosts/Clients/Servers）+ **三类原语**（Resources/Prompts/Tools）+ 一拓扑；Sampling/Logging 在快照版本已 deprecated（时效注记）；官方 reference servers 快照时 7 个（Everything/Fetch/Filesystem/Git/Memory/Sequential Thinking/Time——生态数字带日期）。关键安全语义：**「一 server 一 client」的授权颗粒度**——每个 server 的权限单独授予，不给全局代理权；官方安全三句（Users must explicitly consent… / Hosts must obtain… / Tools represent arbitrary code execution…）按快照转写。
+**工具界面与版本会变化，上面这套分工与授权方法仍然适用**。每格事实挂来源卡，版本化行为带「截至 2026-10-27」。
+
+MCP 是协议，不是第四个工具：**三方**（Hosts/Clients/Servers）+ **三类原语**（Resources/Prompts/Tools）+ 一拓扑；Sampling/Logging 在快照版本已 deprecated（时效注记）；官方 reference servers 快照时 7 个（Everything/Fetch/Filesystem/Git/Memory/Sequential Thinking/Time，生态数字带日期）。
+
+关键安全语义是**「一 server 一 client」的授权颗粒度**：每个 server 的权限单独授予，不给全局代理权；官方安全三句（Users must explicitly consent… / Hosts must obtain… / Tools represent arbitrary code execution…）按快照转写。
 
 ![AI 工具地图动画：四格与 MCP 协议位](/anim/ai-tool-map.svg)
 
 ### 四、工具流 vs 搬运工
 
-把手册塞给模型的三个损耗：**切片**（长文档被切碎，引用错位）、**时效**（模型训练截止后的修订版它不知道）、**语境**（你的板卡事实它没有）。MCP 工具流的解法：L2 手册快照工作流——datasheets/ 目录放冻结版手册、Filesystem server 只读授权、引用必须带原文行号（第 44 章 的对账三问接手验证）。三场景实录：读手册三级（L0 概念/L1 章节/L2 逐行）、跑构建四步验收（配置/编译/烧录/读回）、看串口切片三招（时间戳对齐/帧边界/异常字节）——E08 音频案例（MCLK=4096000、PCA9557 bit1@0x19）是现成的验证样本。
+把手册直接交给模型的三个损耗：**切片**（长文档被切碎，引用错位）、**时效**（模型训练截止后的修订版它不知道）、**语境**（你的板卡事实它没有）。MCP 工具流的解法：L2 手册快照工作流。datasheets/ 目录放冻结版手册、Filesystem server 只读授权、引用必须带原文行号（[第 44 章](./44-manual-reconciliation-hallucination.md)的对账三问接手验证）。
+
+三场景实录：读手册三级（L0 概念/L1 章节/L2 逐行）、跑构建四步验收（配置/编译/烧录/读回）、看串口切片三招（时间戳对齐/帧边界/异常字节）。E08 音频案例（MCLK=4096000、PCA9557 bit1@0x19）是现成的验证样本。
 
 ![MCP 工具流动画：三方拓扑与授权颗粒度](/anim/ai-mcp-toolflow.svg)
 
@@ -74,11 +82,13 @@ MCP 是协议，不是第四个工具：**三方**（Hosts/Clients/Servers）+ *
 
 | 层 | 形态 | 例子 |
 | --- | --- | --- |
-| 软约束 | 提示词/CLAUDE.md | 「不要动 Makefile」——模型可能忘 |
+| 软约束 | 提示词/CLAUDE.md | 「不要动 Makefile」；模型可能忘 |
 | 工具闸门 | agent 配置 | 只授权只读工具；写工具白名单 |
-| 硬门禁 | 跑在模型外 | CI checks、slop_lint、测试——**不经过模型意志，失败会自己报警** |
+| 硬门禁 | 跑在模型外 | CI checks、slop_lint、测试：**不经过模型意志，失败会自己报警** |
 
-权限四问：它能读哪些路径？它能写哪些路径？它能跑哪些命令？它带什么凭据？最后一条的铁律：**生产凭据永不进 agent 环境**。
+权限四问：它能读哪些路径？它能写哪些路径？它能跑哪些命令？它带什么凭据？最后一条规则：**生产凭据不得进入 agent 环境**。
+
+![AI 授权与防线：MCP 三方拓扑与一 server 一 client 授权；软约束、工具闸门、硬门禁三层；权限四问与凭据红线。原理示意，不是产品截图](/arch/ai-defense.png)
 
 ## 测量与证据
 
@@ -100,10 +110,10 @@ MCP 是协议，不是第四个工具：**三方**（Hosts/Clients/Servers）+ *
 | --- | --- | --- |
 | AI 生成的寄存器代码编译不过 | API 名是幻觉（`HAL_GPIO_SetPin` 型） | 头文件 grep 存在性；改用真实函数 |
 | 编译过了但行为不对 | 位语义错（传引脚号不传掩码；APB1ENR bit5 张冠李戴） | 按手册逐位对账（第 44 章 三问） |
-| 三次回答不一致 | 语料密度低的冷门题 | 分布结论成立：人工查手册裁决 |
+| 三次回答不一致 | 语料密度低的冷门题 | 分布结论成立：人工查手册确认 |
 | 工具行为与文档不符 | 文档快照过期 / 界面改版 | 重抓来源卡；带新日期 |
 | MCP server 权限过大 | 给了全局代理权 | 按「一 server 一 client」重配 |
-| agent 改了不该改的文件 | 只有软约束没有工具闸门 | 加白名单；硬门禁兜底 |
+| agent 改了不该改的文件 | 只有软约束没有工具闸门 | 加白名单；硬门禁作为最后保障 |
 | 凭据泄漏风险 | 凭据进了 agent 环境 | 权限四问第四问重审；轮换凭据 |
 
 ## 离开检查
@@ -112,4 +122,4 @@ MCP 是协议，不是第四个工具：**三方**（Hosts/Clients/Servers）+ *
 - 一致性实验能跑一次并写下分布结论。
 - 三段式提示词能改写一条弱提示；六类代签清单能归类。
 - MCP 拓扑与授权颗粒度能画；工具事实全部带快照日期。
-- 三层防线能配；权限四问能答；生产凭据不进 agent 环境是铁律。
+- 三层防线能配；权限四问能答；生产凭据不进 agent 环境是硬性规则。

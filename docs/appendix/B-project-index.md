@@ -7,13 +7,13 @@ platforms: [generic]
 
 ## 本章罗盘
 
-- **问题**：全书配套工程在哪两个登记簿里，各多少条、什么类型、怎么跑？例程的「最小可见结果/验收工具/不能由此推出」三列怎么用？跑表前要对哪几行账？工程证据的两档（宿主验证/目标板验证）怎么区分？
+- **问题**：全书配套工程在哪两个登记簿里，各多少条、什么类型、怎么跑？例程的「最小可见结果/验收工具/不能由此推出」三列怎么用？跑表前要核对哪几行数据？工程证据的两档（宿主验证/目标板验证）怎么区分？
 - **交付**：能在双登记簿里找到任何一章的配套工程并按入口跑起来；能按推荐跑法安排实验顺序；能填出每例程的交付记录七字段。
-- **边界**：本附录是索引层，不代填证据状态（以各工程 README 为准）；账表本体在 附录 D（本附录落位时 D 尚未链接，账已并入附录 D 文末）；许可边界见附录 E（落位后链接）。
+- **边界**：本附录是索引层，不代填证据状态（以各工程 README 为准）；数据表本体在附录 D（本附录落位时 D 尚未链接，数据已并入附录 D 文末）；许可边界见附录 E（落位后链接）。
 - **依据锚点**：根书例程区 `examples/`（15 条，MIT）与姊妹书工程区 `code/`（47 项，projects.json 登记，Apache-2.0）；`motor-dc-speed` 为 B3 批次补登。
 
 
-本附录是全书配套工程的**双登记簿**：根书例程区（`examples/`，F103 线，15 条）与姊妹书工程区（`code/`，47 个可编译验证工程，F407/ESP32/GD32/宿主四类）。例程不是「复制后能编译」就结束——每个工程都要留下可观察结果，并写清不能由该结果推出什么。
+本附录是全书配套工程的**双登记簿**：根书例程区（`examples/`，F103 线，15 条）与姊妹书工程区（`code/`，47 个可编译验证工程，F407/ESP32/GD32/宿主四类）。例程不是「复制后能编译」就结束。每个工程都要留下可观察结果，并写清不能由该结果推出什么。
 
 - 根书区：`examples/` 下 14 例程 + 补登的 `motor-dc-speed`（B3 批次新增，源表漏登），MIT 许可。
 - 姊妹书区：`code/` 下 47 工程，`code/projects.json` 登记、CI 逐个构建（ARM 工程用 arm-none-eabi-gcc；ESP-IDF 工程用 `espressif/idf:v5.5.2` 容器，target esp32s3；宿主工程用本机 gcc），Apache-2.0。
@@ -40,11 +40,11 @@ platforms: [generic]
 | 12 | `usb-hid` | v1 第 13 章（[第 35 章](../v4-platforms/35-can-usb-fieldbus.md)） | PA0 边沿产生一次按下和一次全零释放报告 | 文本框 + USB 抓包 | 可作为安全输入设备或通过 USB-IF 认证 |
 | 13 | `freertos-task` | [第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md) | 三任务运行，队列空时阻塞，按键事件唤醒任务 | trace/运行时统计 + 串口 | 最坏响应时间和栈裕量已被证明 |
 | 14 | `spl-f1-blink` | v1 第 7 章 | ELF/HEX/BIN/MAP 构建闭合；真板 PC13 约 1 Hz | GNU Arm size/nm + ST-Link + 逻辑分析仪 | 编译链接通过等于真板已验证 |
-| 15（补登） | `motor-dc-speed` | [第 37 章](../v5-motion/37-dc-motor-openloop.md) | 开环 PWM 驱动直流电机，斜坡受控起停 | 电流表 + 示波器 | 端点语义与限幅账已被板上验证（[第 37 章](../v5-motion/37-dc-motor-openloop.md) 数值断言钉的是文案） |
+| 15（补登） | `motor-dc-speed` | [第 37 章](../v5-motion/37-dc-motor-openloop.md) | 开环 PWM 驱动直流电机，斜坡受控起停 | 电流表 + 示波器 | 端点语义与限幅计算已被板上验证（[第 37 章](../v5-motion/37-dc-motor-openloop.md) 数值断言核对的是文案） |
 
-### 先和账对上的四行（时钟与位时间）
+### 先核对一致的四行（时钟与位时间）
 
-跑表之前，先把四行与 附录 D 文末前两张账对上——对不上就先不要加下一种总线：
+跑表之前，先把四行与附录 D 文末前两张表核对一致；对不上就先不要加下一种总线：
 
 | 例程 | 先对上的数 | 对不上说明什么 |
 | --- | --- | --- |
@@ -55,7 +55,7 @@ platforms: [generic]
 
 ### 通道和描述符再对三行
 
-附录 D 第三张账，对请求号、描述符长度和栈的单位：
+附录 D 第三张表，核对请求号、描述符长度和栈的单位：
 
 | 例程 | 先对上的数 | 对不上说明什么 |
 | --- | --- | --- |
@@ -65,10 +65,10 @@ platforms: [generic]
 
 ### 推荐跑法
 
-1. **先闭环**：`gpio-blink → exti-key → timer-pwm`——证明下载、引脚、时基。
-2. **再连外设**：`uart-dma-idle → i2c-oled → spi-flash → adc-dma`——一次一种总线。
-3. **再处理状态**：`rtc-alarm → iap-bootloader → can-bxcan → usb-*`——每步保留可回退镜像。
-4. **最后并发**：`freertos-task`——裸机行为可解释后，调度问题才不与驱动混淆。
+1. **先闭环**：`gpio-blink → exti-key → timer-pwm`：证明下载、引脚、时基。
+2. **再连外设**：`uart-dma-idle → i2c-oled → spi-flash → adc-dma`：一次一种总线。
+3. **再处理状态**：`rtc-alarm → iap-bootloader → can-bxcan → usb-*`：每步保留可回退镜像。
+4. **最后并发**：`freertos-task`：裸机行为可解释后，调度问题才不与驱动混淆。
 5. **最后对照旧库**：`spl-f1-blink` 单独 SPL V3.5.0 + CMake，不与 HAL 示例双重初始化。
 
 ### 每例程的交付记录
@@ -83,7 +83,7 @@ platforms: [generic]
 | 边界 | 仿真/真板、温度、电源、未覆盖的失败路径 |
 | 复现 | 从干净工程到观察结果的最短步骤 |
 
-![手绘板：先对四行账（原理示意，非实拍）](/images/app-b-four-rows.png)
+![手绘板：先核对四行数据（原理示意，非实拍）](/images/app-b-four-rows.png)
 
 ![手绘板：通道与描述符三行（原理示意，非实拍）](/images/app-b-channel-desc.png)
 
@@ -133,12 +133,12 @@ platforms: [generic]
 
 | 工程 | 类型 | 对应章 | 内容 |
 | --- | --- | --- | --- |
-| rtos-00-why-rtos | host-probe | [第 21 章](../v3-rtos/21-why-rtos.md) | 裸机可行性账与超级循环翻车 |
+| rtos-00-why-rtos | host-probe | [第 21 章](../v3-rtos/21-why-rtos.md) | 裸机可行性计算与超级循环失败 |
 | rtos-01-freertos-lab | arm-make | [第 21–24 章](../v3-rtos/21-why-rtos.md) | FreeRTOS 全场景实验（6 场景） |
 | rtos-02-rt-thread-lab | arm-make | [第 21–24 章](../v3-rtos/22-tasks-tcb-scheduler.md) | RT-Thread Nano 移植与验收 |
 | rtos-03-scheduler | host-probe | [第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md) | 双路径选优 O(1) 对照 |
 | rtos-05-sem-mutex | host-probe | [第 24 章](../v3-rtos/24-queue-semaphore-notification.md) | 优先级反转剧本双版本 |
-| rtos-06-timers | host-probe | [第 24 章](../v3-rtos/24-queue-semaphore-notification.md) | 守护任务 RAM 账与五幕推演 |
+| rtos-06-timers | host-probe | [第 24 章](../v3-rtos/24-queue-semaphore-notification.md) | 守护任务 RAM 占用与五幕推演 |
 
 ### ESP32-S3 + ESP-IDF
 
@@ -159,13 +159,13 @@ platforms: [generic]
 
 | 工程 | 类型 | 对应章 | 内容 |
 | --- | --- | --- | --- |
-| gd32-01-rcu-clock | arm-make | [第 29 章](../v4-platforms/29-gd32-arm-riscv.md) | 200 MHz 分频账与官方库对照 |
+| gd32-01-rcu-clock | arm-make | [第 29 章](../v4-platforms/29-gd32-arm-riscv.md) | 200 MHz 分频计算与官方库对照 |
 | common-behavior | host-probe | [第 41 章](../v6-labs-projects/41-dual-board-logger-project.md) | 行为层（滤波/状态）断言 |
 | common-reliability | host-probe | [附录 A](./A-engineering-deep-read.md) | 帧 codec + 健康监测全断言 |
 | common-logger | host-probe | [第 41 章](../v6-labs-projects/41-dual-board-logger-project.md) | 记录槽位/代次/饱和计数 |
 
 ### 证据状态
 
-工程分两档：**宿主验证**（host-probe 与公共层：断言全绿、CI 必跑）与**目标板验证**（arm-make/esp-idf：CI 验证「能干净构建」，板上现象按各章「待上板实测」口径另行回填——见 [第 40 章](../v6-labs-projects/40-lab-method-instruments.md) 的实测记录制度）。哪个工程处于哪一档，以各工程 README 清单为准，本表不代填。
+工程分两档：**宿主验证**（host-probe 与公共层：断言全绿、CI 必跑）与**目标板验证**（arm-make/esp-idf：CI 验证「能干净构建」，板上现象按各章「待上板实测」口径另行回填；见 [第 40 章](../v6-labs-projects/40-lab-method-instruments.md) 的实测记录制度）。哪个工程处于哪一档，以各工程 README 清单为准，本表不代填。
 
-根书例程区源码在 `examples/`（MIT）；姊妹书工程区在 `code/`（Apache-2.0）；本书正文与图 CC BY 4.0（根域）/Apache-2.0（mcu 域）——完整许可边界见 附录 E。
+根书例程区源码在 `examples/`（MIT）；姊妹书工程区在 `code/`（Apache-2.0）；本书正文与图 CC BY 4.0（根域）/Apache-2.0（mcu 域）。完整许可边界见 附录 E。
