@@ -135,6 +135,8 @@ if ( ( uint8_t * ) pxPrevBlock == ( uint8_t * ) pxBlockToInsert ) {
 
 对几 KB 到几十 KB 的嵌入式小堆，O(n) 遍历的绝对开销微不足道，换来的是 8 B 头的极简实现。这是工程取舍，不是理论缺陷。
 
+![手绘板：heap_4 释放三步——按地址找插入点、后邻吞并、前邻吞并；判据只有地址相邻，隔着一个已用块的洞永不合并；8 B 头没有 footer，不是边界标记法（原理示意，非实拍）](/images/ch25-free-merge.png)
+
 ![heap_4 空闲链表示意：按地址排序，释放时只有相邻空闲块才合并，不相邻的洞保留](/figures/rtos-freertos-07-heap.svg)
 
 ## 两个指标与一个被漏掉的读数

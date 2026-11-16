@@ -395,11 +395,80 @@ def ch23_pendsv_line():
     return f
 
 
+def ch25_free_merge():
+    """heap_4 free: three steps, adjacent-by-address is the only merge
+    rule, no boundary tags. Facts from ch25 (heap_4.c:492)."""
+    f = Fig("ch25-free-merge",
+            "heap_4 释放：三步合邻居",
+            title_color=GREEN_D, tag="CH 25 · 内存管理")
+    f.text(64, 126,
+           "链表按地址升序；释放块放回去时，前后只有地址正好接上才并——隔着一个已用块的洞永不合并。",
+           size=19, color=MUTED)
+
+    # ---- memory strip before ----
+    f.text(96, 170, "释放前", size=15, color=MUTED, weight="bold")
+    blocks0 = [("A 已用", 88, GRAY_FILL, MUTED), ("我 释放 248 B", 260,
+               RED_FILL, RED), ("B 空闲 100 B", 150, GREEN_FILL, GREEN_D),
+               ("C 已用", 100, GRAY_FILL, MUTED)]
+    x = 96
+    for name, w, fl, c in blocks0:
+        f.panel(x, 182, w, 44, fl, amp=1.4)
+        f.rect(x, 182, w, 44, color=c, sw=1.8, fill=None, amp=1.4)
+        f.text(x + w / 2, 209, name, size=13.5, color=c, anchor="middle",
+               weight="bold")
+        x += w + 8
+    f.arrow(560, 240, 560, 282, color=BLUE_D, sw=2.6, bend=0.0, head=10)
+    f.text(586, 268, "prvInsertBlockIntoFreeList：后邻吞并 → 被前邻吞并",
+           size=14.5, color=BLUE_D, weight="bold")
+
+    # ---- memory strip after ----
+    f.text(96, 316, "释放后", size=15, color=MUTED, weight="bold")
+    blocks1 = [("A 已用", 88, GRAY_FILL, MUTED),
+               ("我+B 合并 348 B", 418, GREEN_FILL, GREEN_D),
+               ("C 已用", 100, GRAY_FILL, MUTED)]
+    x = 96
+    for name, w, fl, c in blocks1:
+        f.panel(x, 328, w, 44, fl, amp=1.4)
+        f.rect(x, 328, w, 44, color=c, sw=1.8, fill=None, amp=1.4)
+        f.text(x + w / 2, 355, name, size=13.5, color=c, anchor="middle",
+               weight="bold")
+        x += w + 8
+    f.text(96, 402, "块头 8 B（pxNextFreeBlock 4 + xBlockSize 4）；xBlockSize 含头自身；对齐 8",
+           size=14, color=INK, font=MONO)
+
+    # ---- three steps + verdict cards ----
+    f.card(64, 436, 560, 172, BLUE_D, fill=BLUE_FILL)
+    f.text(84, 468, "三步放回", size=19, color=BLUE_D, weight="bold")
+    f.text(84, 500, "① 按地址走链表，找到插入点", size=15, color=INK)
+    f.text(84, 528, "② 我的尾 == 后邻的头 → 吞并后邻", size=15, color=INK)
+    f.text(84, 556, "③ 前邻的尾 == 我的头 → 被它吞并", size=15, color=INK)
+    f.text(84, 584, "谁也不挨着，就正常插进链表", size=14, color=MUTED)
+
+    f.card(652, 436, 436, 172, RED, fill=RED_FILL)
+    f.text(672, 468, "不是边界标记法", size=19, color=RED, weight="bold")
+    f.text(672, 500, "只有 8 B 头、没有 footer；前邻靠", size=14.5,
+           color=INK)
+    f.text(672, 526, "地址序遍历找出，合并是 O(n) 不是 O(1)", size=14.5,
+           color=INK)
+    f.text(672, 556, "小堆上 O(n) 开销微不足道，换来极简头部", size=14,
+           color=MUTED)
+    f.text(672, 584, "「边界标记法」是旧稿术语错位，别照搬", size=14,
+           color=RED, weight="bold")
+
+    f.htext(64, 700, "分配走首次适配，偏爱低地址块；相邻合并是它的搭档，不是解药",
+            size=20, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "取自本章 heap_4.c:492 起的源码语义；示意布局，非内存转储。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch21-stack-word-ruler": ch21_stack_word_ruler,
     "ch22-first-frame-18-words": ch22_first_frame_18_words,
     "ch23-pendsv-line": ch23_pendsv_line,
     "ch24-queue-three-contracts": ch24_queue_three_contracts,
+    "ch25-free-merge": ch25_free_merge,
 }
 
 

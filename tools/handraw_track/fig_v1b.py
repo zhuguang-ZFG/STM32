@@ -7,7 +7,8 @@ same code -> same SVG bytes -> same PNG pixels.
 from pathlib import Path
 
 from hd import (AMBER_PALE, AMBER_STROKE, BLUE_D, BLUE_FILL, GRAY_FILL,
-                GREEN_D, GREEN_FILL, INK, MUTED, RED, WHITE, Fig, save)
+                GREEN_D, GREEN_FILL, INK, MUTED, RED, RED_FILL, WHITE, Fig,
+                save)
 
 FIG_DIR = (Path(__file__).resolve().parents[2] / ".temp" / "l0-l5-pass"
            / "figures")
@@ -218,8 +219,69 @@ def ch14_ndtr_units():
     return f
 
 
+def ch11_load_plus_one():
+    """Period = LOAD + 1: forget the minus one and the day drifts 514 ms;
+    24-bit ceiling. Facts from ch11 (probe.c:45-48, 128-186)."""
+    f = Fig("ch11-load-plus-one",
+            "周期 = LOAD + 1：忘减一，日漂 514 ms",
+            title_color=AMBER_STROKE, tag="CH 11 · SysTick")
+    f.text(64, 126,
+           "次数一样，相位不对：短延时看不出，长期计时才会暴露——这正是忘减一不易察觉的原因。",
+           size=19, color=MUTED)
+
+    # ---- left: correct config ----
+    f.card(64, 156, 500, 300, GREEN_D, fill=GREEN_FILL)
+    f.text(84, 190, "LOAD = 167999", size=22, color=GREEN_D, weight="bold",
+           font=MONO)
+    f.text(84, 216, "168 MHz 要 1 ms：168000 个时钟，减一落笔", size=14,
+           color=MUTED)
+    f.metric(96, 268, "1.000000 ms", "重载周期 = LOAD + 1 = 168000", GREEN_D)
+    f.text(84, 322, "倒数到 0，下一个周期才重载并置 COUNTFLAG", size=15,
+           color=INK)
+    f.text(84, 352, "probe：1680000 周期恰好归零重载 10 次", size=14.5,
+           color=INK, font=MONO)
+    f.text(84, 386, "第 10 次重载落在第 1512001 个时钟", size=14.5,
+           color=MUTED, font=MONO)
+    f.text(84, 424, "「减一」来自重载时序，可以逐拍数出来", size=14,
+           color=MUTED)
+
+    # ---- right: forgot the minus one ----
+    f.card(588, 156, 500, 300, RED, fill=RED_FILL)
+    f.text(608, 190, "LOAD = 168000（忘减一）", size=20, color=RED,
+           weight="bold", font=MONO)
+    f.text(608, 216, "同样跑 1680000 周期，照样重载 10 次", size=14,
+           color=MUTED)
+    f.metric(620, 268, "5.95 ppm", "每 tick 慢 1/168000", RED)
+    f.metric(850, 268, "514 ms/天", "86400 s × 1000 ÷ 168000", RED)
+    f.text(608, 322, "第 10 次重载落在第 1512010 个时钟：差 9 拍", size=14.5,
+           color=INK, font=MONO)
+    f.text(608, 356, "1 ms 短延时看不出；数据记录器、日历时基", size=14.5,
+           color=INK)
+    f.text(608, 384, "才会把它暴露成漂移", size=14.5, color=INK)
+    f.text(608, 424, "次数一样 → 测试测不出，只能靠周期对账", size=14,
+           color=MUTED)
+
+    # ---- bottom: 24-bit ceiling ----
+    f.panel(64, 486, 1024, 110, GRAY_FILL, amp=1.6)
+    f.rect(64, 486, 1024, 110, color=MUTED, sw=1.6, fill=None, amp=1.6)
+    f.text(88, 518, "24 位上限：LOAD_MAX = 16777215 → 168 MHz 下最长单次 ≈ 99.86 ms",
+           size=15.5, color=INK, weight="bold")
+    f.text(88, 548, "请求 100 ms：SysTick_Config 返回 1 拒配，寄存器一个没动——所以要查返回值",
+           size=14.5, color=INK)
+    f.text(88, 576, "不查、强写 & 0xFFFFFF → LOAD=22783，tick 135.6 µs，ISR 以 737 倍速狂跳",
+           size=14.5, color=RED, weight="bold")
+
+    f.htext(64, 700, "要 168000 个时钟就写 167999；更长周期换 HCLK/8 或 32 位 TIM",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "读数取自本章 probe 模型实测（probe.c:128-186）；推导口径，非示波器波形。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch11-three-timebases": ch11_three_timebases,
+    "ch11-load-plus-one": ch11_load_plus_one,
     "ch14-dma-buffer-ownership": ch14_dma_buffer_ownership,
     "ch14-ndtr-units": ch14_ndtr_units,
 }

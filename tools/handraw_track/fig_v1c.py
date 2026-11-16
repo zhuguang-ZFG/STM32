@@ -13,6 +13,7 @@ from hd import (AMBER_PALE, AMBER_STROKE, BLUE, BLUE_D, BLUE_FILL, GRAY_FILL,
                 Fig, save)
 
 OUT = Path(__file__).resolve().parents[2] / ".temp" / "l0-l5-pass" / "figures"
+MONO = "'Consolas','Courier New',monospace"
 
 
 def adc_dac_chain():
@@ -176,8 +177,66 @@ def flash_ota_rollback():
     return f
 
 
+def ch15_sar_twelve_rounds():
+    """SAR halves the candidate interval 12 times: 2.00 V -> 0x9B2.
+    Facts from ch15 (VREF=3.30 V, 1 LSB = 805.7 uV, table of 12 rounds)."""
+    f = Fig("ch15-sar-twelve-rounds",
+            "SAR 十二轮：逼出 0x9B2",
+            title_color=BLUE_D, tag="CH 15 · ADC 与 DAC")
+    f.text(64, 126,
+           "试探码从 bit11 到 bit0，比较器每轮只答「大了还是小了」；4096 → 1，候选每轮减半。",
+           size=19, color=MUTED)
+
+    rounds = [  # (bit, trial, V_dac, verdict)
+        ("bit11", "2048", "1.6500", "留"),
+        ("bit10", "3072", "2.4750", "清"),
+        ("bit9", "2560", "2.0625", "清"),
+        ("bit8", "2304", "1.8563", "留"),
+        ("bit7", "2432", "1.9594", "留"),
+        ("bit6", "2496", "2.0109", "清"),
+        ("bit5", "2464", "1.9852", "留"),
+        ("bit4", "2480", "1.9980", "留"),
+        ("bit3", "2488", "2.0045", "清"),
+        ("bit2", "2484", "2.0013", "清"),
+        ("bit1", "2482", "1.9997", "留"),
+        ("bit0", "2483", "2.0005", "清"),
+    ]
+    for i, (bit, trial, vd, keep) in enumerate(rounds):
+        col = i // 6
+        row = i % 6
+        x = 96 + col * 490
+        y = 168 + row * 52
+        c = GREEN_D if keep == "留" else RED
+        fl = GREEN_FILL if keep == "留" else RED_FILL
+        f.panel(x, y - 24, 120, 40, fl, amp=1.4)
+        f.rect(x, y - 24, 120, 40, color=c, sw=1.6, fill=None, amp=1.4)
+        f.text(x + 60, y + 4, keep, size=17, color=c, anchor="middle",
+               weight="bold")
+        f.text(x + 140, y, bit, size=15, color=MUTED, font=MONO)
+        f.text(x + 216, y, f"trial {trial}", size=15, color=INK,
+               font=MONO, weight="bold")
+        f.text(x + 330, y, f"{vd} V", size=15, color=MUTED, font=MONO)
+
+    # ---- verdict band ----
+    f.panel(96, 496, 960, 104, AMBER_PALE, amp=1.6)
+    f.rect(96, 496, 960, 104, color=AMBER_STROKE, sw=1.8, fill=None,
+           amp=1.6)
+    f.metric(120, 548, "2482 = 0x9B2", "锁定码 · 回算 1.99966 V", BLUE_D)
+    f.metric(400, 548, "差 0.34 mV", "= 0.42 LSB，落在 [0,1) LSB 区间",
+             GREEN_D)
+    f.metric(700, 548, "1 LSB = 805.7 µV", "3.3 V ÷ 4096", AMBER_STROKE)
+
+    f.htext(64, 700, "12 轮只保证分得细——保持电容没充满，逼近到哪都是错的",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "取自本章 VREF=3.30 V 模型算术与 S9 宿主 probe（非板上读数）；布局示意。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch15-adc-dac-chain": adc_dac_chain,
+    "ch15-sar-twelve-rounds": ch15_sar_twelve_rounds,
     "ch17-flash-ota-rollback": flash_ota_rollback,
 }
 
