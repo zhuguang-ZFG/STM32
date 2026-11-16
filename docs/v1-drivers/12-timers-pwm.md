@@ -39,6 +39,8 @@ f = TIMclk / ((PSC + 1) × (ARR + 1))
 
 ## 机制
 
+![手绘板：一只计数器三个旋钮——PSC=83 定步速、ARR=999 定圈长、CCR=500 定翻点；频率算式里没有 CCR，输入捕获是同一只计数器的反用（原理示意，非实拍）](/images/ch12-counter-three-knobs.png)
+
 ### 先问真实的 TIMclk：APB 分频不等于 1 就乘 2
 
 定时器的时钟不是 PCLK，而是 TIMxCLK。RM0090 与 RM0008 写同一条规则：APB 预分频为 1 时 TIMxCLK = PCLK；不为 1 时 TIMxCLK = PCLK × 2。F407 的 TIM3 挂在 APB1，168MHz 主频下 PCLK1=42MHz、APB1 分频 /4，所以 TIM3 按 84MHz 计数；F103 的 TIM3 同样挂 APB1，72MHz 主频下 PCLK1=36MHz、APB1 分频 /2，TIM3 按 72MHz 计数。按 42MHz 或 36MHz 去算，得到的频率正好差一倍。

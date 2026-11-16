@@ -40,6 +40,8 @@ platforms: [f407, f103, gd32, esp32]
 
 ## 机制
 
+![手绘板：GPIO 三步——合闸 RCC_AHB1ENR bit5、四张表逐格填 PF6、BSRR 纯赋值发令；ODR 读改写有中断插队窗口（原理示意，非实拍）](/images/ch09-gpio-breaker-tables.png)
+
 ### 时钟先行：外设没有合闸，寄存器只是橱窗
 
 F407 的 GPIO 挂在 AHB1 上。RCC 的基址是 `0x4002_3800`，`AHB1ENR` 偏移 `0x30`，GPIOF 对应 bit5。这一行必须在任何配置之前：
