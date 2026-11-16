@@ -162,7 +162,7 @@ isr_toggle:
 | 先配 A 再配 B，顺序不能乱 | 不够 | 内存屏障 `DMB/DSB/ISB`，CMSIS-Core 封成 `__DMB()/__DSB()/__ISB()` |
 | DMA 写的缓冲区 CPU 随后读 | 不够 | 屏障 + cache 清理/无效化（带数据 cache 的核，如 ESP32-S3） |
 
-这五道题对着上面的合同出。
+这六道题对着上面的合同出。
 
 <QuizBank chapter="c03-volatile" />
 
@@ -219,6 +219,8 @@ is_bigger_after_inc:
 | `-O2 -fwrapv` | 0 | 溢出按回绕，INT_MAX+1 = INT_MIN，比较为假 |
 
 `-O0` 那一行单独看。把宿主 `-O0` 汇编拉出来，函数体是 `pushq %rbp; movq %rsp, %rbp; movl %ecx, 16(%rbp); movl $1, %eax; popq %rbp; ret`，加法与比较都不在，只剩装载常量；`main` 里仍规规矩矩 `call`，可被调用的函数已经不再执行加法和比较。`-O0` 不等于逐行照实执行，它只是不在调用点做折叠、不在函数间传播。
+
+![手绘板：UB 是编译器的优化燃料——`x + 1 > x` 折成 `movs r0, #1`，`1u << 33` 两档变脸 2/0，`-fwrapv` 救不了移位三条红线（原理示意，非实拍）](/images/ch02-ub-compiler-fuel.png)
 
 ![UB 编译器优化陷阱：源代码 → 编译器假设无 UB → 折叠为常量 → 运行时与数学期望偏离](/anim/ub-compiler-trap.svg)
 

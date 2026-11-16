@@ -119,6 +119,8 @@ typedef struct tskTaskControlBlock
 
 软件帧 9 = R4–R11 + EXC_RETURN；硬件帧 8 = R0–R3、R12、LR、PC、xPSR；最上面一格是对齐空位。源码从初始栈顶回退 17 次，加上最后停住的落点，一共 18 个字 = 72 B（`F2:254-255,328`）。真正写入的只有 5 个槽：xPSR、PC、LR、R0、EXC_RETURN；其余 13 个槽（对齐 1 + R12/R3/R2/R1 + R4–R11）源码故意跳过初始化，运行后会被任务自己的寄存器覆盖。
 
+![手绘板：首帧 18 字 = 72 B——硬件 8 + 软件 9 + 对齐 1，从高地址对齐空位摆到低地址 R4 槽，真写的只有 xPSR/PC/LR/R0/EXC_RETURN 五槽（原理示意，非实拍）](/images/ch22-first-frame-18-words.png)
+
 F1:164-176 的 GDB 记录把 xPSR 放在 `pxTopOfStack` 指向的第一个字；按 `pxPortInitialiseStack` 的返回值和 `stmdb` 的压栈顺序，`pxTopOfStack` 应指向 R4 的槽位（源码未初始化），不是 xPSR。两者不一致，仓库里也没有 GDB 原始日志；这里以源码与 F2 的 18 字布局为准，GDB 记录只标「来源说法(未复核)」。
 
 ![新任务首帧：xPSR、PC、LR、R0 与 EXC_RETURN 被写进任务栈](/anim/task-create-stack.svg)
