@@ -28,7 +28,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from hd import (AMBER_PALE, AMBER_STROKE, BLUE_D, BLUE_FILL,  # noqa: E402
+from hd import (AMBER_PALE, AMBER_STROKE, BLUE_D, BLUE_FILL, GRAY_FILL,  # noqa: E402
                 GREEN_D, GREEN_FILL, HAND, INK, MUTED, RED, RED_FILL,
                 WHITE, Fig, save)
 
@@ -311,10 +311,170 @@ def ch13_cobs_paper_tape():
     return f
 
 
+
+def ch09_bitband_alias():
+    """Bit-band alias formula worked for PF6, plus the three data
+    register division. Facts from ch09/ch08 records."""
+    f = Fig("ch09-bitband-alias",
+            "位带：把一位搬进别名区",
+            title_color=BLUE_D, tag="CH 09 · GPIO")
+    f.text(64, 126,
+           "写别名地址，硬件替你完成一次原子读改写；只覆盖两个区的前 1 MB，一次只管一位。",
+           size=19, color=MUTED)
+
+    f.card(64, 156, 560, 210, BLUE_D, fill=BLUE_FILL)
+    f.text(84, 190, "别名公式（外设位带区）", size=18, color=BLUE_D,
+           weight="bold")
+    f.text(84, 222, "别名 = 0x42000000 + (地址 - 0x40000000) * 32", size=15,
+           color=INK, font=MONO, weight="bold")
+    f.text(84, 250, "                 + 位号 * 4", size=15, color=INK,
+           font=MONO, weight="bold")
+    f.text(84, 286, "F407 的 PF6 算过一遍（第 8 章）：", size=14.5, color=INK)
+    f.text(84, 314, "GPIOF_ODR 0x40021414 bit6 -> 0x42428298", size=15,
+           color=BLUE_D, font=MONO, weight="bold")
+    f.text(84, 346, "写这个字 = 硬件原子改 ODR 的 bit6", size=14, color=MUTED)
+
+    f.card(648, 156, 440, 210, GREEN_D, fill=GREEN_FILL)
+    f.text(668, 190, "三个数据寄存器分工", size=18, color=GREEN_D,
+           weight="bold")
+    divs = [("IDR", "只读：引脚此刻的真实电平"),
+            ("ODR", "可读可写：读改写有插队窗口"),
+            ("BSRR", "只写：一条 str 原子，BS 低 16 位、BR 高 16 位")]
+    for i, (r, note) in enumerate(divs):
+        y = 224 + i * 44
+        f.text(668, y, r, size=15.5, color=GREEN_D, weight="bold", font=MONO)
+        f.text(760, y, note, size=13, color=INK)
+    f.text(668, 352, "共阳接 3.3V：BR6（0x00400000）拉低 = 亮", size=13.5,
+           color=INK)
+
+    f.panel(64, 396, 1024, 100, RED_FILL, amp=1.6)
+    f.rect(64, 396, 1024, 100, color=RED, sw=1.8, fill=None, amp=1.6)
+    f.text(88, 428, "极性记反，代码完全反着工作：这套板子「高 16 位亮、低 16 位灭」",
+           size=15, color=RED, weight="bold")
+    f.text(88, 458, "BSRR |= x 读到 0 后碰巧等价于纯赋值——结果对，习惯错：只写寄存器的意图用 = 表达",
+           size=14, color=INK)
+    f.text(88, 484, "HAL_GPIO_WritePin 底层同样落 BSRR：用库不改原子性结论",
+           size=14, color=MUTED)
+
+    f.htext(64, 560, "两条原子路都通：位带或 BSRR；多比特字段回掩码操作",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(576, 590,
+           "别名地址取自第 8/9 章推算记录；示意，非实测。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
+def ch12_capture_two_pitfalls():
+    """Input capture: measuring PWM with its own timer reads delta 0;
+    wraparound needs three conditions. Facts from ch12 S6 record."""
+    f = Fig("ch12-capture-two-pitfalls",
+            "输入捕获两坑：自己测自己，回绕三条件",
+            title_color=RED, tag="CH 12 · 定时器")
+    f.text(64, 126,
+           "TIM2 以 1MHz 自由计数、1 计数 = 1us；两次边沿的差值直接读成微秒。坑全在时基的选择上。",
+           size=19, color=MUTED)
+
+    f.card(64, 156, 500, 200, RED, fill=RED_FILL)
+    f.text(84, 190, "坑一：拿 PWM 自己的定时器测自己", size=17, color=RED,
+           weight="bold")
+    f.text(84, 218, "TIM3 ARR=999，PWM 周期正好 1000 计数", size=14.5,
+           color=INK)
+    f.text(84, 244, "同相位边沿每周期落在同一个 CNT 上", size=14.5, color=INK)
+    f.pill(84, 262, 220, 42, "差值恒为 0", RED, fill=WHITE, size=17)
+    f.text(84, 328, "分不出经过了几圈——解法：换独立的 TIM2 捕获", size=14,
+           color=MUTED)
+
+    f.card(588, 156, 500, 200, AMBER_STROKE, fill=AMBER_PALE)
+    f.text(608, 190, "坑二：回绕不是无脑相减", size=17, color=AMBER_STROKE,
+           weight="bold")
+    f.text(608, 218, "三条件：模数=位宽（2^32）· 间隔<一整圈 · 无丢边沿",
+           size=14, color=INK)
+    f.text(608, 244, "反例 TIM3：last=990、now=10，真差 20", size=14.5,
+           color=INK, font=MONO)
+    f.pill(608, 262, 300, 42, "uint32 相减 -> 4294966316", RED, fill=WHITE,
+           size=14.5, text_color=RED)
+    f.text(608, 328, "模 1000 也救不了：分不清零圈还是一整圈", size=14,
+           color=MUTED)
+
+    f.panel(64, 386, 1024, 116, GREEN_FILL, amp=1.6)
+    f.rect(64, 386, 1024, 116, color=GREEN_D, sw=1.8, fill=None, amp=1.6)
+    f.text(88, 418, "S6 的判定纪律（capture.h）", size=15.5, color=GREEN_D,
+           weight="bold")
+    f.text(88, 448, "32 位自由计数时基 · 只接受 100us-500ms 间隔 · 首次捕获只建基准 · 过捕获（overcapture）重建基准",
+           size=14, color=INK)
+    f.text(88, 476, "超 1 秒无新边沿清零；主循环用 PRIMASK 短临界区复制快照，临界区外使用",
+           size=14, color=MUTED)
+
+    f.htext(64, 560, "delta = now - previous：三条件齐了才是周期，否则是垃圾",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(576, 590,
+           "数字取自本章 S6/capture.h 断言记录；机制示意，非实测波形。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
+def ch13_brr_error_budget():
+    """BRR integer is the denominator; error budget derived from 8.5
+    bit-times. Facts from ch13 S7 record."""
+    f = Fig("ch13-brr-error-budget",
+            "BRR 整数值就是分母：误差预算 5.882%",
+            title_color=BLUE_D, tag="CH 13 · UART 帧协议")
+    f.text(64, 126,
+           "16 × USARTDIV 正好是寄存器那 16 位：固件直接写整数，先算误差预算再挑 PCLK。",
+           size=19, color=MUTED)
+
+    f.card(64, 156, 470, 220, BLUE_D, fill=BLUE_FILL)
+    f.text(84, 190, "BRR = round(PCLK / baud)", size=18, color=BLUE_D,
+           weight="bold", font=MONO)
+    f.text(84, 218, "16 x USARTDIV = 16*Mantissa + Fraction", size=14,
+           color=INK, font=MONO)
+    f.text(84, 248, "115200 @ 84MHz：BRR=729 -> 115226（+0.023%）", size=14,
+           color=INK, font=MONO)
+    f.text(84, 278, "Mantissa 39 + Fraction 1 写成 625 一个整数", size=14,
+           color=INK, font=MONO)
+    f.text(84, 316, "1 到 65535 全试过：四舍五入值就是最优值", size=14,
+           color=MUTED)
+    f.text(84, 344, "（宿主算术口径，非板上实测）", size=13, color=MUTED)
+
+    f.card(558, 156, 530, 220, GREEN_D, fill=GREEN_FILL)
+    f.text(578, 190, "预算从 8.5 个位时间推出来", size=18, color=GREEN_D,
+           weight="bold")
+    f.text(578, 218, "最险时刻：最后一位的中点 = 8.5 位", size=14.5, color=INK)
+    f.text(578, 246, "|误差| x 8.5 < 0.5 -> 总容差 5.882%", size=15,
+           color=GREEN_D, font=MONO, weight="bold")
+    f.text(578, 274, "收发两端对半分：每端 2.941%", size=14.5, color=INK)
+    f.text(578, 304, "1MHz 配 115200：BRR=9 -> -3.549%，一项吃掉六成，",
+           size=14, color=RED, weight="bold")
+    f.text(578, 330, "剩 2.333% 两端分，HSI ±1% 刚够，没有余量", size=14,
+           color=RED, weight="bold")
+    f.text(578, 360, "16MHz 配 921600：+2.124%，同样卡在量化", size=14,
+           color=MUTED)
+
+    f.panel(64, 406, 1024, 100, AMBER_PALE, amp=1.6)
+    f.rect(64, 406, 1024, 100, color=AMBER_STROKE, sw=1.8, fill=None,
+           amp=1.6)
+    f.text(88, 438, "OVER8=1 的误差账两处来源对不上（S7 给 -0.794%，按字段定义复算约 -8.6%）",
+           size=15, color=AMBER_STROKE, weight="bold")
+    f.text(88, 468, "这里不下结论、标待复核：要落定得置 OVER8 后读回 BRR 并用仪器量线上位宽",
+           size=14, color=INK)
+    f.text(88, 494, "经验值「±2%-3%」的出处就是这条 8.5 位推导，不含温漂与走线延迟",
+           size=13.5, color=MUTED)
+
+    f.htext(64, 560, "先算 8.5 位再挑 PCLK——量化吃掉预算的六成，就没有余量了",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(576, 590,
+           "读数取自本章 S7 八行误差表（宿主脚本口径）；推导示意。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch09-gpio-breaker-tables": ch09_gpio_breaker_tables,
+    "ch09-bitband-alias": ch09_bitband_alias,
     "ch12-counter-three-knobs": ch12_counter_three_knobs,
+    "ch12-capture-two-pitfalls": ch12_capture_two_pitfalls,
     "ch13-cobs-paper-tape": ch13_cobs_paper_tape,
+    "ch13-brr-error-budget": ch13_brr_error_budget,
 }
 
 

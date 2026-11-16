@@ -105,6 +105,8 @@ ISR 的频率也要计算：1kHz 更新中断每秒进 1000 次，每次几十�
 共享判定函数在 `mcu/code/common/behavior/capture.h`：`delta = now - previous`，只有见过上一拍且 `100 <= delta <= 500000` 才输出 `1000000/delta`；`overcapture` 把频率清零并记一次丢失。`tests.c` 里写着对应的断言：`UINT32_MAX-499` 之后接 `500` 得到 1000Hz，`overcapture=true` 后频率为 0、`lost=1`，超时后清零。
 
 主循环不直接读捕获结构体，而是用 `lock()`/`unlock()` 的 PRIMASK 短临界区复制一份快照，再在临界区外使用；跨 ISR 与主循环的变量按[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同声明。这些是源码里的断言与写法，不是这里跑出来的板上读数；板上测频在 S6 里仍标着待实测。
+![手绘板：输入捕获两坑——拿 PWM 自己的定时器测自己差值恒 0；回绕要模数=位宽、间隔<一圈、无丢边沿三条件齐；S6 判定纪律 100us-500ms 加 overcapture（原理示意，非实拍）](/images/ch12-capture-two-pitfalls.png)
+
 
 ![输入捕获：边沿拍照 → CNT 差值 → 脉宽与频率](/anim/tim-input-capture.svg)
 

@@ -26,8 +26,11 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from hd import (AMBER_PALE, AMBER_STROKE, BLUE_D, BLUE_FILL, GREEN_D,  # noqa: E402
-                GREEN_FILL, INK, MUTED, RED, RED_FILL, WHITE, Fig, save)
+from hd import (AMBER_PALE, AMBER_STROKE, BLUE_D, BLUE_FILL, GRAY_FILL,  # noqa: E402
+                GREEN_D, GREEN_FILL, INK, MUTED, RED, RED_FILL, WHITE, Fig,
+                save)
+
+MONO = "'Consolas','Courier New',monospace"
 
 STAGE = Path(__file__).resolve().parents[2] / ".temp" / "l0-l5-pass" / "figures"
 
@@ -225,8 +228,130 @@ def ch19_reset_cause_fusebox():
     return f
 
 
+
+def ch16_spi_shift_ring():
+    """SPI shift ring and mode table: both sides shift one bit per SCK
+    beat; modes differ only in idle level and sample edge. Facts from
+    ch16 section six."""
+    f = Fig("ch16-spi-shift-ring",
+            "SPI 移位环：发和收是同一个动作",
+            title_color=BLUE_D, tag="CH 16 · I2C 与 SPI")
+    f.text(64, 126,
+           "主从各一个 8 位移位寄存器，MOSI/MISO 把头尾接成环；8 拍之后两个字节完成对调。",
+           size=19, color=MUTED)
+
+    # ---- shift ring ----
+    f.card(96, 156, 420, 130, BLUE_D, fill=BLUE_FILL)
+    f.text(116, 188, "主机移位寄存器 0xA5", size=15.5, color=BLUE_D,
+           weight="bold")
+    f.card(636, 156, 420, 130, GREEN_D, fill=GREEN_FILL)
+    f.text(656, 188, "从机移位寄存器 0x3C", size=15.5, color=GREEN_D,
+           weight="bold")
+    f.arrow(520, 196, 630, 196, color=BLUE_D, sw=2.6, bend=0.0, head=10)
+    f.text(575, 178, "MOSI", size=13.5, color=BLUE_D, anchor="middle",
+           weight="bold")
+    f.arrow(630, 246, 520, 246, color=GREEN_D, sw=2.6, bend=0.0, head=10)
+    f.text(575, 268, "MISO", size=13.5, color=GREEN_D, anchor="middle",
+           weight="bold")
+    f.text(96, 316, "SCK 每来一拍：两边各移出一位、移进一位；MSB 先出（LSBFIRST=0 复位值）",
+           size=14, color=INK)
+    f.text(96, 342, "只想读也得假写一个字节顶出从机数据；只想写也得把换回来的读走，否则下次接收溢出",
+           size=14, color=MUTED)
+
+    # ---- mode table ----
+    modes = [("0", "0", "0", "低", "第 1 沿（上升）", GREEN_D, GREEN_FILL),
+             ("1", "0", "1", "低", "第 2 沿（下降）", BLUE_D, BLUE_FILL),
+             ("2", "1", "0", "高", "第 1 沿（下降）", BLUE_D, BLUE_FILL),
+             ("3", "1", "1", "高", "第 2 沿（上升）", AMBER_STROKE, AMBER_PALE)]
+    for i, (m, cpol, cpha, idle, sample, c, fl) in enumerate(modes):
+        x = 96 + i * 244
+        f.card(x, 372, 228, 120, c, fill=fl)
+        f.text(x + 16, 402, "Mode " + m, size=17, color=c,
+               weight="bold")
+        f.text(x + 16, 432, "CPOL=" + cpol + "  CPHA=" + cpha,
+               size=14, color=INK, font=MONO)
+        f.text(x + 16, 456, "空闲 " + idle, size=13.5, color=MUTED)
+        f.text(x + 16, 478, "采样 " + sample, size=13.5, color=INK)
+
+    # ---- mismatch verdict ----
+    f.panel(64, 516, 1024, 84, RED_FILL, amp=1.6)
+    f.rect(64, 516, 1024, 84, color=RED, sw=1.8, fill=None, amp=1.6)
+    f.text(88, 548, "模式错配不报错：MOSI 波形看着正常，从机读到的字节整体错一位",
+           size=15, color=RED, weight="bold")
+    f.text(88, 578, "定位法：逻辑分析仪对空闲电平与采样沿；W25Q64/ST7789 多为 Mode 0，W25Q64 也支持 Mode 3",
+           size=14, color=MUTED)
+
+    f.htext(64, 700, "BR 只有 /2 到 /256 八档、没有 /3：10MHz 目标只能落相邻档（84MHz /8 = 10.5MHz）",
+            size=19.5, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "模式表与分频档取自本章 CR1 位段取证；示意，非实测波形。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
+def ch18_stop_wake_clock():
+    """Stop exit: HSE/PLL are off, wake lands on HSI; clock must be
+    rebuilt in order. Facts from ch18 section four."""
+    f = Fig("ch18-stop-wake-clock",
+            "Stop 退出：PLL 不会自己回来",
+            title_color=RED, tag="CH 18 · 低功耗")
+    f.text(64, 126,
+           "Stop 期间 HSE 与 PLL 停掉，醒来硬件把 HSI 接上：F103 是 8MHz，F407 是 16MHz。",
+           size=19, color=MUTED)
+
+    # ---- wake chain ----
+    chain = [("醒来：HSI 在跑，PLL 停", "别用 72/168MHz 的外设参数"),
+             ("开 HSE，等 HSERDY", "8MHz 晶振"),
+             ("配 PLL 并等 PLLRDY", "F1：HSE x9；F4：M8 N336 P2 Q7"),
+             ("Flash latency：F1=2WS · F4=5WS", "3.3V 口径"),
+             ("SYSCLK 切 PLL，等 SWS", "写 SW 不等于已切换"),
+             ("重开外设时钟，重算 SysTick/BRR/TIM", "F1：71999、0x271；F4：167999、729")]
+    for i, (a, b) in enumerate(chain):
+        y = 164 + i * 60
+        c = RED if i == 0 else BLUE_D
+        fl = RED_FILL if i == 0 else BLUE_FILL
+        f.panel(96, y, 560, 50, fl, amp=1.5)
+        f.rect(96, y, 560, 50, color=c, sw=1.8, fill=None, amp=1.5)
+        f.text(112, y + 21, a, size=14.5, color=c, weight="bold")
+        f.text(112, y + 40, b, size=13, color=MUTED, font=MONO)
+
+    # ---- uart evidence ----
+    f.card(700, 164, 388, 280, AMBER_STROKE, fill=AMBER_PALE)
+    f.text(720, 196, "串口最先暴露", size=18, color=AMBER_STROKE,
+           weight="bold")
+    f.text(720, 228, "F103：0x271 在 72MHz = 115200", size=13.5, color=INK,
+           font=MONO)
+    f.text(720, 254, "醒在 HSI 8MHz：同一个 0x271 = 12800", size=13.5,
+           color=RED, font=MONO, weight="bold")
+    f.text(720, 292, "F407：729 在 84MHz = 115226", size=13.5, color=INK,
+           font=MONO)
+    f.text(720, 318, "PCLK2 掉到 8MHz：729 打出 10973", size=13.5, color=RED,
+           font=MONO, weight="bold")
+    f.text(720, 356, "和 115200 差约 90%，对端收到帧错", size=13.5,
+           color=MUTED)
+    f.text(720, 388, "恢复 PLL 后按新 PCLK 重算 BRR", size=13.5, color=INK)
+    f.text(720, 414, "两套分母不能互抄", size=13.5, color=RED, weight="bold")
+
+    # ---- who does what ----
+    f.panel(64, 530, 1024, 80, GRAY_FILL, amp=1.6)
+    f.rect(64, 530, 1024, 80, color=MUTED, sw=1.6, fill=None, amp=1.6)
+    f.text(88, 560, "EnterSTOPMode 只负责进 Stop，不替你恢复 PLL：__WFI() 返回后自己调时钟初始化",
+           size=14.5, color=INK, weight="bold")
+    f.text(88, 588, "HAL 时基挂 SysTick 的，先恢复 tick 再配时钟，避免配置里的超时判断用错节拍",
+           size=13.5, color=MUTED)
+
+    f.htext(64, 700, "「醒来 PLL 自动回来」是错误说法：六步重走，分母按 F1/F4 各算各的",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "恢复表与 BRR 读数取自本章取证记录；流程示意，非实测。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch16-at24c02-page-wrap": ch16_at24c02_page_wrap,
+    "ch16-spi-shift-ring": ch16_spi_shift_ring,
+    "ch18-stop-wake-clock": ch18_stop_wake_clock,
     "ch19-reset-cause-fusebox": ch19_reset_cause_fusebox,
 }
 

@@ -342,12 +342,71 @@ def plate_mc32_espnow_limits():
     return f
 
 
+
+def plate_mc31_uart_layers():
+    """ESP32 UART: three buffer layers, three overflow points, event is
+    not data. Facts from ch31 section two (uart.h:121,91-95)."""
+    f = Fig("mc31-uart-three-layers",
+            "UART 三层缓冲：三个溢出点，事件不是数据",
+            title_color=BLUE_D, tag="CH 31 · ESP32 驱动")
+    f.text(64, 126,
+           "uart_driver_install 装好闭环：ISR 搬运 → 事件队列 → 任务处理；字节在哪一层，事件说了不算。",
+           size=19, color=MUTED)
+
+    # ---- three layers ----
+    layers = [("硬件 FIFO", "S3：128 字节", "soc_caps.h:425", BLUE_D, BLUE_FILL),
+              ("驱动 ring buffer", "示例 2048", "rx_buffer_size 参数", GREEN_D, GREEN_FILL),
+              ("用户 buffer", "应用自备", "uart_read_bytes 才取走", AMBER_STROKE, AMBER_PALE)]
+    for i, (name, size, note, c, fl) in enumerate(layers):
+        y = 164 + i * 74
+        f.card(96, y, 560, 62, c, fill=fl)
+        f.text(116, y + 26, name, size=16, color=c, weight="bold")
+        f.text(340, y + 26, size, size=15, color=INK, font=MONO,
+               weight="bold")
+        f.text(116, y + 48, note, size=12.5, color=MUTED)
+        if i < 2:
+            f.arrow(376, y + 62, 376, y + 74, color=MUTED, sw=2.0,
+                    bend=0.0, head=7)
+
+    # ---- overflow points ----
+    f.card(700, 164, 388, 216, RED, fill=RED_FILL)
+    f.text(720, 196, "三个溢出点 → 两类事件", size=17, color=RED,
+           weight="bold")
+    ovs = [("FIFO 满未搬", "UART_BUFFER_FULL"),
+           ("FIFO 溢出（硬件丢字节）", "UART_FIFO_OVF"),
+           ("ring 满", "数据被拒收")]
+    for i, (a, b) in enumerate(ovs):
+        y = 228 + i * 48
+        f.text(720, y, a, size=14, color=INK)
+        f.text(720, y + 20, b, size=13.5, color=RED, font=MONO,
+               weight="bold")
+
+    # ---- event vs data ----
+    f.panel(64, 400, 1024, 104, AMBER_PALE, amp=1.6)
+    f.rect(64, 400, 1024, 104, color=AMBER_STROKE, sw=1.8, fill=None,
+           amp=1.6)
+    f.text(88, 432, "事件不等于数据：UART_DATA 只带 size 与 timeout_flag（uart.h:91-95），字节躺在 ring buffer 里",
+           size=15, color=AMBER_STROKE, weight="bold")
+    f.text(88, 462, "timeout_flag = 「RX TOUT 时间内没有新数据」——IDF 版的 IDLE 判帧，软件超时实现",
+           size=14.5, color=INK)
+    f.text(88, 490, "协议帧边界靠它，与 v1 第 13 章的 IDLE 判帧同构", size=13.5,
+           color=MUTED)
+
+    f.htext(64, 560, "事件队列给的是通知；不调 uart_read_bytes，字节永远停在 ring buffer",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(576, 590,
+           "签名与层数取自本章 v5.5.2 uart.h 取证；结构示意，非实测。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 PLATES = {
     "mc29-gd32-contrast": plate_mc29,
     "mc29-mtime-not-systick": plate_mc29_mtime,
     "mc30-s3-boot-chain": plate_mc30,
     "mc30-app-main-layers": plate_mc30_app_main,
     "mc31-matrix-audio": plate_mc31,
+    "mc31-uart-three-layers": plate_mc31_uart_layers,
     "mc32-wifi-espnow": plate_mc32,
     "mc32-espnow-limits": plate_mc32_espnow_limits,
 }

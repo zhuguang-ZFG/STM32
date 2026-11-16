@@ -67,6 +67,8 @@ uart_driver_install(UART_NUM_1,
 数据走**三层**：硬件 FIFO（S3 是 128 字节，`soc_caps.h:425`）→ 驱动 ring buffer → 用户 buffer。三个溢出点对应两类事件：FIFO 满未搬 → `UART_BUFFER_FULL`；FIFO 溢出（硬件丢字节）→ `UART_FIFO_OVF`；ring buffer 满 → 数据被拒收。
 
 **事件≠数据**：`UART_DATA` 事件只带元数据（`uart_event_t` 的 `size` 与 `timeout_flag`，`uart.h:91-95`），字节躺在 ring buffer 里，`uart_read_bytes` 才取走。`timeout_flag` 是「RX TOUT 时间内没有新数据」的标志，也就是**IDF 版的 IDLE 判帧**：协议帧边界靠它，与 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md) 的 IDLE 判帧同构，只是这边用软件超时实现。
+![手绘板：UART 三层缓冲——硬件 FIFO 128B、驱动 ring、用户 buffer；三个溢出点对应两类事件；UART_DATA 只带元数据，不调 uart_read_bytes 字节不动（原理示意，非实拍）](/images/mc31-uart-three-layers.png)
+
 
 ![UART 事件驱动动画：ISR 搬运、事件队列、任务处理](/anim/idf-uart-events.svg)
 
