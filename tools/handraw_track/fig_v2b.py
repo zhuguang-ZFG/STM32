@@ -30,6 +30,7 @@ from hd import (AMBER_FILL, AMBER_PALE, AMBER_STROKE, BLUE_D,  # noqa: E402
                 BLUE_FILL, GRAY_FILL, GREEN_D, GREEN_FILL, INK, MUTED, RED,
                 RED_FILL, WHITE, Fig, save)
 
+MONO = "'Consolas','Courier New',monospace"
 STAGE = Path(__file__).resolve().parents[2] / ".temp" / "l0-l5-pass" / "figures"
 
 
@@ -226,8 +227,98 @@ def ch24_queue_three_contracts():
     return f
 
 
+def ch22_first_frame_18_words():
+    """New task's first frame: 18 words the kernel fakes as 'just
+    interrupted'. Five written slots, 13 skipped. Facts from ch22
+    (port.c:92-125, F2:254-255)."""
+    f = Fig("ch22-first-frame-18-words",
+            "首帧 18 字：内核伪造的「刚被中断」现场",
+            title_color=BLUE_D, tag="CH 22 · 任务与调度")
+    f.text(64, 126,
+           "任务从没运行过，硬件没替它压过栈；pxPortInitialiseStack 手工摆出一份与 PendSV 同形的帧。",
+           size=19, color=MUTED)
+
+    # ---- stack column: high address on top, low at bottom ----
+    slots = [  # (label, written?)  top -> bottom = high -> low
+        ("对齐空位", None, False),
+        ("xPSR", "0x01000000", True),
+        ("PC", "入口 & 0xFFFFFFFE", True),
+        ("LR", "prvTaskExitError", True),
+        ("R12", None, False),
+        ("R3", None, False), ("R2", None, False), ("R1", None, False),
+        ("R0", "任务参数", True),
+        ("EXC_RETURN", "0xFFFFFFFD", True),
+        ("R11", None, False), ("R10", None, False), ("R9", None, False),
+        ("R8", None, False), ("R7", None, False), ("R6", None, False),
+        ("R5", None, False), ("R4", None, False),
+    ]
+    top = 170
+    ch = 27
+    for i, (label, value, written) in enumerate(slots):
+        y = top + i * ch
+        c = RED if label in ("LR",) else (BLUE_D if written else MUTED)
+        fill = (RED_FILL if label == "LR" else
+                (BLUE_FILL if written else GRAY_FILL))
+        f.panel(96, y, 210, ch - 3, fill, amp=1.2)
+        f.rect(96, y, 210, ch - 3, color=c, sw=1.6, fill=None, amp=1.2)
+        f.text(108, y + 18, label, size=13.5,
+               color=c if written else MUTED,
+               weight="bold" if written else "normal")
+        if value:
+            f.text(300, y + 18, value, size=12.5,
+                   color=RED if label == "LR" else BLUE_D,
+                   font=MONO, weight="bold")
+    f.text(96, top + 18 * ch + 14, "低地址：pxTopOfStack 的落点（R4 槽）",
+           size=13, color=MUTED)
+    f.text(96, top - 12, "高地址：创建前的栈顶（对齐空位）", size=13,
+           color=MUTED)
+
+    # ---- right: three frame groups + the five facts ----
+    f.card(560, 156, 528, 150, BLUE_D, fill=BLUE_FILL)
+    f.text(580, 188, "18 字 = 72 B 的三段", size=19, color=BLUE_D,
+           weight="bold")
+    rows3 = [("硬件帧 8", "R0-R3 · R12 · LR · PC · xPSR", BLUE_D),
+             ("软件帧 9", "R4-R11 + EXC_RETURN", GREEN_D),
+             ("对齐 1", "最上面一格空位", MUTED)]
+    for i, (name, detail, c) in enumerate(rows3):
+        y = 220 + i * 26
+        f.text(592, y, name, size=16, color=c, weight="bold")
+        f.text(706, y, detail, size=13.5, color=INK)
+    f.text(580, 292, "硬件 8 + 软件 9 + 对齐 1；源码从栈顶回退 17 次落脚，共 18 字",
+           size=13, color=MUTED)
+
+    f.card(560, 326, 528, 170, GREEN_D, fill=GREEN_FILL)
+    f.text(580, 358, "真写进去的只有 5 个槽", size=19, color=GREEN_D,
+           weight="bold")
+    facts = ["xPSR = 0x01000000（T 位，Thumb 开跑）",
+             "PC = 入口 & 0xFFFFFFFE（bit0 归 xPSR 管）",
+             "LR = prvTaskExitError（任务 return 的陷阱）",
+             "R0 = pvParameters（AAPCS 第一个整型参数）",
+             "EXC_RETURN = 0xFFFFFFFD（PSP · Thread · 无 FPU）"]
+    for i, ln in enumerate(facts):
+        f.text(580, 386 + i * 20, ln, size=12.5, color=INK, font=MONO)
+    f.text(580, 482, "其余 13 槽源码故意跳过：跑起来就被任务自己的寄存器覆盖",
+           size=13, color=MUTED)
+
+    f.card(560, 516, 528, 108, RED, fill=RED_FILL)
+    f.text(580, 548, "为什么第一次切换就能跑", size=19, color=RED,
+           weight="bold")
+    f.text(580, 576, "弹栈按同一套偏移：ldmia r0!, {r4-r11,r14} 从低地址 R4 起，",
+           size=13.5, color=INK, font=MONO)
+    f.text(580, 598, "硬件帧随后弹出——任务就像「一直在这儿干活」一样开始执行。",
+           size=13.5, color=INK)
+
+    f.htext(64, 700, "TCB 的 pxTopOfStack 按偏移 0 存这个落点——第一字段是内核与 port 层的 ABI",
+            size=19.5, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "布局取自本章 port.c/F2 取证记录；位置示意，非 GDB 实拍。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch21-stack-word-ruler": ch21_stack_word_ruler,
+    "ch22-first-frame-18-words": ch22_first_frame_18_words,
     "ch24-queue-three-contracts": ch24_queue_three_contracts,
 }
 

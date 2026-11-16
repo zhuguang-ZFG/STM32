@@ -7,8 +7,9 @@ same code -> same SVG bytes -> same PNG pixels.
 """
 from pathlib import Path
 
-from hd import (AMBER_PALE, AMBER_STROKE, BLUE_D, BLUE_FILL, GREEN_D,
-                GREEN_FILL, INK, MUTED, RED, RED_FILL, WHITE, Fig, save)
+from hd import (AMBER_PALE, AMBER_STROKE, BLUE_D, BLUE_FILL, GRAY_FILL,
+                GREEN_D, GREEN_FILL, INK, MUTED, RED, RED_FILL, WHITE, Fig,
+                save)
 
 STAGE = Path(__file__).resolve().parents[2] / ".temp" / "l0-l5-pass" / "figures"
 MONO = "'Consolas','Courier New',monospace"
@@ -285,10 +286,204 @@ def ch03_struct_overlay():
     return f
 
 
+def ch01_const_ram_economics():
+    """const LUT: .data 256 -> 0, .text 148 -> 404, start copies 64 words
+    fewer. Numbers from ch01 lut_probe.c record."""
+    f = Fig("ch01-const-ram-economics",
+            "加一个 const：256 字节的表从 RAM 搬回 Flash",
+            title_color=GREEN_D, tag="CH 01 · 内存模型")
+    f.text(64, 126,
+           "表还是那张表，只是不再要 RAM 的户口：初值本来就存 Flash，查表也直接读 Flash。",
+           size=19, color=MUTED)
+
+    # ---- left: plain LUT, lives in .data ----
+    f.card(64, 156, 500, 330, BLUE_D, fill=BLUE_FILL)
+    f.text(84, 190, "uint8_t lut[256] = {1,2,3};", size=19, color=BLUE_D,
+           weight="bold", font=MONO)
+    f.text(84, 218, "可写：住在 .data，两边各一份", size=14, color=MUTED)
+    f.metric(96, 268, ".data 256", "RAM 本体 0x20000000", BLUE_D)
+    f.metric(300, 268, ".text 148", "Flash 里的代码", MUTED)
+    f.text(84, 322, "nm：20000000 00000100 D lut", size=14.5, color=INK,
+           font=MONO)
+    f.text(84, 350, "第二个 LOAD：FileSiz 0x100 · MemSiz 0x700",
+           size=14.5, color=INK)
+    f.text(84, 386, "启动搬运循环要多跑 64 个字", size=15, color=RED,
+           weight="bold")
+    f.text(84, 414, "RAM 从 256 字节起算，堆栈挤在同一个 128 KB 里",
+           size=14, color=MUTED)
+
+    # ---- right: const LUT, lives in Flash ----
+    f.card(588, 156, 500, 330, GREEN_D, fill=GREEN_FILL)
+    f.text(608, 190, "const uint8_t lut[256] = {1,2,3};", size=19,
+           color=GREEN_D, weight="bold", font=MONO)
+    f.text(608, 218, "只读：住 Flash，RAM 里查无此人", size=14, color=MUTED)
+    f.metric(620, 268, ".data 0", "RAM 让出 256 字节", GREEN_D)
+    f.metric(824, 268, ".text 404", "Flash 多存这份表", AMBER_STROKE)
+    f.text(608, 322, "nm：0800021c 00000100 T lut", size=14.5, color=INK,
+           font=MONO)
+    f.text(608, 350, "第二个 LOAD：FileSiz 0x00000 · MemSiz 0x600",
+           size=14.5, color=INK)
+    f.text(608, 386, "启动少拷 64 个字（256÷4）", size=15, color=GREEN_D,
+           weight="bold")
+    f.text(608, 414, "判据是「初值是否全零/只读」，不是有没有写 =",
+           size=14, color=MUTED)
+
+    # ---- bottom: the trade, spelled out ----
+    f.panel(64, 516, 1024, 120, AMBER_PALE, amp=1.6)
+    f.rect(64, 516, 1024, 120, color=AMBER_STROKE, sw=1.8, fill=None,
+           amp=1.6)
+    f.text(96, 556, "这笔账的两半：", size=17, color=AMBER_STROKE,
+           weight="bold")
+    f.text(96, 588, "省下的是 RAM 那一半；Flash 那一半本来就要花——初值总得有人存。",
+           size=16, color=INK)
+    f.text(96, 616, "要运行时改写的表（校准补偿）不能 const：改用 RAM 工作副本，启动时从 Flash 模板拷入。",
+           size=14.5, color=MUTED)
+
+    f.htext(64, 700, "一个 const 换 256 字节 RAM；RAM 越小的型号，这笔交易越值",
+            size=22, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "数字取自本章 lut_probe.c 实测记录；F407 128 KB，small 型号几十 KB。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
+def ch02_ub_compiler_fuel():
+    """UB gives the optimizer license: is_bigger_after_inc folds to movs
+    r0,#1; 1u<<33 gives 2 (-O0) vs 0 (-O2). Facts from ch02 probe record."""
+    f = Fig("ch02-ub-compiler-fuel",
+            "UB：编译器拿「你不会越界」当优化燃料",
+            title_color=RED, tag="CH 02 · volatile 与 UB")
+    f.text(64, 126,
+           "标准撒手的地方，编译器按最省指令的走法排；两个答案都对，因为题目本身没有答案。",
+           size=19, color=MUTED)
+
+    # ---- left: signed overflow folds ----
+    f.card(64, 156, 520, 360, RED, fill=RED_FILL)
+    f.text(84, 190, "return x + 1 > x;", size=20, color=RED, weight="bold",
+           font=MONO)
+    f.text(84, 216, "x = INT_MAX 那一刻加法已溢出，属于 UB", size=14,
+           color=MUTED)
+    f.pill(84, 236, 300, 40, "-O2：movs r0, #1", RED, fill=WHITE, size=16)
+    f.text(84, 306, "推理链：你保证不喂 INT_MAX → 比较恒真 → 整段折叠",
+           size=14.5, color=INK)
+    f.pill(84, 324, 360, 40, "-O2 -fwrapv：mvn r3, #-2147483648", GREEN_D,
+           fill=WHITE, size=15)
+    f.text(84, 394, "回绕口径下编译器失去假设权，只能真算：", size=14.5,
+           color=INK)
+    f.text(84, 420, "INT_MAX+1 = INT_MIN，比较为假，返回 0", size=15,
+           color=GREEN_D, weight="bold")
+    f.text(84, 456, "-O0 也不是逐行照实执行：函数体同样只剩装载常量",
+           size=14, color=MUTED)
+    f.text(84, 484, "「-O0 能跑」从来不是正确性证据", size=15, color=RED,
+           weight="bold")
+
+    # ---- right: shift count changes face ----
+    f.card(608, 156, 480, 360, BLUE_D, fill=BLUE_FILL)
+    f.text(628, 190, "1u << 33", size=20, color=BLUE_D, weight="bold",
+           font=MONO)
+    f.text(628, 216, "计数 ≥ 位宽，UB——两档两个答案", size=14, color=MUTED)
+    f.metric(640, 268, "-O0 → 2", "33&31=1，1u<<1", BLUE_D)
+    f.metric(850, 268, "-O2 → 0", "认出 UB，任选最省", AMBER_STROKE)
+    f.text(628, 322, "三条红线：计数≥位宽 · 计数为负 · 左移进符号位",
+           size=15, color=INK, weight="bold")
+    f.text(628, 352, "安全写法：计数编译期可证 < 32，或运行期先查再移",
+           size=14.5, color=INK)
+    f.text(628, 386, "-fwrapv 只救有符号加/减/乘的溢出，", size=14.5,
+           color=MUTED)
+    f.text(628, 412, "移位三条红线一条都不救", size=14.5, color=MUTED)
+    f.text(628, 456, "掩码写 1UL 只防符号位，防不住计数越界", size=14,
+           color=MUTED)
+    f.text(628, 484, "gcc 16.1.0 宿主实测，交叉档同判", size=14, color=MUTED)
+
+    # ---- bottom: what UB actually buys the optimizer ----
+    f.panel(64, 540, 1024, 96, AMBER_PALE, amp=1.6)
+    f.rect(64, 540, 1024, 96, color=AMBER_STROKE, sw=1.8, fill=None,
+           amp=1.6)
+    f.text(96, 578, "燃料换来的速度：越界检查不用生成、边界不用判断、循环不用守",
+           size=16, color=INK)
+    f.text(96, 608, "代价：换优化档、换编译器、加一行代码，同一个函数就换一张脸。",
+           size=14.5, color=MUTED)
+
+    f.htext(64, 700, "UB 题目本身没有标准答案——别在它上面建立任何行为假设",
+            size=22, color=RED, weight="bold", hl=True)
+    f.text(576, 730,
+           "读数取自本章 probe.sh 宿主记录；布局示意，非实测波形。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
+def ch06_boot_five_stations():
+    """Boot five stations with the seven literal-pool words. Facts from
+    ch06 startup section (objdump of link_probe)."""
+    f = Fig("ch06-boot-five-stations",
+            "启动五站：硬件两读，到最后一声 bl main",
+            title_color=BLUE_D, tag="CH 06 · 链接与启动")
+    f.text(64, 126,
+           "链接脚本把地址条写进字面量池，启动文件照单搬运；每一站都有失败的样子。",
+           size=19, color=MUTED)
+
+    # ---- five stations: 2 rows (3 + 2) ----
+    st = [
+        ("1 硬件两读", "硅片硬逻辑", "0x08000000→MSP\n0x08000004→PC",
+         "向量表被 gc：SP 变成机器码，第一次压栈就死", BLUE_D, BLUE_FILL),
+        ("2 开 FPU", "Reset_Handler", "CPACR 0xE000ED88\nCP10/11 置 0xF<<20",
+         "漏了：第一条 FPU 指令 UsageFault(NOCP)", GREEN_D, GREEN_FILL),
+        ("3 搬 .data", "Reset_Handler", "_sidata→_sdata.._edata\n0x08000218→0x20000000",
+         "没搬：全局变量是上电垃圾", AMBER_STROKE, AMBER_PALE),
+        ("4 清 .bss", "Reset_Handler", "_sbss.._ebss 写 0\n0x20000004..0x20001008",
+         "没清：未初始化全局不是 0，随板子变", AMBER_STROKE, AMBER_PALE),
+        ("5 bl main", "Reset_Handler", "跳进 C 世界\n返回则 .L_hang 转圈",
+         "裸机 main return = 停机，等看门狗", RED, RED_FILL),
+    ]
+    pos = [(64, 156), (438, 156), (812, 156), (251, 330), (625, 330)]
+    for (name, who, act, fail, c, fl), (x, y) in zip(st, pos):
+        f.card(x, y, 276, 156, c, fill=fl)
+        f.text(x + 16, y + 32, name, size=19, color=c, weight="bold")
+        f.text(x + 16, y + 54, who, size=12.5, color=MUTED)
+        lines = act.split("\n")
+        for j, ln in enumerate(lines):
+            f.text(x + 16, y + 78 + j * 22, ln, size=13, color=INK,
+                   font=MONO)
+        f.text(x + 16, y + 128, fail, size=12.5, color=c, weight="bold")
+    for x0, x1 in ((340, 438), (714, 812)):
+        f.arrow(x0, 234, x1, 234, color=MUTED, sw=2.2, bend=0.0, head=8)
+    f.arrow(527, 286, 560, 318, color=MUTED, sw=2.2, bend=0.0, head=8)
+    f.arrow(901, 286, 780, 318, color=MUTED, sw=2.2, bend=0.0, head=8)
+
+    # ---- literal pool strip: the seven address slips ----
+    f.panel(64, 516, 1024, 118, GRAY_FILL, amp=1.6)
+    f.rect(64, 516, 1024, 118, color=MUTED, sw=1.6, fill=None, amp=1.6)
+    f.text(88, 546, "Reset_Handler 字面量池 · 七张地址条", size=15,
+           color=INK, weight="bold")
+    words = [("0x20020000", "_estack", BLUE_D),
+             ("0xe000ed88", "CPACR", GREEN_D),
+             ("0x20000000", "_sdata", AMBER_STROKE),
+             ("0x20000004", "_edata", AMBER_STROKE),
+             ("0x08000218", "_sidata", AMBER_STROKE),
+             ("0x20000004", "_sbss", AMBER_STROKE),
+             ("0x20001008", "_ebss", AMBER_STROKE)]
+    for i, (w, name, c) in enumerate(words):
+        x = 88 + i * 142
+        f.text(x, 576, w, size=13.5, color=c, font=MONO, weight="bold")
+        f.text(x, 596, name, size=12.5, color=MUTED)
+    f.text(88, 622, "_sbss == _edata：清零循环从搬运循环的终点接着跑",
+           size=13.5, color=INK)
+
+    f.htext(64, 700, "站 3、4 干完，站 5 才有资格跳：三个环节缺一个，g_init 就不是 5",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "地址与字面量取自本章 link_probe 的 objdump 记录；流程示意，非实拍。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch01-memory-two-addresses": ch01_memory_two_addresses,
+    "ch01-const-ram-economics": ch01_const_ram_economics,
     "ch02-volatile-contract": ch02_volatile_contract,
+    "ch02-ub-compiler-fuel": ch02_ub_compiler_fuel,
     "ch03-struct-overlay": ch03_struct_overlay,
+    "ch06-boot-five-stations": ch06_boot_five_stations,
 }
 
 

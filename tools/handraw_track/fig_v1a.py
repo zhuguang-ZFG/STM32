@@ -17,10 +17,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from hd import (AMBER_FILL, AMBER_PALE, AMBER_STROKE, BLUE, BLUE_D,  # noqa: E402
-                BLUE_FILL, GREEN_D, GREEN_FILL, INK, MUTED, RED, RED_FILL,
-                WHITE, Fig, save)
+                BLUE_FILL, GRAY_FILL, GREEN_D, GREEN_FILL, INK, MUTED, RED,
+                RED_FILL, WHITE, Fig, save)
 
 STAGE = Path(__file__).resolve().parents[2] / ".temp" / "l0-l5-pass" / "figures"
+MONO = "'Consolas','Courier New',monospace"
 
 
 def _box(f, x, y, w, h, color, title, lines, title_size=19, line_size=14.5,
@@ -226,9 +227,90 @@ def ch10_exti_nvic_path():
     return f
 
 
+def ch10_prio_four_bit_window():
+    """4-bit priority window: left-shift 4, write-16 traps, 0x5FA key,
+    PRIGROUP split. Facts from ch10 (stm32f407xx.h:49, core_cm4.h:1661)."""
+    f = Fig("ch10-prio-four-bit-window",
+            "4 位优先级窗口：写 16 变最高",
+            title_color=RED, tag="CH 10 · NVIC")
+    f.text(64, 126,
+           "IP 字节只实现了高 4 位：越界不报错、不换字节，只在本字节截断，嵌套关系悄悄反掉。",
+           size=19, color=MUTED)
+
+    # ---- left: encoding ladder ----
+    f.card(64, 156, 380, 330, BLUE_D, fill=BLUE_FILL)
+    f.text(84, 188, "NVIC_PRIO_BITS = 4", size=18, color=BLUE_D,
+           weight="bold", font=MONO)
+    f.text(84, 212, "stm32f407xx.h:49 · 只用高 4 位", size=13, color=MUTED)
+    enc = [("逻辑 5", "0x50"), ("逻辑 10", "0xA0"), ("逻辑 15", "0xF0")]
+    for i, (lv, byte) in enumerate(enc):
+        y = 244 + i * 44
+        f.text(84, y, lv, size=15, color=INK)
+        f.pill(210, y - 26, 120, 36, byte, BLUE_D, fill=WHITE, size=16,
+               text_color=INK)
+    f.text(84, 396, "存入值 = 逻辑优先级左移 4 位，低 4 位恒 0", size=14.5,
+           color=INK)
+    f.text(84, 424, "F407 上只有 0~15 这 16 档", size=14.5, color=MUTED)
+    f.text(84, 456, "API 收 0~255，窗口只有 4 位", size=14, color=MUTED)
+
+    # ---- middle: the truncate table (the trap) ----
+    f.card(468, 156, 330, 330, RED, fill=RED_FILL)
+    f.text(488, 188, "写越界的下场", size=19, color=RED, weight="bold")
+    rows = [("16", "0x00", "0（最高！）"), ("17", "0x10", "1"),
+            ("20", "0x40", "4"), ("255", "0xF0", "15"),
+            ("256", "0x00", "0")]
+    for i, (w_in, byte, back) in enumerate(rows):
+        y = 226 + i * 40
+        f.text(488, y, w_in, size=15, color=INK, font=MONO)
+        f.text(556, y, "→", size=14, color=MUTED)
+        f.text(596, y, byte, size=15, color=RED, weight="bold", font=MONO)
+        f.text(676, y, back, size=14,
+               color=RED if i in (0, 4) else MUTED,
+               weight="bold" if i in (0, 4) else "normal")
+    f.text(488, 440, "想给 16（最低），芯片收到 0（最高）", size=14.5,
+           color=RED, weight="bold")
+    f.text(488, 466, "程序照跑，只有嵌套悄悄反了", size=14, color=MUTED)
+
+    # ---- right: AIRCR key + PRIGROUP ----
+    f.card(822, 156, 266, 330, GREEN_D, fill=GREEN_FILL)
+    f.text(842, 188, "SCB->AIRCR", size=18, color=GREEN_D, weight="bold",
+           font=MONO)
+    f.pill(842, 204, 226, 40, "VECTKEY 0x5FA", AMBER_STROKE, fill=WHITE,
+           size=16)
+    f.text(842, 272, "没钥匙：整个写被无视", size=13.5, color=RED)
+    f.text(842, 298, "core_cm4.h:1661", size=12.5, color=MUTED)
+    grp = [("0~3", "4 抢占+0 子"), ("4", "3+1"), ("5", "2+2"),
+           ("6", "1+3"), ("7", "0+4")]
+    for i, (g, split) in enumerate(grp):
+        y = 326 + i * 30
+        f.text(842, y, f"PRIGROUP {g}", size=13.5, color=INK, font=MONO)
+        f.text(986, y, split, size=13.5, color=GREEN_D, weight="bold")
+    f.text(842, 462, "FreeRTOS 要 4 位全给抢占", size=13.5, color=MUTED)
+
+    # ---- bottom: fixed priorities ----
+    f.panel(64, 516, 1024, 100, GRAY_FILL, amp=1.6)
+    f.rect(64, 516, 1024, 100, color=MUTED, sw=1.6, fill=None, amp=1.6)
+    f.text(88, 548, "三个设不了的：IRQn_Type 里 -13 被故意跳过（stm32f407xx.h:68-69）",
+           size=15.5, color=INK, weight="bold")
+    fixed = [("Reset -3", "最高"), ("NMI -2", "次之"), ("HardFault -1", "最低")]
+    for i, (name, rank) in enumerate(fixed):
+        x = 120 + i * 320
+        f.text(x, 590, name, size=16, color=RED, weight="bold", font=MONO)
+        f.text(x + 150, 590, rank, size=14, color=MUTED)
+    f.text(936, 590, "硬件固定，SHP/IPR 都摸不到", size=13.5, color=MUTED)
+
+    f.htext(64, 700, "危险的不是报错，是静默改写成另一个合法优先级",
+            size=22, color=RED, weight="bold", hl=True)
+    f.text(576, 730,
+           "编码表与分组表取自本章 S4 probe 记录；布局示意，非实测。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 PLATES = {
     "ch08-clock-tree-path": ch08_clock_tree_path,
     "ch10-exti-nvic-path": ch10_exti_nvic_path,
+    "ch10-prio-four-bit-window": ch10_prio_four_bit_window,
 }
 
 
