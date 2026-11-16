@@ -10,13 +10,13 @@ platforms: [generic]
 - **问题**：全书配套工程在哪两个登记簿里，各多少条、什么类型、怎么跑？例程的「最小可见结果/验收工具/不能由此推出」三列怎么用？跑表前要核对哪几行数据？工程证据的两档（宿主验证/目标板验证）怎么区分？
 - **交付**：能在双登记簿里找到任何一章的配套工程并按入口跑起来；能按推荐跑法安排实验顺序；能填出每例程的交付记录七字段。
 - **边界**：本附录是索引层，不代填证据状态（以各工程 README 为准）；数据表本体在附录 D（本附录落位时 D 尚未链接，数据已并入附录 D 文末）；许可边界见附录 E（落位后链接）。
-- **依据锚点**：根书例程区 `examples/`（15 条，MIT）与姊妹书工程区 `code/`（47 项，projects.json 登记，Apache-2.0）；`motor-dc-speed` 为 B3 批次补登。
+- **依据锚点**：根书例程区 `examples/`（15 条，MIT）与姊妹书工程区 `mcu/code/`（47 项，projects.json 登记，Apache-2.0）；`motor-dc-speed` 为 B3 批次补登。
 
 
-本附录是全书配套工程的**双登记簿**：根书例程区（`examples/`，F103 线，15 条）与姊妹书工程区（`code/`，47 个可编译验证工程，F407/ESP32/GD32/宿主四类）。例程不是「复制后能编译」就结束。每个工程都要留下可观察结果，并写清不能由该结果推出什么。
+本附录是全书配套工程的**双登记簿**：根书例程区（`examples/`，F103 线，15 条）与姊妹书工程区（`mcu/code/`，47 个可编译验证工程，F407/ESP32/GD32/宿主四类）。例程不是「复制后能编译」就结束。每个工程都要留下可观察结果，并写清不能由该结果推出什么。
 
 - 根书区：`examples/` 下 14 例程 + 补登的 `motor-dc-speed`（B3 批次新增，源表漏登），MIT 许可。
-- 姊妹书区：`code/` 下 47 工程，`code/projects.json` 登记、CI 逐个构建（ARM 工程用 arm-none-eabi-gcc；ESP-IDF 工程用 `espressif/idf:v5.5.2` 容器，target esp32s3；宿主工程用本机 gcc），Apache-2.0。
+- 姊妹书区：`mcu/code/` 下 47 工程，`mcu/code/projects.json` 登记（kind 四档：host-probe 22、arm-make 14、esp-idf 10、host-make 1），Apache-2.0。当前 CI 只对根书区的 `examples/motor-dc-speed` 跑宿主测试与三套 ARM 预设（`motor-control.yml`）；这批工程按各目录的 README/脚本本地验证。
 
 完整许可边界见 附录 E。
 
@@ -91,9 +91,9 @@ platforms: [generic]
 
 ![手绘板：交付记录字段（原理示意，非实拍）](/images/app-b-delivery.png)
 
-## 第二区 · 姊妹书工程（code/，47 项）
+## 第二区 · 姊妹书工程（mcu/code/，47 项）
 
-入口/类型/验证方式由 `code/projects.json` 登记，CI 按同一清单逐个构建。类型三档：`host-probe`（宿主取证，`sh probe.sh`）、`arm-make`（裸机 Makefile，`make`/`make flash`）、`esp-idf`（`idf.py build`）。「对应章」按合并书章号标注（原 mcu 站编号在括号内）。
+入口/类型/验证方式由 `mcu/code/projects.json` 的 `kind`/`entry` 字段登记。类型四档：`host-probe`（宿主取证，`sh probe.sh`）、`arm-make`（裸机 Makefile，`make`/`make flash`）、`esp-idf`（`idf.py build`）、`host-make`（宿主 Makefile，产宿主与交叉汇编清单）。「对应章」按合并书章号标注。
 
 ### C 篇与构建篇（宿主机取证）
 
@@ -101,7 +101,7 @@ platforms: [generic]
 | --- | --- | --- | --- |
 | c-01-memory-model | host-probe | [第 1 章](../v0-foundations/01-c-memory-model.md) | 段归属实测、const 经济学 |
 | c-02-pointer | host-probe | [第 1 章](../v0-foundations/01-c-memory-model.md) | 读写六函数宽度对照 |
-| c-03-volatile | arm-make | [第 2 章](../v0-foundations/02-c-volatile-ub.md) | -O0/-O2 反汇编对照 |
+| c-03-volatile | host-make | [第 2 章](../v0-foundations/02-c-volatile-ub.md) | Makefile 产宿主与交叉 -O0/-O2 汇编清单 |
 | c-04-struct-abi | host-probe | [第 3 章](../v0-foundations/03-struct-abi-registers.md) | offsetof/_Static_assert 验证 |
 | c-05-func-pointer | host-probe | [第 4 章](../v0-foundations/04-function-pointer-state-machine.md) | 状态机+环形缓冲断言 |
 | c-06-abi-stack | host-probe | [第 3 章](../v0-foundations/03-struct-abi-registers.md) | AAPCS 传参/栈帧实测 |
@@ -168,4 +168,4 @@ platforms: [generic]
 
 工程分两档：**宿主验证**（host-probe 与公共层：断言全绿、CI 必跑）与**目标板验证**（arm-make/esp-idf：CI 验证「能干净构建」，板上现象按各章「待上板实测」口径另行回填；见 [第 40 章](../v6-labs-projects/40-lab-method-instruments.md) 的实测记录制度）。哪个工程处于哪一档，以各工程 README 清单为准，本表不代填。
 
-根书例程区源码在 `examples/`（MIT）；姊妹书工程区在 `code/`（Apache-2.0）；本书正文与图 CC BY 4.0（根域）/Apache-2.0（mcu 域）。完整许可边界见 附录 E。
+根书例程区源码在 `examples/`（MIT）；姊妹书工程区在 `mcu/code/`（Apache-2.0）；本书正文与图 CC BY 4.0（根域）/Apache-2.0（mcu 域）。完整许可边界见 附录 E。
