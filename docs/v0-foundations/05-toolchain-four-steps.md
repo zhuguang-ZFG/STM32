@@ -232,6 +232,8 @@ $ arm-none-eabi-nm -n blink.elf | grep -E ' (Reset_Handler|main)$'
 - `text 660` = 392（向量表）+ 268（代码）。`bss 1536` 是 `._user_heap_stack` 预留的栈与堆空间，不占 Flash。
 - `Reset_Handler` 是 **W（弱符号）**：启动文件里给了默认实现，用户可以覆盖。芯片复位后 CPU 从 `0x0800_0000` 取向量表第 2 个字跳到这里。
 - `main` 的地址按 `nm` 口径记为 `080001aa`：`nm` 不显示 Thumb 位，给出纯地址。换 `readelf -s` 问同一个符号，会显示 `080001ab`。**`readelf -s` 保留这一位，`nm` 不显示它**。那一位 1 是 Cortex-M 只跑 Thumb 的标记，不是错位。断点用纯地址，往向量表或函数指针里填地址时用带 1 的形式。
+![手绘板：七件工具分家——gcc 写出来、binutils 看清楚；newlib 钩子给 printf 出口；nm 与 readelf 给 main 的地址差一个 Thumb 位（原理示意，非实拍）](/images/ch05-gcc-binutils-bench.png)
+
 
 四道工序走完，一份 65 行的 C 源码变成了能烧进 Flash 的 `.elf`。每一步都留下可检查的中间文件：`.i`（纯 C）、`.s`（汇编）、`.o`（可重定位目标）、`.elf`（可执行）。
 

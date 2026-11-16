@@ -113,6 +113,8 @@ esp_now_send(peer.peer_addr, data, len);
 `recv_info`（含 rx_ctrl 与 src_addr）是**回调内临时变量**，头文件原话「it can only be used in the callback」。要存数据先 memcpy。
 
 错误码分诊（`:19,23,27`）：未 init → `ESP_ERR_ESPNOW_NOT_INIT`；peer 没登记 → `ESP_ERR_ESPNOW_NOT_FOUND`；**信道不一致 → `ESP_ERR_ESPNOW_CHAN`**（`:224` 文档实取）。信道规则：没连网走默认信道；连了路由器，信道被固定，两块板必须同信道（`esp_wifi_get_channel` 对比两板）；初始化顺序 wifi 在前、esp_now 在后。
+![手绘板：ESP-NOW 四个边界数字——MAC 6 B、lmk 16 B、单包 250 B（v2.0 另有 1470 B）、加密 peer ≤6 总 ≤20；v5.x 双回调是 info 结构体版，info 要存先 memcpy；CHAN 是最常见远端病（原理示意，非实拍）](/images/mc32-espnow-limits.png)
+
 
 ![ESP-NOW 直连旁路：peer 互发与 Wi-Fi 共存](/anim/esp32-espnow-direct.svg)
 

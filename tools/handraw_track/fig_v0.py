@@ -662,6 +662,68 @@ def ch07_spl_minimum_loop():
     return f
 
 
+def ch05_gcc_binutils_bench():
+    """gcc writes, binutils reads; newlib hooks give printf an exit.
+    Facts from ch05 (seven tools, hook table, Thumb bit nm vs readelf)."""
+    f = Fig("ch05-gcc-binutils-bench",
+            "七件工具的分家：gcc 写出来，binutils 看清楚",
+            title_color=BLUE_D, tag="CH 05 · 工具链四步")
+    f.text(64, 126,
+           "gcc 是调度员，动手的是 binutils；裸机上 printf 出口、malloc 堆，全靠钩子函数自己补。",
+           size=19, color=MUTED)
+
+    # ---- left: tools bench ----
+    f.card(64, 156, 500, 310, BLUE_D, fill=BLUE_FILL)
+    f.text(84, 190, "七件主工具 + 两件量具", size=19, color=BLUE_D,
+           weight="bold")
+    tools = [("as", "汇编 .s → .o"), ("ld", "链接 .o 与库 → .elf"),
+             ("ar", "打包 .a 静态库"), ("nm", "符号表，查 U 符号"),
+             ("objcopy", "elf → bin/hex"), ("objdump", "反汇编、节表"),
+             ("readelf", "ELF 头/节/程序头")]
+    for i, (tool, note) in enumerate(tools):
+        y = 224 + i * 32
+        f.text(84, y, tool, size=14.5, color=BLUE_D, weight="bold",
+               font=MONO)
+        f.text(200, y, note, size=13.5, color=INK)
+    f.text(84, 462, "量具：size（三列体积）· strings（抽字面量）",
+           size=13.5, color=MUTED)
+
+    # ---- middle: newlib hooks ----
+    f.card(588, 156, 500, 310, GREEN_D, fill=GREEN_FILL)
+    f.text(608, 190, "newlib 钩子：printf 的出口", size=19, color=GREEN_D,
+           weight="bold")
+    hooks = [("_write", "收到的字节写进 UART → printf 走串口"),
+             ("_sbrk", "给 malloc 增长堆；链接脚本预留"),
+             ("_close/_read/_isatty", "裸机一般空实现"),
+             ("_exit/_kill/_getpid", "进程占位，空实现")]
+    for i, (h, note) in enumerate(hooks):
+        y = 224 + i * 44
+        f.text(608, y, h, size=14.5, color=GREEN_D, weight="bold",
+               font=MONO)
+        f.text(608, y + 20, note, size=13.5, color=INK)
+    f.text(608, 436, "上层同一份 printf/malloc，变的只是钩子实现", size=13.5,
+           color=MUTED)
+    f.text(608, 462, "老版 newlib %f 要 -u _printf_float，编译期不提醒",
+           size=13.5, color=RED, weight="bold")
+
+    # ---- bottom: thumb bit ----
+    f.panel(64, 496, 1024, 104, RED_FILL, amp=1.6)
+    f.rect(64, 496, 1024, 104, color=RED, sw=1.8, fill=None, amp=1.6)
+    f.text(88, 528, "同一个 main，两把刀给两个地址：nm 给 080001aa，readelf -s 给 080001ab",
+           size=15, color=RED, weight="bold")
+    f.text(88, 558, "readelf 保留 Thumb 位，nm 不显示；那一位 1 是 Cortex-M 只跑 Thumb 的标记，不是错位",
+           size=14.5, color=INK)
+    f.text(88, 586, "断点用纯地址；往向量表或函数指针里填地址用带 1 的形式",
+           size=14, color=MUTED)
+
+    f.htext(64, 700, "gcc 负责「写出来」，binutils 负责「看清楚」——四把刀日常随身",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "工具清单与钩子落点取自本章取证工程；对照示意，非实测。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch01-memory-two-addresses": ch01_memory_two_addresses,
     "ch01-const-ram-economics": ch01_const_ram_economics,
@@ -670,6 +732,7 @@ FIGS = {
     "ch03-struct-overlay": ch03_struct_overlay,
     "ch03-map-translation-fails": ch03_map_translation_fails,
     "ch04-ring-two-schools": ch04_ring_two_schools,
+    "ch05-gcc-binutils-bench": ch05_gcc_binutils_bench,
     "ch06-boot-five-stations": ch06_boot_five_stations,
     "ch07-spl-minimum-loop": ch07_spl_minimum_loop,
 }

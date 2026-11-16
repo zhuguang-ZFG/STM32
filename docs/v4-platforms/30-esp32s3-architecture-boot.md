@@ -87,6 +87,8 @@ startup.c:224          ESP_INFINITE_LOOP();                       ← 调度器�
 两个易错点：栈定义里**还有一层加项**，`ESP_TASK_MAIN_STACK = CONFIG_ESP_MAIN_TASK_STACK_SIZE + TASK_EXTRA_STACK_SIZE`，只写「= CONFIG」就漏了加项；「8KB 默认栈」是错的（上游 default 3584），写成「3584 起」带上加项语义才准确。
 
 `app_main` 返回即 `vTaskDelete(NULL)` 删掉 main task。它是一次调用，不是常驻循环；要常驻就自己在里面写循环。
+![手绘板：app_main 三层身份——main task（优先级 1、栈 3584 起、CPU0）里的一次调用，返回即 vTaskDelete；S3 代码在外部 Flash 经 Cache 执行，写 Flash 关 Cache 是 IRAM 纪律的由来（原理示意，非实拍）](/images/mc30-app-main-layers.png)
+
 
 ### 二、XIP：代码在 Flash 中执行
 

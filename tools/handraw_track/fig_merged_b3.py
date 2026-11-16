@@ -14,10 +14,12 @@ Deterministic: same code -> same SVG bytes -> same PNG pixels.
 """
 from pathlib import Path
 
-from hd import (AMBER_FILL, AMBER_STROKE, BLUE, BLUE_D, GREEN, GREEN_D, INK,
-                MUTED, RED, W, WHITE, Fig, save)
+from hd import (AMBER_FILL, AMBER_PALE, AMBER_STROKE, BLUE, BLUE_D,  # noqa: E402
+                BLUE_FILL, GRAY_FILL, GREEN, GREEN_D, GREEN_FILL, INK, MUTED,
+                RED, RED_FILL, W, WHITE, Fig, save)
 
 STAGE = Path(__file__).resolve().parents[2] / ".temp" / "b3-plates"
+MONO = "'Consolas','Courier New',monospace"
 
 
 def band(f, x, y, w, h, fill):
@@ -173,11 +175,181 @@ def plate_mc32():
     return f
 
 
+def plate_mc29_mtime():
+    """mtime vs SysTick: four structural differences. Facts from ch29
+    section six (n200_timer.h:8-13, Bumblebee /4 caliber)."""
+    f = Fig("mc29-mtime-not-systick",
+            "mtime 不是 SysTick：四点差异",
+            title_color=BLUE_D, tag="CH 29 · GD32 与 RISC-V")
+    f.text(64, 126,
+           "把 SysTick 的直觉搬过来就错：位宽、方向、触发、重装全是另一套，连访问方式都换了。",
+           size=19, color=MUTED)
+
+    f.card(64, 156, 500, 320, BLUE_D, fill=BLUE_FILL)
+    f.text(84, 190, "SysTick（Cortex-M）", size=19, color=BLUE_D,
+           weight="bold")
+    rows = [("24 位递减", "计到 0 触发"),
+            ("内核外设寄存器", "NVIC 旁边那组"),
+            ("自动重装 LOAD", "周期硬件保证")]
+    for i, (a, b) in enumerate(rows):
+        y = 224 + i * 44
+        f.text(84, y, a, size=15, color=INK, weight="bold")
+        f.text(84, y + 20, b, size=13.5, color=MUTED)
+
+    f.card(588, 156, 500, 320, GREEN_D, fill=GREEN_FILL)
+    f.text(608, 190, "mtime（N200）", size=19, color=GREEN_D, weight="bold")
+    rows2 = [("64 位递增", "mtime ≥ mtimecmp 即挂起中断"),
+             ("内存映射 0xd1000000", "mtime@+0x0、cmp@+0x8，lw/sw 访问"),
+             ("无自动重装", "软件续约：mtimecmp += 周期"),
+             ("不是 = now + 周期", "now 读取与写入之间 tick 会走，续约会漂")]
+    for i, (a, b) in enumerate(rows2):
+        y = 224 + i * 44
+        f.text(608, y, a, size=15, color=GREEN_D, weight="bold")
+        f.text(608, y + 20, b, size=13.5, color=INK)
+    f.text(608, 436, "自增频率口径：SystemCoreClock/4", size=14,
+           color=MUTED)
+    f.text(608, 462, "（108M→27 MHz，1 ms = 27000 tick；标来源说法待核）",
+           size=13, color=MUTED)
+
+    f.panel(64, 506, 1024, 100, AMBER_PALE, amp=1.6)
+    f.rect(64, 506, 1024, 100, color=AMBER_STROKE, sw=1.8, fill=None,
+           amp=1.6)
+    f.text(88, 538, "64 位读写两条纪律", size=15.5, color=AMBER_STROKE,
+           weight="bold")
+    f.text(88, 568, "先高后低写：高字先落，低字写入瞬间比较条件不会提前满足",
+           size=14.5, color=INK)
+    f.text(88, 594, "高-低-高读：防低字回卷时读到撕裂值", size=14.5,
+           color=INK)
+
+    f.htext(64, 700, "续约写 +=，不写 = now + 周期——差一次读取的时间，长延时天天漂",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "寄存器地址与语义取自本章 n200_timer.h 取证；对照示意，非实测。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
+def plate_mc30_app_main():
+    """app_main's real identity: one call inside the main task. Facts
+    from ch30 (v5.5.2 startup.c:222, app_startup.c:83,158,206-210)."""
+    f = Fig("mc30-app-main-layers",
+            "「main」的三层身份：一次调用",
+            title_color=GREEN_D, tag="CH 30 · ESP32-S3")
+    f.text(64, 126,
+           "esp_startup_start_app 建 main task → 调度器启动 → main task 里调一次 app_main，返回即删任务。",
+           size=19, color=MUTED)
+
+    chain = [("startup.c:222", "esp_startup_start_app()"),
+             ("app_startup.c:83", "xTaskCreatePinnedToCore(main_task…)"),
+             ("app_startup.c:158", "static void main_task(…)"),
+             ("app_startup.c:206", "「Calling app_main()」→ app_main()"),
+             ("app_startup.c:210", "vTaskDelete(NULL)")]
+    for i, (loc, fn) in enumerate(chain):
+        y = 170 + i * 56
+        c = BLUE_D if i < 4 else RED
+        fl = BLUE_FILL if i < 4 else RED_FILL
+        f.panel(96, y, 470, 46, fl, amp=1.5)
+        f.rect(96, y, 470, 46, color=c, sw=1.8, fill=None, amp=1.5)
+        f.text(112, y + 30, loc, size=13, color=MUTED, font=MONO)
+        f.text(300, y + 30, fn, size=13.5, color=c, weight="bold",
+               font=MONO)
+        if i < 4:
+            f.arrow(330, y + 46, 330, y + 56, color=MUTED, sw=2.0,
+                    bend=0.0, head=7)
+
+    f.card(620, 156, 468, 300, AMBER_STROKE, fill=AMBER_PALE)
+    f.text(640, 190, "main task 三个默认值", size=19, color=AMBER_STROKE,
+           weight="bold")
+    defs = [("优先级", "1", "ESP_TASK_PRIO_MIN + 1，倒数第二低"),
+            ("栈", "3584 起", "CONFIG_…STACK_SIZE + TASK_EXTRA_STACK"),
+            ("亲和", "CPU0", "choice ESP_MAIN_TASK_AFFINITY 默认")]
+    for i, (k, v, note) in enumerate(defs):
+        y = 226 + i * 66
+        f.text(640, y, k, size=14.5, color=MUTED)
+        f.text(770, y, v, size=19, color=AMBER_STROKE, weight="bold",
+               font=MONO)
+        f.text(640, y + 24, note, size=12.5, color=MUTED)
+    f.text(640, 428, "易错：栈定义里还有一层加项，", size=14, color=RED,
+           weight="bold")
+    f.text(640, 452, "只写「= CONFIG」就漏了；「8KB 默认」是错的", size=14,
+           color=RED, weight="bold")
+
+    f.panel(64, 506, 1024, 92, GRAY_FILL, amp=1.6)
+    f.rect(64, 506, 1024, 92, color=MUTED, sw=1.6, fill=None, amp=1.6)
+    f.text(88, 538, "F407 的 Flash 原地执行；S3 的代码与 rodata 在外部 Flash 经 Cache 映射窗口——写 Flash 要关 Cache",
+           size=15, color=INK, weight="bold")
+    f.text(88, 568, "关 Cache 期间 Flash 里的 ISR 不可取指：这就是 IRAM 纪律与 ESP_IRAM_ATTR 的由来",
+           size=14.5, color=MUTED)
+
+    f.htext(64, 700, "app_main 返回不是「程序结束」：main task 被删，调度器照跑",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "行号链与默认值取自本章 v5.5.2 上游实取；结构示意，非实测。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
+def plate_mc32_espnow_limits():
+    """ESP-NOW boundary numbers and the v5.x info-struct callbacks.
+    Facts from ch32 (esp_now.h:29-37,120,127; error triage)."""
+    f = Fig("mc32-espnow-limits",
+            "ESP-NOW 边界数字与双回调签名",
+            title_color=AMBER_STROKE, tag="CH 32 · Wi-Fi/BLE/ESP-NOW")
+    f.text(64, 126,
+           "旁路直连的尺寸在头文件里定死：混用 250 与 1470 两代长度，包会被截断或丢弃。",
+           size=19, color=MUTED)
+
+    nums = [("6 B", "MAC 地址", "ESP_NOW_ETH_ALEN", BLUE_D, BLUE_FILL),
+            ("16 B", "lmk 密钥", "配对加密用", GREEN_D, GREEN_FILL),
+            ("250 B", "单包载荷（vendor IE）", "ESP_NOW_MAX_IE_DATA_LEN", AMBER_STROKE, AMBER_PALE),
+            ("≤6 / ≤20", "加密 peer / 总 peer", "数量上限", RED, RED_FILL)]
+    for i, (v, name, note, c, fl) in enumerate(nums):
+        x = 64 + (i % 2) * 532
+        y = 160 + (i // 2) * 128
+        f.card(x, y, 520, 112, c, fill=fl)
+        f.text(x + 20, y + 44, v, size=30, color=c, weight="bold")
+        f.text(x + 220, y + 34, name, size=15.5, color=INK, weight="bold")
+        f.text(x + 220, y + 60, note, size=13, color=MUTED)
+    f.text(64, 424, "v2.0 另有 1470 B 档：ESP_NOW_MAX_DATA_LEN_V2——两代长度混用即截断/丢弃",
+           size=14.5, color=RED, weight="bold")
+
+    f.card(64, 452, 520, 148, BLUE_D, fill=BLUE_FILL)
+    f.text(84, 484, "v5.x 双回调是 info 结构体版", size=17, color=BLUE_D,
+           weight="bold")
+    f.text(84, 512, "recv_cb(info, data, len)", size=14, color=INK,
+           font=MONO)
+    f.text(84, 536, "send_cb(info, status)", size=14, color=INK, font=MONO)
+    f.text(84, 566, "旧版 (mac_addr, data, len) 两参签名禁抄", size=13.5,
+           color=RED, weight="bold")
+    f.text(84, 590, "info 是回调内临时变量：要存数据先 memcpy", size=13,
+           color=MUTED)
+
+    f.card(608, 452, 480, 148, GREEN_D, fill=GREEN_FILL)
+    f.text(628, 484, "错误码分诊", size=17, color=GREEN_D, weight="bold")
+    f.text(628, 514, "NOT_INIT：没 init", size=14, color=INK, font=MONO)
+    f.text(628, 540, "NOT_FOUND：peer 没登记", size=14, color=INK, font=MONO)
+    f.text(628, 566, "CHAN：两板信道不一致", size=14, color=RED,
+           font=MONO, weight="bold")
+    f.text(628, 596, "连了路由器信道被固定；wifi init 在前、", size=13.5,
+           color=MUTED)
+    f.text(628, 616, "esp_now 在后", size=13.5, color=MUTED)
+
+    f.htext(64, 700, "先 esp_wifi 初始化再加 peer、两板同信道——CHAN 是最常见的远端病",
+            size=20, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "数字取自本章 esp_now.h:29-37 实取；对照示意，非实测。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 PLATES = {
     "mc29-gd32-contrast": plate_mc29,
+    "mc29-mtime-not-systick": plate_mc29_mtime,
     "mc30-s3-boot-chain": plate_mc30,
+    "mc30-app-main-layers": plate_mc30_app_main,
     "mc31-matrix-audio": plate_mc31,
     "mc32-wifi-espnow": plate_mc32,
+    "mc32-espnow-limits": plate_mc32_espnow_limits,
 }
 
 if __name__ == "__main__":

@@ -110,6 +110,8 @@ ECLIC（N200 核的中断控制器，地址 0xd2000000，`n200_eclic.h:37`）与
 读写两条纪律：64 位值**先高后低写**（高字先写，低字写入的瞬间比较条件不会提前满足）、**高-低-高读**（防低字回卷时读到撕裂值）。
 
 频率口径：自增 = SystemCoreClock/4（108M→27 MHz，1 ms=27000 tick；72M→18000）。÷4 出自 Bumblebee 手册（PDF 未取，算术自洽，标来源说法待核）；延时 ticks 现算不写死。
+![手绘板：mtime 与 SysTick 四点差异——64 位递增、内存映射、≥mtimecmp 触发、软件续约 mtimecmp += 周期；64 位先高后低写、高-低-高读（原理示意，非实拍）](/images/mc29-mtime-not-systick.png)
+
 
 ![mtime 延时动画：64 位递增计数器与 cmp 续约](/anim/riscv-mtime-tick.svg)
 
