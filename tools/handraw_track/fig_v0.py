@@ -477,13 +477,201 @@ def ch06_boot_five_stations():
     return f
 
 
+def ch03_map_translation_fails():
+    """Three ways to translate a register map wrong, from ch03 broken.sh:
+    missing RESERVED shifts DR, AFR[2]->AFR keeps BSRR but shrinks sizeof,
+    pack(1) forces b@1."""
+    f = Fig("ch03-map-translation-fails",
+            "地图翻译错一格：三种坏法",
+            title_color=RED, tag="CH 03 · 结构体与 ABI")
+    f.text(64, 126,
+           "偏移是排队的：前面错一格，后面整体前移；最阴的一种是前面的偏移全对、只有 sizeof 少了 4。",
+           size=19, color=MUTED)
+
+    # ---- three broken variants ----
+    f.card(64, 156, 336, 300, RED, fill=RED_FILL)
+    f.text(84, 190, "① 漏一个 RESERVED", size=19, color=RED, weight="bold")
+    f.text(84, 218, "地图上的空洞没人顶住", size=13.5, color=MUTED)
+    f.pill(84, 236, 200, 40, "DR: 0x08 → 0x04", RED, fill=WHITE, size=15)
+    f.text(84, 306, "后面每个成员整体前移", size=14.5, color=INK)
+    f.text(84, 334, "写入落到隔壁寄存器", size=14.5, color=RED, weight="bold")
+    f.text(84, 366, "修法：空洞补占位成员", size=14, color=MUTED)
+    f.text(84, 408, "broken.sh 实测", size=13, color=MUTED)
+
+    f.card(424, 156, 336, 300, AMBER_STROKE, fill=AMBER_PALE)
+    f.text(444, 190, "② AFR[2] 写成 AFR", size=19, color=AMBER_STROKE,
+           weight="bold")
+    f.text(444, 218, "少写一个寄存器", size=13.5, color=MUTED)
+    f.pill(444, 236, 200, 40, "BSRR 仍 = 0x18", GREEN_D, fill=WHITE,
+           size=15)
+    f.pill(444, 286, 200, 40, "sizeof 0x28 → 0x24", RED, fill=WHITE,
+           size=15)
+    f.text(444, 356, "排在 AFR 后的寄存器整体前移", size=14.5, color=INK)
+    f.text(444, 384, "前面全对、后面错——最难查", size=14.5, color=RED,
+           weight="bold")
+    f.text(444, 408, "只断言 sizeof 或只断言偏移都会漏", size=13,
+           color=MUTED)
+
+    f.card(784, 156, 304, 300, BLUE_D, fill=BLUE_FILL)
+    f.text(804, 190, "③ 加 pack(1)", size=19, color=BLUE_D, weight="bold")
+    f.text(804, 218, "填充压掉，对齐破坏", size=13.5, color=MUTED)
+    f.pill(804, 236, 180, 40, "sizeof = 6", RED, fill=WHITE, size=15)
+    f.text(804, 306, "a@0 · b@1 · c@5", size=14.5, color=INK, font=MONO)
+    f.text(804, 334, "b 落在非对齐偏移", size=14.5, color=RED,
+           weight="bold")
+    f.text(804, 366, "M4 上可能 UsageFault", size=14.5, color=RED,
+           weight="bold")
+    f.text(804, 408, "pack 只配协议帧/文件头", size=13, color=MUTED)
+
+    # ---- four preconditions ----
+    f.panel(64, 486, 1024, 110, GRAY_FILL, amp=1.6)
+    f.rect(64, 486, 1024, 110, color=MUTED, sw=1.6, fill=None, amp=1.6)
+    f.text(88, 518, "结构体映射可靠的四条前提", size=15.5, color=INK,
+           weight="bold")
+    f.text(88, 548, "① 顺序与地图逐个一致，空洞用 RESERVED 顶住",
+           size=14.5, color=INK)
+    f.text(88, 576, "② 宽度一致（AFR[2] 不是 AFR）", size=14.5, color=INK)
+    f.text(590, 548, "③ 每个寄存器成员 volatile（CMSIS __IO）",
+           size=14.5, color=INK)
+    f.text(590, 576, "④ 头文件版本与芯片匹配", size=14.5, color=INK)
+
+    f.htext(64, 700, "offsetof + sizeof + _Static_assert 三件一起上，缺一就留死角",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "读数取自本章 broken.sh 宿主实测；布局示意，非内存转储。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
+def ch04_ring_two_schools():
+    """Ring buffer full/empty verdict: A sacrifices one slot (7 usable),
+    B uses monotonic index (8 usable). Facts from ch04 probe record."""
+    f = Fig("ch04-ring-two-schools",
+            "满/空之争：指针相等是空还是满？",
+            title_color=BLUE_D, tag="CH 04 · 函数指针与状态机")
+    f.text(64, 126,
+           "读写指针相等，两派都叫「空」；分歧只在满——一个牺牲一格当哨兵，一个数在飞量。",
+           size=19, color=MUTED)
+
+    # ---- school A ----
+    f.card(64, 156, 500, 320, AMBER_STROKE, fill=AMBER_PALE)
+    f.text(84, 190, "A 派 · 牺牲一格", size=20, color=AMBER_STROKE,
+           weight="bold")
+    f.text(84, 216, "留一个空位当哨兵，判定直白", size=14, color=MUTED)
+    f.pill(84, 234, 260, 42, "(w+1) % CAP == r → 满", AMBER_STROKE,
+           fill=WHITE, size=15)
+    f.metric(96, 320, "7 格", "8 格物理容量，只能用 7", AMBER_STROKE)
+    f.text(84, 372, "空判定：w == r（两派相同）", size=14.5, color=INK)
+    f.text(84, 400, "代价：一格永久浪费", size=14.5, color=MUTED)
+    f.text(84, 432, "满写被拒路径实测触发过（n_refused > 0）", size=13.5,
+           color=MUTED)
+
+    # ---- school B ----
+    f.card(588, 156, 500, 320, GREEN_D, fill=GREEN_FILL)
+    f.text(608, 190, "B 派 · 单调索引", size=20, color=GREEN_D,
+           weight="bold")
+    f.text(608, 216, "指针不取模，在飞量判满", size=14, color=MUTED)
+    f.pill(608, 234, 300, 42, "(uint8_t)(w - r) >= CAP → 满", GREEN_D,
+           fill=WHITE, size=15)
+    f.metric(620, 320, "8 格", "8 格物理容量全部可用", GREEN_D)
+    f.text(608, 372, "无符号减法模 256：w 从 255 回绕到 0，", size=14.5,
+           color=INK)
+    f.text(608, 400, "在飞量依旧正确，不用写回绕判断", size=14.5, color=INK)
+    f.text(608, 432, "长跑 600 步跨过 255→0：n_put == n_get", size=13.5,
+           color=MUTED)
+
+    # ---- publish order ----
+    f.panel(64, 506, 1024, 92, RED_FILL, amp=1.6)
+    f.rect(64, 506, 1024, 92, color=RED, sw=1.8, fill=None, amp=1.6)
+    f.text(88, 538, "发布顺序：先写数据 → release 屏障 → 再发布 w；消费者 acquire 后才取数据",
+           size=15.5, color=INK, weight="bold")
+    f.text(88, 568, "顺序反了就是「读到空槽」的经典 bug——中断生产、主循环消费的正确性全押在这条序上",
+           size=14, color=MUTED)
+
+    f.htext(64, 700, "单生产单消费才有这些免费判定；双端都写就得加临界区",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "读数取自本章 probe.sh 断言记录（560/560）；机制示意，非实测波形。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
+def ch07_spl_minimum_loop():
+    """SPL minimum blinking loop: five files, two macros, one non-weak
+    SysTick_Handler trap. Facts from ch07 (frozen SPL V3.5.0 build)."""
+    f = Fig("ch07-spl-minimum-loop",
+            "SPL 最小闭环：少一个文件就是链接错",
+            title_color=GREEN_D, tag="CH 07 · 构建与遗留栈")
+    f.text(64, 126,
+           "F103C8 点灯要成套：五类文件、两个宏，缺一样现象各不相同；链接通过只证明接口闭合。",
+           size=19, color=MUTED)
+
+    # ---- left: five files ----
+    f.card(64, 156, 500, 310, BLUE_D, fill=BLUE_FILL)
+    f.text(84, 190, "五类文件，成套出现", size=19, color=BLUE_D,
+           weight="bold")
+    files = [("CMSIS 设备头", "寄存器与内核定义"),
+             ("system_stm32f10x.c", "时钟假设要和晶振一致"),
+             ("启动文件（medium-density）", "向量表与堆栈初值"),
+             ("链接脚本 F103C8", "Flash/RAM 地块"),
+             ("stm32f10x_conf.h + 驱动 src/*.c", "只加 inc 不加 .c → 链接 undefined")]
+    for i, (name, note) in enumerate(files):
+        y = 222 + i * 48
+        f.text(84, y, name, size=14.5, color=INK, weight="bold")
+        f.text(84, y + 20, note, size=12.5, color=MUTED)
+
+    # ---- right: two macros ----
+    f.card(588, 156, 500, 310, AMBER_STROKE, fill=AMBER_PALE)
+    f.text(608, 190, "两个宏必须进编译命令", size=19, color=AMBER_STROKE,
+           weight="bold")
+    f.pill(608, 208, 280, 42, "STM32F10X_MD", AMBER_STROKE, fill=WHITE,
+           size=16)
+    f.text(608, 276, "选中容量器件定义；配错 → 中断号、", size=14.5,
+           color=INK)
+    f.text(608, 302, "外设能力、启动文件与芯片不匹配", size=14.5, color=INK)
+    f.pill(608, 330, 380, 42, "USE_STDPERIPH_DRIVER", AMBER_STROKE,
+           fill=WHITE, size=16)
+    f.text(608, 398, "让 stm32f10x.h 引入 conf.h；漏 →", size=14.5,
+           color=INK)
+    f.text(608, 424, "GPIO_InitTypeDef 等声明不可见", size=14.5, color=INK)
+    f.text(608, 452, "写在 IDE 截图里不影响预处理", size=13.5, color=MUTED)
+
+    # ---- bottom: measured ELF + trap ----
+    f.panel(64, 496, 600, 110, GRAY_FILL, amp=1.6)
+    f.rect(64, 496, 600, 110, color=MUTED, sw=1.6, fill=None, amp=1.6)
+    f.text(88, 528, "冻结 commit 编译实测（GNU Arm 10.3.1）", size=14.5,
+           color=INK, weight="bold")
+    f.text(88, 560, "text 1976 B · data 20 B · bss 1028 B", size=15,
+           color=BLUE_D, font=MONO, weight="bold")
+    f.text(88, 588, "符号表里只有一个 SysTick_Handler", size=14,
+           color=MUTED)
+    f.panel(692, 496, 396, 110, RED_FILL, amp=1.6)
+    f.rect(692, 496, 396, 110, color=RED, sw=1.8, fill=None, amp=1.6)
+    f.text(716, 528, "坑：模板 stm32f10x_it.c 已有非 weak 的", size=14,
+           color=INK)
+    f.text(716, 554, "空 SysTick_Handler——替换它，别并存，", size=14,
+           color=INK)
+    f.text(716, 580, "否则 multiple definition", size=14, color=RED,
+           weight="bold")
+
+    f.htext(64, 700, "链接闭合不证明板级行为：验收仍是 PC13 约 1 Hz、SystemCoreClock 等于真主频",
+            size=19.5, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "读数取自本章 examples/spl-f1-blink 实测；SPL V3.5.0，STSW-STM32054。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 FIGS = {
     "ch01-memory-two-addresses": ch01_memory_two_addresses,
     "ch01-const-ram-economics": ch01_const_ram_economics,
     "ch02-volatile-contract": ch02_volatile_contract,
     "ch02-ub-compiler-fuel": ch02_ub_compiler_fuel,
     "ch03-struct-overlay": ch03_struct_overlay,
+    "ch03-map-translation-fails": ch03_map_translation_fails,
+    "ch04-ring-two-schools": ch04_ring_two_schools,
     "ch06-boot-five-stations": ch06_boot_five_stations,
+    "ch07-spl-minimum-loop": ch07_spl_minimum_loop,
 }
 
 

@@ -307,8 +307,69 @@ def ch10_prio_four_bit_window():
     return f
 
 
+def ch08_six_frequency_steps():
+    """The six register steps from 16 MHz reset to 168 MHz, in order.
+    Facts from ch08 (RM0090 Rev 18 §7.2.3, probe record)."""
+    f = Fig("ch08-six-frequency-steps",
+            "提频六步：顺序错了全部重来",
+            title_color=BLUE_D, tag="CH 08 · 时钟")
+    f.text(64, 126,
+           "复位后只有 HSI 16MHz；想跑 168MHz，六道手续一道不缺、一步不乱。",
+           size=19, color=MUTED)
+
+    steps = [
+        ("① 电压档", "PWR_CR.VOS = 1（bit14）", "Scale 1 解锁 168MHz；F405/407 无就绪位，写入即生效",
+         BLUE_D, BLUE_FILL),
+        ("② Flash 等待", "FLASH_ACR.LATENCY = 5WS", "3.3V 下 168MHz 要 5WS；必须在提速之前，否则取指跑飞",
+         AMBER_STROKE, AMBER_PALE),
+        ("③ 开 HSE", "HSEON(bit16) → 等 HSERDY(bit17)", "晶振虚焊就不就绪——必须带超时回退 HSI，不能死等",
+         GREEN_D, GREEN_FILL),
+        ("④ 配 PLL 启动", "PLLCFGR = 0x07405408", "M8 N336 P/2 SRC=HSE Q7；PLLON → PLLRDY",
+         BLUE_D, BLUE_FILL),
+        ("⑤ 切 SYSCLK", "SW = 10b → 读 SWS 确认", "写完 SW 不等于已切换，SWS [3:2] 才是硬件回执",
+         GREEN_D, GREEN_FILL),
+        ("⑥ 总线分频", "HPRE /1 · PPRE1 /4 · PPRE2 /2", "PCLK1=42（上限）· PCLK2=84（上限）；APB÷≠1 时定时器 ×2",
+         AMBER_STROKE, AMBER_PALE),
+    ]
+    pos = [(64, 156), (438, 156), (812, 156), (251, 330), (625, 330),
+           (64, 504)]
+    for (name, reg, note, c, fl), (x, y) in zip(steps, pos):
+        f.card(x, y, 276, 156, c, fill=fl)
+        f.text(x + 16, y + 32, name, size=19, color=c, weight="bold")
+        f.text(x + 16, y + 62, reg, size=13.5, color=INK, font=MONO,
+               weight="bold")
+        wrap = note
+        f.text(x + 16, y + 92, wrap[:22], size=12.5, color=MUTED)
+        if len(wrap) > 22:
+            f.text(x + 16, y + 112, wrap[22:44], size=12.5, color=MUTED)
+        if len(wrap) > 44:
+            f.text(x + 16, y + 132, wrap[44:66], size=12.5, color=MUTED)
+    for x0, x1 in ((340, 438), (714, 812)):
+        f.arrow(x0, 234, x1, 234, color=MUTED, sw=2.2, bend=0.0, head=8)
+    f.arrow(527, 286, 560, 318, color=MUTED, sw=2.2, bend=0.0, head=8)
+    f.arrow(901, 286, 780, 318, color=MUTED, sw=2.2, bend=0.0, head=8)
+    f.arrow(400, 488, 332, 500, color=MUTED, sw=2.2, bend=0.0, head=8)
+
+    # ---- HPRE caution ----
+    f.panel(380, 504, 708, 100, RED_FILL, amp=1.6)
+    f.rect(380, 504, 708, 100, color=RED, sw=1.8, fill=None, amp=1.6)
+    f.text(404, 536, "RM0090 caution：HPRE 写入后 1~16 个 AHB 周期才生效",
+           size=15, color=RED, weight="bold")
+    f.text(404, 566, "升频前先把总线分频降下来，否则新频率瞬间喂给老分频总线；",
+           size=14, color=INK)
+    f.text(404, 590, "降频可以直接做", size=14, color=INK)
+
+    f.htext(64, 700, "VOS 与 5WS 先行，HSERDY 要带超时回退，SWS 才是硬件回执",
+            size=21, color=INK, weight="bold", hl=True)
+    f.text(576, 730,
+           "寄存器步骤取自本章 RM0090 §7.2.3 与探针记录；流程示意，非实测。",
+           size=14, color=MUTED, anchor="middle")
+    return f
+
+
 PLATES = {
     "ch08-clock-tree-path": ch08_clock_tree_path,
+    "ch08-six-frequency-steps": ch08_six_frequency_steps,
     "ch10-exti-nvic-path": ch10_exti_nvic_path,
     "ch10-prio-four-bit-window": ch10_prio_four_bit_window,
 }

@@ -223,6 +223,8 @@ int main(void)
 
 一个容易踩的坑：V3.5.0 模板的 `stm32f10x_it.c` 已经定义了非 weak 的空 `SysTick_Handler`，必须把这个文件替换成上面的计数实现，不能在 `main.c` 再定义一个同名函数，否则链接报重复定义。链接通过只证明接口和链接闭合，不证明板级行为；验收仍是下载后 PC13 约 1 Hz 闪烁，调试器里的 `SystemCoreClock` 等于真实主频。
 
+![手绘板：SPL 最小闭环——五类文件成套、两个宏进编译命令、模板 it.c 非 weak 的 SysTick_Handler 要替换；实测 text 1976 / data 20 / bss 1028 B（原理示意，非实拍）](/images/ch07-spl-minimum-loop.png)
+
 ### 中断与 DMA：SPL 不替你分发
 
 HAL 的常见写法是 IRQHandler 调 HAL，再进入 `HAL_GPIO_EXTI_Callback()`。SPL 工程没有这层回调，通常直接在 `stm32f10x_it.c` 的 IRQHandler 里检查来源、清标志、交接事件：

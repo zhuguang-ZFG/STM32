@@ -192,6 +192,8 @@ M 的职责就是把晶振归一化到 1MHz 或 2MHz，不是越大越好。教�
 
 RM0090 对 HPRE 还有一条容易忽略的 caution：“分频值在写入 HPRE 后的 1~16 个 AHB 周期内才生效”。推论是**升频前先把总线分频降下来**，否则新频率会瞬间喂给一条还是老分频的总线，超过上限一拍就可能跑飞；降频则可以直接做。
 
+![手绘板：提频六步——VOS=1、5WS 先行，HSEON 等 HSERDY 带超时回退，PLLCFGR=0x07405408，SW 切换后读 SWS 确认，HPRE/PPRE 落分频；HPRE 写入后 1~16 周期生效，升频前先降分频（原理示意，非实拍）](/images/ch08-six-frequency-steps.png)
+
 ![手绘板：8MHz 晶振或 HSI 16MHz 经 PLL 与 AHB/APB 分频，落到 GPIOA 的寄存器地址（原理示意，非实拍）](/images/ch08-clock-tree-path.png)
 
 ### 总线分频与定时器 ×2
