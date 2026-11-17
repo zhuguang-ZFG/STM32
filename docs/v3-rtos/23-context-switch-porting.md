@@ -198,6 +198,8 @@ bx    r14                      ;    异常返回，硬件弹硬件帧
 
 ![手绘板：PendSV 一条线——mrs psp 进来，存 9 字软件帧、写 TCB 偏移 0，BASEPRI 关窗换 pxCurrentTCB，弹 9 字、写 PSP、bx r14；行李牌 bit4 决定硬件弹 8 字还是 26 字（原理示意，非实拍）](/images/ch23-pendsv-line.png)
 
+<!-- stick-scene: ch23-pendsv -->
+
 ![上下文切换动画：TaskA 的硬件帧与 R4–R11 压进自己的栈，栈顶藏进 TCB，换到 TaskB 的栈再弹回](/anim/context-switch.svg)
 
 图里两个任务栈此消彼长，TCB 的 `pxTopOfStack` 各指自己的栈顶，PendSV 标为全系统最低。动画把软件帧画成 R4–R11 八个字，没画第 9 个 EXC_RETURN；完整布局以正文的 9 字布局为准。

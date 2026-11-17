@@ -246,6 +246,20 @@ STICK_SCENES = {
                    "（进入视野自动播放，点击重播）",
         "fallback": "/images/ch00-unbox-blink-frame.png",
     },
+    "ch09-bitband": {
+        "label": "一个人拨下位带别名区的开关，一个写沿导线飞进外设寄存器，"
+                 "对应的那一位被原子地翻转。",
+        "caption": "手绘动画：位带别名——写别名地址，硬件替你原子地读-改-写寄存器的一位"
+                   "（进入视野自动播放，点击重播）",
+        "fallback": "/images/ch09-bitband-frame.png",
+    },
+    "ch23-pendsv": {
+        "label": "管理员把正在运行任务的现场帧从 CPU 插槽取下挂回它的挂钩，"
+                 "再把下一个任务的现场帧挂上 CPU——PendSV 换现场。",
+        "caption": "手绘动画：PendSV 换现场——运行任务的现场存回 TCB 挂钩，下一个任务上 CPU"
+                   "（进入视野自动播放，点击重播）",
+        "fallback": "/images/ch23-pendsv-frame.png",
+    },
 }
 STICK_SCENES_RE = re.compile(
     r'(?:<p>\s*)?<!-- stick-scene: ([a-z0-9-]+) -->\s*(?:</p>)?'
