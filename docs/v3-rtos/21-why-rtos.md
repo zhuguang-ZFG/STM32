@@ -380,6 +380,19 @@ F103 根书例程有 HAL 时基冲突，F407 lab 没有 HAL 时基；把 F103 �
 
 第 22 章展开 TCB、就绪表与调度器，第 23 章展开 PendSV、软硬栈帧与 `ARM_CM3`/`ARM_CM4F` 移植；这里只到"要不要上、先算什么"。
 
+## 社区开源实现
+
+本章的坑（阻塞传染、heap 不够、相对延时累进、优先级反转）在开源代码里都有现成的对照位置：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `tasks.c` | `xTaskCreate`（`tasks.c:1729`）从 heap 池子切出栈与 TCB——「返回失败就是 heap 不够」那一分支的源头；`vTaskDelay`（`:2506`）是相对延时，「周期越来越长」的累进就写在它的参数语义里；`xTaskDelayUntil`（`:2414`，旧文档的 `vTaskDelayUntil` 已改名）是固定周期的正解 |
+| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `tasks.c` | `xTaskPriorityInherit`（`tasks.c:6745`）：互斥量的优先级继承实现——「高优先级等低优先级持有的锁」那条分支，答案是把二值信号量换成互斥量，继承逻辑在这里逐字可读 |
+| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `queue.c` | `xQueueSemaphoreTake`（`queue.c:1659`）：信号量本质是队列的皮——裸机轮询改 RTOS 后「两个任务的串口输出叠在一起」，互斥量与信号量在 API 层的差别在这里对账 |
+| [STMicroelectronics/stm32f4xx-hal-driver](https://github.com/STMicroelectronics/stm32f4xx-hal-driver) | `Src/stm32f4xx_hal.c` | `HAL_Delay` 的 `__weak`（`stm32f4xx_hal.c:390`）与 uwTick：HAL/内核抢 SysTick 的那条分支，官方出路就是把时基换到 TIM——弱符号正是为这一步准备的 |
+
+共性归纳：RTOS 的所有「为什么卡」最终都落到三个计数器——tick、栈顶、heap 水位。`xTaskCreate` 失败不会给你原因，只有返回值与水位；`vTaskDelay` 与 `xTaskDelayUntil` 的差别是 API 文档一句话，代价却是一个周期漂移。优先级继承在 FreeRTOS 里是 tasks.c 的普通函数（不碰调度器主体），说明它依赖的是「持锁者明确」这一语义——这也解释了为什么只对互斥量生效、对二值信号量无效。
+
 ## 离开检查
 
 1. 为什么说超级循环的失败是阻塞传染，不是"慢"？响应上界由什么决定？

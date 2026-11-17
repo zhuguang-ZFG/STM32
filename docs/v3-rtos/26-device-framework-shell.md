@@ -319,6 +319,19 @@ bsp/stm32/stm32f407-atk-explorer/
 
 两条路的判据都写在「先做出来」：`msh />` 出现、`list_device` 有货。没做到之前，这些代码只处于「可编译、未实测」状态。
 
+## 社区开源实现
+
+本章的机制（对象层、注册/查找、命令导出、Kconfig 裁剪）全部是 RT-Thread 的一手源码，可逐条对照：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/object.c` | `rt_object_init`（`object.c:371`）/`rt_object_allocate`（`:492`）/`rt_object_find`（`:730`）：统一对象层的名字、类型与链表节点——「设备框架」的地基就是这一个文件 |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `components/drivers/core/device.c` | `rt_device_register`（`device.c:67`）注册前先查重（`:74`）、`rt_device_find`（`:122`）、`rt_device_open`（`:222`）：注册/查找/打开的一手实现；这个文件已从旧版 `src/device.c` 搬到 `components/drivers/core/`——引用路径先探再写，别照抄旧博客 |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `components/finsh/finsh.h` + `msh.c` | `MSH_CMD_EXPORT`（`finsh.h:142`）与 `FINSH_FUNCTION_EXPORT`（`:122`）：自定义命令一节的宏把函数挂进 FSymTab 段，`msh.c` 在运行时遍历这张表 |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `components/finsh/Kconfig` | FINSH 相关选项的 depend 链：「depend：Kconfig 与 scons 的接合点」一节的一手配置树——`RT_USING_FINSH` 不开，msh 一侧全部裁掉 |
+
+共性归纳：设备框架的全部机制约等于 `object.c`（统一对象，832 行）+ `device.c`（ops 表与注册表，483 行）+ finsh 的导出宏与命令表（`finsh.h` 265 行、`msh.c` 1058 行，master 分支现值）——合计不到三千行，这正是「自己造一个设备框架」的工作量基准，而不是「软件包省几个月」式的修辞。`MSH_CMD_EXPORT` 用段属性把命令收进链接段，与第 6 章的链接脚本、自定义段是一件事在应用层的回响。文件会搬家（`device.c` 从 `src/` 到 `components/drivers/core/`），机制不会——引用 RT-Thread 源码时按符号搜，不按博客路径抄。
+
 ## 短自测
 
 1. ops 表是无条件成员吗？开与关 `RT_USING_DEVICE_OPS` 各是什么形态？

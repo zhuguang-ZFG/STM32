@@ -200,6 +200,20 @@ bx    r14                      ;    异常返回，硬件弹硬件帧
 
 <!-- stick-scene: ch23-pendsv -->
 
+## 社区开源实现
+
+本章的坑（挂起位写错、优先级没到最低、行号漂移、Nano 改名）在开源代码里都有现成的对照位置：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `portable/GCC/ARM_CM4F/port.c` | `xPortPendSVHandler`（main 分支 `port.c:504`；本正文的 `:505` 绑定的是另一个冻结版本——函数体不漂移，行号随版本漂，这正是第 27 章版本锁定坑的实例）与 `xPortSysTickHandler`（`:560`）：保存-换指针-恢复的完整汇编正文 |
+| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `portable/GCC/ARM_CM4F/portmacro.h` | `portYIELD`（`portmacro.h:88`）把 `PENDSVSET`（bit28，`:100`）写进 ICSR `0xe000ed04`（`:99`）：第三节「挂起位在 ICSR bit28」的全部出处；`portYIELD_FROM_ISR`（`:114`）是中断里 yield 的入口 |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `libcpu/arm/cortex-m4/context_gcc.S` | `rt_hw_context_switch_interrupt`（`context_gcc.S:65`）与 `PendSV_Handler`（`:91`）：第十一节 Nano 对照的一手源码——同一条 PendSV 通道，另一套符号名与帧布局 |
+
+共性归纳：三家实现共用同一条硬件通道——PendSV 最低优先级、ICSR bit28 挂起、`bx r14` 收尾；差别只在符号名与软硬帧的切分。`portYIELD` 的一行赋值说明「任务让出」没有任何魔法，就是把挂起位写上；行号会随版本漂移，函数名与寄存器名不会——对开源实现做笔记时记符号不记行号，核对时用 `nm`/objdump 而不是引用旧文档。
+
+<!-- stick-scene: ch23-pendsv -->
+
 ![上下文切换动画：TaskA 的硬件帧与 R4–R11 压进自己的栈，栈顶藏进 TCB，换到 TaskB 的栈再弹回](/anim/context-switch.svg)
 
 图里两个任务栈此消彼长，TCB 的 `pxTopOfStack` 各指自己的栈顶，PendSV 标为全系统最低。动画把软件帧画成 R4–R11 八个字，没画第 9 个 EXC_RETURN；完整布局以正文的 9 字布局为准。

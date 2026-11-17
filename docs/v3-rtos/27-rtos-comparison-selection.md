@@ -147,6 +147,18 @@ Zephyr 在这个漏斗里的定位：跨厂商板卡、Kconfig/Devicetree、协�
 | µA 级睡眠 | 来源说法（未复核） | 低功耗的读数与口径见 [第 18 章](../v2-reliability/18-low-power.md)，同样按证据标签处理 |
 | 读懂一周 / 用全一天 | 营销式修辞，删除 | 学习成本按团队实际情况评审 |
 
+## 社区开源实现
+
+定量说法处置表的替代判据「按组件清单估自建工作量」，落地动作就是把三家的文件清单当「功能报价单」读——每份清单都是一次 `git clone` 后的 `ls`：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `/`（仓库根） | 内核文件清单：`tasks.c`/`queue.c`/`list.c`/`timers.c`/`event_groups.c`/`stream_buffer.c`/`croutine.c` 加 `portable/`——七个内核文件就是 FreeRTOS 的全部功能面，估工时、估 Flash、估学习面都对着它 |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/` 与 `components/` | `src/` 里的 `clock.c`/`ipc.c`/`irq.c`/`mem.c`/`memheap.c`/`mempool.c`/`object.c`/`idle.c` 是内核本体，`components/` 是 finsh、设备框架、pm 等可选层——Nano 与标准版的裁剪边界就是这两棵树的边界 |
+| [zephyrproject-rtos/zephyr](https://github.com/zephyrproject-rtos/zephyr) | `kernel/` | 一棵 `Kconfig*` 与一组子系统 C 文件的平铺——Zephyr 的「统一配置体系」形态在这里可见；它的调度器实现细节本章仍标未复核，只看结构不引数字 |
+
+共性归纳：三个仓库的目录树就是本章六维对比的实物证据——FreeRTOS 一层平铺（小内核、移植层分家）、RT-Thread 内核与组件分树（Nano 裁剪成立）、Zephyr 配置文件与源码同目录（Kconfig 驱动一切）。迁移坑清单里「先读 `configMAX_PRIORITIES` 再给映射」的动作，对应的实物就是各仓库 `include/` 或 `Kconfig` 里的默认值；定量说法处置表的每一条，都能在这三份清单上找到可数的对应物。
+
 ## 短自测
 
 1. 「RT-Thread 总是 256 级、二级位图」「FreeRTOS 常 32 级」为什么都要改？

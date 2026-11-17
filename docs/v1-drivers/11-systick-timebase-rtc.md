@@ -332,6 +332,19 @@ RTC 一侧，F1 是 32 位秒计数器加 10 个 16 位备份寄存器；F4 是 
 
 GD32 的 ARM 型号沿用 Cortex-M 的 SysTick，RISC-V 型号改用 MTIME 一类机器定时器，名字与编程模型都换了；对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。ESP32 不在平台范围，其架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)。定时器 TIM 与 PWM 见[第 12 章](./12-timers-pwm.md)，看门狗见[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，低功耗唤醒见[第 18 章](../v2-reliability/18-low-power.md)。
 
+## 社区开源实现
+
+本章的坑（忘减一、COUNTFLAG 读清、超限截断、ISR 里 HAL_Delay、回绕漏报）在开源代码里都有现成的对照位置：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [ARM-software/CMSIS_6](https://github.com/ARM-software/CMSIS_6) | `CMSIS/Core/Include/core_cm4.h` | `SysTick_Config`（`core_cm4.h:2130`）内部就是 `LOAD = ticks - 1`（`:2137`）加超限检查返回 1：本章「忘减一」与「拒配不查返回值」两条分支的官方答案全在这十行里 |
+| [STMicroelectronics/stm32f4xx-hal-driver](https://github.com/STMicroelectronics/stm32f4xx-hal-driver) | `Src/stm32f4xx_hal.c` | `uwTick`（`stm32f4xx_hal.c:94`）由 `HAL_IncTick` 累加（`:314`），`HAL_Delay` 是 `__weak`（`:390`）：HAL 时基可以整体搬走（换 TIM），而「ISR 里 HAL_Delay 死等」的根源——延时的裁判与被告共用同一个计数器——也写在这里的注释里 |
+| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `portable/GCC/ARM_CM4F/port.c` | `xPortSysTickHandler`（`port.c:560`）：内核把 SysTick ISR 收编成「报时+可能挂 PendSV」的一根线，对照本章「SysTick 只报案不换人」到第 23 章的分工 |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/clock.c` | `rt_tick_increase`（`clock.c:140`）与 `rt_tick_get`（`:69`）：另一套内核的同型接线——tick 服务只做累加与扫定时器，超时换算留给 `rt_tick_from_millisecond`，与 FreeRTOS 的 tickless 假设同样不含 HAL |
+
+共性归纳：`LOAD+1`、COUNTFLAG 读清、无符号减法防回绕这三条纪律在四份代码里逐字成立——CMSIS 的 `ticks - 1` 是它最短的表达式，`HAL_GetTick() - tickstart` 的无符号差是 HAL 全部超时等待的地基（第 8 章的 HSERDY 轮询就是用它写的）。弱符号 `HAL_Delay` 是双刃剑：换时基靠它，裸机调试器里误踩半主机也怪它。LSE 起振慢这件事，任何内核都不管——RTC 一侧的超时与回退永远按第 18 章的失败分支自备。
+
 ## 离开检查
 
 1. 168MHz 下要 2ms tick，LOAD 写多少？周期是多少个时钟？

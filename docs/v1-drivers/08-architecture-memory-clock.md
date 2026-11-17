@@ -315,6 +315,18 @@ F103 一侧，4GB 地图与统一编址同样成立，但时钟树是“HSE 或 
 
 GD32 只划边界。来源在延伸里留的指针是“GD32 的 RCU 与 RCC 对照”，这里不展开它的时钟源、PLL 字段与寄存器布局，也不把 F407 的位段名当成 GD32 的名字。芯片迁移的方法论与引脚/外设差异见[第 28 章](../v4-platforms/28-chip-migration-differences.md)，GD32 系列（ARM 与 RISC-V）的对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。ESP32 不在平台范围内，其架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)。
 
+## 社区开源实现
+
+本章的坑（时钟没开、切换次序、HSERDY 死等、基址判错总线）在开源代码里都有现成的对照位置：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [libopencm3/libopencm3](https://github.com/libopencm3/libopencm3) | `include/libopencm3/stm32/f4/memorymap.h` | `PERIPH_BASE` 与 APB1/APB2/AHB1 分层基址宏（`memorymap.h:29-32`）：本章「从段基址推外设地址」的落地形态——手册的表被一行行写回宏，地址推导可以逐条对着核 |
+| [STMicroelectronics/stm32f4xx-hal-driver](https://github.com/STMicroelectronics/stm32f4xx-hal-driver) | `Src/stm32f4xx_hal_rcc.c` | `HAL_RCC_ClockConfig`（`stm32f4xx_hal_rcc.c:591`）**先**升 Flash 等待并读回校验（`:608-:617`）**再**切 SYSCLK——「切 168MHz 后 HardFault」分支的官方次序；`HAL_RCC_OscConfig`（`:219`）轮询 HSERDY 带 `HAL_GetTick` 超时（`:259/:273`）——「起振卡死」的库侧答案是有超时，回退 HSI 仍要你自己写 |
+| [STMicroelectronics/cmsis-device-f4](https://github.com/STMicroelectronics/cmsis-device-f4) | `Include/stm32f407xx.h` | 各外设基址宏：USART2 落在 APB1 段、USART1 落在 APB2 段——「波特率差一倍」那条分支，先在这里核对基址归属再算 PCLK |
+
+共性归纳：时钟树的「先等待、再切换、后读回」次序在 HAL 里是显式代码（读回校验失败直接 `HAL_ERROR`），而 libopencm3 的 `rcc_wait_for_osc_ready`（`lib/stm32/f4/rcc.c:535`）对就绪位与 SWS 就是裸 `while`——本章「轮询 HSERDY 没有超时，程序卡死」那条分支，是开源代码里现成的实例：HAL 的超时返回 `HAL_TIMEOUT`，卡死还是成功回退 HSI，永远是调用者的纪律。外设基址宏在 libopencm3 与 cmsis-device 两套头文件里值相同而写法不同，判定「这颗外设挂在哪条总线」永远回到基址段位，而不是猜 84 还是 72。
+
 ## 离开检查
 
 1. `0x4002_0000` 为什么是 GPIOA？F407 的 192KB RAM 怎么分？CCM 为什么不能给 DMA 用？
