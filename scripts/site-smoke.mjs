@@ -63,7 +63,13 @@ export async function smoke({ root, mount }) {
   const browser = await chromium.launch()
   const page = await browser.newPage()
   const failed = []
-  page.on('requestfailed', (req) => failed.push(`requestfailed: ${req.url()}`))
+  page.on('requestfailed', (req) => {
+    // 导航/关页把在途的懒加载请求中止（ERR_ABORTED）不算资源错误：
+    // 它是竞态，不是 404。真正的加载失败（DNS/断连/协议错）仍记账。
+    const err = req.failure()?.errorText ?? ''
+    if (err === 'net::ERR_ABORTED') return
+    failed.push(`requestfailed: ${req.url()} (${err})`)
+  })
   page.on('response', (res) => {
     if (res.url().startsWith(base) && res.status() >= 400) failed.push(`http ${res.status()}: ${res.url()}`)
   })
