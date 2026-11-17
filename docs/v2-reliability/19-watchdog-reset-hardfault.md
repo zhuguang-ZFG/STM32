@@ -427,6 +427,19 @@ F103 没有 FPU 扩展栈帧，`EXC_RETURN` 只有 F1/F9/FD 三个值；F407 的
 
 换芯片先查对应 RM/DS 的 IWDG/WWDG、RCC 与 DBGMCU 章，再看备份域容量与调试冻结位。RTC 与备份域的写法见[第 11 章](../v1-drivers/11-systick-timebase-rtc.md)，异常进入与优先级见[第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)，Flash 参数区见[第 17 章](../v1-drivers/17-flash-iap-ota.md)，低功耗下的 IWDG 计数见[第 18 章](./18-low-power.md)。
 
+## 社区开源实现
+
+本章的坑（解锁次序、喂狗窗口、复位标志累积、栈帧选错、行号漂移）在开源代码里都有现成的对照位置：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [ARM-software/CMSIS_6](https://github.com/ARM-software/CMSIS_6) | `CMSIS/Core/Include/core_cm4.h` | `SCB_Type` 的字段偏移（`core_cm4.h:463-467`）：CFSR `0x028`、HFSR `0x02C`、MMFAR `0x034`、BFAR `0x038`——本章 CFSR 表的地址就是从这个结构体读出来的，取证代码的偏移别再另编一套 |
+| [armink/CmBacktrace](https://github.com/armink/CmBacktrace) | `cm_backtrace/cm_backtrace.c` + `cm_backtrace/fault_handler/gcc/cmb_fault.S` | `cmb_fault.S` 按 `EXC_RETURN` bit2 选 MSP/PSP 后跳进 C；`disassembly_ins_is_bl_blx`（`cm_backtrace.c:289`）沿栈帧逐层回溯调用栈、按工具链地址段过滤——「HardFault 读出的 PC 是垃圾」「把函数入口当案发 PC」两条分支的社区标准解法 |
+| [STMicroelectronics/stm32f4xx-hal-driver](https://github.com/STMicroelectronics/stm32f4xx-hal-driver) | `Src/stm32f4xx_hal_iwdg.c` + `Src/stm32f4xx_hal_wwdg.c` | `HAL_IWDG_Init`（`stm32f4xx_hal_iwdg.c:164`）的 `0xCCCC→解锁→写→0xAAAA` 次序（`IWDG_ENABLE_WRITE_ACCESS` 在 `:184`，`HAL_IWDG_Refresh` 在 `:238`）；`HAL_WWDG_Refresh` 的注释（`stm32f4xx_hal_wwdg.c:79`）明说 "only when the counter is lower than the window"——WWDG「一喂就复位」的窗口判据 |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/esp_system/port/panic_handler.c` | TWDT/panic 的现场输出与复位原因登记：对照 ESP32 三条 TWDT 分支——它的取证走 panic + backtrace，没有 CFSR，复位原因要经 `esp_reset_reason()` 过滤再验 CRC |
+
+共性归纳：看门狗的四个值（`0xCCCC` 启动、`0x5555` 解锁、`0xAAAA` 喂狗、SR 的 PVU/RVU 等待）在 HAL 与各家 SDK 里逐字相同，因为它们都是抄寄存器手册——差异只在包装层。故障取证的公共骨架也一致：先按 `EXC_RETURN` 选栈，再解 CFSR 分型，最后回溯调用栈；CmBacktrace 把这套骨架做成了带工具链差异开关的库，ESP32 的 panic handler 是同一骨架的 IDF 版。复位标志「一次读全、再清 RMVF、读完清 magic」的次序，与第 17 章的 swap-state 发布纪律同构——先清后写、最后发布，谁先写 magic 谁的记录在断电时不可信。
+
 ## 离开检查
 
 1. IWDG 的超时公式是什么？RLR=999、/64、LSI=32 kHz 时是多少？LSI 换成 17/47 kHz 后区间是多少？

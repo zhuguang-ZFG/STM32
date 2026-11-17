@@ -291,6 +291,19 @@ e03 的 S3 分支用 GPIO10、LEDC 低速通道 0、5kHz fade，只作为实验�
 
 其它分工：SysTick 的 24 位上限与 RTC 在[第 11 章](./11-systick-timebase-rtc.md)；DMA 搬运捕获数据在[第 14 章](./14-dma.md)；TIM TRGO 触发 ADC 在[第 15 章](./15-adc-dac-sampling.md)；编码器测速与闭环在[第 38 章](../v5-motion/38-encoder-speed-measurement.md)；仪器与证据方法在[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。
 
+## 社区开源实现
+
+本章的坑（+1 漏算、MOE 没开、极性反、预装载没开、捕获回绕）在开源代码里都有现成的对照位置：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [STMicroelectronics/stm32f4xx-hal-driver](https://github.com/STMicroelectronics/stm32f4xx-hal-driver) | `Src/stm32f4xx_hal_tim.c` | `TIM_Base_SetConfig`（`stm32f4xx_hal_tim.c:6776`）写 ARR/PSC 后补 `EGR = TIM_EGR_UG`（`:6817`）让影子寄存器立刻生效，`TIM_OC1_SetConfig`（`:6831`）落 CCMR1/CCER，`HAL_TIM_PWM_Start`（`:1454`）里 `__HAL_TIM_MOE_ENABLE`（`:1476`）开 BDTR.MOE——「TIM1 完全没波形」那条分支就是这一位 |
+| [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Projects/STM32F4-Discovery/Examples/TIM/TIM_PWMInput/Src/main.c` | 官方输入捕获样例：TI1FP1 直连、中断里读 CCR1 求周期与占空比；对照「捕获一直为 0」「回绕时离谱」两条分支——计数方向与 16 位回绕的处理在它手里也是显式写的 |
+| [libopencm3/libopencm3](https://github.com/libopencm3/libopencm3) | `lib/stm32/common/timer_common_all.c` | `timer_set_prescaler`（`:650`）/`timer_set_period`（`:683`）/`timer_set_oc_value`（`:1339`）/`timer_enable_oc_output`（`:1174`）：没有状态机的一套薄包装，寄存器名与本章逐位对应，适合把 CCER/CCMR1 的每一位读回原样 |
+| [STMicroelectronics/cmsis-device-f4](https://github.com/STMicroelectronics/cmsis-device-f4) | `Include/stm32f407xx.h` | `TIM_TypeDef` 的 PSC/ARR/CCR1 偏移与 TIM3 基址宏：复算 (PSC+1)(ARR+1) 时在头文件里核位宽——TIM2/TIM5 的 32 位 CNT 与 TIM3 的 16 位 ARR 差别就写在这个结构体里 |
+
+共性归纳：三家的 +1 约定完全一致——PSC/ARR 写进去的数都比除数小 1，HAL 的 `TIM_Base_SetConfig`、libopencm3 的 `timer_set_period`、SPL 的 `TIM_TimeBaseInit` 都不做任何检查；频率算错一半或十倍时，寄存器不会有任何报错。极性（CCxP）、预装载（OC1PE）、输出使能（CCxE）三家也都交给你自己置位——HAL 帮你开的只有高级定时器的 `MOE`，GPIO 复用与时钟仍要自己管。读回寄存器对照这三份源码，是判「配置错」还是「理解错」最快的路。
+
 ## 离开检查
 
 1. F407 的 TIM3 时钟是多少？要 1kHz，PSC/ARR 为什么是 83/999？

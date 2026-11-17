@@ -457,6 +457,19 @@ ESP32 不在主线内，但边界要划清：它没有 Cortex-M 的 CFSR/`EXC_RE
 
 换芯片时先查对应型号的 TRM 调试章、RM 的 DBGMCU 章与数据手册的时钟树，再改这里的换算表。工具链四步与 ELF 读法见[v0 第 5 章](../v0-foundations/05-toolchain-four-steps.md)；用定时器做外部时间基准见[v1 第 12 章](../v1-drivers/12-timers-pwm.md)；HardFault 寄存器细节见[第 19 章](./19-watchdog-reset-hardfault.md)；低功耗与调试冻结的交叉见[第 18 章](./18-low-power.md)。
 
+## 社区开源实现
+
+本章的坑（FPB 比较器用完、行号漂移、TPIU 分频不匹配、CYCCNT 没开、半主机无人服务）在开源代码里都有现成的对照位置：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [pyocd/pyOCD](https://github.com/pyocd/pyOCD) | `pyocd/core/memory_interface.py` + `pyocd/core/session.py` | `MemoryInterface` 把 AP 访问封装成 `read_memory`/`write_memory`（`memory_interface.py:26/:33`），session 组合 probe/target——本章「IDE → GDB → OpenOCD → DP/AP」链的软件化最后一层：断点、下载、读寄存器最终都落到这两个方法 |
+| [openocd-org/openocd](https://github.com/openocd-org/openocd) | `src/target/cortex_m.c` | `cortex_m_set_breakpoint`（`cortex_m.c:1897`）逐比较器算 FPCR（`:1939-1941`）、`cortex_m_add_breakpoint`（`:2060`）按 Flash/RAM 分派——「断点打不上」分支的真相：FPB 比较器是硬件常数，用完只能删或换 hbreak，软件在 Flash 上的补丁路径也在这个函数里 |
+| [openocd-org/openocd](https://github.com/openocd-org/openocd) | `src/target/arm_tpiu_swo.c` | SWO 分频的舍入式 `prescaler = (traceclkin_freq + swo_pin_freq/2) / swo_pin_freq`（`arm_tpiu_swo.c:782`）与 ACPR 偏移/上限（`:53/:60`）——「SWO 全是乱码」分支：目标 `TRACECLKIN`、ACPR、调试器速率三者必须落在同一个数上 |
+| [ARM-software/CMSIS_6](https://github.com/ARM-software/CMSIS_6) | `CMSIS/Core/Include/core_cm4.h` | `DWT_Type` 的 `CYCCNT`（`core_cm4.h:904`，偏移 0x004）与 `DWT` 基址宏（`:1564`）：四步流水线里 `TRCENA→CYCCNTENA→读数→清零` 的寄存器就是这些宏，M7 的 `LAR` 解锁在 core_cm7.h 里多一步 |
+
+共性归纳：断点预算是硬件常数这一事实，三家实现里都写得很直白——OpenOCD 的比较器列表、pyOCD 的「software breakpoints with hardware breakpoints」替换开关、GDB 的 `hbreak` 区分，谁也不会替你凭空多造一个比较器。CYCCNT 的「没开就恒 0」同样跨工具链成立：DEMCR.TRCEENA 与 DWT_CTRL.CYCCNTENA 两个位不开，OpenOCD/pyOCD/GDB 都无能为力。半主机 `BKPT 0xAB` 是「调试器在才存在」的约定——pyOCD/OpenOCD 各自实现了这指令的处理，脱机后无人服务就是 HardFault，这也解释了为什么生产固件一律去掉 `rdimon`。
+
 ## 离开检查
 
 1. 为什么 `halt` 只是"请求停"，而不是把总线停住？AP 为什么能在 CPU 跑代码时读写内存？

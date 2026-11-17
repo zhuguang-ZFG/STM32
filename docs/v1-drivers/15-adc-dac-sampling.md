@@ -294,6 +294,19 @@ GD32 与 ESP32 不在平台列表。GD32 的 ADC/DAC 命名、通道数与校准
 
 采样数据的存储与掉电保护见[第 17 章](./17-flash-iap-ota.md)，低功耗下的 ADC 关断见[第 18 章](../v2-reliability/18-low-power.md)，仪器与证据方法见[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。
 
+## 社区开源实现
+
+本章的坑（采样不足、SQR 名次错、SCAN/NDTR 不齐、EOCS 语义、F103 校准）在开源代码里都有现成的对照位置：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [STMicroelectronics/stm32f4xx-hal-driver](https://github.com/STMicroelectronics/stm32f4xx-hal-driver) | `Src/stm32f4xx_hal_adc.c` | `HAL_ADC_ConfigChannel`（`stm32f4xx_hal_adc.c:1708`）按 Rank 分三段写 SQR3/SQR2/SQR1（`:1743-1761`）——「多通道数据串位」的来源就在这三段；`HAL_ADC_Start`（`:716`）先查 SQR1.L 再开 DMA 与 EOCS 语义，对照「轮询 EOC 读到别的通道」 |
+| [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Projects/STM32F4-Discovery/Examples/ADC/ADC_RegularConversion_DMA/Src/main.c` | 官方 DMA 连续转换样例：`ContinuousConvMode`/`DMAContinuousRequests` 双开（`main.c:77/:84`）、`HAL_ADC_Start_DMA` 按采样个数传 1（`:114`）——对照「只有第一路在更新」「NDTR 按字节算」两条分支 |
+| [libopencm3/libopencm3](https://github.com/libopencm3/libopencm3) | `lib/stm32/common/adc_common_v1.c` | `adc_set_regular_sequence`（`adc_common_v1.c:574`）把通道数组按 length 摊进 SQR、`adc_set_sample_time`（`:63` 调用处的 8 档宏）、`adc_start_conversion_regular`（`:695`）：无 HAL 的一套薄写法，SMPR 档位与 F103/F4 编码差异一目了然 |
+| [STMicroelectronics/cmsis-device-f4](https://github.com/STMicroelectronics/cmsis-device-f4) | `Include/stm32f407xx.h` | `ADC_TypeDef` 的 SQR1–3/SMPR1–2/DR 偏移与 CR2 的 EOCS/SWSTART 位：判读轮询与 DMA 两种收尾方式时，位定义以这个结构体为准 |
+
+共性归纳：三家都不检查采样时间与源阻抗的匹配——「读数停在上次电压附近」这种慢源问题，任何库都不会替你报错，只有 τ 的计算和读数对比能抓到。SQR 的名次写入在 HAL 与 libopencm3 里都是「先清后置」的两步（HAL 的 `&= ~`/`\|=` 对，libopencm3 的数组摊位同构），名次错了顺序就错。F1 的上电 CAL 在 F4 上不存在——HAL 把校准留给了 `ADCEx_Calibration_Start` 且只在 F1/F3 系列提供，跨系列搬初始化顺序时这条要先摘掉。
+
 ## 离开检查
 
 1. 12 位、VREF=3.3 V，码 2048 对应多少伏？1 LSB 是多少？为什么分母用 4096 而不是 4095？

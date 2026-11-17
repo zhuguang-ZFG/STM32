@@ -457,6 +457,19 @@ E07 的 QMI8658 是板载 I2C 器件，SDA=GPIO1、SCL=GPIO2、7 位地址 0x6A�
 
 其它分工：DMA 的请求映射与 NDTR/半字宽度在[第 14 章](./14-dma.md)；GPIO 的开漏、复用与 BSRR 在[第 9 章](./09-gpio.md)；PCLK1/PCLK2 的时钟树在[第 8 章](./08-architecture-memory-clock.md)；抓包与仪器方法在[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)；Flash 与 IAP 的页/扇区结构在[第 17 章](./17-flash-iap-ota.md)；低功耗下外设关断在[第 18 章](../v2-reliability/18-low-power.md)。
 
+## 社区开源实现
+
+本章的坑（ADDR 清序、BTF 前拉 STOP、ACK polling、总线死锁恢复、BSY 前拉 CS、模式配错）在开源代码里都有现成的对照位置：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [STMicroelectronics/stm32f4xx-hal-driver](https://github.com/STMicroelectronics/stm32f4xx-hal-driver) | `Inc/stm32f4xx_hal_i2c.h` + `Src/stm32f4xx_hal_i2c.c` | `__HAL_I2C_CLEAR_ADDRFLAG` 宏（`stm32f4xx_hal_i2c.h:496`）把「读 SR1 再读 SR2」写成两行不可拆的序列——「卡在等 ADDR」那条分支的官方清法；`HAL_I2C_Master_Transmit`（`stm32f4xx_hal_i2c.c:1056`）发完数据后走 `I2C_WaitOnFlagUntilTimeout` 等 BTF 再 `__HAL_I2C_CLEAR_ADDRFLAG` 的收尾次序 |
+| [STMicroelectronics/stm32f4xx-hal-driver](https://github.com/STMicroelectronics/stm32f4xx-hal-driver) | `Src/stm32f4xx_hal_spi.c` | `HAL_SPI_TransmitReceive`（`stm32f4xx_hal_spi.c:1140`）的收发对读循环；全库只有从机模式的 errata 才等 BSY（`:3576-3634`）——主模式「等 BSY=0 再拉 CS」没有任何库替你做 |
+| [libopencm3/libopencm3](https://github.com/libopencm3/libopencm3) | `lib/stm32/common/i2c_common_v1.c` | `i2c_set_clock_frequency`（`i2c_common_v1.c:199`）/`i2c_set_ccr`（`:262`）/`i2c_send_start`（`:80`）/`i2c_send_7bit_address`（`:297`）：CCR、FREQ、地址移位全部拆成独立函数，「7 位还是 8 位首字节」在 `i2c_send_7bit_address` 的形参注释里就有答案 |
+| [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Projects/STM32F4-Discovery/Examples/I2C/I2C_TwoBoards_RestartComIT/Src/main.c` | 官方重复起始样例：读事务用 Sr 不落 STOP——对照「读回旧数据」分支里「读事务中间多了 STOP」的写法差别 |
+
+共性归纳：清标志的两读序（SR1→SR2）在 HAL 是宏、在 SPL 是注释、在 libopencm3 是文档——三家都不会替你保守这个顺序，工具链绕开它就能复现 ADDR 卡死。等 BTF/BSY 的收尾在所有实现里都是显式的：HAL 只在从机 SPI 的 errata 路径等 BSY，主模式的 CS 时序永远归你。7 位地址左移的约定在 libopencm3 的 `i2c_send_7bit_address` 里写得最直白（函数内部 `<<1`），而 HAL 要求调用方已经移好——同一个器件在两家库里的「地址参数」含义不同，这是跨库移植最容易踩的一处。
+
 ## 离开检查
 
 1. START、STOP、ACK 各是哪根线在什么电平下怎么跳？为什么数据只能在 SCL 低区变？

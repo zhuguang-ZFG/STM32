@@ -412,6 +412,19 @@ ESP32 只划边界。ESP32-S3 没有 STM32 的 USART 寄存器，串口走 ESP-I
 
 其它分工：DMA 引擎在[第 14 章](./14-dma.md)；仪器与证据方法在[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)；双板记录器项目用的是同一份 codec，见[第 41 章](../v6-labs-projects/41-dual-board-logger-project.md)。CAN 与 USB 的现场总线对照在[第 35 章](../v4-platforms/35-can-usb-fieldbus.md)。
 
+## 社区开源实现
+
+本章的坑（ORE 只读 DR 清不掉、TC 没等就切方向、IDLE 误当帧尾、坏帧重对齐）在开源代码里都有现成的对照位置：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [STMicroelectronics/stm32f4xx-hal-driver](https://github.com/STMicroelectronics/stm32f4xx-hal-driver) | `Src/stm32f4xx_hal_uart.c` | `HAL_UART_Transmit`（`stm32f4xx_hal_uart.c:1135`）的等待次序——每个字节等 TXE（`:1172`）、整个缓冲发完**再等一次 TC**（`:1191`）：RS-485「最后一字节被截」那条分支的防御写法就差这一次 TC |
+| [ThrowTheSwitch/Unity](https://github.com/ThrowTheSwitch/Unity) | `src/unity.c` | `UnityFail`（`unity.c:2450`）与 `UnityConcludeTest`（`:587`）：断言宏把文件、行号、表达式打进输出，`UnityDefaultTestRun`（`:2494`）把失败计数留在 `Unity.NumberOfFailures`——本章 e02 与协议 codec 的宿主测试就架在这上面，坏帧用例的判据（COBS 返回 0、CRC 不符）全部写成 `TEST_ASSERT_EQUAL` |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `examples/peripherals/uart/uart_events/main/uart_events_example_main.c` | `uart_event_task`（`uart_events_example_main.c:39`）的事件分支：`UART_DATA` 里 `uart_read_bytes`（`:57`）按 `event.size` 取数，`UART_FIFO_OVF`/`UART_BUFFER_FULL`（`:62/:71`）显式报数——「DMA 环形缓冲的 Size 当成新增字节数」在事件模型下的等价坑 |
+| [libopencm3/libopencm3](https://github.com/libopencm3/libopencm3) | `lib/stm32/common/usart_common_all.c` | `usart_send_blocking`（`usart_common_all.c:321`）等 TXE 就写、`usart_recv_blocking`（`:337`）等 RXNE 就读：库把 SR 当宏直接给你，本章「读 SR 再读 DR」清 ORE/IDLE 的两步序在 libopencm3 里同样是调用者的纪律，没有替你包装 |
+
+共性归纳：TXE/TC 两个「发完」的差别是所有实现共用的坑——HAL 在 `HAL_UART_Transmit` 结尾补等 TC，libopencm3 的 `usart_send_blocking` 只等 TXE，名字里写 blocking 的也不保证最后一字节落线；切方向、关电源、评估时延之前等 TC，这条纪律只能自己守。IDLE 在每家都是「线空了一个帧时间」的通知而非帧定界——esp-idf 用事件投递 IDLE，ST 用 SR 的 IDLE 位，两者都要「读 SR 再读 DR」才清掉。坏帧后先补 0x00 重新对 COBS 对齐，是本章 codec 与所有 COBS 用户共同的恢复路径。
+
 ## 离开检查
 
 1. 0x41 在串口线上的位序是什么？115200 8N1 下一位多宽、一帧多宽？

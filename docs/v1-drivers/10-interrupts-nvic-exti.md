@@ -391,6 +391,19 @@ ESP32 这一侧，没有 NVIC 与固定向量表，中断由分配器在运行�
 
 Cache 映射、Cache 关闭窗口与多核一致性见[第 34 章](../v4-platforms/34-multicore-cache.md)；架构与启动见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)；外设驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。
 
+## 社区开源实现
+
+本章的坑（挂起没清、weak 没顶替、优先级截断、IRAM 承诺）在开源代码里都有现成的对照位置：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [ARM-software/CMSIS_6](https://github.com/ARM-software/CMSIS_6) | `CMSIS/Core/Include/core_cm4.h` | `NVIC_EnableIRQ` 的 `ISER[IRQn >> 5]`（`core_cm4.h:1799`）与 `NVIC_SetPriority` 的 `(priority << (8U - __NVIC_PRIO_BITS)) & 0xFF`（`core_cm4.h:1928`）：本章三条地址公式（IRQn/32、IRQn%32、IP 字节左移）在这里原样落地——「把 16 当最低优先级」的截断分支，就出在这个左移里 |
+| [STMicroelectronics/cmsis-device-f4](https://github.com/STMicroelectronics/cmsis-device-f4) | `Source/Templates/gcc/startup_stm32f407xx.s` | `g_pfnVectors` 的逐槽 `.word`（`startup_stm32f407xx.s:127`）与 `Default_Handler`（`:112`）的 weak 顶替链：「中断一直停在死循环」那条分支的核对证据——objdump 的槽内容对着这张表逐行查函数名 |
+| [libopencm3/libopencm3](https://github.com/libopencm3/libopencm3) | `lib/stm32/common/exti_common_all.c` | `exti_set_trigger` 与 `exti_enable_request`（`exti_common_all.c:45/:63`）把触发沿、IMR 屏蔽位的置位顺序写死在 C 里：对照「边沿到了 EXTI 没反应」——时钟、EXTICR、触发沿、屏蔽位四件事漏一件就是那条分支 |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `examples/peripherals/gpio/generic_gpio/main/gpio_example_main.c` | `gpio_isr_handler` 标 `IRAM_ATTR`（`gpio_example_main.c:59`）与 `gpio_install_isr_service`（`:111`）的 flag 选择：对照 ESP32 两条 IRAM 分支——声明是承诺，整条调用链都要进 IRAM，而不是只标本体 |
+
+共性归纳：NVIC 这一层全社区只有一份实现——CMSIS 的内联函数既是手册摘要也是位运算本身，出错时先回 `core_cm4.h` 那三行；libopencm3 只在 CMSIS 之上加类型与参数检查（`lib/cm3/nvic.c` 的 `nvic_enable_irq`，`nvic.c:57`），语义不变。清挂起永远是 W1C（写 1 清零）、使能永远查 ISER 位——这条纪律在 CMSIS、libopencm3、HAL 三家完全一致，谁直接写 ISR 或用读-改-写清 PR，就同时踩进本章与第 9 章讲过的两个坑。
+
 ## 离开检查
 
 1. 按一下 PF6 的按键，请求从引脚到 ISR 要经过哪三层硬件？SYSCFG 在其中做什么？每一层各负责什么？
