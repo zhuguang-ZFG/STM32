@@ -460,9 +460,17 @@ def ch13_brr_error_budget():
     f.text(88, 494, "经验值「±2%-3%」的出处就是这条 8.5 位推导，不含温漂与走线延迟",
            size=13.5, color=MUTED)
 
-    f.htext(64, 560, "先算 8.5 位再挑 PCLK——量化吃掉预算的六成，就没有余量了",
+    f.panel(64, 530, 1024, 100, GRAY_FILL, amp=1.6)
+    f.rect(64, 530, 1024, 100, color=MUTED, sw=1.6, fill=None, amp=1.6)
+    f.text(88, 562, "把预算走成三步", size=15.5, color=INK, weight="bold")
+    f.text(88, 592, "① 算 BRR = round(PCLK/baud) 与实际误差　② 对照总容差 5.882%（每端 2.941%）",
+           size=14.5, color=INK, font=MONO)
+    f.text(88, 618, "③ 余量留给温漂与采样抖动——不为零就换 PCLK 或降波特率",
+           size=14.5, color=INK, font=MONO)
+
+    f.htext(64, 700, "先算 8.5 位再挑 PCLK——量化吃掉预算的六成，就没有余量了",
             size=21, color=INK, weight="bold", hl=True)
-    f.text(576, 590,
+    f.text(576, 730,
            "读数取自本章 S7 八行误差表（宿主脚本口径）；推导示意。",
            size=14, color=MUTED, anchor="middle")
     return f

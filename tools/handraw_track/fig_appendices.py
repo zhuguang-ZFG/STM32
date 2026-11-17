@@ -397,6 +397,11 @@ def app_e_pin_number():
     f.rect(120, 460, 910, 100, color=AMBER_STROKE, fill=AMBER_FILL, sw=2)
     f.htext(W / 2, 520, "料号 + 时钟入口 + 寄存器域 + 算术，四格齐才算钉住",
             size=26, color=INK, anchor="middle", weight="bold")
+    f.multi(W / 2, 630, [
+        "同一纪律的另一格（CAN 500 kbit/s @ APB1 36 MHz）",
+        "P=9、BS1 5、BS2 2 → 36M/(9×8) = 500 kbit/s，采样点 75%",
+        "抄错分母（搬 F407 的 42 MHz 档）→ 整网速率整体偏掉",
+    ], size=22, color=INK, anchor="middle", lh=36)
     return f
 
 
