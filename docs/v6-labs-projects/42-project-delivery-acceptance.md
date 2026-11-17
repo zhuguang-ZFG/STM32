@@ -9,7 +9,7 @@ platforms: [generic]
 
 这里没有板级实测。源章 D19 的十个项目都没有上板读数，代码段是片段，不是工程；五处代码自带「待纠正草图，不能直接烧录」的声明，正文与代码同页保留；工时与难度星级是「经验值，仅供规划参考」；WS2812 的时序数来自灯珠厂商数据手册（不是 RM0008），带修订版限定。四组资源算术（分区、SRAM、ADC、USB 分包）可复算，与 [v1 各章](../v1-drivers/08-architecture-memory-clock.md) 已冻结口径一致。
 
-> 版本口径：D19《项目实战合集》（`docs/19-项目实战合集.md`，637 行：原理段 + 十个递进项目 + 验收方法论）；ACC《motor 验收框架》（`plans/2026-11-11-motor-control/acceptance.md`）。这里从 ACC 提炼三条通用验收纪律并注明出处，AC/H 编号矩阵本身是 motor 专用，不通用。
+> 版本口径：D19《项目实战合集》（合并前 `docs/19-项目实战合集.md`，637 行：原理段 + 十个递进项目 + 验收方法论；已随 B5 退役，正文的 D19 行号引用均指其旧稿）；ACC《motor 验收框架》（`plans/2026-11-11-motor-control/acceptance.md`，在库）。这里从 ACC 提炼四条通用验收纪律并注明出处，AC/H 编号矩阵本身是 motor 专用，不通用。
 
 ## 本章罗盘
 
@@ -18,7 +18,7 @@ platforms: [generic]
 - **级别**：L5 交付。证据位置：「测量与证据」与「离开检查」；读完留下四问验收栏、六项预算表与交付包五件套清单。
 - **开源读法**：对照 `memfault/interrupt` 文集里的固件更新与可观测性文章，读时用本章的交付包清单和四条纪律对账；验收阈值与算术仍回本章与 ACC。
 - **边界**：内容限于推进与验收方法论；十个项目的技术细节（每个项目的方案与代码）是源章的正文，这里只收「怎么验收」视角与四组算术；motor 的 PI 调参与指标定义归 [第 39 章](../v5-motion/39-speed-closed-loop-pi.md)；实验仪器方法归 [第 40 章](./40-lab-method-instruments.md)；IAP/OTA 机制归 [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md)。
-- **依据锚点**：D19《项目实战合集》（`docs/19-项目实战合集.md`）、ACC（`plans/2026-11-11-motor-control/acceptance.md`）。上游对账：DS5319（C8 SRAM 20 KB）、RM0008/RM0090（分区与外设）、USB 2.0 规范（wMaxPacketSize）；四组算术与 [v1 第 8 章](../v1-drivers/08-architecture-memory-clock.md)、[v1 第 13–14 章](../v1-drivers/13-uart-framed-protocol.md) 已冻结口径互证。
+- **依据锚点**：D19《项目实战合集》（合并前 `docs/19-项目实战合集.md`，已退役）、ACC（`plans/2026-11-11-motor-control/acceptance.md`，在库）。上游对账：DS5319（C8 SRAM 20 KB）、RM0008/RM0090（分区与外设）、USB 2.0 规范（wMaxPacketSize）；四组算术与 [v1 第 8 章](../v1-drivers/08-architecture-memory-clock.md)、[v1 第 13–14 章](../v1-drivers/13-uart-framed-protocol.md) 已冻结口径互证。
 
 ## 先做出来
 
@@ -43,7 +43,7 @@ USB 分包：应用帧 4+128+1 = 133 B → 全速批量一包 64 B → 拆 64+64
 
 ### 一、十个递进项目与四问重排
 
-D19 的十个项目（按键、串口、中断、PWM、ADC+DAC、DMA、I2C EEPROM、SPI Flash、CAN、USB、IAP、网络、蓝牙小车、电机、自平衡等，按递进排序）保持原顺序与技术方案；验收栏按四问重排，工时与难度星级降为「经验值，仅供规划参考」的注记，不作为承诺。每个项目保留七件套里的关键代码片段，五处「待纠正草图」声明随代码同页：
+D19 的十个项目保持原顺序与技术方案，覆盖的主题比项目数多：按键、串口、中断、PWM、ADC+DAC、DMA、I2C EEPROM、SPI Flash、CAN、USB、IAP、网络、蓝牙小车、电机、自平衡等（一个项目可合并多个主题；源章已退役，不再逐一对回）；验收栏按四问重排，工时与难度星级降为「经验值，仅供规划参考」的注记，不作为承诺。每个项目保留旧稿七件套格式里的关键代码片段，五处「待纠正草图」声明随代码同页（表内 D19:NNN 为退役旧稿的行号，仅作出处指认）：
 
 | 草图 | 位置 | 声明 |
 | --- | --- | --- |

@@ -7,9 +7,9 @@ platforms: [f407, esp32]
 
 同一份需求（周期采样、队列缓冲、串口上报、配置可存、断线必停），在 F407 与 ESP32-S3 上各做一遍。公共部分只讲一遍，平台差异用对照表。两份来源文档刻意互镜像（基本结构逐字相同、五处按平台分叉），合并后的正文按「公共架构 → 平台差分 → 故障注入」组织。这是一个真实的工程载体：SAMPLE 载荷 64 B、线上 74 B、队列载荷 1 KiB、租约 500 ms、期限监督。每个数字都可复算。
 
-这里没有板级实测。两份来源的 `hardware_status` 都是 `pending`；上板记录要注明板版本、固件提交、接线、输入和原始日志，本页当前仍是待实测。故障注入四命令的表是**预期逻辑结果（非实测）**，原文自带限定；`mcu/docs/lab/reports/j1-test-report.md` 是空白模板。工程实况也要说明：`mcu/code/projects/` 目录不存在，真实载体是 `code/projects.json` 登记的 `code/stm32/07-sensor-logger`、`code/esp32/08-sensor-logger` 与 `code/common/logger`，全部在库。
+这里没有板级实测。两份来源的 `hardware_status` 都是 `pending`；上板记录要注明板版本、固件提交、接线、输入和原始日志，本页当前仍是待实测。故障注入四命令的表是**预期逻辑结果（非实测）**，原文自带限定；合并前来源的空白记录表 `mcu/docs/lab/reports/j1-test-report.md` 已随 mcu/docs 退役，原始记录按[第 40 章](./40-lab-method-instruments.md) 的实测记录制度另落位置。工程实况也要说明：`mcu/code/projects/` 目录不存在，真实载体是 `mcu/code/projects.json` 登记的 `mcu/code/stm32/07-sensor-logger`、`mcu/code/esp32/08-sensor-logger` 与 `mcu/code/common/logger`，全部在库。
 
-> 版本口径：F407 侧 FreeRTOS V11.1.0、复位 HSI 16 MHz（[v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md) lab 同源）；S3 侧 ESP-IDF 5.5.2（[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md) 同源）。PRJ1《F407 logger》（`mcu/docs/projects/01-f407-logger.md`）、PRJ2《S3 logger》（`.../02-s3-logger.md`）。
+> 版本口径：F407 侧 FreeRTOS V11.1.0、复位 HSI 16 MHz（[v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md) lab 同源）；S3 侧 ESP-IDF 5.5.2（[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md) 同源）。PRJ1《F407 logger》（合并前 `mcu/docs/projects/01-f407-logger.md`）、PRJ2《S3 logger》（`.../02-s3-logger.md`）——两份来源文档已随 mcu/docs 退役，正文按合并口径重述。
 
 ## 本章罗盘
 
@@ -49,7 +49,7 @@ sequence u32 + timestamp_ms u32 + generation u32
 ┌─ 主机（串口终端/上位机）
 ├─ RTOS 运行层（任务/队列/监督/租约）
 ├─ 公共核心（code/common/logger：协议、配置、滤波、期限监督）
-└─ 外设适配 port（code/stm32/07/logger_port.c ｜ code/esp32/08/port.c）
+└─ 外设适配 port（mcu/code/stm32/platform/logger_port.c ｜ mcu/code/esp32/08-sensor-logger/main/port.c）
 ```
 
 公共核心不知道底下是哪颗芯片；port 把「传感器采样、存储读写、看门狗喂狗、控制台」四个动作翻译成平台 API。换平台的成本被压进 port 一层。
