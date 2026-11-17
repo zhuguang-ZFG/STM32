@@ -179,7 +179,7 @@ def ch44_error_sorting_bench():
     f.htext(576, 734, "先验存在，再谈语义：道歉不是修正动作", size=24,
             color=INK, weight="bold", anchor="middle", hl=True)
     f.text(576, 762,
-           "dash≤2/章 · check_pdf 13 gates · docs-check 27 CLAIMS · "
+           "dash≤2/章 · check_pdf 13 门 / docs-check 27 CLAIMS（合并前 mcu 口径）· "
            "教学口径 · 布局示意，非实测",
            size=13, color=MUTED, anchor="middle")
     return f
