@@ -12,6 +12,7 @@ platforms: [f407, f103]
 - **问题**：`GPIOF->BSRR` 展开后为什么正好落在 `0x40021418`？一个只有 `a`、`b`、`c` 三个成员、数据宽度合计 6 字节的结构体，为什么 `sizeof` 是 12？为什么硬件寄存器映射不能用位域，也不能随手加 `#pragma pack(1)`？三个问题分别指向成员顺序、对齐填充与编译器自由裁量的边界。
 - **交付**：能拿到一张寄存器地图就写出对应的 `TypeDef`，用 `offsetof`、`sizeof`、`_Static_assert` 三件工具逐成员对账；能手算含填充结构体的每个偏移，并在内存画布上指出洞的位置；能说清结构体映射担保什么、不担保什么，以及为什么位域与 pack 不属于寄存器。
 - **级别**：L0 起步。证据位置：「测量与证据」与「离开检查」；读完留下逐成员偏移与 `sizeof` 的断言对账记录。
+- **旅程导航**：上一章（[第 2 章](./02-c-volatile-ub.md)）你手里有两份优化档的访存对账与 `volatile` 的读写合同；本章结束多了逐成员偏移与 `sizeof` 的断言对账（`offsetof`、`_Static_assert`）——结构体第一次「罩住」整组寄存器，地图由你亲手算出来。
 - **开源读法**：翻 `cmsis-device-f4` 的 `Include/stm32f407xx.h` 第 526–537 行 `GPIO_TypeDef`，对照本章逐成员算出的偏移；`__IO` 与布局规则仍回手册与 AAPCS。
 - **边界**：逐成员核对的是 F407 的 `stm32f407xx.h`；F103 的寄存器组不是同一张地图，来源 C4 没有给出它的成员表与偏移，这里不补，寄存器级差异指向卷 4 的[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。结构体按值传参、返回时的寄存器与栈约定属于调用约定，留给[第 4 章](./04-function-pointer-state-machine.md)。来源记录里板上 GDB 对照仍标为待回填，这里不把它写成已完成。位域布局的可移植性只有编译器文档与来源结论，没有跨工具链对照实验。
 - **依据锚点**：C4《结构体与 ABI：一个结构体罩住整组寄存器》（`mcu/docs/c/04-struct-abi.md`）及其取证工程 `mcu/code/c/04-struct-abi/probe.c`、`broken.c`；`stm32f407xx.h` 第 526–537 行的 `GPIO_TypeDef` 定义、RM0090 §8.4 的寄存器地图与 ARM AAPCS 的布局规则均转引自 C4；变量段归属与指针宽度在[第 1 章](./01-c-memory-model.md)，volatile 的访存合同在[第 2 章](./02-c-volatile-ub.md)。

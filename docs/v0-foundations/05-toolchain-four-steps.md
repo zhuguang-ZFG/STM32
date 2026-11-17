@@ -12,6 +12,7 @@ platforms: [generic]
 - **问题**：`arm-none-eabi-` 三段各管什么，为什么系统 `gcc` 编不了 F407？`gcc` 自己不做编译，它把活分给谁？四步各留下什么：`-E`、`-S`、`-c` 和链接分别产出哪种文件，报错时怎样一眼看出死在哪个阶段，ELF 头的五个字段与节表又各自回答什么问题？裸机没有 Linux 系统调用，`printf` 的输出凭什么能接到串口？最后是环境：第一次装工具链、make、OpenOCD、ST-Link 驱动和 SWD 线，每一步验收什么？
 - **交付**：能用 build/host/target 说明“交叉”交叉在哪；能按 binutils 的分工查符号、段、体积与格式；能说清 newlib 钩子如何把 `printf` 接到串口；能用 `gcc -###` 读出 cc1、as、collect2 的调度链；能亲手跑完四步并在 `.i`、`.s`、`.o`、`.elf` 里找到对应证据；能读 ELF 头五字段与节表的 `Addr`/`Off`/`Size`/`Flg`；能按五步搭好环境，并用三条命令确认自己用的是哪套工具链。
 - **级别**：L0 起步。证据位置：「测量与证据」与「离开检查」；读完留下四步中间产物、ELF 头与节表读数、环境自查命令的对账记录。
+- **旅程导航**：上一章（[第 4 章](./04-function-pointer-state-machine.md)）你手里有状态×事件动作表与 ISR 签名的判读记录；本章结束多了四步中间产物、ELF 头与节表读数、环境自查命令的对账——前四章写的每一行 C，从此知道死在哪一步、留在哪个节。
 - **开源读法**：对照 `riscv-gnu-toolchain` 的 `Makefile.in`，看 `--with-arch/--with-abi` 的缺省值怎样写进一套交叉工具链的配置；四步产物与 `-###` 的判读仍回本章。
 - **边界**：取证范围是 Cortex-M 裸机、F407 工程与 xPack GNU Arm Embedded GCC 15.2.1 的来源记录，概念适用于没有 OS 的 ARM 嵌入式工程。链接脚本、启动文件与 map 体积审计留给[第 6 章](./06-linker-startup-map.md)；Makefile 与遗留构建栈留给[第 7 章](./07-build-systems-legacy.md)；GDB 与 SWD 调试留给[第 20 章](../v2-reliability/20-debug-performance.md)；寄存器与外设地址留给[第 8 章][ch08]及后续驱动章。环境五步以 Windows 10/11 为主线，Linux 与 macOS 只给对应命令名；板上烧录与点灯步骤来源没有记录本机复跑，这里明确标为未跑。
 - **依据锚点**：B0《工具链全景：四个软件一台戏》（`mcu/docs/build/00-toolchain.md`）、B1《四步构建：从 main.c 到机器码》（`mcu/docs/build/01-four-steps.md`）、B2《ELF 解剖：把固件放上解剖台》（`mcu/docs/build/02-elf.md`）、S0《环境搭建：裸机工具链》（`mcu/docs/stm32/00-env.md`）；根书第 01 章《开发环境搭建》（`docs/01-开发环境搭建.md`）的 SWD 接线与 ST-Link 驱动部分。工具链版本、四步读数、ELF 数字均转引自上述来源。

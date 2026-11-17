@@ -18,6 +18,7 @@ platforms: [f103]
 - **问题**：PI 的离散式与 Kp/Ki 单位怎么定，单位错为什么等于增益错？误差 −10 rpm 时一个 10 ms 节拍输出多少，负输出为什么不能取绝对值？输出限幅与抗饱和差在哪，条件积分四规则如何挡住 windup？目标斜坡、状态机与故障恢复、控制节拍与串口的分离、调参六步的判据与回退、四指标定义，以及 D 项为什么不进 V1。
 - **交付**：能手算一个控制节拍并解释负输出的方向；把条件积分四规则落成代码分支；画出五态状态机、故障锁存与恢复链（CLEAR→DISABLED→HEARTBEAT→ARMED）；把控制节拍与串口任务的所有权分开（ISR 写桥、主循环收发）；按六步调参表走一遍并说出回退条件；按四指标写验收记录的数据要求（同轴曲线、输入哈希、重复全保留）。
 - **级别**：L4 系统。证据位置：「测量与证据」与「离开检查」；读完留下 PI 一步的手算、条件积分四规则的分支与调参六步的回退条件。
+- **旅程导航**：上一章（[第 38 章](./38-encoder-speed-measurement.md)）你手里有 CPR 口径、量化下限与回绕手算；本章结束多了 PI 一步手算、条件积分四规则与调参六步回退条件的记录——测量值第一次闭环进控制律，卷 5 的运动线到此完整。
 - **开源读法**：对照 `br3ttb/Arduino-PID-Library` 的 `PID_v1.cpp`，看它在输出饱和时怎样冻结积分；单位、限幅与节拍语义仍回本章公式与 RM0008。
 - **边界**：开环链路（PWM 端点、带符号占空比、斜坡、租约）归 [第 37 章](./37-dc-motor-openloop.md)，编码器量化与回绕归 [第 38 章](./38-encoder-speed-measurement.md)，驱动桥与供电归 [第 36 章](./36-motor-driver-power.md)，DWT 测量归 [v1 第 20 章](../v2-reliability/20-debug-performance.md)，IWDG 归 [v1 第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，任务与队列归 [v3-rtos](../v3-rtos/22-tasks-tcb-scheduler.md)。EKF/Kalman 等状态估计不在这里，控制律是纯算术。
 - **依据锚点**：M32 草稿（`plans/2026-11-11-motor-control/chapters-draft/32-直流电机速度闭环.md`）、DESIGN 合同（`:121-130` 单位、`:132` 抗饱和、`:140-162` 状态机/F01–F06、`:85` 耗时预算）、ACC《验收》（`plans/2026-11-11-motor-control/acceptance.md`）。上游对账：RM0008；TB6612 datasheet；`tools/motor_analyze.py`（P3 交付物，标待核）。

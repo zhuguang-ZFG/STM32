@@ -12,6 +12,7 @@ platforms: [generic]
 - **问题**：入门的第一周做什么——买哪块板、装哪个工具链、第一次构建与烧录各会卡在哪？「点灯」为什么值得认真做一次，而不是抄一段代码了事？
 - **交付**：完成一次从源码到闪烁的完整闭环，并留下 L0 要求的三样证据；遇到「灯不闪」时能按三条失败分支分诊；能用串口跟芯片完成第一次对话。
 - **级别**：L0 起步。证据位置：「你应该看到」各清单与[第 40 章](../v6-labs-projects/40-lab-method-instruments.md) 的记录表；读完留下构建日志、烧录记录与一张填写过的记录表。
+- **旅程导航**：进本章前你手里只有一块新板子和这本书；本章结束多了构建、烧录、点灯与串口四步的最小闭环，以及 L0 要求的构建日志与烧录记录——旅程从「跑通」开始，看懂这四步是卷 0 的事。
 - **开源读法**：本章的例程是 `examples/gpio-blink` 与 `examples/uart-dma-idle`（[附录 B](../appendix/B-project-index.md) 登记），README 里有完整接线与命令；工具链事实仍回[第 5 章](../v0-foundations/05-toolchain-four-steps.md)。
 - **边界**：本章只做「跑起来」，不解释机制——GPIO 的寄存器语义在[第 9 章](../v1-drivers/09-gpio.md)，时钟树在[第 8 章](../v1-drivers/08-architecture-memory-clock.md)，串口在[第 13 章](../v1-drivers/13-uart-framed-protocol.md)；本章出现的数字（115200、BRR `0x271`、1 Hz）全部转引已冻结口径，不新造。
 - **依据锚点**：点灯的 1 Hz、串口的 115200 与 BRR `0x271` 转引[第 7 章](../v0-foundations/07-build-systems-legacy.md)、[第 9 章](../v1-drivers/09-gpio.md)、[第 13 章](../v1-drivers/13-uart-framed-protocol.md)已冻结口径；PC13 低电平与灌电流上限引 DS5319 注 5；接线与命令以 `examples/gpio-blink`、`examples/uart-dma-idle` 的 README 为准（[附录 B](../appendix/B-project-index.md) 登记）。L0 三样证据与十八周排期见[第 46 章](../v7-delivery/46-resources-roadmap-open-source.md)，记录表格式见[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)，失败分诊见[第 45 章](../v7-delivery/45-troubleshooting-handbook.md)。

@@ -12,6 +12,7 @@ platforms: [f103, esp32]
 - **问题**：Make 靠哪三样东西建立依赖图，`make -n` 看到的到底是什么，改头文件不重建又缺了哪条边？CMake 为什么不直接构建，而要先“生成”？ESP-IDF 的 `idf_component_register` 与 RT-Thread 的 `SConscript` 为什么对应同一类组件，Kconfig 为什么说与构建系统正交？SPL 一侧：点灯最小闭环少一个文件会怎样，`GPIO_Init` 逐行动了哪几个寄存器、哪几位，SPL 三层又怎样把一个字段翻译成位段？
 - **交付**：能用 `make -n` 与 `touch` 观察局部重建；能写出最小裸机 CMake 工程并说清工具链文件为何必须在 `project()` 之前；能读懂 IDF 组件声明与 SConscript 的对应；能为 F103 工程锁定 SPL 版本、宏、启动文件与驱动源文件；能按“先清后置、按位段移位”逐行讲 `GPIO_Init`；能用“API → 寄存器”反推法拆任意库函数。
 - **级别**：L0 起步。证据位置：「测量与证据」与「离开检查」；读完留下局部重建预测、CMake 生成日志与 `GPIO_Init` 位操作的对账记录。
+- **旅程导航**：上一章（[第 6 章](./06-linker-startup-map.md)）你手里有链接脚本三段判读与体积审计的对账；本章结束多了局部重建预测、CMake 生成日志与 `GPIO_Init` 位操作的对账记录——卷 0 到此收口：语言与构建两条线都齐了，下一章开始把「为什么这样配」接到芯片手册上。
 - **开源读法**：对照 `platformio-core` 的 `platformio/builder/`，看构建脚本在哪里决定 `-mcpu` 与链接脚本；SPL 的寄存器名与位段仍回 RM0008。
 - **边界**：双平台章。构建系统一侧来自 B7，与芯片无关；SPL 一侧限定 STM32F10x SPL V3.5.0，`GPIO_Init` 的逐行拆解来自 S15 对 F4 版 SPL V1.8.0 的取证，寄存器名逐版本标注，不把 F4 的 `MODER` 套到 F103 的 `CRL/CRH` 上。ESP32 一侧只使用 B7 记录的 ESP-IDF 工作流事实（CMake 组件、Kconfig、`idf.py`），ESP32-S3 的地址、时钟与外设留给卷 4。时钟树、NVIC 与 DMA 通道细节分别留给[第 8 章][ch08]、[第 10 章][ch10]、[第 14 章][ch14]。
 - **依据锚点**：B7《构建系统：从手写 Makefile 到 CMake 与 scons》（`mcu/docs/build/07-build-system.md`）、根书第 26 章《STM32F10x 标准外设库（SPL）》（`docs/26-STM32F10x标准外设库SPL.md`）、S15《SPL 标准库解剖：库是怎么封装寄存器的》（`mcu/docs/stm32/15-spl-anatomy.md`）；[第 5 章](./05-toolchain-four-steps.md)的四步构建与[第 6 章](./06-linker-startup-map.md)的链接脚本。命令、版本、字节数与可见现象转引自上述来源；本机没接板的部分在“测量与证据”里标为未跑。
