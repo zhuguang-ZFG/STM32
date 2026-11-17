@@ -7,6 +7,8 @@ platforms: [generic]
 
 这一章在所有理论之前。它回答三件事：这块芯片是什么、你要买什么、怎么让第一颗灯在**你的**板子上亮起来。全书的 46 章按知识分层组织（语言与构建 → 驱动 → 可靠性 → RTOS → 多平台 → 运动 → 项目 → 交付），本章是唯一不按分层走的一章：它按「你的准备周（第 0 周）」组织，先跑通构建、烧录与点灯的最小闭环，再接上[第 46 章](../v7-delivery/46-resources-roadmap-open-source.md)的十八周排期——第 1 周从构建系统开始。读完本章，你手里应该有三样东西——构建日志、烧录记录、一块按你的指令闪烁的板子；这正是 [L0 级别](../v7-delivery/46-resources-roadmap-open-source.md)要求的过关证据。
 
+![手绘板：第 0 周六站——从快递盒到 1 Hz（原理示意，非实拍）](/images/ch00-onramp-six-stops.png)
+
 ## 本章罗盘
 
 - **问题**：入门的第一周做什么——买哪块板、装哪个工具链、第一次构建与烧录各会卡在哪？「点灯」为什么值得认真做一次，而不是抄一段代码了事？
@@ -77,6 +79,8 @@ $ make flash
 - `make flash` 报告写入完成（OpenOCD/CubeProgrammer 的日志含 Flash write 字样）；
 - 板载 PC13 LED 以约 1 Hz 闪烁——注意 PC13 是**低电平点亮**（共阳接法，灌电流能力见 DS5319 注 5 的 ≤3 mA、≤2 MHz 口径）；
 - 接了外接灯的话，PA0 的 LED 每 5 秒翻转一次。
+
+<!-- stick-scene: ch00-unbox-blink -->
 
 「灯不闪」的三条失败分支（完整分诊表见[第 45 章](../v7-delivery/45-troubleshooting-handbook.md) 与例程 README）：
 

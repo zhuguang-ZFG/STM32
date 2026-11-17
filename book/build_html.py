@@ -112,6 +112,16 @@ figure.book-figure figcaption {
   max-width: 36em; margin: 0.65em auto 0; color: var(--muted);
   font-size: 0.88rem; line-height: 1.6; text-align: center;
 }
+/* Animated scene widget: a framed little stage per the stick-scene embed
+   guidance (card, faint dot grid, floor band kept on). The light card stays
+   light in dark mode so the ink drawing keeps its paper. */
+figure.book-scene {
+  border: 1px solid var(--rule); border-radius: 8px; background: #fff;
+  background-image: radial-gradient(#e3ddca 1px, transparent 1.2px);
+  background-size: 14px 14px; padding: 0.9rem 0.6rem 0.5rem;
+}
+figure.book-scene stick-scene { display: block; margin: 0 auto; max-width: 100%; }
+figure.book-scene noscript img { display: block; margin: 0 auto; max-width: 100%; height: auto; }
 .quiz { border: 1px solid var(--rule); border-radius: 6px; padding: 1rem 1.15rem; margin: 1.8rem 0; }
 .quiz-q { margin-top: 0.8em; }
 .quiz-options { margin: 0.35em 0 0.7em; }
@@ -222,6 +232,52 @@ ALT_RE = re.compile(r'\balt="([^"]*)"')
 SRC_RE = re.compile(r'\bsrc="([^"]*)"')
 IMG_TAG_RE = re.compile(r'<img\b([^>]*?)(\s*/?)>', re.I)
 TABLE_RE = re.compile(r'<table>.*?</table>', re.S)
+
+# Site-only animated scenes (stick-scene canvas widgets). A markdown page marks
+# the slot with `<!-- stick-scene: <id> -->`; the EPUB and print pipelines drop
+# HTML comments and keep the static hand-drawn plate, so nothing to do there.
+# Script paths stay root-absolute here and are rewritten per page depth by the
+# relativize() pass, like every other /-rooted asset.
+STICK_SCENES = {
+    "ch00-unbox-blink": {
+        "label": "一个人按下烧录台的按钮，构建日志逐行跑完，固件飞进开发板，"
+                 "板上的 PC13 灯开始按 1 Hz 闪烁。",
+        "caption": "手绘动画：从 make 到 1 Hz——按下烧录、构建、固件入板、PC13 闪烁"
+                   "（进入视野自动播放，点击重播）",
+        "fallback": "/images/ch00-unbox-blink-frame.png",
+    },
+}
+STICK_SCENES_RE = re.compile(
+    r'(?:<p>\s*)?<!-- stick-scene: ([a-z0-9-]+) -->\s*(?:</p>)?'
+)
+
+
+def embed_stick_scenes(html_text: str) -> str:
+    """Swap a stick-scene marker for the animated canvas widget.
+
+    The runtime (scenes/stick.js) must precede the scene script in document
+    order; both are deferred, so they run after parsing and after the element
+    exists. no-font keeps the site free of Google Fonts calls.
+    """
+    def repl(match: re.Match[str]) -> str:
+        scene_id = match.group(1)
+        if scene_id not in STICK_SCENES:
+            raise ValueError(f"unknown stick-scene id: {scene_id}")
+        meta = STICK_SCENES[scene_id]
+        return (
+            '<figure class="book-figure book-scene">'
+            f'<stick-scene scene="{scene_id}" play="view" no-font '
+            f'aria-label="{html_lib.escape(meta["label"])}" '
+            'style="height:240px;max-width:560px"></stick-scene>'
+            f'<noscript><img src="{meta["fallback"]}" '
+            f'alt="{html_lib.escape(meta["caption"])}"></noscript>'
+            f'<figcaption>{html_lib.escape(meta["caption"])}</figcaption>'
+            '</figure>'
+            '<script src="/scenes/stick.js" defer></script>'
+            f'<script src="/scenes/{scene_id}.js" defer></script>'
+        )
+
+    return STICK_SCENES_RE.sub(repl, html_text)
 
 
 def wrap_tables(html_text: str) -> str:
@@ -466,6 +522,7 @@ def build(
         text = (docs_root / entry["file"]).read_text(encoding="utf-8")
         _, body = split_frontmatter(text)
         content = render_markdown(body, quiz_dir)
+        content = embed_stick_scenes(content)
         content = wrap_tables(content)
         content = MD_HREF_RE.sub(
             lambda match: f'href="{match.group(1)}.html{match.group(2) or ""}"', content

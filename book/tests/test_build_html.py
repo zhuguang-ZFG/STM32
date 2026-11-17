@@ -135,3 +135,34 @@ class BuildHtmlTest(unittest.TestCase):
                 quiz_dir=self.quiz_dir,
                 manifest=MANIFEST,
             )
+
+
+class StickSceneEmbedTest(unittest.TestCase):
+    def test_marker_in_paragraph_becomes_scene_figure(self):
+        html_in = "<p>前文</p>\n<p><!-- stick-scene: ch00-unbox-blink --></p>\n<p>后文</p>"
+        out = build_html.embed_stick_scenes(html_in)
+        self.assertIn('class="book-figure book-scene"', out)
+        self.assertIn('<stick-scene scene="ch00-unbox-blink" play="view" no-font', out)
+        self.assertIn("aria-label=", out)
+        self.assertIn('<noscript><img src="/images/ch00-unbox-blink-frame.png"', out)
+        self.assertIn('<figcaption>手绘动画：从 make 到 1 Hz', out)
+        # runtime must precede the scene script so window.RIG exists on load
+        self.assertLess(
+            out.index('src="/scenes/stick.js"'),
+            out.index('src="/scenes/ch00-unbox-blink.js"'),
+        )
+        self.assertTrue(out.startswith("<p>前文</p>"))
+        self.assertTrue(out.rstrip().endswith("<p>后文</p>"))
+
+    def test_bare_comment_marker_also_matches(self):
+        out = build_html.embed_stick_scenes("x\n<!-- stick-scene: ch00-unbox-blink -->\ny")
+        self.assertIn("<stick-scene", out)
+        self.assertNotIn("stick-scene:", out)
+
+    def test_unknown_scene_id_is_a_build_error(self):
+        with self.assertRaises(ValueError):
+            build_html.embed_stick_scenes("<!-- stick-scene: no-such-scene -->")
+
+    def test_plain_comment_without_marker_is_untouched(self):
+        html_in = "<p><!-- 构建提示：保留 --></p>"
+        self.assertEqual(build_html.embed_stick_scenes(html_in), html_in)
