@@ -5,9 +5,9 @@ platforms: [generic]
 
 # 常见故障排查手册
 
-这本手册是**索引层**：已发布 22 章中 19 章带失败分支节（合计 204 条、两代格式），这里把它们的入口按现象域编成一张分诊总表，再把两本姊妹书的 FAQ（F103 线 38 条编号条目 + F407/ESP32 线技术问答）收进第二层。排错按三条规则走：先对现象，再找第一处边界，最后按标签查出处；不要从第三列开始改；**一次只改一处**。
+这本手册是**索引层**：全书 46 章中 42 章带失败分支节（合计 499 条、两代格式），这里把它们的入口按现象域编成一张分诊总表，再把两本姊妹书的 FAQ（F103 线 38 条编号条目 + F407/ESP32 线技术问答）收进第二层。排错按三条规则走：先对现象，再找第一处边界，最后按标签查出处；不要从第三列开始改；**一次只改一处**。
 
-这里没有板级实测。38 条编号条目（C1–C8/D1–D7/P1–P9/H1–H7/R1–R7 = 8+7+9+7+7）与 22 章失败分支的条目统计（19 章有节、合计 204 条：4 列区 108 条 + 3 列区 96 条）是本轮逐章实测的计数。BOOT 三模式、BRR=0x271 时钟计算、PC13 灌电流口径都与已发布章互证；栈大小两套口径（mbF 经验值字节制与仓库例程字制）**并陈不混写**。出处口径沿各章「依据锚点」与[附录 E](../appendix/E-sources-version-license.md) 的来源四层与标签对照（RM0008 §3.4、DS5319 表 5/图 31/注 5 均转引自对应章）。
+这里没有板级实测。38 条编号条目（C1–C8/D1–D7/P1–P9/H1–H7/R1–R7 = 8+7+9+7+7）与全书失败分支的条目统计（42 章有节、合计 499 条：4 列区 360 条 + 3 列区 139 条）是逐章脚本重数的计数（2026-11-18）。BOOT 三模式、BRR=0x271 时钟计算、PC13 灌电流口径都与已发布章互证；栈大小两套口径（mbF 经验值字节制与仓库例程字制）**并陈不混写**。出处口径沿各章「依据锚点」与[附录 E](../appendix/E-sources-version-license.md) 的来源四层与标签对照（RM0008 §3.4、DS5319 表 5/图 31/注 5 均转引自对应章）。
 
 > 版本口径：D18《常见问题FAQ》（`docs/18-常见问题FAQ.md`，F103/BluePill 线）、mbF《常见问题》（`mcu/mcu-book/book/F-常见问题.md`，F407 霸天虎 + ESP32-S3 线）。上游对账：RM0008 §3.4（BOOT 表）、DS5319（表 5 引脚、图 31 复位电容、GPIO 注 5）、FreeRTOS 口径沿 [第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md)。生态与版本类答案带抓取日期（[第 27 章](../v3-rtos/27-rtos-comparison-selection.md) 口径）。
 
@@ -64,20 +64,26 @@ mbF 技术细节 10 问（MMIO/volatile/中断阻塞/队列 vs 信号量/看门�
 
 ## 第三层：逐章失败分支索引
 
-已发布 ch18–39 的失败分支节统计（19 章有节、3 章无节；两代格式：ch18–24 是 4 列「现象/原因/区分证据/下一动作」，ch28–39 是 3 列「症状/第一条假设/区分实验」：索引统一映射为「现象/区分证据/下一动作」语义，不改原章）。条目数为各章表内数据行数，不含表头：
+全书 46 章中 **42 章有失败分支节、4 章无节**（ch25/26/27 与本手册自身）。两代格式：ch01–24 是 4 列「现象/原因/区分证据/下一动作」，ch28–46 有节各章是 3 列「症状/第一条假设/区分实验」：索引统一映射为「现象/区分证据/下一动作」语义，不改原章。条目数为各章表内数据行数，不含表头（2026-11-18 脚本重数）：
 
 | 章 | 条目 | 章 | 条目 | 章 | 条目 |
 | --- | --- | --- | --- | --- | --- |
-| [ch18](../v2-reliability/18-low-power.md) | 14 | [ch19](../v2-reliability/19-watchdog-reset-hardfault.md) | 19 | [v1 20 章](../v2-reliability/20-debug-performance.md) | 20 |
-| [ch21](../v3-rtos/21-why-rtos.md) | 13 | [ch22](../v3-rtos/22-tasks-tcb-scheduler.md) | 13 | [ch23](../v3-rtos/23-context-switch-porting.md) | 12 |
-| [ch24](../v3-rtos/24-queue-semaphore-notification.md) | 17 | [v1 25 章](../v3-rtos/25-memory-management.md) | 无节 | [ch26](../v3-rtos/26-device-framework-shell.md) | 无节 |
-| [ch27](../v3-rtos/27-rtos-comparison-selection.md) | 无节 | [ch28](../v4-platforms/28-chip-migration-differences.md) | 7 | [ch29](../v4-platforms/29-gd32-arm-riscv.md) | 8 |
-| [ch30](../v4-platforms/30-esp32s3-architecture-boot.md) | 6 | [ch31](../v4-platforms/31-esp32-drivers-audio.md) | 10 | [ch32](../v4-platforms/32-esp32-wifi-ble-espnow.md) | 9 |
-| [ch33](../v4-platforms/33-network-protocol-stack.md) | 9 | [ch34](../v4-platforms/34-multicore-cache.md) | 8 | [ch35](../v4-platforms/35-can-usb-fieldbus.md) | 9 |
-| [ch36](../v5-motion/36-motor-driver-power.md) | 7 | [ch37](../v5-motion/37-dc-motor-openloop.md) | 7 | [ch38](../v5-motion/38-encoder-speed-measurement.md) | 8 |
-| [ch39](../v5-motion/39-speed-closed-loop-pi.md) | 8 | | | | |
+| [ch01](../v0-foundations/01-c-memory-model.md) | 11 | [ch02](../v0-foundations/02-c-volatile-ub.md) | 13 | [ch03](../v0-foundations/03-struct-abi-registers.md) | 9 |
+| [ch04](../v0-foundations/04-function-pointer-state-machine.md) | 14 | [ch05](../v0-foundations/05-toolchain-four-steps.md) | 14 | [ch06](../v0-foundations/06-linker-startup-map.md) | 12 |
+| [ch07](../v0-foundations/07-build-systems-legacy.md) | 13 | [ch08](../v1-drivers/08-architecture-memory-clock.md) | 16 | [ch09](../v1-drivers/09-gpio.md) | 12 |
+| [ch10](../v1-drivers/10-interrupts-nvic-exti.md) | 16 | [ch11](../v1-drivers/11-systick-timebase-rtc.md) | 15 | [ch12](../v1-drivers/12-timers-pwm.md) | 15 |
+| [ch13](../v1-drivers/13-uart-framed-protocol.md) | 16 | [ch14](../v1-drivers/14-dma.md) | 17 | [ch15](../v1-drivers/15-adc-dac-sampling.md) | 17 |
+| [ch16](../v1-drivers/16-i2c-spi.md) | 22 | [ch17](../v1-drivers/17-flash-iap-ota.md) | 20 | [ch18](../v2-reliability/18-low-power.md) | 14 |
+| [ch19](../v2-reliability/19-watchdog-reset-hardfault.md) | 19 | [ch20](../v2-reliability/20-debug-performance.md) | 20 | [ch21](../v3-rtos/21-why-rtos.md) | 13 |
+| [ch22](../v3-rtos/22-tasks-tcb-scheduler.md) | 13 | [ch23](../v3-rtos/23-context-switch-porting.md) | 12 | [ch24](../v3-rtos/24-queue-semaphore-notification.md) | 17 |
+| [ch28](../v4-platforms/28-chip-migration-differences.md) | 7 | [ch29](../v4-platforms/29-gd32-arm-riscv.md) | 8 | [ch30](../v4-platforms/30-esp32s3-architecture-boot.md) | 6 |
+| [ch31](../v4-platforms/31-esp32-drivers-audio.md) | 10 | [ch32](../v4-platforms/32-esp32-wifi-ble-espnow.md) | 9 | [ch33](../v4-platforms/33-network-protocol-stack.md) | 9 |
+| [ch34](../v4-platforms/34-multicore-cache.md) | 8 | [ch35](../v4-platforms/35-can-usb-fieldbus.md) | 9 | [ch36](../v5-motion/36-motor-driver-power.md) | 7 |
+| [ch37](../v5-motion/37-dc-motor-openloop.md) | 7 | [ch38](../v5-motion/38-encoder-speed-measurement.md) | 8 | [ch39](../v5-motion/39-speed-closed-loop-pi.md) | 8 |
+| [ch40](../v6-labs-projects/40-lab-method-instruments.md) | 7 | [ch41](../v6-labs-projects/41-dual-board-logger-project.md) | 6 | [ch42](../v6-labs-projects/42-project-delivery-acceptance.md) | 7 |
+| [ch43](../v7-delivery/43-ai-pair-programming.md) | 7 | [ch44](../v7-delivery/44-manual-reconciliation-hallucination.md) | 7 | [ch46](./46-resources-roadmap-open-source.md) | 9 |
 
-表中标「无节」的三章：ch25 用「先做出来 + 台架」结构，ch26 的排错在「先做出来」判据里，ch27 对照表自带反面列。有节 19 章合计 **204 条**（4 列区 108 + 3 列区 96）。遇到故障先到这里翻章号，再进原章看完整表。
+表中标「无节」的四章：ch25 用「先做出来 + 台架」结构，ch26 的排错在「先做出来」判据里，ch27 对照表自带反面列，ch45 是本手册（它自己不再设失败分支节）。上手卷（第 0 章）的「灯不闪」三分支表在其第四节内联，不单列。有节 42 章合计 **499 条**（4 列区 ch01–24 共 360 + 3 列区 ch28–46 共 139）。遇到故障先到这里翻章号，再进原章看完整表。
 
 ![手绘板：排错五步：复现/最小化/二分/看证据/对照手册（原理示意，非实拍）](/images/ch18-five-steps.png)
 
@@ -90,6 +96,6 @@ mbF 技术细节 10 问（MMIO/volatile/中断阻塞/队列 vs 信号量/看门�
 - 分诊表 8 域能翻，「指向章 + 锚点」的用法会用。
 - 38 条编号条目的五域结构与三条抽查样例（BOOT/串口时钟/PC13）口径与已发布章一致。
 - 栈大小两套口径（字节经验值 vs 字配置）并陈不混。
-- 「19/22 章、204 条、两代格式」的统计口径准确，没有「每章都有」的假命题。
+- 「42/46 章、499 条、两代格式」的统计口径准确，没有「每章都有」的假命题；无节的 ch25/26/27/45 也如实标注。
 - 出处口径（各章「依据锚点」+ 附录 E 四层来源与标签对照）说得清。
 - 三条规则与五步方法论在章首，每次排错先过这三条。
