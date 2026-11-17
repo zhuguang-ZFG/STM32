@@ -1,3 +1,4 @@
+ch00	onramp	从开箱到点灯：买板、装环境与第一次下载	onramp/00-from-box-to-blink.md	generic
 ch01	v0	嵌入式 C 的内存模型与指针	v0-foundations/01-c-memory-model.md	generic
 ch02	v0	volatile、const 与未定义行为	v0-foundations/02-c-volatile-ub.md	generic
 ch03	v0	结构体、ABI 与寄存器映射	v0-foundations/03-struct-abi-registers.md	f407,f103

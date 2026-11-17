@@ -34,15 +34,26 @@ STYLE = """
   --rule: #d8d2c0;
   --accent: #1f4680;
   --code-bg: #f4eee0;
+  --paper: #ffffff;
+  --serif: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC",
+           "STSong", "SimSun", serif;
+  --sans: "Source Han Sans SC", "Noto Sans CJK SC", "Microsoft YaHei",
+          "PingFang SC", system-ui, sans-serif;
+  --mono: "Cascadia Mono", "JetBrains Mono", "Sarasa Mono SC",
+          Consolas, "Courier New", monospace;
 }
 html { font-size: 17px; }
 body {
   max-width: 46rem; margin: 0 auto; padding: 2.4rem 1.2rem 5rem;
-  font-family: "Source Han Sans SC", "Noto Sans CJK SC", "Microsoft YaHei",
-               "PingFang SC", system-ui, sans-serif;
+  font-family: var(--serif);
+  background: var(--paper);
   line-height: 1.82; color: var(--ink); text-align: justify;
   text-justify: inter-ideograph; overflow-wrap: break-word;
 }
+nav.book-nav, .chapter-pager, .back-to-top, figcaption, table,
+h1, h2, h3, h4 { font-family: var(--sans); }
+pre, code { font-family: var(--mono); }
+::selection { background: #d7e3f4; }
 nav.book-nav {
   border-bottom: 1px solid var(--rule); margin-bottom: 2.2rem;
   padding-bottom: 0.9rem; font-size: 0.86rem; line-height: 1.6; text-align: left;
@@ -112,11 +123,66 @@ figure.book-figure figcaption {
   table { font-size: 0.84rem; }
   th, td { padding: 0.35rem 0.45rem; }
 }
+nav.chapter-pager {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;
+  margin: 3rem 0 0; padding-top: 1.4rem;
+  border-top: 1px solid var(--rule); text-align: left; line-height: 1.5;
+}
+nav.chapter-pager a {
+  display: block; padding: 0.7rem 0.9rem; border: 1px solid var(--rule);
+  border-radius: 6px; text-decoration: none;
+}
+nav.chapter-pager a:hover { border-color: var(--accent); text-decoration: none; }
+nav.chapter-pager .pager-dir { display: block; font-size: 0.78rem; color: var(--muted); }
+nav.chapter-pager .pager-title { display: block; margin-top: 0.2rem; font-weight: 600; }
+a.pager-next { grid-column: 2; text-align: right; }
+a.pager-prev { grid-column: 1; }
+nav.chapter-pager a:focus-visible, .back-to-top:focus-visible, a:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+.back-to-top {
+  position: fixed; right: 1.2rem; bottom: 1.4rem;
+  width: 2.6rem; height: 2.6rem; border-radius: 50%;
+  border: 1px solid var(--rule); background: var(--paper); color: var(--accent);
+  font-size: 1.2rem; line-height: 1; cursor: pointer; opacity: 0.92;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.12);
+}
+.back-to-top:hover { border-color: var(--accent); }
+p.book-subtitle { font-size: 1.05rem; color: var(--muted); margin: -0.4em 0 1.6em; }
+p.book-version { font-size: 0.82rem; color: var(--muted); margin: 0 0 2rem; }
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #e6e1d3;
+    --muted: #a39d8d;
+    --rule: #4a453a;
+    --accent: #8fb0e6;
+    --code-bg: #2a2620;
+    --paper: #1b1813;
+  }
+  body { background: var(--paper); }
+  ::selection { background: #33415c; }
+  blockquote { background: #25211a; color: #cfc8b6; }
+  thead th { background: #2a2620; }
+  tbody tr:nth-child(even) { background: #211d17; }
+  figure.book-figure img { border-radius: 4px; }
+  .back-to-top { box-shadow: 0 1px 4px rgb(0 0 0 / 0.5); }
+}
 """
-PRINT_SCRIPT = """<script>
+PAGE_SCRIPT = """<script>
 window.addEventListener('beforeprint', () => {
   document.querySelectorAll('details').forEach((item) => { item.open = true; });
 });
+const topButton = document.createElement('button');
+topButton.type = 'button';
+topButton.className = 'back-to-top';
+topButton.setAttribute('aria-label', '回到顶部');
+topButton.textContent = '\\u2191';
+topButton.hidden = true;
+document.body.appendChild(topButton);
+const syncTopButton = () => { topButton.hidden = window.scrollY < 600; };
+window.addEventListener('scroll', syncTopButton, { passive: true });
+topButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+syncTopButton();
 </script>"""
 
 
@@ -312,13 +378,42 @@ def nav_html(items: list[tuple[str, str, str]], current_path: str) -> str:
     )
 
 
-def page_shell(title: str, body: str, nav: str) -> str:
+def _pager_link(current_dir: str, direction: str, entry: tuple[str, str, str]) -> str:
+    _, title, path = entry
+    href = posixpath.relpath(path, current_dir or ".")
+    label = "上一章" if direction == "prev" else "下一章"
+    rel = ' rel="prev"' if direction == "prev" else ' rel="next"'
+    side = "pager-prev" if direction == "prev" else "pager-next"
+    return (
+        f'<a class="{side}" href="{href}"{rel}>'
+        f'<span class="pager-dir">{label}</span>'
+        f'<span class="pager-title">{html_lib.escape(title)}</span></a>'
+    )
+
+
+def chapter_pager_html(items: list[tuple[str, str, str]], current_path: str) -> str:
+    paths = [path for _, _, path in items]
+    if current_path not in paths:
+        return ""
+    index = paths.index(current_path)
+    current_dir = posixpath.dirname(current_path)
+    links = []
+    if index > 0:
+        links.append(_pager_link(current_dir, "prev", items[index - 1]))
+    if index + 1 < len(items):
+        links.append(_pager_link(current_dir, "next", items[index + 1]))
+    if not links:
+        return ""
+    return f'<nav class="chapter-pager" aria-label="章节导航">{"".join(links)}</nav>'
+
+
+def page_shell(title: str, body: str, nav: str, pager: str = "") -> str:
     return (
         "<!DOCTYPE html>\n"
         '<html lang="zh-CN">\n<head>\n<meta charset="utf-8">\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
         f"<title>{html_lib.escape(title)}</title>\n<style>{STYLE}</style>\n</head>\n<body>\n"
-        f'<nav class="book-nav">{nav}</nav>\n<main>\n{body}\n</main>\n{PRINT_SCRIPT}\n'
+        f'<nav class="book-nav">{nav}</nav>\n<main>\n{body}\n{pager}\n</main>\n{PAGE_SCRIPT}\n'
         "</body>\n</html>\n"
     )
 
@@ -381,8 +476,9 @@ def build(
         content = wrap_figures(content, lazy=True, zoom=True)
         page_path = out_dir / page_paths[entry["id"]]
         page_path.parent.mkdir(parents=True, exist_ok=True)
+        pager = chapter_pager_html(items, page_paths[entry["id"]])
         page_path.write_text(
-            page_shell(entry["title"], content, nav_html(items, page_paths[entry["id"]])),
+            page_shell(entry["title"], content, nav_html(items, page_paths[entry["id"]]), pager),
             encoding="utf-8",
         )
         pages.append(page_paths[entry["id"]])

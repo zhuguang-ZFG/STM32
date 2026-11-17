@@ -18,6 +18,7 @@ VERSION = "0.1.0"
 ALLOWED_PLATFORMS = {"f103", "f407", "gd32", "esp32", "generic"}
 
 VOLUMES = [
+    ("onramp", "上手 · 从开箱到点灯", "在理论之前先跑通闭环：买板、装环境、第一次构建烧录，留下 L0 要求的三样证据。"),
     ("v0", "卷 0 · 语言与构建", "把 C、工具链与固件构建的地基打牢：能解释一段代码如何变成可烧录的固件。"),
     ("v1", "卷 1 · 裸机驱动", "从寄存器与 HAL 两条路径驱动真实外设，并能用波形、寄存器读回与最小可见结果对账。"),
     ("v2", "卷 2 · 可靠性与故障", "处理掉电、升级、看门狗、低功耗与崩溃现场，能复现失败并留下可定位证据。"),
@@ -29,6 +30,7 @@ VOLUMES = [
 ]
 
 VOL_DIR = {
+    "onramp": "onramp/",
     "v0": "v0-foundations/",
     "v1": "v1-drivers/",
     "v2": "v2-reliability/",
@@ -98,9 +100,9 @@ def validate(manifest: dict, rows: list[dict]) -> list[str]:
     all_ids = chapter_ids + appendix_ids
     if len(all_ids) != len(set(all_ids)):
         errors.append("duplicate ids across parts and appendices")
-    expected = [f"ch{i:02d}" for i in range(1, 47)]
+    expected = [f"ch{i:02d}" for i in range(0, 47)]
     if chapter_ids != expected:
-        errors.append(f"chapter ids must be ch01..ch46 in order, got {chapter_ids[:3]}...{chapter_ids[-1:]}")
+        errors.append(f"chapter ids must be ch00..ch46 in order, got {chapter_ids[:3]}...{chapter_ids[-1:]}")
     if appendix_ids != [f"ap{x}" for x in "ABCDEF"]:
         errors.append(f"appendix ids must be apA..apF, got {appendix_ids}")
     for row in rows:

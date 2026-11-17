@@ -30,7 +30,30 @@ platforms: [generic]
 | 进阶 | 6 周 | 定时器/ADC/DMA/总线/RTOS 入门 | 每个外设一次「押注→测量→对账」记录 |
 | 实战 | 8 周 | 综合项目/交付验收 | 一份交付包（[第 42 章](../v6-labs-projects/42-project-delivery-acceptance.md) 五件套） |
 
-逐周自测题不进正文。题面在源章、答案在 [附录 C](../appendix/C-exercises-answers.md)（按合并章号重排）。
+三阶段展开成十八周，每周绑定章、配套例程（全表见[附录 B](../appendix/B-project-index.md)）与一个可展示物——周计划是文档推导（计划表），里程碑物的判据都指向对应章的离开检查与例程 README：
+
+| 周 | 章 | 配套例程 | 你手里多了什么（可展示物） |
+| --- | --- | --- | --- |
+| 1 | [v1 第 7 章](../v0-foundations/07-build-systems-legacy.md) | `gpio-blink` | 构建日志 + PC13 约 1 Hz 闪烁——板上的灯第一次听你的 |
+| 2 | [v1 第 9 章](../v1-drivers/09-gpio.md) | `gpio-blink` 外接灯 | PA0 经 270 Ω 点亮外接 LED，会算限流电阻 |
+| 3 | [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md) | `uart-dma-idle` | `AT` 握手返回 `OK`——第一次跟芯片对话 |
+| 4 | [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) | `exti-key` | 按键事件进中断、计数可读；收口 L0→L1 证据包 |
+| 5 | [v1 第 12 章](../v1-drivers/12-timers-pwm.md) | `timer-pwm` | 1 kHz PWM，占空比随 CCR 连续变化 |
+| 6 | [v1 第 15 章](../v1-drivers/15-adc-dac-sampling.md) | `adc-dma` | 3 通道采样，输入变化与对应通道一致 |
+| 7 | [v1 第 16 章](../v1-drivers/16-i2c-spi.md) | `i2c-oled` | OLED 显示并持续刷新 |
+| 8 | [v1 第 16 章](../v1-drivers/16-i2c-spi.md) | `spi-flash` | JEDEC ID `0xEF4017`，跨页写逐字节一致 |
+| 9 | [ch21–22](../v3-rtos/21-why-rtos.md) | `freertos-task` | 三任务运行、队列阻塞、按键唤醒 |
+| 10 | 阶段收口 | — | L1→L2 证据包：时序图 + 缓冲区状态 + 代码路径 |
+| 11 | [v1 第 11 章](../v1-drivers/11-systick-timebase-rtc.md)、[第 18 章](../v2-reliability/18-low-power.md) | `rtc-alarm` | STOP 后按计划唤醒，VBAT 下时间连续 |
+| 12 | [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md) | `iap-bootloader` | 镜像校验通过跳转；损坏镜像不跳 |
+| 13 | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md) | `can-bxcan` | 环回自收；双节点有 ACK |
+| 14 | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md) | `usb-cdc` | 主机枚举出 CDC，双向字节传输 |
+| 15 | [第 36 章](../v5-motion/36-motor-driver-power.md) | `motor-dc-speed` | 开环 PWM 斜坡起停 |
+| 16 | [第 38 章](../v5-motion/38-encoder-speed-measurement.md) | 编码器测速 | 10 ms 窗口计数换算 rpm |
+| 17 | [第 39 章](../v5-motion/39-speed-closed-loop-pi.md) | 速度闭环 | PI 阶跃响应留档 |
+| 18 | [第 40–42 章](../v6-labs-projects/40-lab-method-instruments.md) | 双板记录器 | 交付包五件套——L5 收口 |
+
+逐周自测题不进正文。题面在源章、答案在 [附录 C](../appendix/C-exercises-answers.md)（按合并章号重排）。入门线从第 1 周就动手——第 0 章的开箱流程（见上手卷）在第 1 周之前完成。
 
 ### 2. 前置知识五块的「够用」标准
 

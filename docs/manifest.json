@@ -5,6 +5,22 @@
   "language": "zh",
   "parts": [
     {
+      "id": "onramp",
+      "title": "上手 · 从开箱到点灯",
+      "goal": "在理论之前先跑通闭环：买板、装环境、第一次构建烧录，留下 L0 要求的三样证据。",
+      "chapters": [
+        {
+          "id": "ch00",
+          "title": "从开箱到点灯：买板、装环境与第一次下载",
+          "file": "onramp/00-from-box-to-blink.md",
+          "status": "planned",
+          "platforms": [
+            "generic"
+          ]
+        }
+      ]
+    },
+    {
       "id": "v0",
       "title": "卷 0 · 语言与构建",
       "goal": "把 C、工具链与固件构建的地基打牢：能解释一段代码如何变成可烧录的固件。",

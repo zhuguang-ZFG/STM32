@@ -9,11 +9,12 @@
       "book": "root",
       "source": "docs/00-如何学习STM32.md",
       "targets": [
-        "ch46"
+        "ch46",
+        "ch00"
       ],
       "purpose": "根书原章",
       "status": "migrated",
-      "note": ""
+      "note": "路线→ch46，开箱与装环境→ch00"
     },
     {
       "book": "root",

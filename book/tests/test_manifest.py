@@ -14,14 +14,17 @@ class ManifestTest(unittest.TestCase):
         self.manifest = m.build_manifest(self.rows)
 
     def test_counts(self):
-        self.assertEqual([p["id"] for p in self.manifest["parts"]], [f"v{i}" for i in range(8)])
+        self.assertEqual(
+            [p["id"] for p in self.manifest["parts"]],
+            ["onramp"] + [f"v{i}" for i in range(8)],
+        )
         chapters = [c for p in self.manifest["parts"] for c in p["chapters"]]
-        self.assertEqual(len(chapters), 46)
+        self.assertEqual(len(chapters), 47)
         self.assertEqual(len(self.manifest["appendices"]), 6)
 
     def test_chapter_ids_sequential(self):
         chapters = [c["id"] for p in self.manifest["parts"] for c in p["chapters"]]
-        self.assertEqual(chapters, [f"ch{i:02d}" for i in range(1, 47)])
+        self.assertEqual(chapters, [f"ch{i:02d}" for i in range(0, 47)])
 
     def test_files_match_volume_dirs(self):
         for part in self.manifest["parts"]:
