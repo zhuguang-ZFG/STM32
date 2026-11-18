@@ -57,6 +57,9 @@
 | Book CI `44366371871` / Motor Control `44366371717`（`88dc40e5`，v5 升级） | success，两条链路的 `upload-artifact@v5` 都实际执行 |
 | Book / Site / 部署 / Merge Check（`df141eed`，`workflow_dispatch` 补跑） | `44372755385` / `44372763574` / `44372770172` / `44372778962` 全部 success |
 | Book / Site / 部署 / Merge Check（`ca5583ec`，`workflow_dispatch` 补跑） | `44375569786` / `44375550379` / `44375555847` / `44375562693` 全部 success；`dist` 实测 55 个 HTML、无 `superpowers` 产物 |
+| Merge Check / Book CI（`60c91ae3`，真实 push 触发） | `44378016890` / `44378017168` success；Site CI 与部署未触发，`!docs/superpowers/**` 按预期生效 |
+
+上表截至 `60c91ae3`。此后仅改 `docs/superpowers/**` 的提交只会自然触发 Merge Check 与 Book CI，不再逐条登记。
 
 一次流程失误与修正：`df141eed`（补记本表）的提交标题带了跳过标记，导致 `docs/**` 触发的四门整体被跳过——`srcExclude` 只影响站点内容，不会豁免工作流触发，这与根 `AGENTS.md` 的「门禁不降级」冲突。该提交已推送，不能 force-push 改写，故对同一 HEAD `df141eed` 显式派发四门补齐覆盖。
 
