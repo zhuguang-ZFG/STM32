@@ -69,7 +69,7 @@ jobs:
           arm-none-eabi-size build/dc-speed/motor-dc-speed.elf
 
       - name: Upload artifacts (map + elf)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: motor-dc-speed-build
           path: |
