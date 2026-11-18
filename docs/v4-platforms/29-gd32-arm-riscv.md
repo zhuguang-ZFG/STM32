@@ -160,6 +160,18 @@ ECLIC（N200 核的中断控制器，地址 0xd2000000，`n200_eclic.h:37`）与
 - UART 的协议帧设计（0x534E 等）：归 [v1 第 13 章](../v1-drivers/13-uart-framed-protocol.md)，这里只讲 GD32 的寄存器面。
 - GD32 的 USBHS/EXMC/TRNG 等存在性清单沿用 G4，逐外设机制不在这里。
 
+## 社区开源实现
+
+GD32 的「素材差异」先说清：它没有 STM32 那样的官方 GitHub 一手仓库——寄存器事实在 UM/AN 的 PDF 里，GitHub 上的固件库（`riscv-mcu` 组织）是第三方托管镜像。本章那张修正版偏移表，正是「二手博客转述 vs 官方头文件」冲突的产物；可引的开源位置有三处：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [riscv-mcu/GD32VF103_Firmware_Library](https://github.com/riscv-mcu/GD32VF103_Firmware_Library) | `Firmware/GD32VF103_standard_peripheral/Include/gd32vf103_usart.h` | `USART_STAT +0x00`（`:48`）、`USART_BAUD +0x08`（`:50`）、`USART_CTL0 +0x0C`（`:51`；钉版 @bc2be118 与 master 逐字相同）：本章修正版偏移表的官方一手对照——旧材料把 CTL0 写在 0x00 的整体错位，被这份头文件直接推翻 |
+| [Nuclei-Software/nuclei-sdk](https://github.com/Nuclei-Software/nuclei-sdk) | `NMSIS/Core/Include/core_feature_eclic.h` | `__ECLIC_SetMth`（`core_feature_eclic.h:448`）与级别换算的 nlbits 逻辑（`:710-718`）：ECLIC 五组寄存器（cfg/ie/ip/attr/ctl）的官方抽象层——「shv 两种路径」与 mth 阈值语义在这里落码 |
+| [riscv-collab/riscv-gnu-toolchain](https://github.com/riscv-collab/riscv-gnu-toolchain) | `Makefile.in` | `WITH_ARCH`/`WITH_ABI` 的搬运（`:222-223`）与 `MULTILIB_FLAGS`（`:171/:178`）：三元组的缺省值在 configure 时定死，Makefile 只是搬运工——「三元组换了前缀」后第一个要核对的就是这套 configure 产物 |
+
+共性归纳：STM32 迁移查 `cmsis-device-*`，GD32/RISC-V 迁移查「固件库头文件 + NMSIS 抽象层 + 工具链 configure」三件套——一手性依次递减，引用时标注来源身份。GD32VF103 的 ARM 线外设（本例 USART）与 F103 的动作序列相同，差的是寄存器名与偏移；RISC-V 线的 ECLIC/mtime 则是语义替换，不是改名——对照这三份代码能把「哪层是改名、哪层是换机制」分开。
+
 ## 离开检查
 
 - 能一张表说清两条线的兼容层级（改宏名 vs 换内核）。
