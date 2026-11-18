@@ -53,6 +53,9 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
-          node-version: "20"
-      - name: Run redirect generator tests
-        run: node --test scripts/tests/legacy-redirects.test.mjs
+          node-version: "24"
+          cache: npm
+      - name: Install tooling
+        run: npm ci
+      - name: Run script tests
+        run: node --test scripts/tests/*.test.mjs

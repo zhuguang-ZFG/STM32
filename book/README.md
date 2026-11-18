@@ -17,18 +17,22 @@ python -m book.build_html --check
 
 站点 CI 的最小依赖仍是 `book/requirements.txt`。新增回归中的位图/印刷集成项仅在 Pillow / Playwright / PyMuPDF 对应模块可用时执行；缺依赖会明确显示 `skipped`，不能把这种最小 CI 结果当作 PDF 验收。本次本地完整验收已具备依赖，87 项均实际执行，无跳过。运行真实浏览器回归还需要已安装的 Chromium/Edge。
 
-## 站点与印刷 PDF
+## 站点（VitePress）、内容渲染器与印刷 PDF
 
-依赖：`book/requirements.txt`（Markdown）、Pillow、Playwright、PyMuPDF；完整 PDF 需 Playwright Chromium 和可用中文字体。`book/print_pdf.py` 会检查中文页眉字体，找不到即失败。浏览器依赖需另行准备，构建不会自动安装。
+依赖分三层：站点只需 Node（`npm ci`）；`book/requirements.txt`（Markdown）供内容渲染契约与印刷；完整 PDF 另需 Pillow、Playwright、PyMuPDF、Playwright Chromium 与可用中文字体。`book/print_pdf.py` 会检查中文页眉字体，找不到即失败；浏览器依赖需另行准备，构建不会自动安装。
 
 ```sh
-python -m book.build_html
-python -m book.build_print_edition --out book/dist/print/merged-book.html
+npm run docs:build                    # 站点 → docs/.vitepress/dist（base /STM32/）
+npm run site:pages                    # 页面集合必须与 docs/manifest.json 一一对应
+npm run site:stubs && npm run site:assemble && npm run site:smoke
+python -m book.build_html --check     # 内容渲染契约：53 页可渲染（不产站点）
+python -m book.build_print_edition    # 单文件印刷 HTML → book/dist/print/
 python -m book.print_pdf --html book/dist/print/merged-book.html --meta book/dist/print/merged-book.meta.json --out book/dist/print/merged-book.pdf
+python -m book.build_epub             # EPUB 3（与 PDF 同源输入）
 ```
 
-第一条输出多页静态站到 `book/dist/site/`，不是单文件 HTML。后两条生成自包含印刷 HTML/元数据，再打印并后处理 PDF（页码、目录、书签、空页与横向溢出检查）。动画仅截取现有 SVG 的静帧用于印刷，不生成动画或视频。
+站点是 VitePress 多页站；`book.build_html` 的完整构建（不带 `--check`）只用于兼容旧的静态站点产物，页面与锚点由 `book/checks.py` 与站点构建共同校验，两者共享 `cjk_slugify` 与 `docs/.vitepress/data/scenes.json`。后三条生成自包含印刷 HTML/元数据，再打印并后处理 PDF（页码、目录、书签、空页与横向溢出检查）。动画仅截取现有 SVG 的静帧用于印刷，不生成动画或视频。
 
-`make book`、`make book-pdf`、`make book-check` 和 `make check` 分别封装站点、PDF、书稿门和资产门。PDF 会覆盖指定输出；有 WIP 时先备份并将两阶段 `--out` 指向仓库外的新目录。禁止把历史验收页数当成本次结果，须记录实际文件大小、页数、哈希、源输入稳定性和抽查页。
+`make book`、`make book-pdf`、`make book-epub`、`make book-check`、`make site-check` 和 `make check` 分别封装站点、PDF、EPUB、书稿门、站点门和资产门。PDF 会覆盖指定输出；有 WIP 时先备份并将两阶段 `--out` 指向仓库外的新目录。禁止把历史验收页数当成本次结果，须记录实际文件大小、页数、哈希、源输入稳定性和抽查页。
 
 `make assets` / `make verify` 会重新生成资产，且依赖视频目标；视频暂停或有资产 WIP 时不要运行。当前回归与 PDF 验收不需要它们。

@@ -1,0 +1,341 @@
+/* Book typography for the VitePress shell.
+   The palette and type stack come from the print edition, so the site, the
+   PDF and the EPUB keep one voice. Layout (nav, sidebar, pager) is VitePress'. */
+
+:root {
+  --book-ink: #26221b;
+  --book-muted: #6e6b60;
+  --book-rule: #d8d2c0;
+  --book-accent: #1f4680;
+  --book-code: #f4eee0;
+  --book-paper: #ffffff;
+  --book-quote: #faf4e4;
+  --book-serif: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC",
+    "STSong", "SimSun", serif;
+  --book-sans: "Source Han Sans SC", "Noto Sans CJK SC", "Microsoft YaHei",
+    "PingFang SC", system-ui, sans-serif;
+  --book-mono: "Cascadia Mono", "JetBrains Mono", "Sarasa Mono SC", Consolas,
+    "Courier New", monospace;
+
+  --vp-c-brand-1: #1f4680;
+  --vp-c-brand-2: #2b5ea7;
+  --vp-c-brand-3: #1f4680;
+  --vp-c-bg: #ffffff;
+  --vp-c-bg-alt: #faf7ee;
+  --vp-c-divider: #d8d2c0;
+  --vp-font-family-base: var(--book-sans);
+  --vp-font-family-mono: var(--book-mono);
+}
+
+.dark {
+  --book-ink: #e6e1d3;
+  --book-muted: #a39d8d;
+  --book-rule: #4a453a;
+  --book-accent: #8fb0e6;
+  --book-code: #2a2620;
+  --book-paper: #1b1813;
+  --book-quote: #25211a;
+
+  --vp-c-brand-1: #8fb0e6;
+  --vp-c-brand-2: #a8c4ef;
+  --vp-c-brand-3: #8fb0e6;
+  --vp-c-bg: #1b1813;
+  --vp-c-bg-alt: #211d17;
+  --vp-c-divider: #4a453a;
+}
+
+/* Reading column: the same ~46rem the print edition was measured against. */
+.VPDoc .content-container {
+  max-width: 46rem;
+}
+
+.vp-doc {
+  font-family: var(--book-serif);
+  line-height: 1.82;
+  color: var(--book-ink);
+  text-align: justify;
+  text-justify: inter-ideograph;
+  overflow-wrap: break-word;
+}
+
+.vp-doc h1,
+.vp-doc h2,
+.vp-doc h3,
+.vp-doc h4,
+.vp-doc h5,
+.vp-doc h6,
+.vp-doc table,
+.vp-doc figcaption {
+  font-family: var(--book-sans);
+}
+
+.vp-doc h1 {
+  font-size: 2rem;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  text-align: left;
+  text-wrap: balance;
+}
+
+.vp-doc h2 {
+  font-size: 1.5rem;
+  line-height: 1.35;
+  padding-bottom: 0.28em;
+  border-bottom: 1px solid var(--book-rule);
+  text-align: left;
+  text-wrap: balance;
+}
+
+.vp-doc h3 {
+  font-size: 1.18rem;
+  line-height: 1.35;
+  text-align: left;
+}
+
+.vp-doc p {
+  margin: 0.7em 0;
+}
+
+.vp-doc p + p {
+  text-indent: 2em;
+}
+
+.vp-doc li > p,
+.vp-doc blockquote p,
+.vp-doc figure p,
+.vp-doc td p,
+.vp-doc th p,
+.vp-doc .quiz p {
+  text-indent: 0;
+}
+
+.vp-doc blockquote {
+  margin: 1.4em 0;
+  padding: 0.65em 1.1em;
+  color: #4a4234;
+  background: var(--book-quote);
+  border-left: 3px solid var(--book-rule);
+}
+
+.dark .vp-doc blockquote {
+  color: #cfc8b6;
+}
+
+.vp-doc pre {
+  background: var(--book-code);
+  border: 1px solid var(--book-rule);
+  border-radius: 4px;
+  line-height: 1.55;
+  text-align: left;
+  font-size: 0.86rem;
+  overflow-wrap: normal;
+}
+
+.vp-doc code {
+  background: var(--book-code);
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.vp-doc :not(pre) > code {
+  overflow-wrap: anywhere;
+}
+
+.vp-doc pre code {
+  background: transparent;
+  font-size: inherit;
+}
+
+/* Register tables scroll inside their own box on narrow screens. */
+.vp-doc .table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 1.4em 0;
+}
+
+.vp-doc .table-scroll table {
+  margin: 0;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  text-align: left;
+  display: table;
+}
+
+.vp-doc th,
+.vp-doc td {
+  border: 1px solid var(--book-rule);
+  padding: 0.45rem 0.65rem;
+  vertical-align: top;
+  overflow-wrap: break-word;
+}
+
+.vp-doc thead th {
+  background: #f3ecdc;
+  font-weight: 600;
+}
+
+.dark .vp-doc thead th {
+  background: #2a2620;
+}
+
+.vp-doc tbody tr:nth-child(even) {
+  background: #fbf7ec;
+}
+
+.dark .vp-doc tbody tr:nth-child(even) {
+  background: #211d17;
+}
+
+/* Captioned figures. The caption is the Markdown alt text, exactly like the
+   print edition; the zoom link opens the original asset. */
+.vp-doc figure.book-figure {
+  margin: 1.9em 0;
+  text-align: center;
+}
+
+.vp-doc figure.book-figure img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.vp-doc a.figure-zoom {
+  display: block;
+  cursor: zoom-in;
+}
+
+.vp-doc figure.book-figure figcaption {
+  max-width: 36em;
+  margin: 0.65em auto 0;
+  color: var(--book-muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* Stick-scene stages keep their paper even in dark mode; the ink drawing
+   depends on the light card. */
+.vp-doc figure.book-scene {
+  border: 1px solid var(--book-rule);
+  border-radius: 8px;
+  background: #fff;
+  background-image: radial-gradient(#e3ddca 1px, transparent 1.2px);
+  background-size: 14px 14px;
+  padding: 0.9rem 0.6rem 0.5rem;
+}
+
+.vp-doc figure.book-scene stick-scene {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+.vp-doc figure.book-scene noscript img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Quizzes: folded answers, identical markup to the print edition. */
+.vp-doc .quiz {
+  border: 1px solid var(--book-rule);
+  border-radius: 6px;
+  padding: 1rem 1.15rem;
+  margin: 1.8rem 0;
+}
+
+.vp-doc .quiz h3 {
+  margin-top: 0;
+}
+
+.vp-doc .quiz-q {
+  margin-top: 0.8em;
+}
+
+.vp-doc .quiz-options {
+  margin: 0.35em 0 0.7em;
+}
+
+.vp-doc .quiz-answer {
+  margin: 0.4em 0 0.2em;
+}
+
+.vp-doc .quiz-answer summary {
+  cursor: pointer;
+  color: var(--book-accent);
+}
+
+/* Homepage: the manifest-driven table of contents. */
+.book-index {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 3rem 1.2rem 5rem;
+  font-family: var(--book-serif);
+  color: var(--book-ink);
+  line-height: 1.8;
+}
+
+.book-index h1 {
+  font-family: var(--book-sans);
+  font-size: 2.2rem;
+  line-height: 1.3;
+  text-align: left;
+}
+
+.book-index .book-subtitle {
+  font-size: 1.05rem;
+  color: var(--book-muted);
+  margin: -0.3em 0 0.4em;
+}
+
+.book-index .book-version {
+  font-size: 0.82rem;
+  color: var(--book-muted);
+  margin: 0 0 2.4rem;
+}
+
+.book-index h2 {
+  font-family: var(--book-sans);
+  font-size: 1.3rem;
+  margin: 2.2em 0 0.4em;
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid var(--book-rule);
+  text-align: left;
+}
+
+.book-index p {
+  color: var(--book-muted);
+  margin: 0.4em 0 0.9em;
+}
+
+.book-index ol {
+  padding-left: 1.6em;
+}
+
+.book-index li {
+  margin: 0.35em 0;
+}
+
+@media (max-width: 700px) {
+  .vp-doc h1 {
+    font-size: 1.7rem;
+  }
+
+  .vp-doc h2 {
+    font-size: 1.35rem;
+  }
+
+  .vp-doc .table-scroll table {
+    font-size: 0.84rem;
+  }
+
+  .vp-doc th,
+  .vp-doc td {
+    padding: 0.35rem 0.45rem;
+  }
+}

@@ -236,45 +236,24 @@ TABLE_RE = re.compile(r'<table>.*?</table>', re.S)
 # Site-only animated scenes (stick-scene canvas widgets). A markdown page marks
 # the slot with `<!-- stick-scene: <id> -->`; the EPUB and print pipelines drop
 # HTML comments and keep the static hand-drawn plate, so nothing to do there.
-# Script paths stay root-absolute here and are rewritten per page depth by the
-# relativize() pass, like every other /-rooted asset.
-STICK_SCENES = {
-    "ch00-unbox-blink": {
-        "label": "一个人按下烧录台的按钮，构建日志逐行跑完，固件飞进开发板，"
-                 "板上的 PC13 灯开始按 1 Hz 闪烁。",
-        "caption": "手绘动画：从 make 到 1 Hz——按下烧录、构建、固件入板、PC13 闪烁"
-                   "（进入视野自动播放，点击重播）",
-        "fallback": "/images/ch00-unbox-blink-frame.png",
-    },
-    "ch09-bitband": {
-        "label": "一个人拨下位带别名区的开关，一个写沿导线飞进外设寄存器，"
-                 "对应的那一位被原子地翻转。",
-        "caption": "手绘动画：位带别名——写别名地址，硬件替你原子地读-改-写寄存器的一位"
-                   "（进入视野自动播放，点击重播）",
-        "fallback": "/images/ch09-bitband-frame.png",
-    },
-    "ch23-pendsv": {
-        "label": "管理员把正在运行任务的现场帧从 CPU 插槽取下挂回它的挂钩，"
-                 "再把下一个任务的现场帧挂上 CPU——PendSV 换现场。",
-        "caption": "手绘动画：PendSV 换现场——运行任务的现场存回 TCB 挂钩，下一个任务上 CPU"
-                   "（进入视野自动播放，点击重播）",
-        "fallback": "/images/ch23-pendsv-frame.png",
-    },
-    "ch12-pwm-dial": {
-        "label": "一个人拧大 CCR 旋钮，示波器上方波的占空比从 25% 滑到 75%，"
-                 "频率保持在 1 kHz 不变。",
-        "caption": "手绘动画：拧 CCR 旋钮——占空比 25%→75%，频率不动；占空比住在 CCR 里"
-                   "（进入视野自动播放，点击重播）",
-        "fallback": "/images/ch12-pwm-dial-frame.png",
-    },
-    "ch18-stop-board": {
-        "label": "一个人拉下 RCC 总闸，时钟灯逐颗熄灭只剩 HSI 微亮，唤醒键亮起；"
-                 "按下后时钟灯逐颗复亮，主灯重新点亮。",
-        "caption": "手绘动画：Stop 进出——拉闸时钟灯逐颗灭、HSI 微亮，按唤醒键逐颗复亮"
-                   "（进入视野自动播放，点击重播）",
-        "fallback": "/images/ch18-stop-board-frame.png",
-    },
-}
+# 元数据只有一份：站点（VitePress 插件）与印刷/EPUB（本文件）都读
+# docs/.vitepress/data/scenes.json，避免两处 caption 悄悄分叉。
+SCENES_FILE = DOCS / ".vitepress" / "data" / "scenes.json"
+
+
+def load_stick_scenes(path: Path = SCENES_FILE) -> dict[str, dict[str, str]]:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError as error:
+        raise SystemExit(f"scene metadata missing: {path}") from error
+    for scene_id, scene in data.items():
+        for key in ("label", "caption", "fallback"):
+            if not scene.get(key):
+                raise SystemExit(f"scene {scene_id}: missing {key} in {path}")
+    return data
+
+
+STICK_SCENES = load_stick_scenes()
 STICK_SCENES_RE = re.compile(
     r'(?:<p>\s*)?<!-- stick-scene: ([a-z0-9-]+) -->\s*(?:</p>)?'
 )

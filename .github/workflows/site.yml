@@ -1,0 +1,57 @@
+name: Site CI
+
+# 站点门：VitePress 构建 + 页面集合对账 + /STM32/ 挂载冒烟（首页、深链、旧链、
+# 场景 canvas、中文搜索、quiz）。发布由 deploy.yml 负责，这里只验。
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'scripts/**'
+      - 'plans/2026-11-12-merged-book/mapping.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/site.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'scripts/**'
+      - 'plans/2026-11-12-merged-book/mapping.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/site.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  site:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Install tooling
+        run: npm ci
+      - name: Unit tests (scripts)
+        run: node --test scripts/tests/*.test.mjs
+      - name: Build site
+        run: npm run docs:build
+      - name: Page set matches manifest
+        run: npm run site:pages
+      - name: Generate legacy stubs
+        run: npm run site:stubs
+      - name: Assemble Pages staging
+        run: npm run site:assemble
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Mounted smoke (/STM32/)
+        run: npm run site:smoke

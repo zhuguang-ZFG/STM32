@@ -700,7 +700,7 @@ ESP32 只划边界。ESP32-S3 没有 STM32 的 FLASH_KEYR/CR/SR，也没有扇�
 
 ESP32 一侧的社区参考是 [espressif/esp-idf](https://github.com/espressif/esp-idf) 本身：`components/app_update/esp_ota_ops.c`（`esp_ota_begin` 全流程）与 `components/bootloader_support/src/bootloader_utility.c`（otadata 三态选择启动分区）把这里引用的 P10 说法（otadata 三态、`CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 回滚门）落成了可读的源码；前面说“没有核 IDF 原文”，想核的时候从这两个文件进去。
 
-STM32 一侧如果不想自己写跳板，社区还有 [RT-Thread 的 OTA 框架](https://github.com/RT-Thread/rt-thread)（FAL 分区抽象 + bootloader 固件）与 ST 官方的 [X-CUBE-SBSFU](https://github.com/STMicroelectronics/x-cube-sbsfu)（双镜像 + 安全启动，代码量大但覆盖了签名加密全套）。这些实现的共同点是：**没有哪个生产级 bootloader 把升级状态只放在 RAM 里**。失败分支里“复位后重试”的教训，在它们那里都变成了 Flash 里的持久状态字。
+STM32 一侧如果不想自己写跳板，社区还有 [RT-Thread 的 OTA 框架](https://github.com/RT-Thread/rt-thread)（FAL 分区抽象 + bootloader 固件）与 ST 官方的 [X-CUBE-SBSFU](https://www.st.com/en/embedded-software/x-cube-sbsfu.html)（双镜像 + 安全启动，代码量大但覆盖了签名加密全套）。这些实现的共同点是：**没有哪个生产级 bootloader 把升级状态只放在 RAM 里**。失败分支里“复位后重试”的教训，在它们那里都变成了 Flash 里的持久状态字。
 
 ## 离开检查
 

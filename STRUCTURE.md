@@ -12,7 +12,7 @@ B5 后两书正文已合为《通往单片机之路》：根 `docs/` 与 `book/`
 | --- | --- | --- |
 | Git 仓库根 | 版本控制与根域工作区 | `D:\Users\STM32`（候选收口 worktree：`D:\Users\STM32-mcu-merge-p1`） |
 | MCU 项目根 | 来源固件与 Trellis 历史上下文（非第二套书籍构建根） | `<Git根>\mcu` |
-| 对外站点根 | 合并版在 Pages/staging 下的挂载前缀 | `/STM32/`；其下旧 `/mcu/` 路径为兼容跳转存根 |
+| 对外站点根 | `/STM32/`：合并书站点根；其下 `mcu/` 只有旧链跳转存根 | `/STM32/`（Pages 域名 `https://zhuguang-zfg.github.io/STM32/`） |
 
 现行依据与证据：[`plans/2026-11-12-merged-book/`](plans/2026-11-12-merged-book/)；`plans/2026-11-11-mcu-merge/` 保留早期 subtree 规划。
 
@@ -21,9 +21,10 @@ B5 后两书正文已合为《通往单片机之路》：根 `docs/` 与 `book/`
 | 路径 | 作用 | 入口 |
 | --- | --- | --- |
 | `docs/` | 47 章书稿（`onramp/` + `v0-foundations/` … `v7-delivery/`）+ 附录 A–F，唯一正文 | [docs/README.md](docs/README.md) |
-| `docs/public/` | 合并版站点资产：`anim/`（113 SVG + 5 GIF）、`figures/`（123）、`arch/`（28）、`images/`（243 PNG + 5 子目录）、`scenes/`（5 个交互场景 + `stick.js` 运行时）。正文里的 `/anim/…` 等绝对路径都落在这里 | `book/build_html.py` |
+| `docs/.vitepress/` | 站点构建：`config.mts`（base `/STM32/`、导航/侧栏来自 `manifest.json`、锚点 slug 与 `cjk_slugify` 一致）、`book.mts`、`plugins/book-markdown.mts`、`theme/`、`data/scenes.json`（站点与印刷共用的场景元数据） | `npm run docs:build` |
+| `docs/public/` | 合并版站点资产：`anim/`（113 SVG + 5 GIF）、`figures/`（123）、`arch/`（28）、`images/`（243 PNG + 5 子目录）、`scenes/`（5 个交互场景 + `stick.js` 运行时）。正文里的 `/anim/…` 等绝对路径都落在这里 | VitePress（`docs/public` → 站点根） |
 | `docs/en/` | 已随合并版下线，未随 47 章重建（英文覆盖停在合并前的 00–28） | — |
-| `book/` | 整书构建包：`checks.py` / `contracts.py` / `build_html.py` / `build_epub.py` / `build_print_edition.py` | [构建指南](book/README.md) |
+| `book/` | 整书构建包：`checks.py` / `contracts.py` / `build_html.py`（内容渲染契约与印刷共用）/ `build_epub.py` / `build_print_edition.py` | [构建指南](book/README.md) |
 | `stm32-book/` | B5 已退役；本地残留/忽略产物不是现行构建入口 | — |
 | `examples/` | STM32 书可编译示例。Wokwi 的 `diagram.json` 放在对应示例里 | [examples/README.md](examples/README.md) |
 | `labs/` | 真板证据协议，不是另一套示例 | [labs/README.md](labs/README.md) |
@@ -34,8 +35,8 @@ B5 后两书正文已合为《通往单片机之路》：根 `docs/` 与 `book/`
 | `tools/` | 生成图片、讲解片、公众号稿的脚本 | [tools/README.md](tools/README.md) |
 | `mcu/` | MCU 来源子树：保留 `code/` 固件、任务历史与仓库元信息；旧文档、VitePress 与 `mcu-book/` 已合并退役 | [mcu/README.md](mcu/README.md)、[mcu/AGENTS.md](mcu/AGENTS.md) |
 | `video/` | 长课机器可读分镜、实际字幕、联系表与媒体报告；大 MP4 仍在忽略的 `final-videos/` | [video/README.md](video/README.md) |
-| `Makefile` | `assets` / `check` / `book` / `book-pdf` / `book-check` / `stats` | 文件头注释 |
-| `.github/workflows/book.yml` | 合并书稿门与构建；本次本地结果不能替代远程 CI 证据 | — |
+| `Makefile` | `assets` / `check` / `book`（VitePress 站点）/ `book-html` / `book-pdf` / `book-epub` / `book-check` / `site-check` / `stats` | 文件头注释 |
+| `.github/workflows/` | 四套：`book.yml`（书稿门 + HTML/PDF/EPUB 契约）、`site.yml`（站点构建 + 冒烟）、`deploy.yml`（组装/Pages）、`links.yml`（外链巡检）；本次本地结果不能替代远程 CI 证据 | — |
 
 下面两项目录在 [.gitignore](.gitignore) 里，只出现在作者本机，克隆仓库看不到：
 

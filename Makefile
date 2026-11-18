@@ -8,18 +8,24 @@
 
 PY ?= python3
 
-.PHONY: assets animations boards diagrams stack-diagrams gpio-classic illustrations samples gifs videos lesson-check book book-pdf book-check check lint-voice verify clean stats
+.PHONY: assets animations boards diagrams stack-diagrams gpio-classic illustrations samples gifs videos lesson-check book book-html book-pdf book-epub book-check site-check check lint-voice verify clean stats
 
 assets: animations boards diagrams illustrations samples gifs videos
 
-# 合并版：book 构建多页静态站；book-pdf 构建单文件印刷 HTML 后生成 PDF。
+# 合并版：book 构建站点（VitePress，base /STM32/，产物 docs/.vitepress/dist）。
+# book-html 是单文件印刷书稿（PDF/EPUB 的同源输入）；book-pdf / book-epub 依次生成。
 # PDF 需要 Playwright Chromium、Pillow、PyMuPDF 与中文字体，见 book/README.md。
 book:
-	$(PY) -m book.build_html
+	npm run docs:build
 
-book-pdf:
+book-html:
 	$(PY) -m book.build_print_edition
+
+book-pdf: book-html
 	$(PY) -m book.print_pdf --html book/dist/print/merged-book.html --meta book/dist/print/merged-book.meta.json --out book/dist/print/merged-book.pdf
+
+book-epub: book-html
+	$(PY) -m book.build_epub
 
 book-check:
 	$(PY) -m book.manifest --check
@@ -27,6 +33,14 @@ book-check:
 	$(PY) -m book.checks --check
 	$(PY) -m unittest discover book/tests -v
 	$(PY) -m book.build_html --check
+
+# 站点门：构建 + 页面集合对账 + 旧链存根 + /STM32/ 冒烟（需要 npm ci 与 Chromium）
+site-check:
+	npm run docs:build
+	npm run site:pages
+	npm run site:stubs
+	npm run site:assemble
+	npm run site:smoke
 
 animations:
 	$(PY) tools/gen_animations.py

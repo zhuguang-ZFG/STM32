@@ -1,5 +1,8 @@
 name: Book CI
 
+# 书稿门 + 印刷/电子书契约：内容规则（manifest/mapping/章节合同/链接/文风）
+# 与三份产物（站点 HTML 渲染契约、单文件印刷 HTML、PDF、EPUB）。
+# 站点构建与冒烟在 site.yml；发布在 deploy.yml；外链在 links.yml。
 on:
   push:
     branches: [main]
@@ -7,12 +10,16 @@ on:
       - 'docs/**'
       - 'book/**'
       - 'scripts/**'
+      - 'plans/2026-11-12-merged-book/**'
+      - 'tools/slop_lint.py'
       - '.github/workflows/book.yml'
   pull_request:
     paths:
       - 'docs/**'
       - 'book/**'
       - 'scripts/**'
+      - 'plans/2026-11-12-merged-book/**'
+      - 'tools/slop_lint.py'
       - '.github/workflows/book.yml'
   workflow_dispatch:
 
@@ -26,14 +33,20 @@ concurrency:
 jobs:
   book:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: "3.13"
       - name: Install book build deps
-        run: python -m pip install -r book/requirements.txt
+        run: |
+          python -m pip install -r book/requirements.txt
+          python -m pip install "PyMuPDF==1.28.*" "Pillow>=12" "playwright>=1.50"
+      # 必须先装浏览器：pip 装了 playwright 后，印刷集成测试不再是 skipped，
+      # 缺 Chromium 会在 unittest 门里直接失败。
+      - name: Install Chromium (print capture)
+        run: python -m playwright install --with-deps chromium
       - name: Run book checks
         run: |
           python -m book.manifest --check
@@ -41,20 +54,49 @@ jobs:
           python -m unittest discover book/tests -v
           python -m book.checks --check
           python tools/slop_lint.py docs/onramp/*.md docs/v0-foundations/*.md docs/v1-drivers/*.md docs/v2-reliability/*.md docs/v3-rtos/*.md docs/v4-platforms/*.md docs/v5-motion/*.md docs/v6-labs-projects/*.md docs/v7-delivery/*.md docs/appendix/*.md
-          python -m book.build_html --check
-      - name: Set up Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: "20"
-      - name: Run redirect generator tests
-        run: node --test scripts/tests/legacy-redirects.test.mjs
-      - name: Run site assemble tests
-        run: node --test scripts/tests/site-assemble.test.mjs
-      - name: Build site
-        run: python -m book.build_html
-      - name: Generate legacy redirect stubs (coverage must be 100%)
-        run: node scripts/legacy-redirects.mjs --mapping plans/2026-11-12-merged-book/mapping.json --manifest docs/manifest.json --out book/dist/site/mcu --docs mcu/docs
+      # build_html 现在是“内容渲染契约”：站点由 VitePress 出，印刷/EPUB 仍走
+      # render_markdown/quiz_html，这里钉住 53 页都能渲染。
+      - name: Renderer contract (53 pages)
+        run: python -m book.build_html --check
+      - name: Install Chromium (print capture)
+        run: python -m playwright install --with-deps chromium
+      - name: Build print HTML
+        run: python book/build_print_edition.py
+      - name: Build PDF
+        run: python book/print_pdf.py --html book/dist/print/merged-book.html --meta book/dist/print/merged-book.meta.json --out book/dist/print/merged-book.pdf
+      - name: Build EPUB
+        run: python book/build_epub.py
+      - name: Assert artifacts exist and are non-trivial
+        run: |
+          status=0
+          for spec in html:1000000 pdf:500000 epub:200000; do
+            ext=${spec%%:*}
+            floor=${spec##*:}
+            path="book/dist/print/merged-book.$ext"
+            size=$(wc -c < "$path" 2>/dev/null || echo 0)
+            echo "$path bytes=$size floor=$floor"
+            if [ "$size" -lt "$floor" ]; then echo "FAIL artifact $path"; status=1; fi
+          done
+          exit "$status"
       - uses: actions/upload-artifact@v4
         with:
-          name: book-site
-          path: book/dist/site
+          name: book-print
+          path: |
+            book/dist/print/merged-book.html
+            book/dist/print/merged-book.pdf
+            book/dist/print/merged-book.epub
+          retention-days: 14
+
+  scripts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Install tooling
+        run: npm ci
+      - name: Run script tests
+        run: node --test scripts/tests/*.test.mjs

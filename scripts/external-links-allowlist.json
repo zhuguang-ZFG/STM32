@@ -1,0 +1,19 @@
+{
+  "entries": [
+    {
+      "match": "^https://controllerstech\\.com/stm32-gpio-output-config-using-registers/?$",
+      "allowStatuses": [403],
+      "reason": "该页面对非浏览器 UA 返回 403（Cloudflare 类拦截），404 仍会失败；地址经搜索结果核对存在（2026-11-19）"
+    },
+    {
+      "match": "^https://www\\.nongnu\\.org/lwip/2_0_x/raw_api\\.html$",
+      "allowTransportError": true,
+      "reason": "本机 DNS 把 nongnu.org 解析到 198.18.x 保留段、无法建立连接；仅豁免传输失败，任何 HTTP 4xx/5xx 仍失败"
+    },
+    {
+      "match": "^https://lists\\.nongnu\\.org/mailman/listinfo/lwip-users$",
+      "allowTransportError": true,
+      "reason": "同上：本机 DNS 过滤导致传输失败；仅豁免传输失败，HTTP 4xx/5xx 仍失败"
+    }
+  ]
+}

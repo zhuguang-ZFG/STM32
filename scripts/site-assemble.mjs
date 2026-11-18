@@ -43,18 +43,40 @@ export function assemble({ dist, stubs, out }) {
     errors.push('根 index.html 不存在：合并书首页必须直接当站点入口')
   }
   let stubCount = 0
+  const danglingTargets = []
   const stubsRoot = stubs ? path.resolve(stubs) : null
   if (stubsRoot && fs.existsSync(stubsRoot)) {
     function countStubs(dir) {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-        if (entry.isDirectory()) countStubs(path.join(dir, entry.name))
-        else if (entry.name.endsWith('.html')) stubCount += 1
+        const full = path.join(dir, entry.name)
+        if (entry.isDirectory()) {
+          countStubs(full)
+        } else if (entry.name.endsWith('.html')) {
+          stubCount += 1
+          const head = fs.readFileSync(full, 'utf8').slice(0, 400)
+          // 没有 meta-refresh 的文件不是存根：它会在组装后的
+          // “mcu/ 下非存根页面”检查里单独报错，这里不重复计。
+          if (!head.includes('http-equiv="refresh"')) continue
+          // 每个存根的跳转目标必须在本次产物里真的存在：改名一章就会让
+          // 除冒烟覆盖的那一条之外的 130 条静默 404。
+          const target = /url=(\/STM32\/[^"']*\.html)/.exec(head)?.[1]
+          if (!target) {
+            danglingTargets.push(`${path.relative(stubsRoot, full)}: 缺少 /STM32/ 跳转目标`)
+          } else if (!fs.existsSync(path.join(distRoot, target.slice('/STM32/'.length)))) {
+            danglingTargets.push(`${path.relative(stubsRoot, full)} → ${target}`)
+          }
+        }
       }
     }
     countStubs(stubsRoot)
   }
   if (stubCount < 131) {
     errors.push(`旧链存根数 ${stubCount} < 131：覆盖率不足 100%`)
+  }
+  if (danglingTargets.length > 0) {
+    errors.push(
+      `${danglingTargets.length} 个存根的跳转目标不在产物中：${danglingTargets.slice(0, 5).join(', ')}`,
+    )
   }
   if (errors.length > 0) {
     throw new Error(errors.join('; '))

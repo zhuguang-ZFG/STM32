@@ -39,6 +39,7 @@ node --test scripts/tests/legacy-redirects.test.mjs
 
 - 英文版策略固定为 `archive`，B5 删除前打 tag。
 - 旧 URL 跳转的站点级页面（guide/reference 等）在 B5 扩展，本批只覆盖 94 个 MCU 章节。
-- 临时静态站由 `book/build_html.py` 生成到 `book/dist/site/`（已 gitignore）；VitePress 站点切换仍归 B5。
+- 临时静态站由 `book/build_html.py` 生成到 `book/dist/site/`（已 gitignore）；该路径自 2026-11-19 起不再是发布源，站点改由 VitePress 输出 `docs/.vitepress/dist`（同样 gitignore）。
 
 - B5 结束状态：全书 52 页以 `book/build_html.py` 静态站上线 `/STM32/` 根（对设计 §4.3 的 VitePress 口径做了显式偏差登记，见 B5 计划）；旧 `/mcu/**` 131 页跳转存根全量生成（`scripts/legacy-redirects.mjs`，覆盖率断言进 CI）；CI 收敛为 `book.yml`（书稿门 + 构建）+ `deploy.yml`（组装/冒烟/Pages）+ `merge-check.yml`，`mcu-book.yml`/`mcu-quality.yml`/`mcu-links.yml`/`mcu-deploy.yml`/`release-fetch.yml` 退役；旧树（stm32-book/、docs/en/、docs/00–28 旧章、mcu/{mcu-book,docs,scripts,package*,tests,playwright.config.mjs}）删除，英文版删除前打 tag `en-archive-2026-11-14` / `en-archive-v1.4.0-2026-11-14`；`mcu/` 保留 code/.trellis 及仓库元文件。
+- B5 偏差已关闭（2026-11-19）：站点改由 VitePress 构建（base `/STM32/`，`cleanUrls: false` 保持 `.html` 深链），导航/侧栏/首页由 `docs/manifest.json` 生成；锚点 slug 与 `book/checks.py:cjk_slugify` 逐字一致（932 锚点 0 差异）；本地搜索带中文分词、sitemap + canonical；旧链 131 存根、`/STM32/` 挂载冒烟 10 项、外链巡检全绿。CI 按设计 §4.4 收敛为 `book.yml`（门 + HTML/PDF/EPUB 契约）、`site.yml`（构建 + 冒烟）、`deploy.yml`（组装/发布）、`links.yml`（外链）。`book/build_html.py` 保留为内容渲染契约与印刷/EPUB 的共享渲染器，不再是站点入口。见 `docs/superpowers/plans/2026-11-19-vitepress-site-cutover.md`。

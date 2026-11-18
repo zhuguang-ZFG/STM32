@@ -117,7 +117,37 @@ export async function smoke({ root, mount }) {
       check('quiz 答案展开交互', false, '页面内没有 .quiz-answer 元素')
     }
 
-    // 8. 资源失败清单
+    // 8. 手绘场景：ch00 的 stick-scene 必须真的画出来（canvas 子节点）
+    await page.goto(`${base}/onramp/00-from-box-to-blink.html`, { waitUntil: 'load' })
+    const scene = page.locator('figure.book-scene stick-scene').first()
+    if (await scene.count()) {
+      await page.waitForFunction(
+        () => !!document.querySelector('figure.book-scene stick-scene canvas'),
+        null,
+        { timeout: 8000 },
+      ).catch(() => {})
+      const canvases = await scene.locator('canvas').count()
+      check('stick-scene 渲染 canvas', canvases > 0, `canvas=${canvases}`)
+    } else {
+      check('stick-scene 渲染 canvas', false, '页面内没有 figure.book-scene stick-scene')
+    }
+
+    // 9. 中文搜索：分词器若退化为整句匹配，搜「中断」会 0 结果
+    await page.goto(`${base}/`, { waitUntil: 'load' })
+    const searchButton = page.locator('.VPNavBarSearchButton, button.DocSearch-Button, .DocSearch-Button').first()
+    if (await searchButton.count()) {
+      await searchButton.click()
+      const input = page.locator('.VPLocalSearchBox input.search-input').first()
+      await input.waitFor({ state: 'visible', timeout: 5000 })
+      await input.fill('中断')
+      await page.waitForTimeout(1200)
+      const hits = await page.locator('.VPLocalSearchBox .results li a.result').count()
+      check('中文搜索有结果', hits > 0, `hits=${hits}`)
+    } else {
+      check('中文搜索有结果', false, '未找到搜索入口按钮')
+    }
+
+    // 10. 资源失败清单
     check('同源资源无失败', failed.length === 0, failed.slice(0, 5).join(' | '))
   } finally {
     await browser.close()

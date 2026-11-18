@@ -7,8 +7,8 @@
 | 身份 | 路径 | 说明 |
 | --- | --- | --- |
 | Git 仓库根 | 本文件所在目录（如 `D:\Users\STM32` / 收口 worktree `D:\Users\STM32-mcu-merge-p1`） | 根域 STM32 书、`plans/` 合并证据、跨域入口 |
-| MCU 项目根 | `<Git根>/mcu` | MCU 子树独立上下文：VitePress/脚本/固件/书籍门、Trellis 任务与 spec |
-| 对外站点根 | `/STM32/mcu/` | MCU 站点挂载前缀；旧 `/mcu/` 仅迁移负例（P2/P3 收口中） |
+| MCU 项目根 | `<Git根>/mcu` | 保留来源固件（`mcu/code/`）、Trellis 任务与 spec、仓库元文件；旧书稿/站点/脚本与书籍门已随合并退役 |
+| 对外站点根 | `/STM32/` | 合并书站点（VitePress，`npm run docs:build`）；其下 `mcu/` 只有旧链跳转存根，已无 MCU 站点 |
 
 命令、Trellis 脚本与路径解析须在对应根执行/解释，不可混用。
 

@@ -19,14 +19,14 @@ test('assemble asserts root index and stub coverage', async () => {
     await writeFile(join(dist, 'index.html'), '<html><body>book home</body></html>')
     await mkdir(join(stubs, 'mcu'), { recursive: true })
     for (let i = 0; i < 10; i += 1) {
-      await writeFile(join(stubs, 'mcu', `page-${i}.html`), '<meta http-equiv="refresh" content="0; url=/STM32/">')
+      await writeFile(join(stubs, 'mcu', `page-${i}.html`), '<meta http-equiv="refresh" content="0; url=/STM32/index.html">')
     }
     await assert.rejects(
       async () => assemble({ dist, stubs, out }),
       (err) => err.message.includes('覆盖率不足')
     )
     for (let i = 10; i < 132; i += 1) {
-      await writeFile(join(stubs, 'mcu', `page-${i}.html`), '<meta http-equiv="refresh" content="0; url=/STM32/">')
+      await writeFile(join(stubs, 'mcu', `page-${i}.html`), '<meta http-equiv="refresh" content="0; url=/STM32/index.html">')
     }
     const { stubCount } = assemble({ dist, stubs, out })
     assert.equal(stubCount, 132)
@@ -51,12 +51,34 @@ test('assemble rejects non-stub pages under mcu/', async () => {
     await mkdir(join(stubs, 'mcu', 'rtos'), { recursive: true })
     for (let i = 0; i < 131; i += 1) {
       const sub = i % 2 === 0 ? '' : 'rtos/'
-      await writeFile(join(stubs, 'mcu', sub, `page-${i}.html`), '<meta http-equiv="refresh" content="0; url=/STM32/">')
+      await writeFile(join(stubs, 'mcu', sub, `page-${i}.html`), '<meta http-equiv="refresh" content="0; url=/STM32/index.html">')
     }
     await writeFile(join(stubs, 'mcu', 'rtos', 'real.html'), '<html><body>real body</body></html>')
     await assert.rejects(
       async () => assemble({ dist, stubs, out }),
       (err) => err.message.includes('非存根页面')
+    )
+  } finally {
+    await rm(dist, { recursive: true, force: true })
+    await rm(stubs, { recursive: true, force: true })
+    await rm(out, { recursive: true, force: true })
+  }
+})
+
+test('assemble rejects a stub whose target is not in dist', async () => {
+  const dist = await mkdtemp(join(tmpdir(), 'b5-dist3-'))
+  const stubs = await mkdtemp(join(tmpdir(), 'b5-stubs3-'))
+  const out = await mkdtemp(join(tmpdir(), 'b5-out3-'))
+  try {
+    await writeFile(join(dist, 'index.html'), '<html><body>book home</body></html>')
+    await mkdir(join(stubs, 'mcu'), { recursive: true })
+    for (let i = 0; i < 131; i += 1) {
+      const target = i === 0 ? '/STM32/v9-renamed/99-gone.html' : '/STM32/index.html'
+      await writeFile(join(stubs, 'mcu', `page-${i}.html`), `<meta http-equiv="refresh" content="0; url=${target}">`)
+    }
+    await assert.rejects(
+      async () => assemble({ dist, stubs, out }),
+      (err) => err.message.includes('跳转目标不在产物中') && err.message.includes('99-gone.html')
     )
   } finally {
     await rm(dist, { recursive: true, force: true })

@@ -19,7 +19,8 @@ SPEC.loader.exec_module(assets)
 
 def recipe(name):
     lines = (ROOT / "Makefile").read_text(encoding="utf-8").splitlines()
-    start = lines.index(name + ":") + 1
+    # 允许目标带前置依赖（如 `book-pdf: book-html`）
+    start = next(i for i, line in enumerate(lines) if line.split("#")[0].strip().startswith(name + ":")) + 1
     result = []
     for line in lines[start:]:
         if line and not line.startswith("\t"):
@@ -83,13 +84,25 @@ class BuildEntrypointTests(unittest.TestCase):
             element.screenshot.assert_called_once_with()
 
     def test_book_is_the_current_site_builder(self):
-        self.assertIn("-m book.build_html", recipe("book"))
-        self.assertNotIn("stm32-book/", recipe("book"))
+        # B5 之后站点入口是 VitePress（base /STM32/）；book.build_html 降级为
+        # 内容渲染契约，由 book-check 固定（见下一条测试）。
+        commands = recipe("book")
+        self.assertIn("npm run docs:build", commands)
+        self.assertNotIn("stm32-book/", commands)
+
+    def test_python_renderer_is_still_the_print_contract(self):
+        commands = recipe("book-check")
+        self.assertIn("-m book.build_html --check", commands)
+        self.assertIn("-m book.build_print_edition", recipe("book-html"))
 
     def test_pdf_uses_both_documented_print_stages(self):
-        self.assertIn("-m book.build_print_edition", recipe("book-pdf"))
+        # 两段流水线现在拆成“book-html 出单文件书稿 → book-pdf 打印”两个目标，
+        # 依赖关系保证顺序；仍钉住两段各自可单独调用。
+        self.assertIn("-m book.build_print_edition", recipe("book-html"))
         self.assertIn("-m book.print_pdf", recipe("book-pdf"))
         self.assertIn("--meta", recipe("book-pdf"))
+        makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
+        self.assertIn("book-pdf: book-html", makefile)
 
     def test_book_check_uses_current_tests_and_checks(self):
         commands = recipe("book-check")

@@ -9,6 +9,9 @@ build/
 MDK-ARM/*/
 book/dist/
 node_modules/
+# VitePress 站点产物与缓存：由 npm run docs:build 生成，不入库
+docs/.vitepress/dist/
+docs/.vitepress/cache/
 .mxproject
 
 # 本地运营产物（不随仓库发布）

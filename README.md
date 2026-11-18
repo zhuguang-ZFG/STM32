@@ -82,7 +82,7 @@
 | 想做什么 | 去哪里 |
 | --- | --- |
 | 从零开始，不知道先学什么 | [第 0 章 · 从开箱到点灯](docs/onramp/00-from-box-to-blink.md) → [第 46 章 · 十八周路线](docs/v7-delivery/46-resources-roadmap-open-source.md) |
-| 想按一本书连续阅读 / 下载离线版 | [整书构建与交付](book/README.md)（多页站点 + 自包含印刷 HTML/PDF；EPUB 另用 `book/build_epub.py`） |
+| 想按一本书连续阅读 / 下载离线版 | [整书构建与交付](book/README.md)（站点 `npm run docs:build`；自包含印刷 HTML/PDF 与 EPUB 见该指南） |
 | 装环境 / 连不上板子 | [第 5 章 · 工具链四步](docs/v0-foundations/05-toolchain-four-steps.md) |
 | 选芯片、看懂时钟树 | [第 1 章 · C 内存模型](docs/v0-foundations/01-c-memory-model.md) / [第 8 章 · 时钟与总线](docs/v1-drivers/08-architecture-memory-clock.md) |
 | 点亮第一颗 LED | [第 9 章 · GPIO](docs/v1-drivers/09-gpio.md) + [examples/gpio-blink](examples/gpio-blink/) |
@@ -108,7 +108,7 @@ B5 已将两书正文合为《通往单片机之路》：根 `docs/` 是现行�
 | 读者入口|[README.md](README.md) / [docs/README.md](docs/README.md)|[mcu/README.md](mcu/README.md)|
 |Git 目录范围|`docs/`、`examples/`、`book/`、`cheatsheets/`、`assets/`、`tools/`、`labs/`、`sim/` 等根域|`mcu/` 保留代码/固件与任务历史（`mcu/code/`、`mcu/.trellis/` 等）；旧书稿/站点树已合并退役|
 |维护边界|合并正文改 `docs/`，书籍构建改 `book/`；示例与素材按各自目录说明维护|固件改 `mcu/code/`，保留来源出处与任务状态；不恢复退役的旧文档/站点树|
-| 构建/验收|`make book` / `make book-pdf` / `make book-check` / `make check`（现行命令与依赖见 [构建指南](book/README.md)；Windows 可加 `PY=python`）|合并版站点与书稿统一由根 `book/` 验收；MCU 固件按保留的工程说明执行，旧 `/mcu/` 入口由兼容存根处理|
+| 构建/验收|`npm run docs:build`（站点）/ `make book-pdf` / `make book-epub` / `make book-check` / `make site-check` / `make check`（现行命令与依赖见 [构建指南](book/README.md)；`make book` 现在调用 VitePress，需先 `npm ci`；Windows 可加 `PY=python`）|合并版站点与书稿统一由根 `docs/` + `book/` 验收；MCU 固件按保留的工程说明执行，旧 `/mcu/` 入口由兼容存根处理|
 |身份/根|Git 仓库根即本仓根域|区分 Git 根、来源工程根 `mcu/`；现行站点根为 `/STM32/`，旧 `/mcu/` 路径只作兼容存根|
 
 现行合并证据见 [`plans/2026-11-12-merged-book/`](plans/2026-11-12-merged-book/)；此前 subtree 规划保留在 `plans/2026-11-11-mcu-merge/`，按历史语境阅读。本次本地构建修复未执行发布。
@@ -256,8 +256,10 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 STM32/
 ├── README.md                 ← 你在这里（门户首页）
 ├── STRUCTURE.md              ← 目录约定、本轮改动、后续事项
-├── Makefile                  ← make assets / check / book / book-check
+├── Makefile                  ← make assets / check / book（VitePress）/ book-pdf / site-check
+├── package.json              ← 站点工具链（VitePress）；npm run docs:build
 ├── docs/                     ← 47 章书稿（onramp/ + v0–v7 卷目录 + appendix/）+ CONTENT_GUIDE.md
+│   └── .vitepress/           ← 站点配置、主题与共用场景元数据（data/scenes.json）
 ├── book/                     ← 整书构建包：checks / contracts / build_html / build_epub / build_print_edition
 ├── examples/                 ← 15 个示例目录（HAL 源码 + Wokwi 配置；spl-f1-blink 与 motor-dc-speed 带构建文件）
 ├── labs/                     ← 真板证据协议（目前：ethernet-24h）

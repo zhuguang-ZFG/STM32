@@ -1,11 +1,16 @@
 name: 部署合并书站点到 GitHub Pages（/STM32/）
+
+# 发布链路：VitePress 构建 → 页面集合对账 → 旧链存根 → staging 组装 → /STM32/ 冒烟
+# → upload-pages-artifact → deploy-pages。任一步失败即不发布。
 on:
   push:
     branches: [main]
     paths:
       - 'docs/**'
-      - 'book/**'
       - 'scripts/**'
+      - 'plans/2026-11-12-merged-book/mapping.json'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
@@ -30,31 +35,25 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
-        with:
-          python-version: "3.13"
-      - name: Install book build deps
-        run: python -m pip install -r book/requirements.txt
-      # 站点构建（52 页 + 首页）
-      - name: 构建合并书站点
-        run: python -m book.build_html
-      # 旧 /mcu/** 全量跳转存根（131 页；覆盖率不足即失败）
-      - name: 生成旧链跳转存根（覆盖率 100%）
-        run: node scripts/legacy-redirects.mjs --mapping plans/2026-11-12-merged-book/mapping.json --manifest docs/manifest.json --out book/dist/site/mcu --docs mcu/docs
       - uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "24"
           cache: npm
-      - name: Install site tooling (playwright)
+      - name: Install tooling
         run: npm ci
-      # 组装 staging（根 index = 合并书首页；mcu/ 下只有存根）
-      - name: 组装 Pages staging（/STM32/ 根 = 合并书）
-        run: node scripts/site-assemble.mjs --dist book/dist/site --stubs book/dist/site/mcu --out .temp/pages-site
-      # 挂载冒烟：按 /STM32/ 起服务，Chromium 回归 首页/深链/旧链跳转/附录/资源/quiz
-      - name: 安装 Chromium（挂载冒烟用）
+      - name: Build site (VitePress, base /STM32/)
+        run: npm run docs:build
+      - name: Page set matches manifest
+        run: npm run site:pages
+      # 旧 /mcu/** 全量跳转存根（131 页；覆盖率不足即失败）
+      - name: Generate legacy redirect stubs
+        run: npm run site:stubs
+      - name: Assemble Pages staging (/STM32/ root = merged book)
+        run: npm run site:assemble
+      - name: Install Chromium
         run: npx playwright install --with-deps chromium
-      - name: 挂载冒烟（/STM32/）
-        run: node scripts/site-smoke.mjs --root .temp/pages-site --mount /STM32
+      - name: Mounted smoke (/STM32/)
+        run: npm run site:smoke
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:

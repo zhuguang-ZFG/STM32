@@ -1,0 +1,41 @@
+name: External Links
+
+# 外链腐烂不会让别的门变红：书稿里的外链是读者会点的承诺。每周巡检一次，
+# 改到书稿/脚本的 PR 也跑；失败时按 host+path 修正文或（有理由地）进允许清单。
+on:
+  schedule:
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'docs/**/*.md'
+      - 'scripts/check-external-links.mjs'
+      - 'scripts/external-links-allowlist.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/links.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: links-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Install tooling
+        run: npm ci
+      # 巡检的是构建产物（含图片/导航等生成链接），所以先建站
+      - name: Build site
+        run: npm run docs:build
+      - name: Check external links
+        run: npm run site:links

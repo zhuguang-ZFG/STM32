@@ -1,6 +1,6 @@
 # 通往单片机之路（合并版全书源）
 
-本目录是双书合并后的**唯一书稿与站点源**：47 章（上手卷 + 卷 0–7）+ 6 附录，构建入口在仓库根 `book/` 包（`python -m book.build_html`）。
+本目录是双书合并后的**唯一书稿与站点源**：47 章（上手卷 + 卷 0–7）+ 6 附录。站点由 VitePress 构建（`npm run docs:build`，产物 `docs/.vitepress/dist`，base `/STM32/`）；`python -m book.build_html --check` 现在是**内容渲染契约**（53 页可渲染），印刷/PDF/EPUB 仍复用同一 Python 渲染器。
 
 - 目录数据：`manifest.json`（由 `python -m book.manifest --write` 从 `book/data/toc.tsv` 生成，不手工编辑；`python -m book.manifest --check` 校验是否过期）。
 - 旧章到新章的逐文件映射：`book.mapping --write` 写出 `../plans/2026-11-12-merged-book/mapping.json`（源数据 `book/data/mapping.tsv`），与上面的 `manifest.json` 不是同一份产物。
