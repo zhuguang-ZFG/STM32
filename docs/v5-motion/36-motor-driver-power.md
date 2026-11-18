@@ -144,6 +144,17 @@ datasheet 额定值 ≠ 模块散热能力，模块的铜箔面积决定连续�
 - 看门狗监督（F03/F06 锁存后的独立监督）：归 [v1 第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。
 - 换 MCU 平台（F407/ESP32）驱动同一桥：这里的真值表与门限结论不变，PWM 时基按新平台重算（[第 28 章](../v4-platforms/28-chip-migration-differences.md) 的方法）。
 
+## 社区开源实现
+
+桥的真值表是硬件契约，社区库只是薄封装——薄到「看什么」就是「看它没做什么」：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [sparkfun/SparkFun_TB6612_Arduino_Library](https://github.com/sparkfun/SparkFun_TB6612_Arduino_Library) | `src/SparkFun_TB6612.h` | `Motor` 类把 IN1/IN2/PWM 三根线封装成 `drive(speed)` 与 `brake()`——接口面就是真值表的三行 |
+| [sparkfun/SparkFun_TB6612_Arduino_Library](https://github.com/sparkfun/SparkFun_TB6612_Arduino_Library) | `src/SparkFun_TB6612.cpp` | `Motor::drive`（`SparkFun_TB6612.cpp:38`）的实现就是 `digitalWrite(In1/In2)` 加 `analogWrite(PWM)`（`:53-55`）：7 行真值表在库代码里逐行可读；「三时刻关闭」的 STBY 检查、堵转余量、再生回流路径——库里完全没有 |
+
+共性归纳：正转/反转/短接制动三个输出态在库里的落法与本章 7 行真值表逐位一致，说明真值表是硬件契约而非库设计；但 **库不碰任何安全语义**——上电默认态、三时刻关闭、再生的母线回流，全部留给调用者。选桥的库时先问一句：它在 `drive()` 里做不做「PWM 先归零再改 IN」？不做，本章的三步检查就是你自己写的 `motor_bridge.c` 存在的理由。
+
 ## 离开检查
 
 - 分层图（毫安逻辑/安培动力）能画，三时刻检查法能落到接线表。

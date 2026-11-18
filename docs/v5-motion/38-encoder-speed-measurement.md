@@ -127,6 +127,17 @@ rpm=0 只说明**窗内无计数**；断线时 A/B 波形消失。区分证据�
 - 开环侧消费本量化知识的两处（REVERSING 停稳 |rpm|≤5、静止判定）：[第 37 章](./37-dc-motor-openloop.md)。
 - 换平台（32 位定时器/更高 PPR）：消歧判据与量化下限都要重算，「换位宽/提上限必须重算」。
 
+## 社区开源实现
+
+编码器模式的寄存器事实在两套驱动里逐行可对，计数口径仍在读者自己：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [STMicroelectronics/stm32f1xx-hal-driver](https://github.com/STMicroelectronics/stm32f1xx-hal-driver) | `Src/stm32f1xx_hal_tim.c` | `HAL_TIM_Encoder_Start`（`stm32f1xx_hal_tim.c:3213`）：把 TI1/TI2 接进 SMCR、开通道的启动序列——「只接一相」那条分支对着这个函数看通道参数就知道 |
+| [libopencm3/libopencm3](https://github.com/libopencm3/libopencm3) | `lib/stm32/common/timer_common_all.c` | `timer_slave_set_mode`（`timer_common_all.c:1868`）裸写 SMCR 的 SMS 字段；仓库自带示例在 `:77` 用 `0x3` 并注释 `// encoder`——SMS=011 是编码器模式 3（双沿四倍频）的寄存器事实 |
+
+共性归纳：编码器模式让硬件替你四倍频计数，但 **CPR 口径、回绕补偿、量化下限是三件库永远不会替你做的事**——`HAL_TIM_Encoder_Start` 不问每转多少线，libopencm3 直接写 SMS 位。从计数值到 rpm 的每一步换算（N=P×Q×G、Δ 定窗、±16384 消歧）都是本章合同的领地；对照这两份代码能确认「计数从哪来」，回答不了「数是什么意思」。
+
 ## 离开检查
 
 - P/PPR/G/CPR 四量能分开，「先报口径」成为反射。

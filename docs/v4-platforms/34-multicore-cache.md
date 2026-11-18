@@ -164,6 +164,18 @@ esp_cache 的方向宏与 STM32 侧一一对应（`esp_cache.h:25-38` 逐行实�
 - H7 的时钟树/VOS/revision 门禁：归 [第 28 章](./28-chip-migration-differences.md)。
 - H745 双核的启动交接与 OTA 场景：归 [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md) 的 IAP/双槽口径，这里只讲通信契约。
 
+## 社区开源实现
+
+Cache/DMA 交接的方向与调用次序，在两套平台的开源头文件里是两种 API 形态：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/esp_mm/include/esp_cache.h`（v5.5.2） | `ESP_CACHE_MSYNC_FLAG_DIR_C2M`（BIT2）/`_M2C`（BIT3）：交接方向表在 esp-idf 里是**一个函数加方向旗**——「不设旗默认 C2M」写在注释里，方向错了就是本章说的静默丢数据 |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/hal/esp32s3/include/hal/cache_ll.h`（v5.5.2） | `cache_ll_invalidate_addr`（`:358`）：LL 层把 cache_level/type/id 拆成独立参数——芯片相关层与通用层的分界 |
+| [ARM-software/CMSIS_6](https://github.com/ARM-software/CMSIS_6) | `CMSIS/Core/Include/m-profile/armv7m_cachel1.h` | `SCB_InvalidateDCache_by_Addr`（`:362`）与 `SCB_CleanDCache_by_Addr`（`:392`）：CMSIS_6 已把 DCache 维护从 `core_cm7.h` 拆到 m-profile 专用头——按老资料去 core_cm7.h 里找会扑空，这正是第 27 章版本锁定坑的头文件版 |
+
+共性归纳：两个平台的答案同为「Clean 是往外推（核→内存）、Invalidate 是往里丢（内存→核）」，但 API 形态相反——esp-idf 用方向旗复用一个 msync，CMSIS 用两个函数名把方向写死。无论哪种形态，「先洗再让 DMA 动」的次序没有库替你保证；esp-idf 的方向旗默认值是 C2M，忘传旗的代码就是本章失败分支里「以为洗了、其实反了」的那一条。
+
 ## 离开检查
 
 - 三平台内存模型（无 cache/带 cache/Cache 映射）一张表能画，各自义务说得清。

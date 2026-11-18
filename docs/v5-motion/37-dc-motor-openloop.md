@@ -128,6 +128,18 @@ PWM1 是「CNT<CCR 有效」：CCR=0 恒无效；**CCR=ARR 时有效格数 3599/
 | 串口偶发丢帧 | 带宽逼近（帧加长后） | 重算 37.3%；降帧率或缩帧 |
 | 方向对了幅值反了 | 方向与幅值在两处维护 | 收敛到带符号占空比单点映射 |
 
+## 社区开源实现
+
+占空比的「写目标」与「生效」两步、中断里的最少事，在三家代码里都是显式的：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [grbl/grbl](https://github.com/grbl/grbl) | `grbl/stepper.c` | `ISR(TIMER1_COMPA_vect)`（`stepper.c:281`）：运动控制的中断里只做最少事（重装载比较器、按段步进），耗时的规划留在主循环——本章「控制时基与串口任务所有权分开」的同型参照 |
+| [STMicroelectronics/stm32f1xx-hal-driver](https://github.com/STMicroelectronics/stm32f1xx-hal-driver) | `Src/stm32f1xx_hal_tim.c` | `HAL_TIM_PWM_Start`（`stm32f1xx_hal_tim.c:1454`）与 `TIM_OC1_SetConfig`（`:6827`）：F1 侧 CCR/CCMR 的落位处——CCR 直写立刻生效、`OCxPE` 预装载才推到更新事件，端点语义（CCR=0/ARR/>ARR）没有库替你兜底 |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/esp_driver_ledc/src/ledc.c`（v5.5.2） | `ledc_set_duty`（`ledc.c:1058`）与 `ledc_update_duty`（`:985`）：esp-idf 把「写目标、生效」拆成两个 API——与 STM32 预装载是同一件事的另一种接口形态 |
+
+共性归纳：三家代码里占空比更新的生命周期完全一致——目标值先写进影子/暂存，再由预装载或显式 update 推到硬件；唯一的例外是关掉 `OCxPE` 的直写 CCR，它立刻生效，也立刻产生本章说的「占空比在周期中途跳变」。带符号占空比到 IN1/IN2+PWM 的单点映射、双限幅与斜坡，任何库都不提供——grbl 的做法是把规划放主循环、ISR 只执行，本章的租约与四阶段合同是同一思想的合同化。
+
 ## 离开检查
 
 - PWM 四数与端点三种语义（CCR=0/CCR=ARR/CCR>ARR）能复算并落代码。

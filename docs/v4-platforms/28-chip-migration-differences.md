@@ -163,6 +163,18 @@ GD32 从 STM32 迁过去，先分「可搬」与「丢位」两类（G4 的口�
 - F407/F103 的时钟配置与 probe 断言（`0x07405408` 等）：已在 [v1 第 8 章](../v1-drivers/08-architecture-memory-clock.md) 核过，这里引用不重算。
 - FDCAN 与 bxCAN 是两个外设：这里只说「位时序寄存器值可搬」的结论由 CAN_BT/CAN_BTR 位域全等支撑（来源说法待核），FDCAN 寄存器层不在这里。
 
+## 社区开源实现
+
+迁移检查表的第一步「料是谁」，在开源代码里的实物就是各家族的设备头文件——三家的「家族地图」三种写法：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [STMicroelectronics/cmsis-device-f4](https://github.com/STMicroelectronics/cmsis-device-f4) | `Include/stm32f407xx.h` | F407 的寄存器结构体与外设基址宏写死在一个头文件里——「料是谁」的第一件事实，逐成员偏移可直接对账 |
+| [STMicroelectronics/cmsis-device-h7](https://github.com/STMicroelectronics/cmsis-device-h7) | `Include/stm32h745xx.h` | H7 家族头按型号分文件（`stm32h7xx.h` 只是分发器），`stm32h745xx.h` 27466 行；`FLASH_BASE = FLASH_BANK1_BASE`（`:2160`）、`GPIOA_BASE = D3_AHB1PERIPH_BASE + 0`（`:2236`）——D1/D2/D3 域基址与 F407 不是同一张地图，`nBOOT_SEL` 这类选项位在头文件里也没有，只在 RM/DS |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/soc/esp32s3/include/soc/soc_caps.h`（v5.5.2） | ESP32 侧的家族地图是 caps 头：`SOC_CACHE_WRITEBACK_SUPPORTED` 一类能力常数集中一处——换芯片先找到自己家族的地图文件，三家三种形态 |
+
+共性归纳：迁移检查表要分「头文件能答」与「手册才能答」两类——寄存器偏移、基址、能力常数在头文件里逐行可核；第 1 脚、BOOT 选项位、引脚复用只在 datasheet/RM。H7 的家族头按型号再分文件，本身就是「同家族内仍要重查」的证据：H745 与 H743 是两个文件，而不是一个头加一个宏。
+
 ## 离开检查
 
 - 能默写迁移六步，并给每步一个失效案例。

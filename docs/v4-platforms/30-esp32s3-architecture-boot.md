@@ -195,6 +195,18 @@ idf_component_register(
 | 写 Flash 时死机 | Flash 写期间调了非 IRAM 安全的 ISR | IRAM 纪律：临界区内只调 `ESP_IRAM_ATTR` 函数 |
 | 改了宏不生效 | 手改了 `sdkconfig.h`（生成物） | 改 menuconfig 或 `sdkconfig.defaults`，重跑构建 |
 
+## 社区开源实现
+
+本章的机制（main 组件、目标宏闭环、分区表）在 esp-idf v5.5.2 的源码里逐行可对：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `tools/cmake/project.cmake:464-465`（v5.5.2） | `if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/main")` 后紧跟 `__project_component_dir(... "project_components")`：main/ 被收成项目组件的全部机制就是这两行——「main 组件」没有任何魔法 |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `examples/get-started/hello_world/main/hello_world_main.c:25`（v5.5.2） | `printf("This is %s chip with %d CPU core(s)…", CONFIG_IDF_TARGET, …)`：目标宏从 menuconfig 一路到运行期打印的闭环实例，与本章 `hello_main.c:25` 同一写法 |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/partition_table/gen_esp32part.py:194/:692`（v5.5.2） | `class PartitionTable(list)` 与 `def main()`：分区表 CSV 解析成 binary 的生成器本体——默认分区表判读的出处，列顺序与偏移由它定义 |
+
+共性归纳：esp-idf 的「配置→组件→分区」三件事在源码里都是平的——main 组件是两行 CMake、目标宏是一个 `CONFIG_IDF_TARGET` 常量、分区表是一个 Python 类。本章的分层定位法（配置/组件声明/编译/烧录）与这三处源码一一对应；版本升级时这三处都可能搬家（`esp_driver_ledc` 这类组件目录重命名就是先例），引用时钉 tag。
+
 ## 离开检查
 
 - 三棒分诊口诀能默写，并给每棒一条卡点判据。
