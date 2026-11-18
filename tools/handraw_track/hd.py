@@ -35,8 +35,18 @@ WHITE = "#FFFFFF"
 
 # Soft tints for large panels. Outlines stay saturated; the tint carries the
 # panel without turning the plate into a wall of white boxes.
-BLUE_FILL = "#E8F0F9"
-GREEN_FILL = "#E8F1E9"
+# Two consumers, different rules:
+#  * the staged v0/v1/v2/b3 family (fig_v0.py, fig_v1*.py, fig_v2a.py,
+#    fig_merged_b3.py, fig_learning.py) takes these names directly and ships
+#    through docs/public/images/ — changing a value here DOES repaint them;
+#  * the 285 chNN/app plates pass literal hexes ("#FBEFD3", ...) instead, so
+#    these names do not reach them. Retint those by editing the literal.
+# Hue, not darkness: darkening a panel always costs dark-ink contrast, so the
+# tints sit at their original lightness with more saturation (GREEN_FILL
+# chroma 9 -> 21, BLUE_FILL 17 -> 25). Every ink keeps or improves its ratio
+# against them (floor 4.25 GREEN on BLUE_FILL, 4.36 on GREEN_FILL).
+BLUE_FILL = "#E4F0FD"
+GREEN_FILL = "#E2F7E5"
 AMBER_PALE = "#FBF0D2"
 RED_FILL = "#F8E6E1"
 SHADOW = "#E4DCC9"
@@ -127,7 +137,7 @@ class Fig:
         return d
 
     def stroke(self, pts, color=INK, sw=2.6, amp=1.6, opacity=1.0,
-               close=False, dash=None, cls=None, fill=None):
+               close=False, dash=None, cls=None, fill=None, texture=None):
         flat = self._poly_pts(pts, close=close, amp=amp)
         dashattr = f' stroke-dasharray="{dash}"' if dash else ""
         clsattr = f' class="{cls}"' if cls else ""
@@ -137,6 +147,20 @@ class Fig:
             f'stroke-width="{sw}" stroke-linecap="round" '
             f'stroke-linejoin="round" opacity="{opacity}"{dashattr}{clsattr}/>'
         )
+        # Pen texture: a pen never lands on its own line twice. One looser,
+        # thinner second pass gives the doubled-edge look that separates ink
+        # from clip-art. Skipped for hairlines, dashes, already-faint layers
+        # and animated paths, where the ghost reads as a blur instead.
+        if texture is None:
+            texture = (fill is None and dash is None and cls is None
+                       and opacity >= 0.6 and sw >= 1.8)
+        if texture:
+            ghost = self._poly_pts(pts, close=close, amp=amp * 1.5 + 0.4)
+            self.body.append(
+                f'<path d="{self._d(ghost)}" fill="none" stroke="{color}" '
+                f'stroke-width="{sw * 0.7:.2f}" stroke-linecap="round" '
+                f'stroke-linejoin="round" opacity="0.30"/>'
+            )
 
     def line(self, x0, y0, x1, y1, **kw):
         self.stroke([(x0, y0), (x1, y1)], **kw)
@@ -145,15 +169,12 @@ class Fig:
              amp=1.8, dash=None, opacity=1.0, double=True):
         # Fill and outline share the same wobbled path. A crisp <rect> under a
         # wobbly stroke leaves a visible ghost edge and reads as clip-art.
+        # `double` now selects the shared pen-texture pass in stroke(), so a
+        # box is never drawn twice by two different mechanisms.
         pts = [(x, y), (x + w, y), (x + w, y + h), (x, y + h)]
         self.stroke(pts, color=color, sw=sw, amp=amp, close=True,
-                    dash=dash, opacity=opacity, fill=fill)
-        if double and not dash:
-            # faint second pencil pass, tiny offset
-            self.stroke([(x + 2.2, y - 1.4), (x + w + 1.4, y + 2.0),
-                         (x + w - 2.0, y + h + 1.4), (x - 1.4, y + h - 2.0)],
-                        color=color, sw=1.1, amp=amp + 0.4, close=True,
-                        opacity=0.28)
+                    dash=dash, opacity=opacity, fill=fill,
+                    texture=(double and not dash))
 
     def circle(self, x, y, rr, color=INK, sw=2.6, fill=None, amp=1.6):
         r = self.rng
@@ -165,6 +186,36 @@ class Fig:
             wob = 1 + r.uniform(-0.012, 0.012)
             pts.append((x + rr * wob * math.cos(a), y + rr * wob * math.sin(a)))
         self.stroke(pts, color=color, sw=sw, amp=amp, close=True, fill=fill)
+
+    def marker(self, x, y, w, h, fill=AMBER_FILL, opacity=0.92):
+        """Highlighter swipe: an uneven bar with slanted ends.
+
+        A symmetric ellipse under a line of text reads as a sticker. A hand
+        highlighter lands as a bar that starts and stops unevenly, and the felt
+        tip doubles back, so the bar carries a second, fainter pass.
+        """
+        r = self.rng
+        j = [r.uniform(-1.8, 1.8) for _ in range(6)]
+        pts = [(x + j[0], y + h * 0.08 + j[1]),
+               (x + w * 0.5, y + j[2] * 0.6),
+               (x + w + j[3], y - j[1] * 0.8),
+               (x + w + j[4] * 0.6, y + h + j[2] * 0.4),
+               (x + w * 0.5, y + h + j[5] * 0.5),
+               (x - j[3] * 0.5, y + h + j[0] * 0.4)]
+        d = self._d(self._poly_pts(pts, close=True, amp=1.5))
+        self.body.append(f'<path d="{d}" fill="{fill}" opacity="{opacity}"/>')
+        # felt tip doubles back: thinner overlap, slightly higher
+        k = [r.uniform(-2.2, 2.2) for _ in range(4)]
+        top = y + h * 0.16
+        pts2 = [(x + 2 + k[0], top + k[1]),
+                (x + w * 0.62, top - 1.5 + k[2]),
+                (x + w - 4 + k[3], top + k[0])]
+        d2 = self._d(self._poly_pts(pts2, amp=1.2))
+        self.body.append(
+            f'<path d="{d2}" fill="none" stroke="{fill}" '
+            f'stroke-width="{h * 0.52:.1f}" stroke-linecap="round" '
+            'opacity="0.30"/>'
+        )
 
     def blob(self, x, y, w, h, fill, color=None, sw=0, amp=3.2):
         """Rounded hand-drawn filled blob (for highlight bars)."""
@@ -397,15 +448,17 @@ class Fig:
 
     # -- text -----------------------------------------------------------
     def text(self, x, y, s, size=26, color=INK, anchor="start", weight="normal",
-             font=HAND, ls=None, halo=True):
+             font=HAND, ls=None, halo=True, opacity=1.0):
         if not str(s).strip():
             return  # empty spacer line: keep the row slot, emit no <text>
         weightattr = f' font-weight="{weight}"' if weight != "normal" else ""
         anchorattr = f' text-anchor="{anchor}"' if anchor != "start" else ""
         halocl = ' class="t-halo"' if halo else ""
+        opattr = f' opacity="{opacity}"' if opacity != 1.0 else ""
         self.body.append(
             f'<text x="{x}" y="{y}" font-family="{font}" font-size="{size}"'
-            f'{weightattr}{anchorattr} fill="{color}"{halocl}>{esc(s)}</text>'
+            f'{weightattr}{anchorattr} fill="{color}"{halocl}{opattr}>'
+            f'{esc(s)}</text>'
         )
 
     def htext(self, x, y, s, size=26, color=INK, anchor="start", weight="normal",
@@ -419,8 +472,8 @@ class Fig:
         else:
             x0 = x
         if hl:
-            self.blob(x0 - pad, y - size * 0.82, w + 2 * pad, size * 1.16,
-                      hl_fill, amp=2.6)
+            self.marker(x0 - pad, y - size * 0.82, w + 2 * pad, size * 1.16,
+                        fill=hl_fill)
         self.text(x, y, s, size=size, color=color, anchor=anchor, weight=weight)
 
     def multi(self, x, y, lines, size=26, color=INK, lh=None, anchor="start",
@@ -433,19 +486,19 @@ class Fig:
     # -- chrome ---------------------------------------------------------
     def chrome(self):
         """Paper, title, footer badge."""
+        defs = ""
         if self.grid:
-            self.body.insert(
-                0,
+            defs = (
                 '<defs><pattern id="dotgrid" width="24" height="24" '
                 'patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.1" '
                 'fill="#DED4BE"/></pattern></defs>'
-                f'<rect width="{W}" height="{H}" fill="{PAPER}"/>'
-                f'<rect width="{W}" height="{H}" fill="url(#dotgrid)" '
-                'opacity="0.36"/>'
             )
-        else:
-            self.body.insert(0, f'<rect width="{W}" height="{H}" fill="{PAPER}"/>')
-        tsize = 46
+        bg = f'<rect width="{W}" height="{H}" fill="{PAPER}"/>'
+        if self.grid:
+            bg += (f'<rect width="{W}" height="{H}" fill="url(#dotgrid)" '
+                   'opacity="0.36"/>')
+        self.body.insert(0, defs + bg)
+        tsize = 50
         if self.title:
             # auto-shrink long titles so they never clip the canvas
             # (Segoe Print runs ~25% wider than the estimator, so pad it)
@@ -465,18 +518,27 @@ class Fig:
             self.text(56 + tw / 2, ty + 21, self.tag, size=15, color=MUTED,
                       anchor="middle", weight="bold", halo=False)
         if self.title:
+            # offset ink pass under the title: a print plate never lands twice
+            # in the same place, and the doubled edge gives the title weight
+            self.text(W / 2 + 3, 77, self.title, size=tsize, color=INK,
+                      anchor="middle", weight="bold", halo=False,
+                      opacity=0.16)
             self.text(W / 2, 74, self.title, size=tsize, color=self.title_color,
                       anchor="middle", weight="bold", halo=False)
-            # hand underline swash
+            # hand underline: one heavy swash, one thin rider below
             tw = text_w(self.title, tsize) * 1.22
-            y0 = 92
+            y0 = 95
             pts = [(W / 2 - tw / 2 + self.rng.uniform(-6, 6), y0)]
             for i in range(1, 7):
                 t = i / 6
                 pts.append((W / 2 - tw / 2 + tw * t,
                             y0 + self.rng.uniform(-3.5, 3.5)))
             self.stroke(pts, color=self.rng.choice([GREEN, AMBER_STROKE]),
-                        sw=3.0, amp=2.0, opacity=0.75)
+                        sw=4.2, amp=2.0, opacity=0.85)
+            rider = [(x, y + 9 + self.rng.uniform(-1.5, 1.5))
+                     for x, y in pts[1:]]
+            self.stroke([pts[0]] + rider, color=INK, sw=1.5, amp=1.4,
+                        opacity=0.30)
         if self.badge:
             bw = text_w(self.badge, 30) + 56
             bx, by = W / 2 - bw / 2, H - 86

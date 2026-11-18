@@ -22,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from hd import (AMBER_PALE, AMBER_STROKE, BLUE_D, BLUE_FILL, GREEN_D,  # noqa: E402
                 GREEN_FILL, INK, MUTED, RED, RED_FILL, WHITE, Fig, save)
 
-STAGE = Path(__file__).resolve().parents[2] / ".temp" / "l0-l5-pass" / "figures"
+STAGE = Path(__file__).resolve().parents[2] / "assets" / "illustrations" / "staged" / "l0-l5-pass" / "figures"
 
 
 def ch43_pair_not_ghost():

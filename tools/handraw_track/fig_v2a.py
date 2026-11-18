@@ -32,7 +32,7 @@ from hd import (AMBER_PALE, AMBER_STROKE, BLUE_D, BLUE_FILL, GRAY_FILL,  # noqa:
 
 MONO = "'Consolas','Courier New',monospace"
 
-STAGE = Path(__file__).resolve().parents[2] / ".temp" / "l0-l5-pass" / "figures"
+STAGE = Path(__file__).resolve().parents[2] / "assets" / "illustrations" / "staged" / "l0-l5-pass" / "figures"
 
 
 def ch16_at24c02_page_wrap():

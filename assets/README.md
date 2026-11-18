@@ -1,5 +1,7 @@
 # 可视化资产清单
 
+> **这一层是合并前的素材库，正文不读 `assets/`。** 合并版站点图在 `docs/public/{anim,arch,figures,images}`，由 `book/build_html.py` 打包进书；`assets/` 里的 SVG 与 GIF 供公众号（`tools/md2mp.py`）和讲解片（`tools/narration.py`、`tools/gen_narrated.py`）复用，另有一部分是合并前版本的留存。
+>
 > 本目录的 SVG / GIF 由本项目代码生成；`assets/photos/` 的五张第三方实拍保持原许可（CC0 ×2、CC BY-SA 4.0 ×2、MIT ×1），作者、原图页、处理方式与校验和见 `assets/photos/README.md`。
 > 生成脚本在 `tools/`，修改后重新运行即可再生成：
 >
@@ -15,47 +17,49 @@
 > python3 tools/gen_gifs.py         # assets/gif/*.gif（纯 Python 光栅动画）
 > ```
 
-图内纸色、墨色和语义色写在 tools/svgkit.py 的字面量里，数值与整书亮色令牌相同，生成时不读 stm32-book/styles/tokens.json。
+图内纸色、墨色和语义色只写在 `tools/svgkit.py` 的字面量里；整书亮色令牌在 `book/print_css.py` 的 CSS 变量中，两处没有共享读取关系，改色要同时改两边。
 
-第 20、22、25–28 章的进阶教学图使用 handdraw-style 元数据中的真实编号：主语言为 `FA-002`（Conceptual Continuous-Line Editorial），高密度系统框图辅以 `FA-029`（Geometric Diagrammatic Narrative）；布局使用 `IG-002`、`IG-004`、`IG-008`、`IG-009`、`IG-010`、`IG-011`、`IG-012`，主题色方向使用 `C-03` 普鲁士蓝、`C-10` 鼠尾草绿、`C-27` 那不勒斯黄、`C-31` 佩恩灰。编号用于约束线条、层级和叙事，不替代图中的工程数据。
+手绘概念图与静态框图都使用 handdraw-style 元数据中的真实编号：概念图主语言为 `FA-002`（Conceptual Continuous-Line Editorial），`tools/gen_diagrams.py` 的系统框图辅以 `FA-029`（Geometric Diagrammatic Narrative）；布局使用 `IG-002`、`IG-004`、`IG-008`、`IG-009`、`IG-010`、`IG-011`、`IG-012`，主题色方向使用 `C-03` 普鲁士蓝、`C-10` 鼠尾草绿、`C-27` 那不勒斯黄、`C-31` 佩恩灰。编号用于约束线条、层级和叙事，不替代图中的工程数据。
 
-33 张章首、33 张章中、8 张分部与 6 张附录手绘概念图统一为 `FA-002`，只用 `C-03`、`C-10`、`C-27`、`C-31` 四个方向。它们负责建立直觉和阅读节奏，不承载工程数据；引脚、时序、电气参数仍以各章技术图和手册为准。生成器同时写出 `assets/illustrations/manifest.json`，`stm32-book/build_html.py` 按这份清单内嵌进中英文两版；缺图、缺条目或章节/分部顺序不对都会让构建失败。章中图的落点由 manifest 里的双语锚点小节决定，锚点缺失或命中不止一次同样是构建错误。附录图按附录 id 装配：中文版嵌 6 张，英文版附录 F 尚未翻译，嵌 5 张；某篇附录没有对应条目同样是构建错误。
+33 张章首、33 张章中、8 张分部与 6 张附录手绘概念图统一为 `FA-002`，只用 `C-03`、`C-10`、`C-27`、`C-31` 四个方向。它们负责建立直觉和阅读节奏，不承载工程数据；引脚、时序、电气参数仍以各章技术图和手册为准。生成器同时写出 `assets/illustrations/manifest.json`；这一层目前只是素材保留，装配状态见第五节。
 
 ## 一、动画演示 `assets/animations/`
 
+> 「关联章节」列是**合并版**章号（ch00–ch46）。文件名不做改动，`sample-NN-*` 里的编号仍是合并前章号，别按文件名找章节。另有一批 `sample-*-flow.svg` 机制流动图由 `tools/sample_figs_quality4/anim_q4.py` 生成，本节只登记 `tools/gen_animations.py` 产出的 31 张。
+
 | 文件 | 演示内容 | 关联章节 |
 | --- | --- | --- |
-| `toolchain-flow.svg` | 辅图：编译箭头。文件不重画。认不出芯片时先看的脚在静态主图上 | 00 / 18 |
-| `boot-sequence.svg` | 上电复位后 CPU 取向量表、启动流程 | 01 / 21 |
-| `memory-map.svg` | Cortex-M 存储器映射（Flash/SRAM/外设） | 02 |
-| `clock-tree.svg` | HSE → PLL → SYSCLK → AHB/APB 时钟树倍频过程 | 02 |
-| `gpio-blink.svg` | GPIO 推挽输出驱动 LED：电平、电流、波形同步演示 | 03 |
-| `gpio-input-interrupt.svg` | 轮询 vs 外部中断 vs EXTI 触发方式对比 | 04 |
-| `nvic-interrupt-flow.svg` | 中断响应全流程：入栈现场 → 取向量 → ISR → 出栈 | 04 |
-| `timer-pwm.svg` | 定时器计数、比较匹配与 PWM 占空比（呼吸灯） | 05 |
-| `timer-modes.svg` | 定时器 4 种常见模式（输出比较/PWM 输入捕获/编码器） | 05 |
-| `uart-frame.svg` | UART 帧结构逐位时序：起始位/数据位/校验/停止位 | 06 |
+| `toolchain-flow.svg` | 辅图：编译箭头。文件不重画。认不出芯片时先看的脚在静态主图上 | 05 / 45 |
+| `boot-sequence.svg` | 上电复位后 CPU 取向量表、启动流程 | 06 |
+| `memory-map.svg` | Cortex-M 存储器映射（Flash/SRAM/外设） | 08 |
+| `clock-tree.svg` | HSE → PLL → SYSCLK → AHB/APB 时钟树倍频过程 | 08 |
+| `gpio-blink.svg` | GPIO 推挽输出驱动 LED：电平、电流、波形同步演示 | 09 |
+| `gpio-input-interrupt.svg` | 轮询 vs 外部中断 vs EXTI 触发方式对比 | 10 |
+| `nvic-interrupt-flow.svg` | 中断响应全流程：入栈现场 → 取向量 → ISR → 出栈 | 10 |
+| `timer-pwm.svg` | 定时器计数、比较匹配与 PWM 占空比（呼吸灯） | 12 |
+| `timer-modes.svg` | 定时器 4 种常见模式（输出比较/PWM 输入捕获/编码器） | 12 |
+| `uart-frame.svg` | UART 帧结构逐位时序：起始位/数据位/校验/停止位 | 13 |
 | `uart-idle-dma.svg` | UART + DMA + IDLE 两类接收契约：Size 是首个未写位置，契约 A 重新武装、契约 B 环形取模 | 附录 A |
-| `i2c-transaction.svg` | I2C 完整事务：START、地址、ACK、数据、STOP | 07 |
-| `spi-transfer.svg` | SPI 全双工移位：CPOL/CPHA 四种模式时序 | 08 |
-| `adc-sar.svg` | ADC 采样保持 + 逐次逼近（SAR）比较过程 | 09 |
-| `dma-circular.svg` | DMA 循环模式：CPU 与 DMA 并行搬运数据 | 10 |
-| `iwdg-window.svg` | 辅图：独立看门狗只惩罚喂晚，喂早也复位的是窗口看门狗。文件不重画 | 11 |
-| `flash-iap.svg` | 辅图：IAP 双区跳转。文件不重画。页边界、两把钥匙和两字在静态主图上 | 12 |
-| `can-arbitration.svg` | 辅图：CAN 仲裁与位填充。文件不重画。500 kbit/s 和 450 kbit/s 在静态主图上 | 13 |
-| `usb-enumeration.svg` | 辅图：USB 枚举。文件不重画。48 MHz 和描述符长度在静态主图上 | 14 |
-| `freertos-scheduler.svg` | Ready/Running/Blocked/Suspended；队列事件在 tick 之间唤醒高优先级任务 | 15、28 |
-| `lowpower-wakeup.svg` | 三条唤醒路径：Sleep 继续、Stop 从 HSI 恢复工作时钟、Standby 复位；移动点表示顺序，非电流或实测时间 | 16 |
-| `debug-swo.svg` | 辅图：SWO。文件不重画。CFSR、bit 15 和 1 µs 在静态主图上 | 17 |
-| `l4-stop2-evidence.svg` | L476 Stop 2：IRQ 入口快照、HAL 清标志与恢复消费边界 | 24 |
-| `h7-clock-chain.svg` | H743 的 8 MHz HSE 经 PLL1 到 Rev Y/W 400 MHz 与 Rev V 480 MHz 的计算链 | 25 |
-| `g0-boot-swd.svg` | G071 启动锁存、PA14/选项位来源选择与 Under Reset 调试恢复 | 23 |
-| `network-packet-journey.svg` | MQTT 消息穿过 TLS、TCP/IP、Ethernet DMA、RMII 与 PHY 的分层证据 | 27 |
-| `rtos-system-layers.svg` | 从硬件、设备、内核、系统服务到应用的系统分层，以及 FreeRTOS/RT-Thread/Zephyr 选型边界 | 28 |
-| `spl-init-pipeline.svg` | SPL 开时钟、取默认值、覆盖字段、写入/使能四步连续状态链 | 26 |
-| `network-online-state.svg` | link、IP、DNS、可信时间、TLS、MQTT 六道上线门 | 27 |
-| `rtos-startup-gates.svg` | 复位证据到应用放行的六道系统启动门 | 28 |
-| `simulation-acceptance-gates.svg` | 同一 ELF 从构建、模型、目标板到可归档验收证据的四道门 | 22 |
+| `i2c-transaction.svg` | I2C 完整事务：START、地址、ACK、数据、STOP | 16 |
+| `spi-transfer.svg` | SPI 全双工移位：CPOL/CPHA 四种模式时序 | 16 |
+| `adc-sar.svg` | ADC 采样保持 + 逐次逼近（SAR）比较过程 | 15 |
+| `dma-circular.svg` | DMA 循环模式：CPU 与 DMA 并行搬运数据 | 14 |
+| `iwdg-window.svg` | 辅图：独立看门狗只惩罚喂晚，喂早也复位的是窗口看门狗。文件不重画 | 19 |
+| `flash-iap.svg` | 辅图：IAP 双区跳转。文件不重画。页边界、两把钥匙和两字在静态主图上 | 17 |
+| `can-arbitration.svg` | 辅图：CAN 仲裁与位填充。文件不重画。500 kbit/s 和 450 kbit/s 在静态主图上 | 35 |
+| `usb-enumeration.svg` | 辅图：USB 枚举。文件不重画。48 MHz 和描述符长度在静态主图上 | 35 |
+| `freertos-scheduler.svg` | Ready/Running/Blocked/Suspended；队列事件在 tick 之间唤醒高优先级任务 | 22 |
+| `lowpower-wakeup.svg` | 三条唤醒路径：Sleep 继续、Stop 从 HSI 恢复工作时钟、Standby 复位；移动点表示顺序，非电流或实测时间 | 18 |
+| `debug-swo.svg` | 辅图：SWO。文件不重画。CFSR、bit 15 和 1 µs 在静态主图上 | 20 |
+| `l4-stop2-evidence.svg` | L476 Stop 2：IRQ 入口快照、HAL 清标志与恢复消费边界 | 18 / 28 |
+| `h7-clock-chain.svg` | H743 的 8 MHz HSE 经 PLL1 到 Rev Y/W 400 MHz 与 Rev V 480 MHz 的计算链 | 08 / 28 |
+| `g0-boot-swd.svg` | G071 启动锁存、PA14/选项位来源选择与 Under Reset 调试恢复 | 06 / 28 |
+| `network-packet-journey.svg` | MQTT 消息穿过 TLS、TCP/IP、Ethernet DMA、RMII 与 PHY 的分层证据 | 33 |
+| `rtos-system-layers.svg` | 从硬件、设备、内核、系统服务到应用的系统分层，以及 FreeRTOS/RT-Thread/Zephyr 选型边界 | 27 |
+| `spl-init-pipeline.svg` | SPL 开时钟、取默认值、覆盖字段、写入/使能四步连续状态链 | 07 |
+| `network-online-state.svg` | link、IP、DNS、可信时间、TLS、MQTT 六道上线门 | 33 |
+| `rtos-startup-gates.svg` | 复位证据到应用放行的六道系统启动门 | 27 |
+| `simulation-acceptance-gates.svg` | 同一 ELF 从构建、模型、目标板到可归档验收证据的四道门 | 40 |
 
 ## 二、板卡实物结构图 `assets/boards/`
 
@@ -86,6 +90,8 @@
 完整来源、原图页、处理尺寸和 SHA-256 见 [`photos/README.md`](photos/README.md)。NUCLEO-L476RG 的具体焊桥、跳线和硬件版本以 ST 官方产品页与 UM1724 为准。
 
 ## 四、静态框图 `assets/diagrams/`
+
+> `sample-NN-*` 的文件名保留合并前章号；下表说明里的「chNN」是合并版章号（如文件名的 10 DMA → ch14、13 CAN → ch35、19 flash-fit → ch17）。
 
 | 文件 | 内容 |
 | --- | --- |
@@ -123,30 +129,30 @@
 | `rtos-owner-task.svg` | 并发直调与唯一所有者任务的前后对比 |
 | `rtos-deadline-budget.svg` | 阻塞、执行、干扰到 deadline 的响应时间预算 |
 | `rtos-config-paths.svg` | FreeRTOS、RT-Thread、Zephyr 配置进入固件的三列路径 |
-| `sample-00-boot-state.svg` | 第 00 章静态主图：BOOT0=0 的闪存别名，以及 BOOT0=1 时 CPU 取到系统存储器。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-03-gpio-led.svg` | 第 03 章静态主图：PA0 经 270 Ω 点灯，PC13 不能当电流源，并画出 LCKR 序列。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-04-exception-stack.svg` | 第 04 章静态主图：GROUP_4 下抢占 1 打断抢占 2 的 8 寄存器入栈，以及同抢占不能嵌套。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-06-uart-frame.svg` | 第 06 章静态主图：PA9/PA10 上 0xA5 的 8N1 帧、停止位采样和 FE 清除顺序。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-02-clock-tree.svg` | 第 02 章静态主图：中密度 72 MHz 树、LATENCY=2，以及 LATENCY=0 的取指失败和 CSS 回到 HSI。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-05-pwm-1khz.svg` | 第 05 章静态主图：PA6 上 TIM3_CH1 的 1 kHz，以及用 36 MHz 去除得到的 500 Hz。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-08-spi-jedec.svg` | 第 08 章静态主图：LQFP48 第 14–17 脚、Mode 0、9 MHz，以及 MOSI/MISO 对调后读不到 0xEF 0x40 0x17。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-09-adc-sar.svg` | 第 09 章静态主图：12 MHz 下一次采样和 MSB 比较，最长转换 21 µs，采样太短时电容上仍是上一次的电压。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-01-swd-vectors.svg` | 第 01 章静态主图：第 34 脚 PA13 与第 37 脚 PA14 上的取指，以及这两只脚被配成 GPIO、第 35 脚被当成 SWCLK。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-07-i2c-addr.svg` | 第 07 章静态主图：第 42、43 脚上的写地址 0x78 与 ACK，以及 DevAddress 填 0x3C 时的 NACK。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-10-dma-cndtr.svg` | 第 10 章静态主图：8 个半字且 CNDTR 为 3 时已写 5 个采样、10 字节，以及把剩余计数当成字节。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-11-iwdg-1s.svg` | 第 11 章静态主图：预分频 64、Reload 624 在 40 kHz 典型值下的 1 秒，以及减到 0 才复位。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-12-iap-map.svg` | 第 12 章静态主图：64 KB 中容量地图、先 KEY1 后 KEY2，以及钥匙反序、0x0801FC00 和 VTOR 仍为 0。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-13-can-bit.svg` | 第 13 章静态主图：预分频 9 的 500 kbit/s，以及预分频 8 的 450 kbit/s。工作脚是第 45 脚和第 46 脚。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-14-usb-enum.svg` | 第 14 章静态主图：USBPRE=0 的 48 MHz、第 33 脚上的 1.5 kΩ，以及 USBPRE=1 的 72 MHz。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-15-rtos-prio.svg` | 第 15 章静态主图：1 ms 节拍上优先级 2 先于 1，以及抢占优先级 0 调用 FromISR。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-16-stop-wake.svg` | 第 16 章静态主图：低功耗稳压器的 Stop 是 14 µA，醒来是 HSI 8 MHz；不重配时钟时 0x271 变成 12800。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-17-cfsr.svg` | 第 17 章静态主图：BFAR 要 bit 15 为 1；72 个 DWT 周期是 1 µs，要先置 DEMCR bit 24。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-18-boot-triage.svg` | 第 18 章静态主图：SWD 接线与 BOOT 三种启动选择分开检查，包含 Flash、系统存储器和 SRAM。由 `tools/gen_sample_figures.py` 生成 |
-| `sample-19-flash-fit.svg` | 第 19 章静态主图：一张 0xB800 停在 0x08010000 之前；两张是 110 KB，65536 字节大于 20 KB SRAM。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-00-boot-state.svg` | ch06 静态主图：BOOT0=0 的闪存别名，以及 BOOT0=1 时 CPU 取到系统存储器。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-03-gpio-led.svg` | ch09 静态主图：PA0 经 270 Ω 点灯，PC13 不能当电流源，并画出 LCKR 序列。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-04-exception-stack.svg` | ch10 静态主图：GROUP_4 下抢占 1 打断抢占 2 的 8 寄存器入栈，以及同抢占不能嵌套。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-06-uart-frame.svg` | ch13 静态主图：PA9/PA10 上 0xA5 的 8N1 帧、停止位采样和 FE 清除顺序。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-02-clock-tree.svg` | ch08 静态主图：中密度 72 MHz 树、LATENCY=2，以及 LATENCY=0 的取指失败和 CSS 回到 HSI。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-05-pwm-1khz.svg` | ch12 静态主图：PA6 上 TIM3_CH1 的 1 kHz，以及用 36 MHz 去除得到的 500 Hz。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-08-spi-jedec.svg` | ch16 静态主图：LQFP48 第 14–17 脚、Mode 0、9 MHz，以及 MOSI/MISO 对调后读不到 0xEF 0x40 0x17。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-09-adc-sar.svg` | ch15 静态主图：12 MHz 下一次采样和 MSB 比较，最长转换 21 µs，采样太短时电容上仍是上一次的电压。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-01-swd-vectors.svg` | ch06 静态主图：第 34 脚 PA13 与第 37 脚 PA14 上的取指，以及这两只脚被配成 GPIO、第 35 脚被当成 SWCLK。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-07-i2c-addr.svg` | ch16 静态主图：第 42、43 脚上的写地址 0x78 与 ACK，以及 DevAddress 填 0x3C 时的 NACK。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-10-dma-cndtr.svg` | ch14 静态主图：8 个半字且 CNDTR 为 3 时已写 5 个采样、10 字节，以及把剩余计数当成字节。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-11-iwdg-1s.svg` | ch19 静态主图：预分频 64、Reload 624 在 40 kHz 典型值下的 1 秒，以及减到 0 才复位。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-12-iap-map.svg` | ch17 静态主图：64 KB 中容量地图、先 KEY1 后 KEY2，以及钥匙反序、0x0801FC00 和 VTOR 仍为 0。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-13-can-bit.svg` | ch35 静态主图：预分频 9 的 500 kbit/s，以及预分频 8 的 450 kbit/s。工作脚是第 45 脚和第 46 脚。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-14-usb-enum.svg` | ch35 静态主图：USBPRE=0 的 48 MHz、第 33 脚上的 1.5 kΩ，以及 USBPRE=1 的 72 MHz。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-15-rtos-prio.svg` | ch22 静态主图：1 ms 节拍上优先级 2 先于 1，以及抢占优先级 0 调用 FromISR。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-16-stop-wake.svg` | ch18 静态主图：低功耗稳压器的 Stop 是 14 µA，醒来是 HSI 8 MHz；不重配时钟时 0x271 变成 12800。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-17-cfsr.svg` | ch20 静态主图：BFAR 要 bit 15 为 1；72 个 DWT 周期是 1 µs，要先置 DEMCR bit 24。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-18-boot-triage.svg` | ch45 静态主图：SWD 接线与 BOOT 三种启动选择分开检查，包含 Flash、系统存储器和 SRAM。由 `tools/gen_sample_figures.py` 生成 |
+| `sample-19-flash-fit.svg` | ch17 静态主图：一张 0xB800 停在 0x08010000 之前；两张是 110 KB，65536 字节大于 20 KB SRAM。由 `tools/gen_sample_figures.py` 生成 |
 
 ## 五、章首手绘概念图 `assets/illustrations/`
 
-29 章各一张，900×560，网页端带轻量 CSS 动画，PDF 首帧完整可读。文件由 `tools/gen_handdraw_illustrations.py` 生成，清单见 [`illustrations/manifest.json`](illustrations/manifest.json)。
+33 张章首图（`ch00`–`ch32`），900×560，文件由 `tools/gen_handdraw_illustrations.py` 生成，清单见 [`illustrations/manifest.json`](illustrations/manifest.json)。**合并版正文尚未挂接这一层**：`book/build_html.py` 不读该清单，旧 `stm32-book` 构建器已随 B5 下线。`ch29`–`ch32` 四张按电机卷预合并编号生成，与合并版 TOC 的 ch29–ch32（GD32、ESP32）不是同一批章节，下表只列到 `ch28`。
 
 | 文件 | 章节 | 画面 |
 | --- | --- | --- |
@@ -180,7 +186,7 @@
 | `ch27-handdraw.svg` | 27 | 数据包穿过 ARP、TCP、TLS 与应用边界 |
 | `ch28-handdraw.svg` | 28 | 中断、任务、驱动、网络与应用组成一套系统 |
 
-七个分部在章节手绘图之外另有一张分部概念图，同样由 `tools/gen_handdraw_illustrations.py` 生成，并嵌在各分部标题页的下半区：
+八个分部各有一张分部概念图，同样由 `tools/gen_handdraw_illustrations.py` 生成：
 
 | 文件 | 分部 | 画面 |
 | --- | --- | --- |
@@ -192,7 +198,7 @@
 | `part-p5-handdraw.svg` | 第六部分 | 三颗芯片在迁移路上交换手册和旧库 |
 | `part-p6-handdraw.svg` | 第七部分 | 硬件、内核、服务和应用叠成一套系统 |
 
-每章另有一张章中概念图（`chNN-mid-handdraw.svg`），插在锚点小节标题之后、正文展开之前，帮读者先建立画面再读细节；锚点小节由 `manifest.json` 的双语锚点指定：
+每章另有一张章中概念图（`chNN-mid-handdraw.svg`），帮读者先建立画面再读细节；锚点小节由 `manifest.json` 记录（`anchor_zh`），合并版还没有消费方：
 
 | 文件 | 章节 | 锚点小节 | 画面 |
 | --- | --- | --- | --- |
@@ -226,7 +232,7 @@
 | `ch27-mid-handdraw.svg` | 27 | TCP 是字节流：必须自己定义消息边界 | 字节流要切成有边界的消息 |
 | `ch28-mid-handdraw.svg` | 28 | ⏱️ 实时性来自预算，不来自 RTOS 名字 | 每件事都要装进自己的时间预算盒 |
 
-六篇附录各有一张开篇概念图（`app-X-handdraw.svg`），嵌在附录标题之后；英文版附录 F 尚未翻译，所以英文版嵌 5 张：
+六篇附录各有一张开篇概念图（`app-X-handdraw.svg`）：
 
 | 文件 | 附录 | 画面 |
 | --- | --- | --- |
@@ -272,9 +278,9 @@
 
 ### 公众号动图 `*-zh.gif`
 
-同目录还有 20 个 `*-zh.gif`。它们由 `tools/svg2gif.py` 用无头浏览器从 SVG 采样，`tools/md2mp.py` 优先拿它们做公众号插图。不是上面 24 张的中文翻译，也不由 `gen_gifs.py` 生成。
+同目录还有 24 个 `*-zh.gif`。它们由 `tools/svg2gif.py` 用无头浏览器从 SVG 采样，`tools/md2mp.py` 优先拿它们做公众号插图。不是上面 24 张的中文翻译，也不由 `gen_gifs.py` 生成。
 
-文件名规则是 `<动画 svg 的主文件名>-zh.gif`。这 8 张 SVG 还没有对应光栅动图：`i2c-transaction`、`l4-stop2-evidence`、`network-packet-journey`、`rtos-system-layers`、`g0-boot-swd`、`spl-init-pipeline`、`network-online-state`、`rtos-startup-gates`。它们在 HTML / GitHub 中仍是可播放的 CSS 动画，PDF 保留完整第一帧。
+文件名规则是 `<动画 svg 的主文件名>-zh.gif`。`assets/animations/` 的 68 张 SVG 里还有 44 张没有对应光栅动图，重点是 `i2c-transaction`、`rtos-system-layers`、`spl-init-pipeline` 与 `sample-*` 系列；它们在 HTML / GitHub 中仍是可播放的 CSS 动画，PDF 保留完整第一帧。
 
 ## 七、章节讲解 `assets/video/`
 

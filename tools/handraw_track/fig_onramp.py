@@ -18,7 +18,7 @@ import sys
 
 from hd import *
 
-STAGE = Path(__file__).resolve().parents[2] / ".temp" / "l0-l5-pass" / "figures"
+STAGE = Path(__file__).resolve().parents[2] / "assets" / "illustrations" / "staged" / "l0-l5-pass" / "figures"
 
 
 def ch00_onramp_six_stops():

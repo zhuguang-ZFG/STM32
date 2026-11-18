@@ -10,7 +10,7 @@ from pathlib import Path
 from hd import (AMBER_FILL, AMBER_STROKE, BLUE_D, GREEN_D, INK, MUTED, RED, W,
                 WHITE, Fig, save)
 
-STAGE = Path(__file__).resolve().parents[2] / ".temp" / "learning-plates"
+STAGE = Path(__file__).resolve().parents[2] / "assets" / "illustrations" / "staged" / "learning-plates"
 
 
 def ch46_l0_l5_ladder():

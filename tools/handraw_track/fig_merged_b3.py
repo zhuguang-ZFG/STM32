@@ -18,7 +18,7 @@ from hd import (AMBER_FILL, AMBER_PALE, AMBER_STROKE, BLUE, BLUE_D,  # noqa: E40
                 BLUE_FILL, GRAY_FILL, GREEN, GREEN_D, GREEN_FILL, INK, MUTED,
                 RED, RED_FILL, W, WHITE, Fig, save)
 
-STAGE = Path(__file__).resolve().parents[2] / ".temp" / "b3-plates"
+STAGE = Path(__file__).resolve().parents[2] / "assets" / "illustrations" / "staged" / "b3-plates"
 MONO = "'Consolas','Courier New',monospace"
 
 
