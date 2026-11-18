@@ -1,11 +1,13 @@
 # timer-pwm —— TIM3 PWM 呼吸灯
 
-> 难度：★★☆☆　｜　涉及外设：TIM（PWM）　｜　对应章节：[05 定时器与 PWM](../../docs/05-定时器与PWM.md)
+> 难度：★★☆☆　｜　涉及外设：TIM（PWM）　｜　对应章节：[ch12 定时器与PWM](../../docs/v1-drivers/12-timers-pwm.md)
 
 <p align="center">
   <img src="../../assets/animations/timer-pwm.svg" width="760" alt="定时器计数与 PWM 占空比动画">
   <br><sub>▲ 动画：定时器计数、比较匹配与 PWM 占空比（呼吸灯，作者自绘矢量图）</sub>
 </p>
+
+> 验证边界：本目录只有BluePill/STM32F103C8T6的HAL源码对照，缺完整独立构建工程，仍未实测。F407主样板及安全/取证见 [PWM协议](../../labs/timer-pwm/README.md)，不混用时钟/复用。
 
 ## 一、功能说明
 
@@ -28,7 +30,7 @@
 | TIM3 → Channel1 | PWM Generation CH1 | 复用为 PWM 输出 |
 | TIM3 → Prescaler | 71 | 72MHz/(71+1)=1MHz |
 | TIM3 → Counter Period (ARR) | 999 | 1MHz/(999+1)=1kHz |
-| TIM3 → Pulse (CCR) | 500 | 初始 50% |
+| TIM3 → Pulse (CCR) | main.c实际写999/2=499 | 初始49.9%，随后被动态循环覆盖 |
 | TIM3 → PWM Mode | PWM mode 1 | CNT<CCR 输出有效 |
 | GPIO PA6 | AF Push Pull / High speed | 复用推挽 |
 
@@ -42,7 +44,7 @@ f_PWM   = fCK_PSC / ((ARR + 1) × (PSC + 1))        PWM 频率
 Duty    = CCR / (ARR + 1) × 100%                   占空比
 ```
 
-本例：`PSC=71 → fCK_CNT=1MHz`，`ARR=999 → f_PWM=1kHz`；CCR 从 0~999 即 0~100% 占空比。
+本例：`PSC=71 → fCK_CNT=1MHz`，`ARR=999 → f_PWM=1kHz`；CCR=0~999对应0~99.9%；实际循环步长10会走到1000（100%）再回落，不是精确0~999。
 
 **2) 时基 + 通道配置**
 
@@ -54,7 +56,7 @@ HAL_TIM_PWM_Init(&htim3);
 
 TIM_OC_InitTypeDef oc = {0};
 oc.OCMode     = TIM_OCMODE_PWM1;          /* PWM 模式 1 */
-oc.Pulse      = PWM_ARR / 2U;             /* 初始 CCR = 500 → 50% */
+oc.Pulse      = PWM_ARR / 2U;             /* 实际初始 CCR = 499 → 49.9% */
 oc.OCPolarity = TIM_OCPOLARITY_HIGH;
 HAL_TIM_PWM_ConfigChannel(&htim3, &oc, PWM_CH);
 HAL_TIM_PWM_Start(&htim3, PWM_CH);        /* 启动输出 */
@@ -69,8 +71,7 @@ __HAL_TIM_SET_COMPARE(&htim3, PWM_CH, duty);      /* 改 CCR，预装载生效 *
 HAL_Delay(BREATH_DELAY_MS);
 ```
 
-> 打开 `AutoReloadPreload` 后，ARR/CCR 写入**影子寄存器**，在更新事件（UEV）时才生效，
-> 避免 PWM 中途出现毛刺。这也是「改了 CCR 波形却不抖」的原因。
+> ARR预装载由ARPE控制，CCR预装载由OC1PE控制，两者不要混为同一开关。实际HAL版本的ConfigChannel/Start实现须核对，不能只因AutoReloadPreload已开就宣称CCR无毛刺。
 
 **4) 高级定时器 TIM1 的 MOE**
 
@@ -83,11 +84,9 @@ TIM1/TIM8 若不开 MOE，通道使能了也没有波形输出，是最常见的
 
 ## 五、编译烧录步骤
 
-1. CubeMX 生成 F103C8 工程，配置 TIM3 如上表，覆盖 `Core/Src/main.c`。
-2. Keil 按 `F7` 编译，按 `F8` 下载；CubeIDE 先编译再运行；PlatformIO `pio run -t upload`。
-3. 若用 CubeMX 自动生成 TIM 代码，注意别与本文件的 `pwm_init()` 重复初始化。
+目录未附完整CubeIDE/Keil/PlatformIO工程，不能直接承诺upload成功。已有实际工程需锁定F103C8T6/HAL版本，配置HSE8MHz、PLL×9、APB1=/2与Serial Wire，集成main.c并保留HAL/CMSIS、启动/链接、HAL配置与SysTick中断时基；避免重复main/pwm_init或生成TIM初始化。先Build成功留日志/哈希，后续获准且安全核对后才下载。本轮不补工程骨架、不运行构建烧录。
 
-## 六、预期现象
+## 六、预期现象（理论设计，未实测）
 
 - 接 PA6 的 LED 由暗到亮、再由亮到暗平滑循环（呼吸灯）；
 - 示波器测 PA6：频率稳定在 **1kHz**，占空比在 0~100% 之间线性变化；
@@ -97,7 +96,7 @@ TIM1/TIM8 若不开 MOE，通道使能了也没有波形输出，是最常见的
 
 | 现象 | 原因 | 解决 |
 | --- | --- | --- |
-| 引脚无波形 | 高级定时器未开 MOE | `HAL_TIM_PWM_Start` 或 `__HAL_TIM_MOE_ENABLE` |
+| 本例PA6无波形 | TIM3通道/时钟/复用未放行 | 查TIM3 CC1E/CEN和GPIO；TIM3没有MOE，高级TIM的MOE不适用于本例 |
 | LED 一直亮/灭 | 占空比固定 0 或 100% | 检查 CCR 是否在 0~ARR 间变化 |
 | 频率不对 | PSC/ARR 算错或时钟树不对 | 用公式重算，确认定时器时钟 |
 | 调占空比时闪一下 | 未开预装载 | 使能 `AutoReloadPreload` / OCxPE |

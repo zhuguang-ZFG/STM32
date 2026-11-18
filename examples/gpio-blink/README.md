@@ -1,11 +1,13 @@
 # gpio-blink —— GPIO 推挽输出闪烁 LED
 
-> 难度：★☆☆☆　｜　涉及外设：GPIO　｜　对应章节：[03 GPIO 与 LED](../../docs/03-GPIO与LED.md)
+> 难度：★☆☆☆　｜　涉及外设：GPIO　｜　对应章节：[ch09 GPIO](../../docs/v1-drivers/09-gpio.md)
 
 <p align="center">
   <img src="../../assets/animations/gpio-blink.svg" width="760" alt="GPIO 推挽输出驱动 LED 动画">
   <br><sub>▲ 动画：GPIO 推挽输出点亮 LED（电平、电流、波形同步，作者自绘矢量图）</sub>
 </p>
+
+> 验证边界：本目录为BluePill/STM32F103C8T6的HAL源码对照，不是完整独立工程。可执行取证主样板见 [F407点灯协议](../../labs/gpio-blink/README.md)，两条接线/时钟不可混用；仍未实测。
 
 ## 一、功能说明
 
@@ -68,7 +70,7 @@ else
     GPIOC->BSRR = (uint32_t)GPIO_PIN_13;         /* 置位 PC13 */
 ```
 
-`BSRR` 单次写入即完成操作，天然原子，不会被中断打断产生「读改写」竞态。
+BSRR的单次写入是原子的；但这里的翻转先读ODR再分支写BSRR，整个“判断并翻转”不是不可分割操作，并发访问同一脚仍需所有权约束。
 
 **3) 两种延时对比**
 
@@ -86,12 +88,11 @@ static void delay_systick_count(uint32_t ms) {
 
 ## 五、编译烧录步骤
 
-1. **Keil MDK**：新建 F103C8 工程，把本 `main.c` 替换 `Core/Src/main.c`，勾选 `Use MicroLIB`（可选），编译 → 下载。
-2. **STM32CubeIDE**：新建 F103C8 工程，覆盖 `Core/Src/main.c`，点工具栏的编译按钮，再点调试或运行按钮下载。
-3. **PlatformIO**：`platform = ststm32`、`board = bluepill_f103c8`、`framework = stm32cube`，把 `main.c` 放进 `src/`，`pio run -t upload`。
-4. 连接 ST-Link：`SWDIO=PA13`、`SWCLK=PA14`、`GND`、`3.3V`。
+本目录没有随附完整Keil/CubeIDE/PlatformIO工程；此前单条upload写法不能证明工程可构建。已有CubeMX/CubeIDE工程需锁定F103C8T6与HAL版本，按上表配置HSE8MHz/PLL72MHz和Serial Wire，再集成main.c；保留生成的HAL/CMSIS、启动/链接、HAL配置和调用HAL_IncTick的SysTick_Handler，不重复定义main与时钟函数。随后在实际工程中执行Build，成功后经安全核对才下载，保存日志/固件哈希；本轮未生成工程、未编译/下载。
 
-## 六、预期现象
+`HAL_GetTick()==0`的启动自检可能在首个tick前进入error_handler；两种延时都依赖SysTick中断，不是独立硬件计数忙等。需后续构建/上板核实，不能据注释断言可独立运行，本轮不修改代码行为。SWD供电/针序按实际原理图和[共同安全](../../labs/README.md)，不把VTref当默认供电输出。
+
+## 六、预期现象（理论与设计目标，未实测）
 
 - 上电后板载 LED（PC13）以 **1Hz 稳定闪烁**；
 - 接在 PA0 的外接 LED 每 **5 秒**翻转一次；

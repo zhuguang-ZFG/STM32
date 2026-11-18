@@ -20,6 +20,18 @@ platforms: [generic]
 
 完整许可边界见 附录 E。
 
+## 三个基础取证协议（F407主线，F103对照分开）
+
+先读仓库 `labs/README.md` 的共同供电/仪器安全与空白证据记录。下表是现有 E01/E03/E02 方法对应的协议路径，不是新增实验编号，也不表示已实测。仓库根 `docs/README.md`、`labs/README.md` 和各工程 README 提供可点击的文件入口；书稿只列仓库路径，不把书外文件误当站内页面。
+
+| 现行章 / 方法 | 可执行取证协议（仓库路径） | 代码主线 | 状态 / 不能由此推出 |
+| --- | --- | --- | --- |
+| [ch09 GPIO / E01](../v1-drivers/09-gpio.md) | `labs/gpio-blink/README.md` | `mcu/code/stm32/00-blink` | 未实测；PF6软件忙等，不能据注释承诺精确1Hz |
+| [ch12 PWM / E03](../v1-drivers/12-timers-pwm.md) | `labs/timer-pwm/README.md` | `mcu/code/stm32/02-tim-pwm` | 未实测；PA6→PA0，动态CCR不是静态50%证据 |
+| [ch13 UART / E02](../v1-drivers/13-uart-framed-protocol.md) | `labs/uart-dma/README.md` | `mcu/code/stm32/03-uart-dma` | 未实测；IDLE不等于应用帧，宿主测试不等于线上通过 |
+
+三个主样板启动目标均为STM32F407ZGT6，实际板型/芯片/容量与供电需现场核实。F103对照 `examples/gpio-blink`、`examples/timer-pwm` 是待集成HAL源码，不随目录提供完整工程；不能拿F103的PC13/72MHz/PSC71套给F407的PF6或回读时钟。所有硬件读数留待测；固定CCR、积压试验所需的新代码/工具只保留设计，不在本轮实施。
+
 ## 第一区 · 根书例程（F103 线，BluePill）
 
 默认平台 STM32F103C8T6；时钟、接线与固件包版本以各目录 README 为准。关联章按合并书章号标注。

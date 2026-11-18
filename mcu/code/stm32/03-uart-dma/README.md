@@ -1,78 +1,37 @@
-# 03-uart-dma：串口收发的两级缓冲，和"可写 ≠ 发完"
+# 03-uart-dma：串口两级缓冲与“可写≠发完”
 
-配套章节：[S7 USART](../../docs/stm32/07-usart.md)、[S8 DMA](../../docs/stm32/08-dma.md)
+现行配套章节：[ch13 UART](../../../../docs/v1-drivers/13-uart-framed-protocol.md)、[ch14 DMA](../../../../docs/v1-drivers/14-dma.md)。完整安全接线、构建步骤、位宽与跨圈判据、证据表见 [UART取证协议](../../../../labs/uart-dma/README.md)。
 
-## 这个工程讲清三件事
+## 当前工程事实
 
-1. **波特率是算出来的，不是填出来的。** 默认 16 倍过采样（OVER8=0）时 `baud = f_PCLK2 / BRR`。
-   时钟一变波特率就跟着变，所以 `BRR` 由回读出来的 PCLK2 计算。
-   反例：1MHz（PLL 参考频率那一档）下 `BRR = 9`，实际 111111，误差 −3.549%，通信就已经不可靠。
-2. **接收有两级缓冲**：串口移位寄存器/FIFO，DMA 搬进环形数组。
-   DMA 不理解"帧"，它只理解"搬够 N 个字节"；帧边界靠 USART 的 **IDLE** 标志判断
-   （总线空闲一个帧时间就置位）。
-3. **TXE ≠ TC**。TXE 只说明数据寄存器空出来了，TC 才说明停止位已经发完。
-   在 RS-485 这类需要切方向的场合，漏掉 TC 就会把最后一位切掉。
+- 启动目标STM32F407ZGT6、Flash1MB/SRAM128KB；PF6/PF8低亮LED对应霸天虎源码口径，实际板卡/芯片仍待核实。
+- USART1：PA9 TX/PA10 RX、AF7；115200、8N1、OVER8=0、无流控。使用3.3V TTL交叉接TX/RX并共地，适配器VCC不接，不接RS-232或5V。
+- clocks_read()按RCC推导HCLK/PCLK2，程序未主动配置PLL；冷复位HSI名义16MHz条件下，四舍五入得到BRR139，理论约115107.91baud（−0.07994%）、位宽8.6875µs。不是所有F407都用84MHz/BRR729；寄存器推导不等于仪器实测。
+- DMA2 Stream5 Channel4、64字节循环，HT/TC和IDLE推动消费。流寄存器地址与IRQ68也是固定配置，不能只改stream宏迁移；实际映射须按芯片RM0090核对。源码旧头注释中的“换IDF”不适用于这个裸机F407工程。
+- IDLE是空闲服务通知，**不是应用消息边界**。TXE表示可继续写DR，TC才表示停止位已发完。
+- 启动发`uart-dma ready\r\n`，随后主循环非阻塞原样回显；不是AT→OK应答或带CRC协议。
 
-## 硬件前提
+| 变量 | 按当前实现解读 |
+| --- | --- |
+| g_rx_bytes | 成功消费进发送队列的字节总数，不保证包含所有线上字节 |
+| g_frames | 历史名称，实际计IDLE通知次数，不是应用帧数 |
+| g_overruns | USART ORE/FE/NE、DMA丢弃、发送队列满、流重启等路径累计 |
+| g_half_events/g_full_events | HT/TC计数，取每次试验增量 |
+| g_hclk/g_pclk2/g_brr | 回读推导的时钟与实际写入BRR；读数仍待采集 |
 
-| 项 | 说明 |
-|---|---|
-| 串口 | USB-TTL 接 PA9(TX)/PA10(RX)，共地，3.3V 电平 |
-| 波特率 | 115200 8N1，8 位字长，1 停止位，无校验，无流控 |
-| 其他 | 无 |
+## 后续构建烧录（本轮未执行）
 
-引脚依据 DS8626 Table 9：PA9 = USART1_TX (AF7)、PA10 = USART1_RX (AF7)。
-
-## ⚠ DMA stream/channel 的取值
-
-```c
-#define USART1_RX_STREAM   5U
-#define USART1_RX_CHANNEL  4U
-```
-
-权威来源是 RM0090 的 **DMA2 request mapping** 表（Rev 18 Table 43）——
-USART1 挂在 APB2 上，它的 DMA 请求归 DMA2 管；常见取值 RX = DMA2 Stream5 Channel4、
-TX = DMA2 Stream6 Channel4。本次实施未能取得该表正文（st.com 返回 HTTP 567，
-各镜像的文本层只覆盖到约 229 页，而该表在 307/308 页），因此这里不把它当作
-"板上事实"，而是集中成两个宏，方便你按自己的资料核对后修改。
-详见任务研究记录 `.trellis/tasks/10-06-stm32-depth-animations/research/baseline-and-sources.md`。
-
-## 构建
-
-PATH 需要 `arm-none-eabi-gcc`、`mingw32-make`，以及 Git 的 `usr\bin`。
+保留common/behavior相对目录，在本目录及既有兼容Make环境执行：
 
 ```bash
-make
-make flash
-make clean
+make          # build/uart-dma.elf/.bin/.hex/.map
+make flash    # OpenOCD/ST-Link verify reset
 ```
 
-## 上板自检
+先核身份、供电、SWD及后续写板授权，构建失败停止，不用旧ELF代替。工具版本、固件哈希、构建/verify/冷复位日志见取证协议；make gdb含load，会写板。
 
-1. 烧录后串口应立刻打印 `uart-dma ready`；
-2. 电脑上发任意字符串 → 板子原样回显；
-3. GDB 里对照两个计数：
+最小自检先捕获启动行，再单字节0x55/0x41量双方向位宽并核回显；通过后再做63/64/65与256字节跨圈测试，记录字节比对、rx/IDLE/HT/TC/overruns增量。IDLE次数不必等于应用包数，零接收也不唯一证明stream配置错，应查PA10/AF7/DMAR/NDTR/DMA时钟/映射/IRQ完整链。
 
-   | 变量 | 含义 |
-   |---|---|
-   | `g_rx_bytes` | DMA 搬进环形数组的字节总数 |
-   | `g_frames` | IDLE 判出的帧数 |
-   | `g_overruns` | ORE/FE/NE 错误计数，应为 0 |
-   | `g_half_events` / `g_full_events` | 半缓冲 / 整缓冲中断次数 |
-   | `g_brr` | 由 PCLK2 算出的 BRR，应接近 139（HSI 16MHz 下 16000000/115200=138.9→138/139） |
-   | `g_pclk2` | 回读到的 APB2 时钟 |
+64字节缓冲在115200 8N1下半区约2.778ms，属于服务预算，不是无限吞吐或上板通过证据。宿主消费逻辑测试不能替代真实串口与波形。
 
-4. 若 `g_rx_bytes` 一直是 0 而回显也没有 → stream/channel 配错，回查 RM0090 映射表改上面两个宏。
-
-## 失败排查
-
-| 现象 | 多半是 |
-|---|---|
-| 完全没有输出 | 没共地；PA9/PA10 接反；USB-TTL 电平不是 3.3V |
-| 输出是乱码 | 波特率算错（`g_brr` 与实际 PCLK2 不匹配）；或对端用了 7 数据位/2 停止位 |
-| 收不到数据 | `USART_CR3.DMAR` 没开；或 PA10 没配成 AF7 复用；或 GPIOA 时钟没开 |
-| 数据量对但分帧不对 | IDLE 标志没清干净（必须"读 SR 再读 DR"），或主机发送间隔小于一个帧时间 |
-| 偶发丢字节 | `g_overruns` 不为 0：CPU 处理不及时，或没有环形缓冲 |
-## 接收边界与验证更新
-
-IDLE 是服务通知，不是应用帧边界。消费者从上次已消费位置读到新的 DMA 写位置；HT/TC 也推动消费。两种边界标志同时积压时丢弃不可信片段并计数，不能从相同位置猜测漏了几圈。ISR 只做有界搬运，主循环非阻塞回显。64 字节环形缓冲在 115200 8N1 下半缓冲约 2.78ms，服务期限必须留余量。宿主行为测试覆盖首次单字节、连续短块、跨圈与积压；这不是无限吞吐或上板实测证明。
+状态：`hardware_status: pending`，本轮未构建、未烧录、未实测。身份、双方向位宽、构建/verify日志、跨圈原始字节与计数、误差预算和复测仍待完成。

@@ -11,3 +11,5 @@
 - 两书迁移的逐文件去向：`../plans/2026-11-12-merged-book/`（mapping.tsv 141 行 + 各批验收证据）。
 
 写作与正文纪律：[CONTENT_GUIDE.md](CONTENT_GUIDE.md)。
+
+学习入口：[第 46 章的五阶段能力目标与 47 章依赖索引](v7-delivery/46-resources-roadmap-open-source.md)（区分硬先修与推荐阅读，沿用 L0–L5）；动手取证：[实验目录](../labs/README.md)（含点灯/PWM/UART，均保留未实测状态）。
