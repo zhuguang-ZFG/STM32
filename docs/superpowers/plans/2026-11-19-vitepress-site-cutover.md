@@ -1,6 +1,6 @@
 # VitePress 站点收尾（关闭 B5 §4.3 偏差）
 
-- 日期：2026-11-19；本地 Git 根 `D:/Users/STM32`；未提交/暂存/推送/发布。
+- 日期：2026-11-19；本地 Git 根 `D:/Users/STM32`。已获授权提交并推送：`0331f9e2`（站点迁移）+ `a8b8bdc5`（EPUB 依赖修复），Pages 已发布。
 - 依据：`docs/superpowers/specs/2026-11-12-merged-book-design.md` §4.1/§4.3/§4.4、AC3–AC5；B5 偏差登记见 `2026-11-14-merged-book-b5-site-cutover.md`。
 - 结论：站点入口从 `book/build_html.py` 静态站换为 VitePress，base `/STM32/`；`book/build_html.py` 降级为内容渲染契约 + 印刷/EPUB 共享渲染器。
 
@@ -22,7 +22,7 @@
 | `npm run site:links` | 两轮：`111 checked, 1 allowlisted, 0 failed`；复跑 `111 checked, 0 allowlisted, 0 failed (55 pages)`（nongnu 在本机 DNS 时而可解析）。豁免项只覆盖 `www.nongnu.org/lwip/2_0_x/raw_api.html` 的传输失败，不是 404 |
 | `python -m book.build_html --check` | `built 53 pages, 0 planned chapters missing` |
 | `python -m unittest discover book/tests` | 102 tests OK |
-| `node --test scripts/tests/*.test.mjs` | 21 pass / 0 fail |
+| `node --test scripts/tests/*.test.mjs` | 23 pass / 0 fail |
 | `python tools/slop_lint.py …` / `tools/check_assets.py` | 0 |
 | `python -m book.build_print_edition` | 47 章、63 条 outline，703s |
 | `python -m book.print_pdf …` | 837 页 |
@@ -40,4 +40,21 @@
 
 - `<details>` 内的 Markdown 列表：VitePress 解析为 `<ol>`，Python-Markdown（无 `md_in_html`）保留字面 `1. …`。印刷/EPUB 维持既有渲染（未改，避免冻结点漂移）；这是站点与印刷既有的差异，不是本轮引入的链接或锚点风险。
 - 外链允许清单仅 3 条精确 URL，且必须带理由；`404/410` 在加载期即被拒绝，探活后也只有匹配的 401/403/429 或传输失败可豁免。
-- CI 未在远程实跑（本轮不推送）。两处按首跑风险预置：`book.yml` 把 Chromium 安装放在门禁之前（pip 装 playwright 后印刷集成测试会由 skipped 变失败）；五套 workflow 的 Node 固定为本地实测的 `24`（`scripts/tests/site-config.test.mjs` 直接导入 `.mts`，依赖默认类型剥离）。
+
+## 远程 CI 与发布（2026-11-19）
+
+| 运行 | 结论 |
+| --- | --- |
+| Merge Check `44357645567`（`0331f9e2`） | success |
+| Site CI `44357645413`（`0331f9e2`） | success（构建、页面对账、131 存根、组装、Chromium、10 项冒烟） |
+| 部署 `44357645322`（`0331f9e2`） | success，13 步全绿；Pages 已发布 |
+| External Links `44357700548`（手动派发） | success |
+| Book CI `44357645501`（`0331f9e2`） | **failure**：Build EPUB 缺 `lxml`（`tools/build_epub.py` 导入），已修复 |
+| Book CI `44361076775`（`a8b8bdc5`，修复后） | **success**：门禁 + 渲染契约 + 印刷 HTML/PDF/EPUB + 体积断言 + 产物上传 |
+| Merge Check `44361076742`（`a8b8bdc5`） | success |
+
+修复：新增 `book/requirements-print.txt`（markdown / lxml / PyMuPDF / Pillow / playwright），`book.yml` 一次安装；删掉重复的 Chromium 步骤。轻量 `merge-check.yml` 仍只装 `book/requirements.txt`。
+
+线上抽查（`https://zhuguang-zfg.github.io/STM32/`）：首页 200 且为 VitePress 产物并带 canonical；`v1-drivers/09-gpio.html` 200（含 quiz/scene）；`mcu/stm32/03-gpio.html` 200（485 字节存根）；`sitemap.xml` 200 且 54 条 `<loc>`。
+
+CI 预置风险（首跑前写下的两条）已被证实必要：Chromium 必须先装（否则印刷集成测试由 skipped 变失败）；Node 固定 `24` 是因为 `site-config.test.mjs` 直接导入 `.mts`。
