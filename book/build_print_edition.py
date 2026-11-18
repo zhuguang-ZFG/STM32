@@ -218,7 +218,7 @@ def build(out_path: Path | None = None, sample: int | None = None) -> Path:
         f'<h1 class="book-title"><span class="bt-main">{html_lib.escape(main.strip())}</span>'
         f'<span class="bt-tail">{html_lib.escape(tail.strip())}</span></h1>\n'
         '<div class="cover-rule"><i></i><span class="cover-mark">MCU</span><i></i></div>\n'
-        '<p class="book-sub">寄存器级深度教学 · 全程实物实验 · 双书合并版</p>\n'
+        '<p class="book-sub">原理讲解 · 工程示例 · 实验指南</p>\n'
         '<div class="cover-foot"><span>zhuguang-ZFG</span>'
         '<span>GitHub · STM32</span></div>\n'
         '</div></section>\n'

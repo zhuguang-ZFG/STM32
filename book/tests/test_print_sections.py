@@ -1,13 +1,31 @@
+import re
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from book.build_print_edition import chapter_number, chapter_section
+from book.build_print_edition import build, chapter_number, chapter_section
 from book.print_css import build_css
+
+
+class CoverCopyTests(unittest.TestCase):
+    def test_cover_describes_guidance_without_claiming_hardware_validation(self):
+        manifest = {"title": "测试书", "subtitle": "测试副题", "parts": [], "appendices": []}
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "cover.html"
+            with patch("book.manifest.load_toc", return_value=[]), patch(
+                "book.manifest.build_manifest", return_value=manifest
+            ):
+                build(out)
+            html = out.read_text(encoding="utf-8")
+        subtitle = re.search(r'<p class="book-sub">([^<]*)</p>', html).group(1)
+        self.assertEqual(subtitle, "原理讲解 · 工程示例 · 实验指南")
+        self.assertNotIn("全程实物实验", subtitle)
+        self.assertNotIn("全程实测", subtitle)
 
 
 class PrintCssTests(unittest.TestCase):
