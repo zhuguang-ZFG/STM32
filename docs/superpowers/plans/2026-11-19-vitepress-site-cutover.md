@@ -52,8 +52,11 @@
 | Book CI `44357645501`（`0331f9e2`） | **failure**：Build EPUB 缺 `lxml`（`tools/build_epub.py` 导入），已修复 |
 | Book CI `44361076775`（`a8b8bdc5`，修复后） | **success**：门禁 + 渲染契约 + 印刷 HTML/PDF/EPUB + 体积断言 + 产物上传 |
 | Merge Check `44361076742`（`a8b8bdc5`） | success |
+| Site CI `44363672954` / 部署 `44363672893`（`6903417c`，验收记录提交） | success（`docs/**` 命中即重新构建并发布） |
+| Book CI `44363672911` / Merge Check `44363672951`（`6903417c`） | success |
+| Book CI `44366371871` / Motor Control `44366371717`（`88dc40e5`，v5 升级） | success，两条链路的 `upload-artifact@v5` 都实际执行 |
 
-修复：新增 `book/requirements-print.txt`（markdown / lxml / PyMuPDF / Pillow / playwright），`book.yml` 一次安装；删掉重复的 Chromium 步骤。轻量 `merge-check.yml` 仍只装 `book/requirements.txt`。
+修复：新增 `book/requirements-print.txt`（markdown / lxml / PyMuPDF / Pillow / playwright），`book.yml` 一次安装；删掉重复的 Chromium 步骤。轻量 `merge-check.yml` 仍只装 `book/requirements.txt`。随后把 `actions/upload-artifact` 从 v4 升到 v5（v4 仍指向 Node 20，被强制在 Node 24 上运行并告警）；`book.yml` 与既有的 `motor-control.yml` 各改 1 行。
 
 线上抽查（`https://zhuguang-zfg.github.io/STM32/`）：首页 200 且为 VitePress 产物并带 canonical；`v1-drivers/09-gpio.html` 200（含 quiz/scene）；`mcu/stm32/03-gpio.html` 200（485 字节存根）；`sitemap.xml` 200 且 54 条 `<loc>`。
 
