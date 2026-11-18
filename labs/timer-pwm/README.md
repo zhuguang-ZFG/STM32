@@ -15,7 +15,7 @@
 | 占空比 | 初始CCR1=500，主循环立即按phase改写，每20ms一步 | 不是固定50%；循环CCR最小10、最大1000，即1%–100% |
 | 观测 | g_pwm_hz/g_measured_hz/g_capture_edges/g_overcapture | TIM2同源捕获不能独立证明绝对频率准确 |
 
-冷复位HSI名义16MHz、APB1=/1条件下（**理论，待回读确认**）：TIMclk=16MHz、PSC15，`f=16e6/((15+1)×(999+1))=1000Hz`，周期1ms。短暂/2时PCLK1=8MHz、TIMclk仍16MHz，随后恢复。实际条件不同就重算，不套章内84MHz或F103的72MHz。
+冷复位HSI名义16MHz、APB1=/1条件下（**理论，待回读确认**）：TIMclk=16MHz、PSC15，`f=16e6/((15+1)×(999+1))=1000Hz`，周期1ms。短暂/2时PCLK1=8MHz、TIMclk仍16MHz，随后恢复。实际条件不同就重算，不套章内84MHz或F103的72MHz。当前源码还会短暂写APB1=/2作对照，因此仅从已确认的冷复位HSI16MHz环境解释此步骤；不得在HCLK=168MHz时直接运行/复用该段，APB1会短暂成为84MHz而超42MHz上限。
 
 ## 接线、构建与烧录（后续执行）
 

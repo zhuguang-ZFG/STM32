@@ -12,7 +12,16 @@ rule-of-three, and paragraph flow stay with human reading.
     python3 tools/slop_lint.py docs/03-GPIO与LED.md
     python3 tools/slop_lint.py --list              # show the rules
 
-Exit code: 0 clean, 1 hits, 2 bad invocation.
+Default discovery at a Git root uses tracked + non-ignored untracked files
+reported by that repository. Git leaves independent nested repositories and
+worktrees opaque; if the parent index overlaps one, retain all Git-reported
+candidates rather than prune tracked sources. Tracked files also remain
+candidates under later ignore rules. Existing prose
+scope exclusions below still apply. Explicit file arguments bypass discovery;
+source archives without .git retain filesystem discovery. Git errors at a Git
+root are fatal, never a reason to report a clean scan.
+
+Exit code: 0 clean, 1 hits, 2 bad invocation or discovery failure.
 
 Shape follows two public skills: tazhate/anti-ai-slop (rule groups, scrubbing
 code and quotes before matching, escape directives) and
@@ -28,7 +37,9 @@ What is deliberately NOT flagged, because it is correct here:
 from __future__ import annotations
 
 import argparse
+import os
 import re
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -298,8 +309,19 @@ def lint(text: str, path: str, house_style: bool = True) -> list[Hit]:
 def targets(given: list[str]) -> list[Path]:
     if given:
         return [Path(name) for name in given]
+    if (ROOT / ".git").exists():
+        # Git owns the nested-repository and ignore boundaries. --cached keeps
+        # tracked sources even if a later ignore rule matches their directory;
+        # --others includes pending documents. NULs preserve arbitrary names.
+        names = subprocess.check_output(
+            ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
+            cwd=ROOT, stderr=subprocess.PIPE,
+        )
+        candidates = [ROOT / os.fsdecode(name) for name in names.split(b"\0") if name]
+    else:
+        candidates = ROOT.rglob("*.md")
     found: list[Path] = []
-    for path in sorted(ROOT.rglob("*.md")):
+    for path in sorted({p for p in candidates if p.match("*.md") and p.is_file()}):
         if any(part in SKIP_DIRS or part.startswith(".venv")
                for part in path.relative_to(ROOT).parts):
             continue
@@ -327,7 +349,7 @@ def main(argv: list[str] | None = None) -> int:
             stream.reconfigure(encoding="utf-8", errors="replace")
 
     parser = argparse.ArgumentParser(description="查 Markdown 里的 AI 味。")
-    parser.add_argument("files", nargs="*", help="要检查的文件，留空就查整个仓库")
+    parser.add_argument("files", nargs="*", help="要检查的文件，留空查本仓库已跟踪及非忽略的待提交 Markdown")
     parser.add_argument(
         "--house-style",
         choices=["on", "off"],
@@ -344,8 +366,13 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"  {pattern}")
         return 0
 
+    try:
+        selected = targets(args.files)
+    except (OSError, subprocess.CalledProcessError) as error:
+        print(f"无法枚举仓库 Markdown：{error}", file=sys.stderr)
+        return 2
     hits: list[Hit] = []
-    for path in targets(args.files):
+    for path in selected:
         if not path.is_file():
             print(f"没有这个文件：{path}", file=sys.stderr)
             return 2
