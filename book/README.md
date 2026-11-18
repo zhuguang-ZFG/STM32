@@ -19,7 +19,7 @@ python -m book.build_html --check
 
 ## 站点（VitePress）、内容渲染器与印刷 PDF
 
-依赖分三层：站点只需 Node（`npm ci`）；`book/requirements.txt`（Markdown）供内容渲染契约与印刷；完整 PDF 另需 Pillow、Playwright、PyMuPDF、Playwright Chromium 与可用中文字体。`book/print_pdf.py` 会检查中文页眉字体，找不到即失败；浏览器依赖需另行准备，构建不会自动安装。
+依赖分三层：站点只需 Node（`npm ci`）；内容门与渲染契约只需 `book/requirements.txt`（Markdown）；印刷 HTML / PDF / EPUB 需要 `book/requirements-print.txt`（`lxml`、Pillow、Playwright、PyMuPDF）加上 Playwright Chromium 与可用中文字体。`book/print_pdf.py` 会检查中文页眉字体，找不到即失败；浏览器依赖需另行准备，构建脚本不会自动安装。
 
 ```sh
 npm run docs:build                    # 站点 → docs/.vitepress/dist（base /STM32/）

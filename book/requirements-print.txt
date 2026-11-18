@@ -1,0 +1,9 @@
+# 印刷版/EPUB 构建依赖（book.yml 的 book job 安装；本地 make book-pdf/book-epub
+# 只调用构建器，不会自动装依赖，需自己先装本文件）。
+# 内容门本身只需 requirements.txt（markdown）；这里额外固定三条产物链的依赖，
+# 避免 CI 漏装（如 tools/build_epub.py 的 lxml）到构建时才发现。
+markdown==3.11
+lxml>=6
+PyMuPDF>=1.28,<1.29
+Pillow>=12
+playwright>=1.50
