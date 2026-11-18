@@ -2,7 +2,7 @@
 #
 # 常用命令：
 #   make assets    重新生成全部图片（纯 Python，零依赖）
-#   make check     校验 SVG 与 GIF（GIF 会解码回像素比对）
+#   make check     校验现行合并版章节、链接、测验与站点 SVG/位图
 #   make clean     清理 __pycache__ 等临时文件
 #   make stats     统计仓库内容规模
 
@@ -12,16 +12,21 @@ PY ?= python3
 
 assets: animations boards diagrams illustrations samples gifs videos
 
-# 整书版：离线单文件 HTML；book-pdf 还需要 Chrome/Edge、Playwright 与 PyMuPDF。
+# 合并版：book 构建多页静态站；book-pdf 构建单文件印刷 HTML 后生成 PDF。
+# PDF 需要 Playwright Chromium、Pillow、PyMuPDF 与中文字体，见 book/README.md。
 book:
-	$(PY) stm32-book/build_html.py
+	$(PY) -m book.build_html
 
 book-pdf:
-	$(PY) stm32-book/build_html.py --pdf
+	$(PY) -m book.build_print_edition
+	$(PY) -m book.print_pdf --html book/dist/print/merged-book.html --meta book/dist/print/merged-book.meta.json --out book/dist/print/merged-book.pdf
 
 book-check:
-	$(PY) -m unittest discover stm32-book/tests -v
-	$(PY) stm32-book/build_html.py --check
+	$(PY) -m book.manifest --check
+	$(PY) -m book.mapping --check
+	$(PY) -m book.checks --check
+	$(PY) -m unittest discover book/tests -v
+	$(PY) -m book.build_html --check
 
 animations:
 	$(PY) tools/gen_animations.py

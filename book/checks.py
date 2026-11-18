@@ -19,7 +19,7 @@ FENCE_RE = re.compile(r"^(```|~~~)")
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
 CUSTOM_ID_RE = re.compile(r"\s*\{#([^}]+)\}\s*$")
 IMAGE_RE = re.compile(r"!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
-LINK_RE = re.compile(r"(?<!!)\[([^\]]+)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
+LINK_RE = re.compile(r"(?<!!)\[((?:[^\[\]]|\[[^\]]*\])*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 QUIZ_RE = re.compile(r"<QuizBank\s+chapter=\"([^\"]+)\"\s*/>")
 INLINE_CODE_RE = re.compile(r"`[^`\n]*`")
 
@@ -47,6 +47,36 @@ def heading_anchors(text: str) -> set[str]:
             anchors.add(custom.group(1))
             continue
         anchors.add(cjk_slugify(title))
+    return anchors
+
+
+def blockquote_anchors(text: str) -> set[str]:
+    """Headings written inside a blockquote (`> ### 标题`).
+
+    README styles its "card" sections that way. Whether a renderer turns those
+    into jump targets is decided by the renderer, not by the Markdown source:
+    the local build never renders README, and the GitHub renderer could not be
+    observed, so treating them as valid anchors would bless a link nobody here
+    verified. They are reported separately and exempted from the anchor check
+    instead of being asserted as working.
+    """
+    anchors: set[str] = set()
+    in_fence = False
+    for line in text.splitlines():
+        if FENCE_RE.match(line):
+            in_fence = not in_fence
+            continue
+        if in_fence or not line.startswith(">"):
+            continue
+        stripped = line
+        while stripped.startswith(">"):
+            stripped = stripped[1:].lstrip()
+        match = HEADING_RE.match(stripped)
+        if not match:
+            continue
+        title = match.group(2)
+        custom = CUSTOM_ID_RE.search(title)
+        anchors.add(custom.group(1) if custom else cjk_slugify(title))
     return anchors
 
 
@@ -154,6 +184,86 @@ def check_file(path: Path, docs_root: Path, quiz_dir: Path) -> tuple[list[str], 
     return errors, quiz_ids
 
 
+def check_entry_doc(path: Path, repo_root: Path) -> list[str]:
+    """Validate relative links and images in a document outside the chapter TOC.
+
+    The chapter scan only walks the manifest, so README / CREDITS / STRUCTURE /
+    assets README / tool READMEs could rot silently: a renamed directory or a
+    retired image left a dead link nobody noticed. These files carry the first
+    thing a reader sees, so they get the same treatment.
+    """
+    errors: list[str] = []
+    text = path.read_text(encoding="utf-8")
+    scan = strip_code(text)
+    label = _display_path(path, repo_root)
+    for match in IMAGE_RE.finditer(scan):
+        target = match.group(2)
+        if target.startswith(("http://", "https://", "//", "data:")):
+            continue
+        line = _line_of(scan, match.start())
+        candidate = _resolve_entry_target(path, target, repo_root)
+        if candidate is None:
+            continue
+        if not candidate.exists():
+            errors.append(f"{label}:{line}: missing image: {target}")
+    for match in LINK_RE.finditer(scan):
+        target = match.group(2)
+        if target.startswith(("http://", "https://", "mailto:", "tel:", "//")):
+            continue
+        line = _line_of(scan, match.start())
+        target_path, _, fragment = target.partition("#")
+        if not target_path:
+            if fragment and fragment not in heading_anchors(text) \
+                    and fragment not in blockquote_anchors(text):
+                errors.append(f"{label}:{line}: missing anchor: #{fragment}")
+            continue
+        candidate = _resolve_entry_target(path, target_path, repo_root)
+        if candidate is None:
+            continue
+        if not candidate.exists():
+            errors.append(f"{label}:{line}: missing target: {target_path}")
+            continue
+        if fragment and candidate.is_file() and candidate.suffix == ".md":
+            target_text = candidate.read_text(encoding="utf-8")
+            if fragment not in heading_anchors(target_text) \
+                    and fragment not in blockquote_anchors(target_text):
+                errors.append(
+                    f"{label}:{line}: missing anchor in {target_path}: #{fragment}")
+    return errors
+
+
+def _display_path(path: Path, repo_root: Path) -> str:
+    """Relative-to-repo path so output stays short and clickable in editors."""
+    try:
+        return path.resolve().relative_to(repo_root.resolve()).as_posix()
+    except ValueError:
+        return str(path)
+
+
+def _resolve_entry_target(path: Path, target: str, repo_root: Path) -> Path | None:
+    """Map a link target to a real path; None means "not ours to check"."""
+    cleaned = target.split("?")[0]
+    if not cleaned:
+        return None
+    if cleaned.startswith("/"):
+        # site-absolute: /images/x.png lives under docs/public/
+        return repo_root / "docs" / "public" / cleaned.lstrip("/")
+    return (path.parent / cleaned).resolve()
+
+
+ENTRY_DOCS = (
+    "README.md",
+    "STRUCTURE.md",
+    "CREDITS.md",
+    "CONTRIBUTING.md",
+    "docs/README.md",
+    "docs/CONTENT_GUIDE.md",
+    "assets/README.md",
+    "cheatsheets/README.md",
+    "tools/handraw_track/README.md",
+)
+
+
 def check_book(
     docs_root: Path = DOCS,
     quiz_dir: Path = QUIZ_DIR,
@@ -207,6 +317,12 @@ def check_book(
                 errors.append(f"orphan quiz: {quiz_path.name}")
             elif len(owners) > 1:
                 errors.append(f"quiz referenced by multiple chapters: {quiz_path.name} -> {sorted(owners)}")
+    if not only:
+        repo_root = docs_root.parent
+        for rel in ENTRY_DOCS:
+            entry = repo_root / rel
+            if entry.exists():
+                errors.extend(check_entry_doc(entry, repo_root))
     return errors
 
 

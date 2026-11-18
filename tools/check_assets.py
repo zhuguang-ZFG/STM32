@@ -3,7 +3,10 @@
 """
 
 
-check_assets.py —— 素材自检工具（不需要任何第三方库，也不用打开图片）。
+check_assets.py —— 素材自检入口（合并版需 Pillow；旧树保留历史检查）。
+
+合并版：检查完整章节、链接/锚点/测验、docs/public SVG XML 与位图解码。
+不会生成资产，不启动视频管线；以下 GIF/视频规则仅适用于归档旧布局。
 
 做四件事：
 1. 校验 assets/ 下所有 SVG 是合法 XML；
@@ -653,12 +656,75 @@ def check_links():
     return bad == 0
 
 
-if __name__ == "__main__":
-    # Windows 的默认 GBK 终端无法打印质量门使用的勾叉符号。
+def check_public_assets(public):
+    """Validate real merged-edition SVG/raster payloads without writing files."""
+    from pathlib import Path
+    from PIL import Image, ImageSequence
+    public = Path(public)
+    if not public.is_dir():
+        print(f"[FAIL] missing public assets: {public}")
+        return False
+    ok, count = True, 0
+    for path in sorted(public.rglob("*")):
+        if not path.is_file():
+            continue
+        suffix = path.suffix.lower()
+        if suffix not in {".svg", ".png", ".jpg", ".jpeg", ".gif", ".webp"}:
+            continue
+        count += 1
+        try:
+            if suffix == ".svg":
+                doc = xml.dom.minidom.parse(str(path))
+                if doc.documentElement.localName != "svg":
+                    raise ValueError("root element is not svg")
+                doc.unlink()
+            else:
+                with Image.open(path) as image:
+                    image.verify()
+                with Image.open(path) as image:
+                    for frame in ImageSequence.Iterator(image):
+                        frame.load()
+        except Exception as exc:
+            print(f"[FAIL] {path}: {exc}")
+            ok = False
+    if count == 0:
+        print(f"[FAIL] no SVG/raster assets under {public}")
+        ok = False
+    print(f"public assets: {count} checked; {'PASS' if ok else 'FAIL'}")
+    return ok
+
+
+def check_merged_book(repo_root=None):
+    """Current manifest completeness, chapter/link/quiz contracts and assets."""
+    from pathlib import Path
+    repo_root = Path(repo_root or ROOT)
+    sys.path.insert(0, str(repo_root))
+    from book import checks, manifest
+    expected = manifest.build_manifest(manifest.load_toc())
+    entries = [c for part in expected["parts"] for c in part["chapters"]]
+    entries += expected["appendices"]
+    errors = [f"missing chapter: {e['file']}" for e in entries
+              if not (repo_root / "docs" / e["file"]).is_file()]
+    if not errors:
+        errors.extend(checks.check_book(docs_root=repo_root / "docs",
+                      quiz_dir=repo_root / "docs/.vitepress/data/quizzes"))
+    for error in errors:
+        print(f"[FAIL] {error}")
+    assets_ok = check_public_assets(repo_root / "docs/public")
+    return not errors and assets_ok
+
+
+def main():
     for stream in (sys.stdout, sys.stderr):
         reconfigure = getattr(stream, "reconfigure", None)
         if reconfigure:
             reconfigure(encoding="utf-8", errors="backslashreplace")
+    from pathlib import Path
+    if (Path(ROOT) / "docs/manifest.json").is_file():
+        ok = check_merged_book()
+        print("merged-book assets: " + ("PASS" if ok else "FAIL"))
+        return 0 if ok else 1
+    # Archived layout: keep the original pixel/video/simulation checks intact.
     a = check_svg()
     b = check_gif()
     d = check_videos()
@@ -669,5 +735,9 @@ if __name__ == "__main__":
     c = check_links()
     ok = a and b and c and d and e and f and g and h
     print("结果：", "全部通过 ✅" if ok else "存在问题 ❌")
-    sys.exit(0 if ok else 1)
+    return 0 if ok else 1
 
+
+
+if __name__ == "__main__":
+    sys.exit(main())

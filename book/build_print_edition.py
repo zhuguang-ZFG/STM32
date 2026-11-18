@@ -75,11 +75,11 @@ def anim_frame_uri(svg_path: Path) -> str:
         element = page.query_selector("svg")
         if element is None:
             raise RuntimeError(f"no <svg> in {svg_path}")
-        tmp = svg_path.with_suffix(".probe.png")
-        element.screenshot(path=str(tmp))
+        # Keep snapshots in memory: printing must not overwrite an adjacent
+        # user-owned .probe.png or modify the source asset tree.
+        snapshot = element.screenshot()
         browser.close()
-    uri = data_uri(tmp, "image/png")
-    tmp.unlink(missing_ok=True)
+    uri = "data:image/png;base64," + base64.b64encode(snapshot).decode("ascii")
     _anim_cache[key] = uri
     return uri
 

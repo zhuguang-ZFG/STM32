@@ -217,7 +217,8 @@ tr { break-inside: avoid; }
 /* 图与动画帧 */
 figure { margin: .9em 0; break-inside: avoid; text-align: center; }
 figure.book-figure { margin: 1.15em 0; }
-figure img, p img { max-width: 100%; height: auto; }
+/* Markdown also permits images directly in list items and links. */
+img { max-width: 100%; height: auto; }
 figure.book-figure figcaption { max-width: 150mm; margin: .45em auto 0; }
 figcaption { font-family: "NotoSansSC", sans-serif; font-size: .8em;
   color: var(--muted); margin-top: .35em; line-height: 1.5; }
