@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | STM32 中文/英文正文 | `docs/`、`docs/en/` | `docs/CONTENT_GUIDE.md` 与原书 spec |
 | STM32 示例与实验 | `examples/`、`labs/`、`sim/` | 各目录说明及原 CI |
-| STM32 整书 | `stm32-book/` | `BOOK_CLASSIC_CONVERGE_SPECS.md` 等现行叠加规则 |
+| STM32 整书 | `stm32-book/` | `BOOK_CLASSIC_CONVERGE_SPECS.md` 等叠加规则（该批规格已随 B5 移除，现以 `docs/CONTENT_GUIDE.md` 与 `book/contracts.py` 为准） |
 | MCU 站点/正文 | `mcu/docs/` | `mcu/.trellis/spec/docs-site/` |
 | MCU 固件 | `mcu/code/` | MCU firmware-* 层及 `mcu/code/projects.json` |
 | MCU 整书 | `mcu/mcu-book/` | MCU book 层；保持 HTML/A4/印前三类产物区分 |

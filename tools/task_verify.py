@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """task_verify —— 分列验证工具（passed / failed / unverified，unverified 不冒充通过）。
 
-背景：`BOOK_CLASSIC_CONVERGE_SPECS.md` §10.2 要求 task_verify 的分列报告；
+背景：`BOOK_CLASSIC_CONVERGE_SPECS.md` §10.2 要求 task_verify 的分列报告（该规格文件已随 B5 站点切换从本仓库移除，此处只留历史出处）；
 本环境原本没有该工具，此前以手写等价记录落盘。本脚本按开源 verify 工具的
 通用模式（checks 清单 → 逐项执行 → 机器可读报告）实现等价工具本体：
 命令清单来自 checks JSON，每项要么作为命令执行（exit 0 = passed，否则 failed

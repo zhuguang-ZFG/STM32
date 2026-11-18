@@ -14,7 +14,7 @@ platforms: [generic]
 - **问题**：入门的第一周做什么——买哪块板、装哪个工具链、第一次构建与烧录各会卡在哪？「点灯」为什么值得认真做一次，而不是抄一段代码了事？
 - **交付**：完成一次从源码到闪烁的完整闭环，并留下 L0 要求的三样证据；遇到「灯不闪」时能按三条失败分支分诊；能用串口跟芯片完成第一次对话。
 - **级别**：L0 起步。证据位置：「你应该看到」各清单与[第 40 章](../v6-labs-projects/40-lab-method-instruments.md) 的记录表；读完留下构建日志、烧录记录与一张填写过的记录表。
-- **旅程导航**：进本章前你手里只有一块新板子和这本书；本章结束多了构建、烧录、点灯与串口四步的最小闭环，以及 L0 要求的构建日志与烧录记录——旅程从「跑通」开始，看懂这四步是卷 0 的事。
+- **旅程导航**：进本章前你手里只有一块新板子和这本书；本章结束多了构建、烧录、点灯与串口四步的最小闭环，以及 L0 要求的三样证据（构建日志、烧录记录、一张填写过的记录表；本章无板级实测，现象按「你应该看到」的预期写）——L0 的第一步是「先跑通」：装好工具链、灯不闪时按三条失败分支分诊、用串口跟芯片说上第一句话，这些是闭环记录与分诊判据不是已核过的手册读数。
 - **开源读法**：本章的例程是 `examples/gpio-blink` 与 `examples/uart-dma-idle`（[附录 B](../appendix/B-project-index.md) 登记），README 里有完整接线与命令；工具链事实仍回[第 5 章](../v0-foundations/05-toolchain-four-steps.md)。
 - **边界**：本章只做「跑起来」，不解释机制——GPIO 的寄存器语义在[第 9 章](../v1-drivers/09-gpio.md)，时钟树在[第 8 章](../v1-drivers/08-architecture-memory-clock.md)，串口在[第 13 章](../v1-drivers/13-uart-framed-protocol.md)；本章出现的数字（115200、BRR `0x271`、1 Hz）全部转引已冻结口径，不新造。
 - **依据锚点**：点灯的 1 Hz、串口的 115200 与 BRR `0x271` 转引[第 7 章](../v0-foundations/07-build-systems-legacy.md)、[第 9 章](../v1-drivers/09-gpio.md)、[第 13 章](../v1-drivers/13-uart-framed-protocol.md)已冻结口径；PC13 低电平与灌电流上限引 DS5319 注 5；接线与命令以 `examples/gpio-blink`、`examples/uart-dma-idle` 的 README 为准（[附录 B](../appendix/B-project-index.md) 登记）。L0 三样证据与十八周排期见[第 46 章](../v7-delivery/46-resources-roadmap-open-source.md)，记录表格式见[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)，失败分诊见[第 45 章](../v7-delivery/45-troubleshooting-handbook.md)。
@@ -45,19 +45,21 @@ STM32 是意法半导体（ST）基于 ARM Cortex-M 内核的 32 位微控制器
 
 ## 三、装环境
 
-本书例程的主路是 GNU Arm 嵌入式工具链 + Make（[第 5 章](../v0-foundations/05-toolchain-four-steps.md) 讲清了每一步在做什么，[第 7 章](../v0-foundations/07-build-systems-legacy.md) 给出工程组织）。装两样：
+本书的构建主线是 GNU Arm 嵌入式工具链 + Make（[第 5 章](../v0-foundations/05-toolchain-four-steps.md) 讲清了每一步在做什么，[第 7 章](../v0-foundations/07-build-systems-legacy.md) 给出工程组织）。先讲清一件容易预期落空的事：**本章要用的两个例程目录**（`examples/gpio-blink`、`examples/uart-dma-idle`）只带 `main.c`、接线图与 Wokwi 配置，没有附 Makefile 或 `CMakeLists.txt`——构建方式按各自 README 的「编译烧录」一节三选一（Keil MDK / STM32CubeIDE / PlatformIO），需要你按那三步自己建工程。因此先装两样：
 
 1. **GNU Arm Embedded Toolchain**（xPack 发行版或官方包）：提供 `arm-none-eabi-gcc` 与 binutils。
 2. **Make**（Windows 装 xPack GNU Make 或 MSYS2 的）。
 
-验证安装——这两条命令有输出，环境就绪：
+验证安装——这两条命令有输出、版本号能打出来，PATH 就指对了：
 
 ```console
 $ arm-none-eabi-gcc --version
-arm-none-eabi-gcc (xPack GNU Arm Embedded GCC) 15.2.1
+arm-none-eabi-gcc (...) <你的版本号>
 $ make --version
-GNU Make 4.x
+GNU Make <4.x 或更高>
 ```
+
+版本号不必和本书一致：第 7 章的实测用的是 GNU Arm 10.3.1，换版本后四步产物与诊断信息会有出入，机制不变。Make 在第一次点灯时还用不上——第 5、7 章的构建主线才轮到它，现在装上省得回头补。
 
 烧录工具用 ST-Link 自带的 STSW-LINK007 驱动加 OpenOCD 或 STM32CubeProgrammer（[第 20 章](../v2-reliability/20-debug-performance.md) 讲调试口的完整用法）。偏好图形环境的读者可以用 Keil MDK 或 STM32CubeIDE 走同样的例程——工程组织不同，四步机制相同（[第 7 章](../v0-foundations/07-build-systems-legacy.md)）。
 
@@ -65,18 +67,18 @@ GNU Make 4.x
 
 例程：`examples/gpio-blink`（[附录 B](../appendix/B-project-index.md) 第 1 条）。它在一块 BluePill 上对比两组写法：HAL 库翻转与 `BSRR` 寄存器原子翻转，板载 LED（PC13）以 1 Hz 闪烁——亮 500 ms、灭 500 ms；外接 LED（PA0，经 270 Ω 限流电阻）每 5 秒翻转一次，用于确认程序没卡死。
 
-构建与烧录：
+构建与烧录按例程 README 的「五、编译烧录步骤」三选一。本章不假设你用哪个 IDE，也不假设仓库里有一条统一的命令行：
 
-```console
-$ cd examples/gpio-blink
-$ make
-$ make flash
-```
+1. **Keil MDK**：新建 F103C8 工程，把 `main.c` 覆盖到 `Core/Src/main.c`，编译后点下载。
+2. **STM32CubeIDE**：新建 F103C8 工程，覆盖 `Core/Src/main.c`，编译后点运行/调试下载。
+3. **PlatformIO**：工程里写 `board = bluepill_f103c8`、`framework = stm32cube`，把 `main.c` 放进 `src/`，再 `pio run -t upload`。
+
+走 CubeMX/CubeIDE 这一路，记得在 `SYS → Debug` 选 **Serial Wire**（例程 README 的 CubeMX 配置表就是这么写的）：不选它，PA13/PA14 会被当成普通 GPIO，烧录一次之后就再也连不上板子。另外两路由各自的工程模板生成启动文件，SWD 是否被复用取决于模板；真遇到烧完连不上，回来查这一项。
 
 **你应该看到**（判读口径，转引例程 README 与 [第 7 章](../v0-foundations/07-build-systems-legacy.md)；本轮未实测，按预期现象记录）：
 
-- `make` 结束无 error，产物里有 `build/*.elf`、`*.bin`；
-- `make flash` 报告写入完成（OpenOCD/CubeProgrammer 的日志含 Flash write 字样）；
+- 编译无 error，工具在自己的输出目录里生成可执行固件（CubeIDE 在 `Debug/`、PlatformIO 在 `.pio/build/bluepill_f103c8/`、Keil 在 `Objects/` 且常见后缀是 `.axf` 而不是 `.elf`；文件名、后缀与是否附带 `.bin` 都以你的工具版本为准）；
+- 下载/复位报告成功——以工具界面或终端打印为准（Keil、CubeIDE 显示下载完成，PlatformIO 打印 `SUCCESS`；改用 OpenOCD 烧录时，日志里要出现 Flash write 字样）；
 - 板载 PC13 LED 以约 1 Hz 闪烁——注意 PC13 是**低电平点亮**（共阳接法，灌电流能力见 DS5319 注 5 的 ≤3 mA、≤2 MHz 口径）；
 - 接了外接灯的话，PA0 的 LED 每 5 秒翻转一次。
 
@@ -90,11 +92,11 @@ $ make flash
 | 烧录成功但灯不闪 | 目标板没从 Flash 启动 | 查 BOOT0 跳线是否接 GND；复位一次 |
 | 闪烁但外接灯反相 | 极性记反 | PC13 低电平点亮；PA0 高电平点亮 |
 
-这一步做完，把三样证据记进[第 40 章](../v6-labs-projects/40-lab-method-instruments.md) 的记录表：构建日志（保存 `make` 输出）、烧录记录（工具与时间）、最小可见结果（一句话：PC13 约 1 Hz）。L0 的证据链就此闭合。
+这一步做完，把三样证据记进[第 40 章](../v6-labs-projects/40-lab-method-instruments.md) 的记录表：构建日志（保存 IDE 的 Build 输出，PlatformIO 是 `pio run` 的日志）、烧录记录（工具与时间）、最小可见结果（一句话：PC13 约 1 Hz）。L0 的证据链就此闭合。
 
 ## 五、跟芯片说第一句话
 
-点灯是「你 → 芯片」；串口是「芯片 → 你」。把 USB-TTL 模块接上：PA9（TX）接模块 RX，PA10（RX）接模块 TX（交叉），GND 共地，模块拨到 3.3 V 档。例程换 `examples/uart-dma-idle`，构建烧录同上。
+点灯是「你 → 芯片」；串口是「芯片 → 你」。把 USB-TTL 模块接上：PA9（TX）接模块 RX，PA10（RX）接模块 TX（交叉），GND 共地，模块拨到 3.3 V 档。例程换 `examples/uart-dma-idle`，建工程与烧录走同样的三选一（这个例程用 DMA + IDLE 收不定长，第一次跑只要命令能应答，机制留给[第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 14 章](../v1-drivers/14-dma.md)）。
 
 打开串口终端（115200 8N1——这个数的来历与 BRR `0x271` 的算法在[第 13 章](../v1-drivers/13-uart-framed-protocol.md) 逐位拆过），发一条 `AT`：
 

@@ -1,7 +1,5 @@
 # 内容风格指南（贡献者必读）
 
-> English: [Writing guide](en/CONTENT_GUIDE.md)
-
 本仓库定位：**面向中文学习者的 STM32 知识库**，参考 [通往AGI之路](https://github.com/waytoagi/WaytoAGI) 的组织方式——
 门户首页 + 分章知识库 + 可视化（动画/图示/实物图）+ 可运行代码 + 速查表。
 
@@ -24,7 +22,7 @@
 
 ## 节奏、分层与自测（从 handraw 抽取，Port B）
 
-机械禁词仍由 `tools/slop_lint.py` 管；下面三条管人眼与 Sepia 流程，不能被 lint 替代。细则与合流合同见 [`../stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md`](../stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md) §5、§6。
+机械禁词仍由 `tools/slop_lint.py` 管；下面三条管人眼与 Sepia 流程，不能被 lint 替代。原 `stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md` 已随 B5 站点切换（`44c0fdb0`）从本仓库移除，那几节细则不再有可点的正文；现行可执行的合同只有两份脚本——`book/contracts.py`（罗盘标签与章文件字段）与 `tools/slop_lint.py`（机械禁词与格式），其余靠这里的人眼条目。
 
 ### 节奏
 
@@ -63,7 +61,7 @@
 
 ## 2. 每章教学合同与功能块（可选）
 
-不再强制「每篇文章同一套固定标题顺序」。合入门禁看：**教学合同字段是否已登记**、**选用功能块是否完成认知任务且无空标题**。完整合同见 [`../stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md`](../stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md) §4；本指南只落地写作细则。分部重映射表与视频成片参数不放在本文件。
+不再强制「每篇文章同一套固定标题顺序」。合入门禁看：**教学合同字段是否已登记**、**选用功能块是否完成认知任务且无空标题**（这两条靠人眼，脚本不查）。原先指向的 `BOOK_CLASSIC_CONVERGE_SPECS.md` §4 已在 B5 站点切换中移除；本指南 §2.1 起是现行细则，机器能查的部分见 `book/contracts.py`。分部重映射表与视频成片参数不放在本文件。
 
 ### 2.1 教学合同字段（必填登记）
 

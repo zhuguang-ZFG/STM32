@@ -2,20 +2,18 @@
 
 # STM32 学习知识库
 
-> English: [English edition](docs/en/README.md)
-
 **像查手册一样查知识，像看动画一样学原理。**
 
-面向中文学习者的 STM32 系统化知识库：29 篇文档（00–28）· 31 个原理动画 · 29 张章首 + 29 张章中 + 7 张分部 + 6 张附录手绘概念图 · 2 张 CC0 板卡实拍 · 板卡结构图与 H7/G0/L4 引脚图 · 6 个教学光栅动画 · 14 个可编译示例 · 4 份速查表
+面向中文学习者的 STM32 系统化知识库：**47 章**（上手卷 ch00 + 卷 0–7 的 ch01–46）+ 6 附录 · 正文引用 319 张站点图 · 15 个示例目录 · 4 份速查表
 
-[![docs](https://img.shields.io/badge/文档-29_篇-60a5fa?style=flat-square)](docs/)
+[![docs](https://img.shields.io/badge/文档-47_章-60a5fa?style=flat-square)](docs/README.md)
 [![book](https://github.com/zhuguang-ZFG/STM32/actions/workflows/book.yml/badge.svg)](https://github.com/zhuguang-ZFG/STM32/actions/workflows/book.yml)
-[![animations](https://img.shields.io/badge/SVG_动画-31_个-22d3ee?style=flat-square)](assets/animations/)
-[![illustrations](https://img.shields.io/badge/手绘概念图-71_张-c084fc?style=flat-square)](assets/illustrations/)
+[![site](https://img.shields.io/badge/站点图-319_张-22d3ee?style=flat-square)](docs/public/)
+[![illustrations](https://img.shields.io/badge/手绘概念图-80_张-c084fc?style=flat-square)](assets/illustrations/)
 [![boards](https://img.shields.io/badge/板卡与引脚图-10_张-fbbf24?style=flat-square)](assets/boards/)
 [![photos](https://img.shields.io/badge/CC0_实拍-2_张-10b981?style=flat-square)](assets/photos/)
-[![gif](https://img.shields.io/badge/教学_GIF-6_个-f87171?style=flat-square)](assets/gif/)
-[![examples](https://img.shields.io/badge/可编译示例-14_个-34d399?style=flat-square)](examples/)
+[![gif](https://img.shields.io/badge/教学_GIF-24_个-f87171?style=flat-square)](assets/gif/)
+[![examples](https://img.shields.io/badge/示例目录-15_个-34d399?style=flat-square)](examples/)
 [![cheatsheets](https://img.shields.io/badge/速查表-4_份-a78bfa?style=flat-square)](cheatsheets/)
 [![tools](https://img.shields.io/badge/素材生成-纯_Python_零依赖-f472b6?style=flat-square)](tools/)
 [![license](https://img.shields.io/badge/license-MIT_+_CC_BY_4.0-lightgrey?style=flat-square)](LICENSE)
@@ -29,9 +27,14 @@
 
 ---
 
+> ### 两套图在哪
+>
+> 正文引用的 319 张图都在 `docs/public/`（`anim` 82 · `images` 150 · `figures` 63 · `arch` 24），由 `book/` 打包进 HTML / PDF / EPUB。
+> `assets/` 是合并前的素材库：68 张动画、80 张手绘概念图、48 张 GIF、10 张板卡与引脚图、5 张实拍。正文不读它，它供公众号与讲解片复用。
+
 > ### 公众号连载版
 >
-> 本教程正在微信公众号「**SIAI小宇宙**」同步连载：与本仓库相同的 **00–28 共 29 章**图文 + 每章配套讲解视频 + 速查表，
+> 本教程正在微信公众号「**SIAI小宇宙**」同步连载：与本仓库正文对应的 **00–28 共 29 篇**图文（合并前章号）+ 每章配套讲解视频 + 速查表，
 > 手机随时翻。微信搜索「**SIAI小宇宙**」或扫文末二维码关注，关注后回复「**资料**」直达本仓库。
 >
 > 另外在公众号上单独发了一套「**按报错原文查**」竖版图解（No target / Flash 下载失败 /
@@ -55,7 +58,7 @@
 | **示例代码抄了跑不起来** | 每个示例都是完整可编译的 HAL 代码 + CubeMX 配置要点 + 常见坑 |
 
 > **诚实声明**：本仓库所有插图都是**作者用代码自绘的矢量图（SVG）与程序生成的光栅动画（GIF）**，
-> 不是厂商实拍照片。需要看实拍照片与官方原理图，请通过[第 21 章](docs/21-原理图与实物图鉴.md)里的官方链接查看。
+> 不是厂商实拍照片。需要看实拍照片与官方原理图，请通过[第 40 章 · 实验方法与仪器](docs/v6-labs-projects/40-lab-method-instruments.md)里的官方链接查看。
 
 ## 卡住了？按报错原文查
 
@@ -63,52 +66,52 @@
 
 | 你看到的现象 | 真正的原因 | 看这里 | 手机版图解 |
 | --- | --- | --- | --- |
-| `No target connected`、下载按钮灰掉 | 调试器没连上（SWD 接线 / 驱动 / 目标未供电），九成不是芯片坏了 | [01 开发环境搭建](docs/01-开发环境搭建.md) | [三张图](https://mp.weixin.qq.com/s/Aqg29TrABB_YddQHTPCHjQ) |
-| 编译通过，下载报 `Flash Download failed` | 读保护、复位方式、Flash 算法与芯片不匹配 | [18 FAQ · 下载与调试](docs/18-常见问题FAQ.md) | [三张图](https://mp.weixin.qq.com/s/BR6WAaTKvxCE_RXVA1FJkw) |
-| 串口收到乱码，或第一字节丢失 | 波特率误差、时钟源配错、DMA+IDLE 用法 | [06 串口 UART](docs/06-串口UART.md) | [三张图](https://mp.weixin.qq.com/s/3b5FMfd8BQNwyrTJX94CkA) |
-| 烧完程序 SWD 就连不上了 | 调试口被程序关掉（`SYS → Debug` 选成 No Debug、PA13/PA14 被复用） | [18 FAQ · 下载与调试](docs/18-常见问题FAQ.md) | [三张图](https://mp.weixin.qq.com/s/Tw_rMgODw9tKdZaNIAl7xQ) |
-| 程序卡在 `HardFault_Handler` | 空指针、栈溢出、时钟没使能就配外设 | [17 调试与性能优化](docs/17-调试与性能优化.md) | — |
-| I2C 一直返回错误、总线卡死 | 上拉缺失、从机拉低 SDA、缺总线死锁恢复 | [07 I2C 总线](docs/07-I2C总线.md) | — |
-| 中断进不去 / 只进一次 | NVIC 使能顺序、标志未清、优先级分组 | [04 中断与 NVIC](docs/04-中断与NVIC.md) | — |
+| `No target connected`、下载按钮灰掉 | 调试器没连上（SWD 接线 / 驱动 / 目标未供电），九成不是芯片坏了 | [第 5 章 · 工具链四步](docs/v0-foundations/05-toolchain-four-steps.md) | [三张图](https://mp.weixin.qq.com/s/Aqg29TrABB_YddQHTPCHjQ) |
+| 编译通过，下载报 `Flash Download failed` | 读保护、复位方式、Flash 算法与芯片不匹配 | [第 45 章 · 排障手册](docs/v7-delivery/45-troubleshooting-handbook.md) | [三张图](https://mp.weixin.qq.com/s/BR6WAaTKvxCE_RXVA1FJkw) |
+| 串口收到乱码，或第一字节丢失 | 波特率误差、时钟源配错、DMA+IDLE 用法 | [第 13 章 · 串口成帧](docs/v1-drivers/13-uart-framed-protocol.md) | [三张图](https://mp.weixin.qq.com/s/3b5FMfd8BQNwyrTJX94CkA) |
+| 烧完程序 SWD 就连不上了 | 调试口被程序关掉（`SYS → Debug` 选成 No Debug、PA13/PA14 被复用） | [第 45 章 · 排障手册](docs/v7-delivery/45-troubleshooting-handbook.md) | [三张图](https://mp.weixin.qq.com/s/Tw_rMgODw9tKdZaNIAl7xQ) |
+| 程序卡在 `HardFault_Handler` | 空指针、栈溢出、时钟没使能就配外设 | [第 20 章 · 调试与性能](docs/v2-reliability/20-debug-performance.md) | — |
+| I2C 一直返回错误、总线卡死 | 上拉缺失、从机拉低 SDA、缺总线死锁恢复 | [第 16 章 · I2C 与 SPI](docs/v1-drivers/16-i2c-spi.md) | — |
+| 中断进不去 / 只进一次 | NVIC 使能顺序、标志未清、优先级分组 | [第 10 章 · NVIC 与 EXTI](docs/v1-drivers/10-interrupts-nvic-exti.md) | — |
 
-> 完整 30+ 条「现象 / 原因 / 解决」在 [18 常见问题 FAQ](docs/18-常见问题FAQ.md)。
+> 完整分诊表在 [第 45 章 · 排障手册](docs/v7-delivery/45-troubleshooting-handbook.md)。
 > 「手机版图解」是公众号上逐条排过版的竖版长图，手机上照着查比翻 Markdown 快。
 
 ## 快速导航
 
 | 想做什么 | 去哪里 |
 | --- | --- |
-| 从零开始，不知道先学什么 | [第 0 章 · 如何学习 STM32](docs/00-如何学习STM32.md) |
-| 想按一本书连续阅读 / 下载离线版 | [整书构建与交付](stm32-book/)（单文件 HTML + PDF） |
-| 装环境 / 连不上板子 | [第 1 章 · 开发环境搭建](docs/01-开发环境搭建.md) |
-| 选芯片、看懂时钟树 | [第 2 章 · 芯片选型与存储器时钟](docs/02-芯片选型与存储器时钟.md) |
-| 点亮第一颗 LED | [第 3 章 · GPIO 与 LED](docs/03-GPIO与LED.md) + [examples/gpio-blink](examples/gpio-blink/) |
-| 程序卡死 / 编译不过 | [第 18 章 · 常见问题 FAQ](docs/18-常见问题FAQ.md) |
-| 想选 FreeRTOS / RT-Thread / Zephyr 或设计任务架构 | [第 28 章 · 嵌入式系统与 RTOS 生态](docs/28-嵌入式系统与RTOS生态.md) |
+| 从零开始，不知道先学什么 | [第 0 章 · 从开箱到点灯](docs/onramp/00-from-box-to-blink.md) → [第 46 章 · 十八周路线](docs/v7-delivery/46-resources-roadmap-open-source.md) |
+| 想按一本书连续阅读 / 下载离线版 | [整书构建与交付](book/README.md)（多页站点 + 自包含印刷 HTML/PDF；EPUB 另用 `book/build_epub.py`） |
+| 装环境 / 连不上板子 | [第 5 章 · 工具链四步](docs/v0-foundations/05-toolchain-four-steps.md) |
+| 选芯片、看懂时钟树 | [第 1 章 · C 内存模型](docs/v0-foundations/01-c-memory-model.md) / [第 8 章 · 时钟与总线](docs/v1-drivers/08-architecture-memory-clock.md) |
+| 点亮第一颗 LED | [第 9 章 · GPIO](docs/v1-drivers/09-gpio.md) + [examples/gpio-blink](examples/gpio-blink/) |
+| 程序卡死 / 编译不过 | [第 45 章 · 排障手册](docs/v7-delivery/45-troubleshooting-handbook.md) |
+| 想选 FreeRTOS / RT-Thread / Zephyr 或设计任务架构 | [第 27 章 · RTOS 选型](docs/v3-rtos/27-rtos-comparison-selection.md) |
 | 想做 Ethernet 24 小时与故障注入验收 | [Ethernet 长稳证据实验](labs/ethernet-24h/) |
-| 没有板子，先仿真 | [sim/](sim/README.md) · [第 22 章](docs/22-仿真实验Wokwi与Renode.md) |
+| 没有板子，先仿真 | [sim/](sim/README.md) · [第 40 章 · 实验方法与仪器](docs/v6-labs-projects/40-lab-method-instruments.md) |
 | 只想要速查表 | [cheatsheets/](cheatsheets/README.md) |
 | 想看所有动画和实物图 | [assets/README.md](assets/README.md) |
 | 想看讲解视频怎么编号 | [assets/video/](assets/video/README.md) |
 | 想自己改图 / 生成素材 | [tools/](tools/)（纯 Python，零依赖） |
 | 想搞清仓库目录各自干什么 | [STRUCTURE.md](STRUCTURE.md) |
-| 想看 MCU 寄存器级/双路线姊妹书（仓内子树） | [mcu/README.md](mcu/README.md)（MCU 项目根 `mcu/`，站点挂载 `/STM32/mcu/`） |
+| 想看 MCU 来源工程与任务历史（仓内子树） | [mcu/README.md](mcu/README.md)（保留固件与历史上下文；现行书稿已合并到根 `docs/`） |
 
 > 姊妹仓库：[**BMS-Z**](https://github.com/zhuguang-ZFG/BMS-Z) —— 学完 STM32 往上走一层：从入门到产品级的电池管理系统（BMS）中文自学路线。
 
-## 双书入口与维护边界
+## 合并书稿与来源工程边界
 
-本仓库采用 **单仓双书、分域维护**（subtree 收口中）：两本书正文、示例、构建与验收各自独立，互不覆盖、不改对方章节号。
+B5 已将两书正文合为《通往单片机之路》：根 `docs/` 是现行书稿，根 `book/` 是统一构建；`mcu/` 保留来源固件与任务历史，不再维护第二套站点/书稿。
 
 |维度|STM32 知识库（本书）|通往单片机之路（MCU 姊妹书）|
 |---|---|---|
-|读者入口|[README.md](README.md) / [docs/README.md](docs/README.md)|[mcu/README.md](mcu/README.md) / [mcu/docs/index.md](mcu/docs/index.md)|
-|Git 目录范围|`docs/`、`examples/`、`stm32-book/`、`cheatsheets/`、`assets/`、`tools/`、`labs/`、`sim/` 等根域|`mcu/` 子树（`mcu/docs/`、`mcu/code/`、`mcu/mcu-book/`、`mcu/scripts/`、`mcu/.trellis/` 等）|
-|维护边界|仅改根域 STM32 内容；MCU 内容在 `mcu/` 对应文件维护，保留其边界声明|仅改 `mcu/` 域；不覆盖本书 `docs/` 章节与根域内容；`mcu/README.md` 为 MCU 内容边界权威入口|
-|构建/验收|`make book` / `make book-pdf` / `make check`（见 [stm32-book/README.md](stm32-book/README.md)、[STRUCTURE.md](STRUCTURE.md)）|在 MCU 项目根 `mcu/` 执行其脚本与门禁，按 `/STM32/mcu/` 挂载语义验收；**既有门禁完整保留**|
-|身份/根|Git 仓库根即本仓根域|区分 Git 根、MCU 项目根 `mcu/`、对外站点根 `/STM32/mcu/`；命令与路径不可混用|
+| 读者入口|[README.md](README.md) / [docs/README.md](docs/README.md)|[mcu/README.md](mcu/README.md)|
+|Git 目录范围|`docs/`、`examples/`、`book/`、`cheatsheets/`、`assets/`、`tools/`、`labs/`、`sim/` 等根域|`mcu/` 保留代码/固件与任务历史（`mcu/code/`、`mcu/.trellis/` 等）；旧书稿/站点树已合并退役|
+|维护边界|合并正文改 `docs/`，书籍构建改 `book/`；示例与素材按各自目录说明维护|固件改 `mcu/code/`，保留来源出处与任务状态；不恢复退役的旧文档/站点树|
+| 构建/验收|`make book` / `make book-pdf` / `make book-check` / `make check`（现行命令与依赖见 [构建指南](book/README.md)；Windows 可加 `PY=python`）|合并版站点与书稿统一由根 `book/` 验收；MCU 固件按保留的工程说明执行，旧 `/mcu/` 入口由兼容存根处理|
+|身份/根|Git 仓库根即本仓根域|区分 Git 根、来源工程根 `mcu/`；现行站点根为 `/STM32/`，旧 `/mcu/` 路径只作兼容存根|
 
-合并计划与证据：[`plans/2026-11-11-mcu-merge/`](plans/2026-11-11-mcu-merge/)（PRD/设计/实施/research）。本轮未发布。
+现行合并证据见 [`plans/2026-11-12-merged-book/`](plans/2026-11-12-merged-book/)；此前 subtree 规划保留在 `plans/2026-11-11-mcu-merge/`，按历史语境阅读。本次本地构建修复未执行发布。
 
 ## 动画演示（GitHub 页面直接播放）
 
@@ -127,7 +130,7 @@
 </tr>
 </table>
 
-完整清单（25 个 SVG 动画）见 [assets/README.md](assets/README.md)。下面 6 个是标准库生成的教学 GIF。`assets/gif/` 里另有 20 个 `*-zh.gif`，由 `tools/svg2gif.py` 从 SVG 采样，给公众号用，不是这 6 张的译文：
+完整清单（68 张 SVG 动画）见 [assets/README.md](assets/README.md)。下面 6 张是标准库生成的教学 GIF；`assets/gif/` 里共 24 张 ASCII 光栅图，另有 24 张 `*-zh.gif` 由 `tools/svg2gif.py` 从 SVG 采样、给公众号用，不是这 24 张的译文：
 
 <div align="center">
 <img src="assets/gif/led-blink.gif" width="330" alt="LED 闪烁 GIF">
@@ -142,18 +145,18 @@
 <sub>▲ GIF 用标准库手写的 GIF89a/LZW 编码器生成，帧间差分 + 透明索引压缩；文字为 ASCII（内置点阵字体限制）</sub>
 </div>
 
-## 手绘概念图（29 章首 + 7 分部）
+## 手绘概念图（33 章首 + 33 章中 + 8 分部 + 6 附录）
 
-每章一张章首图，每个分部另有一张分部概念图，均为 900×560。网页端带轻量 CSS 动画，PDF 取完整首帧。它们只负责建立直觉，不替代技术图；引脚、时序和电气参数仍以各章技术图和手册为准。
+已覆盖 ch00–ch32 的章首图与章中图、8 张分部概念图与 6 张附录图，均为 900×560，清单在 [`assets/illustrations/manifest.json`](assets/illustrations/manifest.json)。这些 SVG 目前只作为素材保留：**合并版正文尚未挂接**，网页与 PDF 都不渲染它们。它们只负责建立直觉，不替代技术图；引脚、时序和电气参数仍以各章技术图和手册为准。
 
 <table>
 <tr>
-<td width="50%"><img src="assets/illustrations/ch00-handdraw.svg" alt="第 1 章手绘概念图：从第一盏灯走到能验收的系统"><br><sub>▲ 第 1 章：从第一盏灯走到能验收的系统</sub></td>
-<td width="50%"><img src="assets/illustrations/ch05-handdraw.svg" alt="第 6 章手绘概念图：齿轮咬合出可测量的波形"><br><sub>▲ 第 6 章：齿轮咬合出可测量的波形</sub></td>
+<td width="50%"><img src="assets/illustrations/ch00-handdraw.svg" alt="第 0 章手绘概念图：从第一盏灯走到能验收的系统"><br><sub>▲ 第 0 章：从第一盏灯走到能验收的系统</sub></td>
+<td width="50%"><img src="assets/illustrations/ch05-handdraw.svg" alt="第 5 章手绘概念图：齿轮咬合出可测量的波形"><br><sub>▲ 第 5 章：齿轮咬合出可测量的波形</sub></td>
 </tr>
 <tr>
-<td><img src="assets/illustrations/ch16-handdraw.svg" alt="第 17 章手绘概念图：睡着的芯片在电池月亮下短暂醒来"><br><sub>▲ 第 17 章：睡着的芯片在电池月亮下短暂醒来</sub></td>
-<td><img src="assets/illustrations/ch28-handdraw.svg" alt="第 29 章手绘概念图：中断、任务、驱动、网络与应用组成一套系统"><br><sub>▲ 第 29 章：中断、任务、驱动、网络与应用组成一套系统</sub></td>
+<td><img src="assets/illustrations/ch16-handdraw.svg" alt="第 16 章手绘概念图：睡着的芯片在电池月亮下短暂醒来"><br><sub>▲ 第 16 章：睡着的芯片在电池月亮下短暂醒来</sub></td>
+<td><img src="assets/illustrations/ch28-handdraw.svg" alt="第 28 章手绘概念图：中断、任务、驱动、网络与应用组成一套系统"><br><sub>▲ 第 28 章：中断、任务、驱动、网络与应用组成一套系统</sub></td>
 </tr>
 </table>
 
@@ -194,18 +197,24 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 ```
 
 每章文末都有「动手实验」和自测清单，做完就算过关。详细说明见
-[第 0 章 · 如何学习 STM32](docs/00-如何学习STM32.md)。
+[第 46 章 · 十八周路线](docs/v7-delivery/46-resources-roadmap-open-source.md)。
 
 
 ## 章节目录
 
-逐章的一句话摘要和配套动画只维护在 [docs/README.md](docs/README.md)。英文目录在 [docs/en/contents.md](docs/en/contents.md)。
+47 章按卷组织：上手卷（ch00）+ 卷 0–7（ch01–46），另有附录 A–F。逐章的一句话摘要和配套动画只维护在 [docs/README.md](docs/README.md)。
 
-| 篇 | 范围 | 从这里进 |
+| 卷 | 章 | 从这里进 |
 | --- | --- | --- |
-| 基础 | 00–08 | [00 如何学习 STM32](docs/00-如何学习STM32.md) |
-| 进阶 | 09–17 | [09 ADC 与 DAC](docs/09-ADC与DAC.md) |
-| 实战、仿真、引脚、SPL、网络与系统 | 18–28 | [18 常见问题 FAQ](docs/18-常见问题FAQ.md) |
+| 上手 | ch00 | [从开箱到点灯](docs/onramp/00-from-box-to-blink.md) |
+| 0 语言与构建 | ch01–07 | [第 1 章 · C 内存模型](docs/v0-foundations/01-c-memory-model.md) |
+| 1 裸机驱动 | ch08–17 | [第 9 章 · GPIO](docs/v1-drivers/09-gpio.md) |
+| 2 可靠性 | ch18–20 | [第 19 章 · 看门狗与 HardFault](docs/v2-reliability/19-watchdog-reset-hardfault.md) |
+| 3 RTOS | ch21–27 | [第 21 章 · 为什么上 RTOS](docs/v3-rtos/21-why-rtos.md) |
+| 4 多平台与连接 | ch28–35 | [第 28 章 · 换芯片的差异](docs/v4-platforms/28-chip-migration-differences.md) |
+| 5 运动控制 | ch36–39 | [第 36 章 · 电机驱动与供电](docs/v5-motion/36-motor-driver-power.md) |
+| 6 实验与项目 | ch40–42 | [第 40 章 · 实验方法与仪器](docs/v6-labs-projects/40-lab-method-instruments.md) |
+| 7 交付 | ch43–46 | [第 46 章 · 路线与资料](docs/v7-delivery/46-resources-roadmap-open-source.md) |
 
 写新章节前先读 [docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md)，并只改 `docs/README.md` 里的目录行。
 
@@ -248,13 +257,13 @@ STM32/
 ├── README.md                 ← 你在这里（门户首页）
 ├── STRUCTURE.md              ← 目录约定、本轮改动、后续事项
 ├── Makefile                  ← make assets / check / book / book-check
-├── docs/                     ← 中文 00–28 + CONTENT_GUIDE.md
-│   └── en/                   ← 英文 00–28、英文速查表
-├── examples/                 ← 14 个可编译示例（Wokwi 工程在示例目录内）
+├── docs/                     ← 47 章书稿（onramp/ + v0–v7 卷目录 + appendix/）+ CONTENT_GUIDE.md
+├── book/                     ← 整书构建包：checks / contracts / build_html / build_epub / build_print_edition
+├── examples/                 ← 15 个示例目录（HAL 源码 + Wokwi 配置；spl-f1-blink 与 motor-dc-speed 带构建文件）
 ├── labs/                     ← 真板证据协议（目前：ethernet-24h）
 ├── sim/renode/               ← Renode .resc
-├── cheatsheets/              ← 4 份中文速查表
-├── stm32-book/               ← 整书：manifest、附录、离线 HTML/PDF
+├── cheatsheets/              ← 4 份中文速查表 + README
+├── stm32-book/               ← 已退役旧树的本地残留（非现行构建入口）
 ├── assets/                   ← 动画、板卡图、实拍、GIF、讲解视频、公众号二维码
 └── tools/                    ← 生成脚本（清单见 tools/README.md）
 
@@ -290,9 +299,9 @@ python3 tools/check_assets.py
 
 ## 开发主线与旧支归档
 
-sole development line = **`main`**。合流规格见 [`stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md`](stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md)。
+sole development line = **`main`**。原合流规格 `stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md` 已随 B5 站点切换（`44c0fdb0`）从本仓库移除，现行约束见 [`docs/CONTENT_GUIDE.md`](docs/CONTENT_GUIDE.md) 与 `book/contracts.py`。
 
-历史分支 **`feat/strip-spec-voice`**（tip `b1f03cb`）与 **`feat/handraw-sketch-system`**（tip `23e319e`）已于 **2026-11-04** 标为 **停更/归档**：规则与技能已 Port 进 main，远程 tip 保留只读历史，不再在旧支改 docs。详情：[`stm32-book/audits/branch-archive-strip-handraw.md`](stm32-book/audits/branch-archive-strip-handraw.md)。
+历史分支 **`feat/strip-spec-voice`**（tip `b1f03cb`）与 **`feat/handraw-sketch-system`**（tip `23e319e`）已于 **2026-11-04** 标为 **停更/归档**：规则与技能已 Port 进 main，远程 tip 保留只读历史，不再在旧支改 docs。
 
 ## 贡献指南
 
@@ -313,15 +322,15 @@ sole development line = **`main`**。合流规格见 [`stm32-book/BOOK_CLASSIC_C
 
 ## Roadmap
 
-- [x] 29 章知识文档 + 写作规范
-- [x] 25 个 SVG 原理动画（清单见 [assets/README.md](assets/README.md)，含 G0 启动与 SWD 恢复）
+- [x] 47 章知识文档 + 写作规范
+- [x] 68 张 SVG 动画（清单见 [assets/README.md](assets/README.md)，含 G0 启动与 SWD 恢复）
 - [x] 7 张板卡结构图 + 3 张芯片引脚图 + 2 张带许可记录的 CC0 实拍
-- [x] 6 个零依赖生成的 GIF 动画 + 素材自检工具
-- [x] 14 个可编译示例 + 4 份速查表（含 SPL/CMake、bxCAN 与 USB CDC/HID）
-- [x] 第 00–28 章讲解视频（`assets/video/`，约 2–4 分钟 MP4，中文配音 + SRT，脚本可复现，不是实拍）
-- [x] Wokwi 工程（核心示例的 diagram.json + wokwi.toml）与 Renode `.resc`，见第 22 章
-- [x] H7 / G0 / L4 引脚图与差异（第 23–25 章，脚序来自 DS12232 / DS10198 / DS12110）
-- [x] 英文版（[docs/en/](docs/en/README.md)，00–28 章与四份速查表）
+- [x] 24 个零依赖生成的 GIF 动画（`led-blink` 等 24 张 ASCII 光栅图）+ 24 张 `*-zh.gif` 公众号动图 + 素材自检工具
+- [x] 15 个示例目录 + 4 份速查表（含 SPL/CMake、bxCAN 与 USB CDC/HID）
+- [x] 第 00–28 章讲解视频 + `chs0`/`chs1` 两集续集（`assets/video/`，约 2–4 分钟 MP4，中文配音 + SRT，脚本可复现，不是实拍）
+- [x] Wokwi 工程（核心示例的 diagram.json + wokwi.toml）与 Renode `.resc`，见第 40 章
+- [x] H7 / G0 / L4 引脚图（`assets/boards/`，脚序来自 DS12232 / DS10198 / DS12110）与芯片迁移方法（第 28 章）
+- [ ] 英文版（原 `docs/en/` 已随合并版下线，未随 47 章重建）
 
 ---
 

@@ -13,8 +13,8 @@ python3 tools/gen_pinouts.py        # G0 / L4 / H7 引脚图
 python3 tools/gen_diagrams.py       # 6 张静态框图
 python3 tools/gen_stack_diagrams.py --render  # stack-diagram HTML + 明暗 PNG（需已审技能与 Chromium）
 python3 tools/gen_gpio_classic.py   # 11 张 GPIO 机制/失败/实验证据 SVG（纯 Python）
-python3 tools/gen_handdraw_illustrations.py   # 29 章首 + 29 章中 + 7 分部 + 6 附录手绘概念图 + manifest
-python3 tools/gen_gifs.py           # 6 个教学 GIF（ASCII）
+python3 tools/gen_handdraw_illustrations.py   # 33 章首 + 33 章中 + 8 分部 + 6 附录手绘概念图 + manifest
+python3 tools/gen_gifs.py           # 24 个教学 GIF（ASCII）
 python3 tools/gen_narrated.py --posters   # 每章讲解海报（需 Pillow）
 python3 tools/gen_narrated.py --speak     # 配音 MP4 + SRT（还需 edge-tts、ffmpeg、联网）
 python3 tools/gen_long_lesson.py --check 03  # 长课 storyboard + 1080p 排版检查
@@ -44,9 +44,9 @@ python3 tools/gen_gifs.py led-blink
 | `gen_diagrams.py` | 分层架构、工程目录、外设总线、中断优先级、L4 JP6 IDD 接线、网络排错阶梯 |
 | `gen_stack_diagrams.py` | 用已审查的 stack-diagram 技能重建 PC13 控制/电流边界 HTML 与明暗 PNG；源在 `tools/stack-diagrams/`，需 Playwright Chromium，不进入零依赖 `make assets` |
 | `gen_gpio_classic.py` | 11 张 ch03 机制、代码、失败与实验证据 SVG；修正开漏、寄存器、LCKR、抖动、轮询和专用接线的视觉证据 |
-| `gen_handdraw_illustrations.py` | 29 章各两张（章首 + 章中锚点小节）+ 7 分部各一张 + 6 附录各一张 900×560 手绘概念图（`FA-002`），并写出 `assets/illustrations/manifest.json`；不承载工程数据 |
+| `gen_handdraw_illustrations.py` | 33 章各两张（章首 + 章中锚点小节）+ 8 分部各一张 + 6 附录各一张 900×560 手绘概念图（`FA-002`），并写出 `assets/illustrations/manifest.json`；不承载工程数据。合并版正文尚未挂接这一层 |
 | `minigfx.py` | 位图绘制（含 5×7 点阵字体）+ **手写 GIF89a/LZW 编码器**（差分帧 + 透明索引） |
-| `gen_gifs.py` | 6 个教学 GIF：LED 闪烁、PWM 呼吸灯、UART 逐位、I2C 时序、DMA 环形缓冲、SAR ADC |
+| `gen_gifs.py` | 24 个教学 GIF（`led-blink`、`pwm-breath`、`uart-bits`、`i2c-timing`、`dma-ring`、`sar-adc` 等）；另有 24 张 `*-zh.gif` 由 `svg2gif.py` 生成，不走这个脚本 |
 | `gen_videos.py` | **已停用。** 五帧 ASCII 幻灯。`make assets` 不调用它。直接运行会写出 `assets/video/chNN-*.gif`（自检会失败），`--patch-docs` 会改写章节里的讲解视频。要重放旧幻灯才设 `GEN_VIDEOS_I_KNOW=1` |
 | `narration.py` | 第 00–28 章的分镜、口诀和旁白稿，输出 `assets/video/chNN-*.mp4` |
 | `narration_ai.py` | AI 续集分镜。`NARRATED_MODULE=narration_ai` 时输出 `assets/video/chsNN-*.mp4` |

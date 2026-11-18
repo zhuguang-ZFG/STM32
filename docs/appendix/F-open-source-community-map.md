@@ -16,36 +16,36 @@ platforms: [generic]
 
 | 篇 | 仓库 | 星标 | 许可 | 先读什么 | 对应章节 |
 | --- | --- | --- | --- | --- | --- |
-| C | ARM-software/CMSIS_6 | 483 | Apache-2.0 | `CMSIS/Core/Include/core_cm4.h`：内联函数与屏障宏、`__I/__O/__IO` | [第 2 章](../v0-foundations/02-c-volatile-ub.md)、[第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) |
-| C | STMicroelectronics/cmsis-device-f4 | 161 | Apache-2.0（Cube 许可表逐组件标注） | `Include/stm32f407xx.h`：寄存器结构体与位域 | [第 9 章](../v1-drivers/09-gpio.md) |
-| 构建 | platformio/platformio-core | 9564 | 见仓库 `LICENSE` | `platformio/builder/`：谁决定 `-mcpu` 与链接脚本 | [第 7 章](../v0-foundations/07-build-systems-legacy.md) |
-| 构建 | riscv-collab/riscv-gnu-toolchain | 4651 | GPL 家族 | `Makefile.in` 的 `--with-arch/--with-abi` 缺省值 | [第 29 章](../v4-platforms/29-gd32-arm-riscv.md) |
-| STM32 | STMicroelectronics/STM32CubeF4 | 1361 | HAL/BSP/Projects=BSD-3-Clause；CMSIS/mbedTLS=Apache-2.0；USB/STemWin/TouchGFX=SLA0044 | `Drivers/STM32F4xx_HAL_Driver/Src/` 任一外设的 `Init` | [第 9 章](../v1-drivers/09-gpio.md) |
-| STM32 | libopencm3/libopencm3 | 3671 | 见 `COPYING` | `include/libopencm3/stm32/f4/memorymap.h`：把手册翻成宏 | [第 9 章](../v1-drivers/09-gpio.md) |
-| STM32 | stm32duino/Arduino_Core_STM32 | 3375 | 见 `LICENSE` | `system/Drivers/` 与 `cores/arduino/` 的边界 | [第 3 章](../v0-foundations/03-struct-abi-registers.md) |
-| RTOS | RT-Thread/rt-thread | 12309 | Apache-2.0 | `src/object.c` 对象容器、`src/components.c` 初始化档位 | [第 26 章](../v3-rtos/26-device-framework-shell.md) |
-| RTOS | FreeRTOS/FreeRTOS-Kernel | 4609 | MIT | `tasks.c` 就绪表与切换、`portable/GCC/ARM_CM4F/` | [第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md) |
-| RTOS | zephyrproject-rtos/zephyr | 16906 | Apache-2.0 | `include/zephyr/device.h`：设备树的运行期投影 | [第 21 章](../v3-rtos/21-why-rtos.md)、[第 27 章](../v3-rtos/27-rtos-comparison-selection.md) |
-| ESP32 | espressif/esp-idf | 19347 | Apache-2.0（`esp_err.h` 的 SPDX 头可证） | `components/esp_common/include/esp_err.h` | [第 10、34 章](../v1-drivers/10-interrupts-nvic-exti.md)、[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md) |
-| ESP32 | espressif/arduino-esp32 | 17629 | 见 `LICENSE` | `cores/esp32/esp32-hal-*.c`：Arduino API 怎么落到 IDF | [第 31 章](../v4-platforms/31-esp32-drivers-audio.md) |
-| GD32 | CommunityGD32Cores/gd32-pio-spl-package | 10 | 见 `LICENSE` | GD32 SPL 的重打包规则 | [第 29 章](../v4-platforms/29-gd32-arm-riscv.md) |
-| 调试 | openocd-org/openocd | 2365 | GPL-2.0 | `src/flash/nor/stm32f2x.c`：Flash 算法怎么写 | [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md) |
-| 调试 | pyocd/pyOCD | 1473 | Apache-2.0 | `pyocd/core/` 的 target 抽象 | [v1 第 20 章](../v2-reliability/20-debug-performance.md) |
-| 调试 | blackmagic-debug/blackmagic | 3719 | 见 `COPYING` | **已归档**（`archived: true`），仅作阅读 | [第 20 章](../v2-reliability/20-debug-performance.md) |
-| 运行时 | micropython/micropython | 22154 | 见 `LICENSE` | `ports/*/mpconfigport.h`：移植层要暴露什么 | [第 3 章](../v0-foundations/03-struct-abi-registers.md) |
-| 运行时 | rust-embedded/cortex-m | 1010 | MIT/Apache-2.0 双许可 | `src/peripheral/` 与 `asm.rs`：裸机抽象的另一条路 | [第 1 章](../v0-foundations/01-c-memory-model.md) |
-| 控制器 | grbl/grbl | 6309 | GPL-3.0 | `grbl/stepper.c`：中断里只做最少事 | [第 12 章](../v1-drivers/12-timers-pwm.md)、[第 37 章](../v5-motion/37-dc-motor-openloop.md) |
-| RTOS | apache/nuttx | 4087 | Apache-2.0 | `sched/` 任务模型、`drivers/` 分层注册 | [第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md) 对照 |
-| RTOS | RIOT-OS/RIOT | 5827 | **LGPL-2.1** | `core/sched.c` 极简调度、`sys/` 抽象层 | [第 3 章](../v0-foundations/03-struct-abi-registers.md) 对照 |
-| 存储 | littlefs-project/littlefs | 6980 | BSD-3-Clause | `lfs.c` 元数据对与 CTZ 跳表、磨损均衡 | [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md) |
-| 存储 | pellepl/spiffs | 1632 | MIT | `spiffs_nucleus.c` GC 触发与页状态机 | [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md) 另一种取舍 |
-| 网络 | lwip-tcpip/lwip（镜像，上游在 savannah） | 1765 | BSD-3-Clause（SICS 版） | `src/core/pbuf.c` 零拷贝链、`tcp_in.c` 状态机 | [第 33 章](../v4-platforms/33-network-protocol-stack.md) |
-| 网络 | apache/mynewt-nimble | 895 | Apache-2.0 | `nimble/host/src/ble_gap.c` 连接状态机 | [第 32 章](../v4-platforms/32-esp32-wifi-ble-espnow.md) |
-| 网络 | hathach/tinyusb | 7238 | MIT | `src/device/usbd.c` 端点与描述符装配 | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
-| 图形 | lvgl/lvgl | 25010 | MIT | `src/core/lv_obj.c` 对象树、`src/draw/sw/` 脏矩形 | [第 31 章](../v4-platforms/31-esp32-drivers-audio.md) 数据面/控制面同构 |
-| 测试 | ThrowTheSwitch/Unity | 5432 | MIT | `src/unity.c` 断言宏与失败信息 | [第 4 章](../v0-foundations/04-function-pointer-state-machine.md)、与这里的 probe.sh 手写断言互为对照（这里未引入它） |
-| 测试 | ThrowTheSwitch/CMock | 846 | MIT | `src/cmock.c` mock 生成与调用序断言 | [第 13 章](../v1-drivers/13-uart-framed-protocol.md) |
-| SDK | raspberrypi/pico-sdk | 5004 | BSD-3-Clause | `src/rp2_common/`：寄存器→高层 API 的分层 | [第 5 章](../v0-foundations/05-toolchain-four-steps.md) 库层对照 |
+| C | [ARM-software/CMSIS_6](https://github.com/ARM-software/CMSIS_6) | 483 | Apache-2.0 | `CMSIS/Core/Include/core_cm4.h`：内联函数与屏障宏、`__I/__O/__IO` | [第 2 章](../v0-foundations/02-c-volatile-ub.md)、[第 10 章](../v1-drivers/10-interrupts-nvic-exti.md) |
+| C | [STMicroelectronics/cmsis-device-f4](https://github.com/STMicroelectronics/cmsis-device-f4) | 161 | Apache-2.0（Cube 许可表逐组件标注） | `Include/stm32f407xx.h`：寄存器结构体与位域 | [第 9 章](../v1-drivers/09-gpio.md) |
+| 构建 | [platformio/platformio-core](https://github.com/platformio/platformio-core) | 9564 | 见仓库 `LICENSE` | `platformio/builder/`：谁决定 `-mcpu` 与链接脚本 | [第 7 章](../v0-foundations/07-build-systems-legacy.md) |
+| 构建 | [riscv-collab/riscv-gnu-toolchain](https://github.com/riscv-collab/riscv-gnu-toolchain) | 4651 | GPL 家族 | `Makefile.in` 的 `--with-arch/--with-abi` 缺省值 | [第 29 章](../v4-platforms/29-gd32-arm-riscv.md) |
+| STM32 | [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | 1361 | HAL/BSP/Projects=BSD-3-Clause；CMSIS/mbedTLS=Apache-2.0；USB/STemWin/TouchGFX=SLA0044 | `Drivers/STM32F4xx_HAL_Driver/Src/` 任一外设的 `Init` | [第 9 章](../v1-drivers/09-gpio.md) |
+| STM32 | [libopencm3/libopencm3](https://github.com/libopencm3/libopencm3) | 3671 | 见 `COPYING` | `include/libopencm3/stm32/f4/memorymap.h`：把手册翻成宏 | [第 9 章](../v1-drivers/09-gpio.md) |
+| STM32 | [stm32duino/Arduino_Core_STM32](https://github.com/stm32duino/Arduino_Core_STM32) | 3375 | 见 `LICENSE` | `system/Drivers/` 与 `cores/arduino/` 的边界 | [第 3 章](../v0-foundations/03-struct-abi-registers.md) |
+| RTOS | [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | 12309 | Apache-2.0 | `src/object.c` 对象容器、`src/components.c` 初始化档位 | [第 26 章](../v3-rtos/26-device-framework-shell.md) |
+| RTOS | [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | 4609 | MIT | `tasks.c` 就绪表与切换、`portable/GCC/ARM_CM4F/` | [第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md) |
+| RTOS | [zephyrproject-rtos/zephyr](https://github.com/zephyrproject-rtos/zephyr) | 16906 | Apache-2.0 | `include/zephyr/device.h`：设备树的运行期投影 | [第 21 章](../v3-rtos/21-why-rtos.md)、[第 27 章](../v3-rtos/27-rtos-comparison-selection.md) |
+| ESP32 | [espressif/esp-idf](https://github.com/espressif/esp-idf) | 19347 | Apache-2.0（`esp_err.h` 的 SPDX 头可证） | `components/esp_common/include/esp_err.h` | [第 10、34 章](../v1-drivers/10-interrupts-nvic-exti.md)、[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md) |
+| ESP32 | [espressif/arduino-esp32](https://github.com/espressif/arduino-esp32) | 17629 | 见 `LICENSE` | `cores/esp32/esp32-hal-*.c`：Arduino API 怎么落到 IDF | [第 31 章](../v4-platforms/31-esp32-drivers-audio.md) |
+| GD32 | [CommunityGD32Cores/gd32-pio-spl-package](https://github.com/CommunityGD32Cores/gd32-pio-spl-package) | 10 | 见 `LICENSE` | GD32 SPL 的重打包规则 | [第 29 章](../v4-platforms/29-gd32-arm-riscv.md) |
+| 调试 | [openocd-org/openocd](https://github.com/openocd-org/openocd) | 2365 | GPL-2.0 | `src/flash/nor/stm32f2x.c`：Flash 算法怎么写 | [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md) |
+| 调试 | [pyocd/pyOCD](https://github.com/pyocd/pyOCD) | 1473 | Apache-2.0 | `pyocd/core/` 的 target 抽象 | [v1 第 20 章](../v2-reliability/20-debug-performance.md) |
+| 调试 | [blackmagic-debug/blackmagic](https://github.com/blackmagic-debug/blackmagic) | 3719 | 见 `COPYING` | **已归档**（`archived: true`），仅作阅读 | [第 20 章](../v2-reliability/20-debug-performance.md) |
+| 运行时 | [micropython/micropython](https://github.com/micropython/micropython) | 22154 | 见 `LICENSE` | `ports/*/mpconfigport.h`：移植层要暴露什么 | [第 3 章](../v0-foundations/03-struct-abi-registers.md) |
+| 运行时 | [rust-embedded/cortex-m](https://github.com/rust-embedded/cortex-m) | 1010 | MIT/Apache-2.0 双许可 | `src/peripheral/` 与 `asm.rs`：裸机抽象的另一条路 | [第 1 章](../v0-foundations/01-c-memory-model.md) |
+| 控制器 | [grbl/grbl](https://github.com/grbl/grbl) | 6309 | GPL-3.0 | `grbl/stepper.c`：中断里只做最少事 | [第 12 章](../v1-drivers/12-timers-pwm.md)、[第 37 章](../v5-motion/37-dc-motor-openloop.md) |
+| RTOS | [apache/nuttx](https://github.com/apache/nuttx) | 4087 | Apache-2.0 | `sched/` 任务模型、`drivers/` 分层注册 | [第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md) 对照 |
+| RTOS | [RIOT-OS/RIOT](https://github.com/RIOT-OS/RIOT) | 5827 | **LGPL-2.1** | `core/sched.c` 极简调度、`sys/` 抽象层 | [第 3 章](../v0-foundations/03-struct-abi-registers.md) 对照 |
+| 存储 | [littlefs-project/littlefs](https://github.com/littlefs-project/littlefs) | 6980 | BSD-3-Clause | `lfs.c` 元数据对与 CTZ 跳表、磨损均衡 | [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md)、[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md) |
+| 存储 | [pellepl/spiffs](https://github.com/pellepl/spiffs) | 1632 | MIT | `spiffs_nucleus.c` GC 触发与页状态机 | [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md) 另一种取舍 |
+| 网络 | [lwip-tcpip/lwip](https://github.com/lwip-tcpip/lwip)（镜像，上游在 savannah） | 1765 | BSD-3-Clause（SICS 版） | `src/core/pbuf.c` 零拷贝链、`tcp_in.c` 状态机 | [第 33 章](../v4-platforms/33-network-protocol-stack.md) |
+| 网络 | [apache/mynewt-nimble](https://github.com/apache/mynewt-nimble) | 895 | Apache-2.0 | `nimble/host/src/ble_gap.c` 连接状态机 | [第 32 章](../v4-platforms/32-esp32-wifi-ble-espnow.md) |
+| 网络 | [hathach/tinyusb](https://github.com/hathach/tinyusb) | 7238 | MIT | `src/device/usbd.c` 端点与描述符装配 | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md) |
+| 图形 | [lvgl/lvgl](https://github.com/lvgl/lvgl) | 25010 | MIT | `src/core/lv_obj.c` 对象树、`src/draw/sw/` 脏矩形 | [第 31 章](../v4-platforms/31-esp32-drivers-audio.md) 数据面/控制面同构 |
+| 测试 | [ThrowTheSwitch/Unity](https://github.com/ThrowTheSwitch/Unity) | 5432 | MIT | `src/unity.c` 断言宏与失败信息 | [第 4 章](../v0-foundations/04-function-pointer-state-machine.md)、与这里的 probe.sh 手写断言互为对照（这里未引入它） |
+| 测试 | [ThrowTheSwitch/CMock](https://github.com/ThrowTheSwitch/CMock) | 846 | MIT | `src/cmock.c` mock 生成与调用序断言 | [第 13 章](../v1-drivers/13-uart-framed-protocol.md) |
+| SDK | [raspberrypi/pico-sdk](https://github.com/raspberrypi/pico-sdk) | 5004 | BSD-3-Clause | `src/rp2_common/`：寄存器→高层 API 的分层 | [第 5 章](../v0-foundations/05-toolchain-four-steps.md) 库层对照 |
 
 ![手绘板：选一条车道读到底，选树、读文件、冻 SHA、写引用（原理示意，非实拍）](/images/app-f-lane.png)
 

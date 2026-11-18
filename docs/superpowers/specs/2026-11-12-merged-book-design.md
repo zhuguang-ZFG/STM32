@@ -4,7 +4,7 @@
 
 范围：根 STM32 书与 MCU 姊妹书的正文合并、源树重组、构建链与站点收敛。
 
-依据：根 [内容指南](../../CONTENT_GUIDE.md)、[Book 2.0 重构 Spec](../../../stm32-book/BOOK_REDESIGN_SPEC.md)、[经典化改造 Specs](../../../stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md)、[MCU 质量契约](../../../mcu/.trellis/spec/docs-site/quality-contract.md)、[motor-control 计划](../../../plans/2026-11-11-motor-control/prd.md)。
+依据：根 [内容指南](../../CONTENT_GUIDE.md)、`stm32-book/BOOK_REDESIGN_SPEC.md` 与 `stm32-book/BOOK_CLASSIC_CONVERGE_SPECS.md`（两份已随 B5 站点切换移除，此处按历史出处保留文件名、不再链接）、[MCU 质量契约](../../../mcu/.trellis/spec/docs-site/quality-contract.md)、[motor-control 计划](../../../plans/2026-11-11-motor-control/prd.md)。
 
 ## 1. 背景与目标
 

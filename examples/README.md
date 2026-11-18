@@ -9,41 +9,43 @@
 
 | 示例 | 难度 | 涉及外设 | 对应文档章节 | 硬件需求 |
 | --- | --- | --- | --- | --- |
-| [spl-f1-blink](spl-f1-blink/) | ★★ | SPL V3.5.0 GPIO + SysTick + CMake/OpenOCD | [01 开发环境](../docs/01-开发环境搭建.md) / [26 SPL](../docs/26-STM32F10x标准外设库SPL.md) | BluePill + ST-Link |
-| [gpio-blink](gpio-blink/) | ★ | GPIO 推挽输出 | [03 GPIO与LED](../docs/03-GPIO与LED.md) | BluePill（板载 LED + 可选外接 LED/270Ω） |
-| [exti-key](exti-key/) | ★★ | GPIO + EXTI + NVIC | [04 中断与NVIC](../docs/04-中断与NVIC.md) | BluePill + 按键（或杜邦线碰 GND） |
-| [timer-pwm](timer-pwm/) | ★★ | TIM（PWM 输出） | [05 定时器与PWM](../docs/05-定时器与PWM.md) | BluePill + LED + 270Ω（可选示波器） |
-| [uart-dma-idle](uart-dma-idle/) | ★★★ | USART + DMA + 环形缓冲 | [06 串口UART](../docs/06-串口UART.md) / [10 DMA](../docs/10-DMA.md) | BluePill + USB-TTL 模块 |
-| [i2c-oled](i2c-oled/) | ★★★ | 硬件 I2C + SSD1306 | [07 I2C总线](../docs/07-I2C总线.md) | BluePill + 0.96" I2C OLED |
-| [spi-flash](spi-flash/) | ★★★ | 硬件 SPI + W25Q64 | [08 SPI总线](../docs/08-SPI总线.md) | BluePill + W25Q64 模块 |
-| [adc-dma](adc-dma/) | ★★★ | ADC 多通道 + DMA | [09 ADC与DAC](../docs/09-ADC与DAC.md) / [10 DMA](../docs/10-DMA.md) | BluePill + 电位器/传感器 |
-| [rtc-alarm](rtc-alarm/) | ★★ | RTC + PWR(STOP) + 备份域 | [11 RTC与看门狗](../docs/11-RTC与看门狗.md) | BluePill + 32.768kHz 晶振 + 纽扣电池 |
-| [freertos-task](freertos-task/) | ★★★★ | GPIO/EXTI/USART + FreeRTOS | [15 FreeRTOS入门](../docs/15-FreeRTOS入门.md) | BluePill + 按键 + USB-TTL |
-| [iap-bootloader](iap-bootloader/) | ★★★★ | USART + Flash | [12 Flash与IAP升级](../docs/12-Flash与IAP升级.md) | BluePill + USB-TTL |
-| [can-bxcan](can-bxcan/) | ★★★★ | bxCAN 环回 / 双节点 / 过滤器 / Bus-Off | [13 CAN总线](../docs/13-CAN总线.md) | 环回只需 BluePill；双节点再加两只 3.3 V 收发器 |
-| [usb-cdc](usb-cdc/) | ★★★★ | USB Device CDC | [14 USB](../docs/14-USB.md) | BluePill 板载 USB（D+ 1.5 kΩ） |
-| [usb-hid](usb-hid/) | ★★★★ | USB Device HID 键盘 | [14 USB](../docs/14-USB.md) | BluePill 板载 USB + PA0 按键 |
+| [spl-f1-blink](spl-f1-blink/) | ★★ | SPL V3.5.0 GPIO + SysTick + CMake/OpenOCD | [ch05 工具链四步](../docs/v0-foundations/05-toolchain-four-steps.md) / [ch07 构建系统与历史工程](../docs/v0-foundations/07-build-systems-legacy.md) | BluePill + ST-Link |
+| [gpio-blink](gpio-blink/) | ★ | GPIO 推挽输出 | [ch09 GPIO](../docs/v1-drivers/09-gpio.md) | BluePill（板载 LED + 可选外接 LED/270Ω） |
+| [exti-key](exti-key/) | ★★ | GPIO + EXTI + NVIC | [ch10 中断、NVIC 与 EXTI](../docs/v1-drivers/10-interrupts-nvic-exti.md) | BluePill + 按键（或杜邦线碰 GND） |
+| [timer-pwm](timer-pwm/) | ★★ | TIM（PWM 输出） | [ch12 定时器与 PWM](../docs/v1-drivers/12-timers-pwm.md) | BluePill + LED + 270Ω（可选示波器） |
+| [uart-dma-idle](uart-dma-idle/) | ★★★ | USART + DMA + 环形缓冲 | [ch13 UART 帧协议](../docs/v1-drivers/13-uart-framed-protocol.md) / [ch14 DMA](../docs/v1-drivers/14-dma.md) | BluePill + USB-TTL 模块 |
+| [i2c-oled](i2c-oled/) | ★★★ | 硬件 I2C + SSD1306 | [ch16 I2C 与 SPI](../docs/v1-drivers/16-i2c-spi.md) | BluePill + 0.96" I2C OLED |
+| [spi-flash](spi-flash/) | ★★★ | 硬件 SPI + W25Q64 | [ch16 I2C 与 SPI](../docs/v1-drivers/16-i2c-spi.md) | BluePill + W25Q64 模块 |
+| [adc-dma](adc-dma/) | ★★★ | ADC 多通道 + DMA | [ch15 ADC 与 DAC 采样](../docs/v1-drivers/15-adc-dac-sampling.md) / [ch14 DMA](../docs/v1-drivers/14-dma.md) | BluePill + 电位器/传感器 |
+| [rtc-alarm](rtc-alarm/) | ★★ | RTC + PWR(STOP) + 备份域 | [ch11 时基与 RTC](../docs/v1-drivers/11-systick-timebase-rtc.md) | BluePill + 32.768kHz 晶振 + 纽扣电池 |
+| [freertos-task](freertos-task/) | ★★★★ | GPIO/EXTI/USART + FreeRTOS | [ch22 任务、TCB 与调度](../docs/v3-rtos/22-tasks-tcb-scheduler.md) | BluePill + 按键 + USB-TTL |
+| [iap-bootloader](iap-bootloader/) | ★★★★ | USART + Flash | [ch17 Flash、IAP 与 OTA](../docs/v1-drivers/17-flash-iap-ota.md) | BluePill + USB-TTL |
+| [can-bxcan](can-bxcan/) | ★★★★ | bxCAN 环回 / 双节点 / 过滤器 / Bus-Off | [ch35 CAN 与 USB 现场总线](../docs/v4-platforms/35-can-usb-fieldbus.md) | 环回只需 BluePill；双节点再加两只 3.3 V 收发器 |
+| [usb-cdc](usb-cdc/) | ★★★★ | USB Device CDC | [ch35 CAN 与 USB 现场总线](../docs/v4-platforms/35-can-usb-fieldbus.md) | BluePill 板载 USB（D+ 1.5 kΩ） |
+| [usb-hid](usb-hid/) | ★★★★ | USB Device HID 键盘 | [ch35 CAN 与 USB 现场总线](../docs/v4-platforms/35-can-usb-fieldbus.md) | BluePill 板载 USB + PA0 按键 |
+| [motor-dc-speed](motor-dc-speed/) | ★★★★ | TIM PWM + 正交编码器 + PI 速度环（CMake 工程，主机测试全绿，未上板） | [ch36 电机驱动与供电](../docs/v5-motion/36-motor-driver-power.md) / [ch39 速度闭环与 PI](../docs/v5-motion/39-speed-closed-loop-pi.md) | BluePill + TB6612 + 带编码器直流电机 |
 
 > 难度说明：★ 入门（单外设、几十行）→ ★★★★ 进阶（多外设联动、需理解时序/内存布局）。
 
 ## 二、示例与章节对照
 
-| 编号 | 章节文件 | 相关示例 |
+| 章 | 章节文件 | 相关示例 |
 | --- | --- | --- |
-| 03 | [03-GPIO与LED.md](../docs/03-GPIO与LED.md) | gpio-blink |
-| 04 | [04-中断与NVIC.md](../docs/04-中断与NVIC.md) | exti-key |
-| 05 | [05-定时器与PWM.md](../docs/05-定时器与PWM.md) | timer-pwm |
-| 06 | [06-串口UART.md](../docs/06-串口UART.md) | uart-dma-idle |
-| 07 | [07-I2C总线.md](../docs/07-I2C总线.md) | i2c-oled |
-| 08 | [08-SPI总线.md](../docs/08-SPI总线.md) | spi-flash |
-| 09 | [09-ADC与DAC.md](../docs/09-ADC与DAC.md) | adc-dma |
-| 10 | [10-DMA.md](../docs/10-DMA.md) | uart-dma-idle / adc-dma |
-| 11 | [11-RTC与看门狗.md](../docs/11-RTC与看门狗.md) | rtc-alarm |
-| 12 | [12-Flash与IAP升级.md](../docs/12-Flash与IAP升级.md) | iap-bootloader |
-| 13 | [13-CAN总线.md](../docs/13-CAN总线.md) | can-bxcan |
-| 14 | [14-USB.md](../docs/14-USB.md) | usb-cdc / usb-hid |
-| 15 | [15-FreeRTOS入门.md](../docs/15-FreeRTOS入门.md) | freertos-task |
-| 26 | [26-STM32F10x标准外设库SPL.md](../docs/26-STM32F10x标准外设库SPL.md) | spl-f1-blink |
+| 05 | [05 工具链四步](../docs/v0-foundations/05-toolchain-four-steps.md) | spl-f1-blink |
+| 07 | [07 构建系统与历史工程](../docs/v0-foundations/07-build-systems-legacy.md) | spl-f1-blink |
+| 09 | [09 GPIO](../docs/v1-drivers/09-gpio.md) | gpio-blink |
+| 10 | [10 中断、NVIC 与 EXTI](../docs/v1-drivers/10-interrupts-nvic-exti.md) | exti-key |
+| 11 | [11 时基与 RTC](../docs/v1-drivers/11-systick-timebase-rtc.md) | rtc-alarm |
+| 12 | [12 定时器与 PWM](../docs/v1-drivers/12-timers-pwm.md) | timer-pwm |
+| 13 | [13 UART 帧协议](../docs/v1-drivers/13-uart-framed-protocol.md) | uart-dma-idle |
+| 14 | [14 DMA](../docs/v1-drivers/14-dma.md) | uart-dma-idle / adc-dma |
+| 15 | [15 ADC 与 DAC 采样](../docs/v1-drivers/15-adc-dac-sampling.md) | adc-dma |
+| 16 | [16 I2C 与 SPI](../docs/v1-drivers/16-i2c-spi.md) | i2c-oled / spi-flash |
+| 17 | [17 Flash、IAP 与 OTA](../docs/v1-drivers/17-flash-iap-ota.md) | iap-bootloader |
+| 22 | [22 任务、TCB 与调度](../docs/v3-rtos/22-tasks-tcb-scheduler.md) | freertos-task |
+| 35 | [35 CAN 与 USB 现场总线](../docs/v4-platforms/35-can-usb-fieldbus.md) | can-bxcan / usb-cdc / usb-hid |
+| 36 | [36 电机驱动与供电](../docs/v5-motion/36-motor-driver-power.md) | motor-dc-speed |
+| 39 | [39 速度闭环与 PI](../docs/v5-motion/39-speed-closed-loop-pi.md) | motor-dc-speed |
 
 ## 三、目录结构
 
@@ -63,7 +65,8 @@ examples/
 ├── iap-bootloader/
 ├── can-bxcan/             ← 环回、双节点、过滤器、Bus-Off
 ├── usb-cdc/               ← HAL PCD 虚拟串口（不含 ST 中间件）
-└── usb-hid/               ← HAL PCD 键盘
+├── usb-hid/               ← HAL PCD 键盘
+└── motor-dc-speed/        ← CMake 工程：TB6612 + 正交编码器 + PI 速度环（未上板）
 ```
 
 ## 四、如何把示例跑起来
@@ -76,12 +79,12 @@ examples/
 3. 编译下载（Keil / CubeIDE / PlatformIO 均可）。
 4. 对照 README 的「预期现象」验证；不通过时查「常见问题」表。
 
-## 仿真（可选，见第 22 章）
+## 仿真（可选，见第 40 章）
 
 核心示例目录里有 `diagram.json` 和 `wokwi.toml`，Renode 脚本在
 [`sim/renode/`](../sim/renode/)。入口说明见 [sim/README.md](../sim/README.md)。
 怎么跑、哪些外设当前模型跑不完，写在
-[22 仿真实验](../docs/22-仿真实验Wokwi与Renode.md)。
+[ch40 实物实验方法与仪器证据](../docs/v6-labs-projects/40-lab-method-instruments.md)。
 
 ## 五、通用注意事项
 

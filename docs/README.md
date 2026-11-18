@@ -2,7 +2,8 @@
 
 本目录是双书合并后的**唯一书稿与站点源**：47 章（上手卷 + 卷 0–7）+ 6 附录，构建入口在仓库根 `book/` 包（`python -m book.build_html`）。
 
-- 目录数据：`manifest.json`（由 `book/mapping.py --write` 从 `book/data/mapping.tsv` 生成，不手工编辑）。
+- 目录数据：`manifest.json`（由 `python -m book.manifest --write` 从 `book/data/toc.tsv` 生成，不手工编辑；`python -m book.manifest --check` 校验是否过期）。
+- 旧章到新章的逐文件映射：`book.mapping --write` 写出 `../plans/2026-11-12-merged-book/mapping.json`（源数据 `book/data/mapping.tsv`），与上面的 `manifest.json` 不是同一份产物。
 - 章节文件：`onramp/`（上手 · 从开箱到点灯）、`v0-foundations/`（语言与构建）、`v1-drivers/`（裸机驱动）、`v2-reliability/`（可靠性与故障）、`v3-rtos/`（RTOS）、`v4-platforms/`（多平台与连接）、`v5-motion/`（运动控制）、`v6-labs-projects/`（实验与项目）、`v7-delivery/`（交付与资料）、`appendix/`（附录 A–F）。
 - 测验数据：`.vitepress/data/quizzes/`（各章 `<QuizBank>` 引用）。
 - 站点资产：`public/`（anim/figures/images/arch，挂载于 `/STM32/` 根）。

@@ -16,7 +16,7 @@ platforms: [generic]
 - **问题**：三阶段路线（4/6/8 周）的过关判据与前置知识五块的「够用」标准；L0–L5 六级证据怎么判定、对应哪些卷章；三种开发方式（寄存器/SPL/HAL+LL）的六维对比，两书相反的入门建议如何统一。手册六类各查什么、三步法怎么走；工具选型两表的预算口径；开源仓库、开源书/课程、配套代码与社区文章怎么选、怎么读、怎么问；生态数字为什么必须带抓取日期。
 - **交付**：能按三阶段表给自己排计划并写出过关判据；能指出自己停在 L0–L5 哪一级，并写出下一级缺的证据；能用前置知识表自评「够用即可」；能按统一口径选择入门路线并说出取舍理由；能按六类命名表挑对手册并用三步法查到 TIM1 占空比/PA11 USB/F4 DMA FIFO 三个示例；能从四类社区资源里选一本开源书或课程，说明它的许可边界；能给出两板（BluePill 起步线/霸天虎+实战派线）的采购清单；能按提问五件事提一个可回答的问题。
 - **级别**：L5 交付。证据位置：「测量与证据」与「离开检查」；读完留下自己的三阶段计划与过关判据、L0–L5 自评与下一级缺口证据，以及一本开源书的许可边界说明。
-- **旅程导航**：上一章（[第 45 章](./45-troubleshooting-handbook.md)）你手里有从现象翻到章锚点的分诊路径与三条抽查样例的核对记录；本章结束多了自己的三阶段计划与过关判据、L0–L5 自评与下一级缺口——终点回看起点：十八周排期接回[第 0 章](../onramp/00-from-box-to-blink.md)的开箱闭环，每一级都有你自己的证据。
+- **旅程导航**：上一章（[第 45 章](./45-troubleshooting-handbook.md)）你手里有从现象翻到章锚点的分诊路径与三条抽查样例的核对记录；本章结束多了自己的三阶段计划与过关判据、L0–L5 自评与下一级缺口（周数是计划表、采购价是估算区间、星标数带抓取日期）——L5 的「失败经验可查」升到「路线自己能排」：十八周每周绑一个可展示物、六级按证据划分不按章数、手册六类与查手册三步法、开源资源的许可边界，这些是你自己的排期与自评不是别人给的评级；终点回看起点，十八周排期接回[第 0 章](../onramp/00-from-box-to-blink.md)的开箱闭环。
 - **开源读法**：从四类社区资源里挑一本（如 `rust-embedded/discovery`），按「编译一条命令 → 目录结构 → 最小例程」的读法走一遍，许可读仓库根文件原文；地址、时钟与位段仍回对应 RM/DS。
 - **边界**：这里属于路线与资料层；BOOT、首次点灯、构建命令的技术正文归 v1 各章（这里只留索引）；L0–L5 的定义与卷章映射在这里；全量源码仓库表与知识点在 附录 F；手册来源注册表在 附录 E；生态数量口径沿 [第 27 章](../v3-rtos/27-rtos-comparison-selection.md)。视频块、公众号手机阅读版、英文版链接不保留。
 - **依据锚点**：D00、D20（`docs/`）、mbF 起步区（`mcu/mcu-book/book/F-常见问题.md` 并入部分）。上游对账：SPL 停更与 [v1 第 7 章](../v0-foundations/07-build-systems-legacy.md) 口径一致；F1 DMA 无 FIFO/F4 有与 [v1 第 14 章](../v1-drivers/14-dma.md)、[第 33 章](../v4-platforms/33-network-protocol-stack.md) 一致。
@@ -55,6 +55,19 @@ platforms: [generic]
 | 18 | [第 40–42 章](../v6-labs-projects/40-lab-method-instruments.md) | 双板记录器 | 交付包五件套——L5 收口 |
 
 逐周自测题不进正文。题面在源章、答案在 [附录 C](../appendix/C-exercises-answers.md)（按合并章号重排）。入门线从第 1 周就动手——第 0 章的开箱流程（见上手卷）在第 1 周之前完成。
+
+十八周只排「动手轨」：47 章里 19 章在表内，28 章不在——[第 0 章](../onramp/00-from-box-to-blink.md) 是第 0 周，v0 前六章（[ch01](../v0-foundations/01-c-memory-model.md) 至 [ch06](../v0-foundations/06-linker-startup-map.md)）是第 1 周之前的预备，其余 21 章（多平台、RTOS 内核后半、交付方法等）用到哪章翻哪章。
+
+想顺着章节线读的人，表内有六处可以顺手回看：这几个动手章的罗盘写着「上一章你手里有…」，而那一位没有周次。先把那一章读了再接本周的动手，衔接更顺；不读也不影响照表做出本周的可展示物——周次绑定的是例程与可展示物，不是阅读顺序。
+
+| 周 | 动手章 | 顺带可回看的上一章 |
+| --- | --- | --- |
+| 1 | [ch07 构建系统](../v0-foundations/07-build-systems-legacy.md) | [ch06 链接与启动](../v0-foundations/06-linker-startup-map.md) |
+| 2 | [ch09 GPIO](../v1-drivers/09-gpio.md) | [ch08 架构、内存与时钟](../v1-drivers/08-architecture-memory-clock.md) |
+| 6 | [ch15 ADC/DAC](../v1-drivers/15-adc-dac-sampling.md) | [ch14 DMA](../v1-drivers/14-dma.md) |
+| 9 | [ch21 为什么用 RTOS](../v3-rtos/21-why-rtos.md) | [ch20 调试与性能](../v2-reliability/20-debug-performance.md) |
+| 13 | [ch35 CAN/USB](../v4-platforms/35-can-usb-fieldbus.md) | [ch34 多核与缓存](../v4-platforms/34-multicore-cache.md) |
+| 16 | [ch38 编码器测速](../v5-motion/38-encoder-speed-measurement.md) | [ch37 直流电机开环](../v5-motion/37-dc-motor-openloop.md) |
 
 ### 2. 前置知识五块的「够用」标准
 

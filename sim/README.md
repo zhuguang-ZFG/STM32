@@ -1,6 +1,6 @@
 # 仿真
 
-没有板子时从这里进。原理、模型边界和跑不完的外设写在 [第 22 章](../docs/22-仿真实验Wokwi与Renode.md)（English: [chapter 22](../docs/en/22-simulation-wokwi-renode.md)）。
+没有板子时从这里进。原理、模型边界和跑不完的外设写在 [ch40 实物实验方法与仪器证据](../docs/v6-labs-projects/40-lab-method-instruments.md)。
 
 ## Renode
 
