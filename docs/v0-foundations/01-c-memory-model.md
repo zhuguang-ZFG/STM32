@@ -55,6 +55,15 @@ Contents of section .data:
 
 你自己的工程里，地址和大小会随链接脚本、对齐和对象数量变化；要看的形状是 VMA 落在 RAM、LMA 落在 Flash、`FileSiz` 小于 `MemSiz`。
 
+**你应该看到**（宿主判据，转引上方冻结输出；你的版本与工程会变数，形状不变）：
+
+- `size` 三列 `660 / 0 / 1536`——点灯工程 `data` 为 0，`bss` 全是栈与堆的预留位；
+- `nm` 一行 `20000000 00000004 D g_init`——运行地址落在 RAM 开头，`D` 说明住在 `.data`；
+- `readelf -l` 第二条 `LOAD`：`VirtAddr 0x20000000` 对 `PhysAddr 0x080002a0`，且 `FileSiz 0xc < MemSiz 0x2c`——初值在文件里只带一份；
+- `objdump -s -j .data`：`05000000` 就是 `g_init` 的 5，`.bss` 的对象一个不在场。
+
+对照完这四条，再跑本章后面的 `const` 实验：`data` 塌到 0、`text` 涨 256 字节——「省的一半」当场可见。
+
 ## 机制
 
 ### 没有 OS 的世界

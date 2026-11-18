@@ -47,6 +47,14 @@ CC=arm-none-eabi-gcc sh probe.sh
 
 交叉编译器链接不了带 `printf` 的宿主程序，脚本会自动退化为只编译，只验证编译期断言。布局事实在这一步就应该站得住，后面的板子只是复核。
 
+**你应该看到**（宿主判据，转引上方冻结输出）：
+
+- `probe.sh` 打出两行对账：`offsetof(BSRR) = 0x18`、`sizeof(GPIO_TypeDef) = 0x28`——押注与编译器一致；
+- `broken.sh` 的最后一行是 `_Static_assert` 的原话——四种写错一位的布局里，故意有一处编译失败把断言打出来；
+- `CC=arm-none-eabi-gcc sh probe.sh`：脚本退化为只编译、不链接，断言仍在编译期生效。
+
+## 机制
+
 ## 机制
 
 ### GPIO_TypeDef：寄存器地图的 C 版翻译
