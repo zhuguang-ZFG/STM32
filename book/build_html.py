@@ -260,6 +260,20 @@ STICK_SCENES = {
                    "（进入视野自动播放，点击重播）",
         "fallback": "/images/ch23-pendsv-frame.png",
     },
+    "ch12-pwm-dial": {
+        "label": "一个人拧大 CCR 旋钮，示波器上方波的占空比从 25% 滑到 75%，"
+                 "频率保持在 1 kHz 不变。",
+        "caption": "手绘动画：拧 CCR 旋钮——占空比 25%→75%，频率不动；占空比住在 CCR 里"
+                   "（进入视野自动播放，点击重播）",
+        "fallback": "/images/ch12-pwm-dial-frame.png",
+    },
+    "ch18-stop-board": {
+        "label": "一个人拉下 RCC 总闸，时钟灯逐颗熄灭只剩 HSI 微亮，唤醒键亮起；"
+                 "按下后时钟灯逐颗复亮，主灯重新点亮。",
+        "caption": "手绘动画：Stop 进出——拉闸时钟灯逐颗灭、HSI 微亮，按唤醒键逐颗复亮"
+                   "（进入视野自动播放，点击重播）",
+        "fallback": "/images/ch18-stop-board-frame.png",
+    },
 }
 STICK_SCENES_RE = re.compile(
     r'(?:<p>\s*)?<!-- stick-scene: ([a-z0-9-]+) -->\s*(?:</p>)?'

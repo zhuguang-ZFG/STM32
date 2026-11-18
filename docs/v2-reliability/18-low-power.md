@@ -146,6 +146,8 @@ Stop 期间 HSE 与 PLL 停掉。醒来时硬件把 HSI 接到系统时钟：F10
 Stop 醒来先 HSI，再 HSE、PLL、Flash latency；不重配时 `0x271` 在 8 MHz 下是 12800。
 ![手绘板：Stop 退出六步——HSI 接管、HSE/PLL/Flash latency/SWS 逐项重走，F1 与 F4 分母各算各的；0x271 在 8MHz 下打出 12800（原理示意，非实拍）](/images/ch18-stop-wake-clock.png)
 
+<!-- stick-scene: ch18-stop-board -->
+
 
 ### 五、备份域：DBP、BDRST、BRE/BRR
 
