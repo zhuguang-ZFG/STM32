@@ -5,7 +5,7 @@
  * 因为复位那一刻芯片只有内部 RC（HSI 16MHz）在供电，外部晶振没起振、
  * Flash 没准备好、主频还锁在最低档。所以正确顺序是：
  *
- *   电压档 → Flash 等待周期 → 开 HSE 并等就绪 → 配 PLL → 切 SYSCLK → 回读确认
+ *   PWR时钟/电压档 → Flash等待与回读 → HSE/PLL就绪 → 安全APB分频 → 切SYSCLK/读SWS
  *
  * 这一步顺序错了，典型后果不是"跑得慢"，而是"随机跑飞"。
  *
@@ -44,6 +44,9 @@
 
 #define GPIOA_BASE          (0x40020000UL)
 #define GPIOA_MODER         (*(volatile uint32_t *)(GPIOA_BASE + 0x00UL))
+#define GPIOA_OTYPER        (*(volatile uint32_t *)(GPIOA_BASE + 0x04UL))
+#define GPIOA_OSPEEDR       (*(volatile uint32_t *)(GPIOA_BASE + 0x08UL))
+#define GPIOA_PUPDR         (*(volatile uint32_t *)(GPIOA_BASE + 0x0CUL))
 #define GPIOA_AFRH          (*(volatile uint32_t *)(GPIOA_BASE + 0x24UL)) /* [9:8]=PA8 */
 
 #define GPIOF_BASE          (0x40021400UL)
@@ -65,7 +68,7 @@
 
 #define RCC_PLLCFGR_PLLM    (0x3FUL << 0)    /* [5:0]   分频，2..63     */
 #define RCC_PLLCFGR_PLLN    (0x1FFUL << 6)   /* [14:6]  倍频，50..432   */
-#define RCC_PLLCFGR_PLLP    (0x3UL << 16)    /* [17:16] 00=/2, 01=/4    */
+#define RCC_PLLCFGR_PLLP    (0x3UL << 16)    /* [17:16] 00/01/10/11=/2/4/6/8 */
 #define RCC_PLLCFGR_PLLSRC  (1UL << 22)      /* 0=HSI, 1=HSE          */
 #define RCC_PLLCFGR_PLLQ    (0xFUL << 24)    /* [27:24] 给 USB，2..15   */
 
@@ -75,6 +78,7 @@
 #define RCC_CFGR_HPRE       (0xFUL << 4)     /* [7:4]   AHB 预分频     */
 #define RCC_CFGR_PPRE1      (0x7UL << 10)    /* [12:10] APB1 预分频    */
 #define RCC_CFGR_PPRE2      (0x7UL << 13)    /* [15:13] APB2 预分频    */
+#define RCC_CFGR_MCO1       (0x3UL << 21)    /* MCO1: HSI/LSE/HSE/PLL */
 #define RCC_CFGR_MCO1PRE    (0x7UL << 24)    /* [26:24] MCO1 预分频    */
 
 #define FLASH_ACR_LATENCY   (0x7UL << 0)     /* [2:0] 等待周期数       */
@@ -107,7 +111,7 @@
 volatile uint32_t SystemCoreClock;                 /* SPL/工程惯用名字 */
 volatile uint32_t g_pll_m, g_pll_n, g_pll_p, g_pll_q;
 volatile uint32_t g_clock_tree[5];                  /* {SYSCLK,HCLK,PCLK1,PCLK2,TIM2CLK} */
-volatile uint32_t g_clock_status;                   /* 0=PLL 成功，1=回退 HSI，2=HSE 起振超时 */
+volatile uint32_t g_clock_status;                   /* 0=无已记录错误(含默认HSI)，1=等待/切换失败，2=参数拒绝 */
 
 static volatile uint32_t g_ms;                      /* SysTick 毫秒计数 */
 
@@ -187,14 +191,23 @@ static void mco1_init(uint32_t sysclk_hz)
 {
     const uint32_t pre = mco1_pre_for(sysclk_hz);
 
-    RCC_CFGR = (RCC_CFGR & ~RCC_CFGR_MCO1PRE) | (pre << 24);
-
-    /* GPIOA 使能在 RCC_AHB1ENR bit0 */
+    /* HAL_RCC_MCOConfig: AF0/推挽/无上下拉/Very High，再选择源与分频。 */
     *(volatile uint32_t *)(RCC_BASE + 0x30UL) |= (1UL << 0);
-    GPIOA_MODER &= ~(3UL << (MCO1_PIN * 2));
-    GPIOA_MODER |=  (1UL << (MCO1_PIN * 2));          /* 通用输出 */
-    GPIOA_AFRH  &= ~(0xFUL << ((MCO1_PIN - 8U) * 4U));
-    GPIOA_AFRH  |=  (0x0UL << ((MCO1_PIN - 8U) * 4U)); /* AF0 = MCO1 */
+    (void)*(volatile uint32_t *)(RCC_BASE + 0x30UL); /* GPIOA clock readback */
+    GPIOA_OTYPER &= ~(1UL << MCO1_PIN);
+    GPIOA_OSPEEDR = (GPIOA_OSPEEDR & ~(3UL << (MCO1_PIN * 2U)))
+                  | (3UL << (MCO1_PIN * 2U));
+    GPIOA_PUPDR &= ~(3UL << (MCO1_PIN * 2U));
+    GPIOA_AFRH &= ~(0xFUL << ((MCO1_PIN - 8U) * 4U));
+    GPIOA_MODER = (GPIOA_MODER & ~(3UL << (MCO1_PIN * 2U)))
+                | (2UL << (MCO1_PIN * 2U)); /* 10 = AF, AF0 = MCO1 */
+
+    /* MCO1不能直接选SYSCLK；按SWS选同一HSI/HSE/PLL源。 */
+    const uint32_t sws = RCC_CFGR & RCC_CFGR_SWS;
+    const uint32_t source = (sws == RCC_CFGR_SWS_PLL) ? (3UL << 21)
+                          : (sws == (1UL << 2)) ? (2UL << 21) : 0UL;
+    RCC_CFGR = (RCC_CFGR & ~(RCC_CFGR_MCO1 | RCC_CFGR_MCO1PRE))
+              | source | (pre << 24);
 }
 
 /** 电压范围分档的等待周期表（RM0090 Rev 18 Table 10，VDD 与 HCLK 的组合）。
@@ -220,15 +233,17 @@ static uint32_t flash_latency_ws_3v3(uint32_t sysclk_hz)
 static void flash_config(uint32_t sysclk_hz, uint32_t need_scale1)
 {
     if (need_scale1 && sysclk_hz > 144000000UL) {
+        /* F407 RCC_APB1ENR.PWREN bit28，先开门并读回。 */
+        *(volatile uint32_t *)(RCC_BASE + 0x40UL) |= (1UL << 28);
+        (void)*(volatile uint32_t *)(RCC_BASE + 0x40UL);
         PWR_CR |= PWR_CR_VOS;        /* Scale 1：解锁 168MHz 的必要条件。
                                           F405/407 没有 VOSRDY 就绪位（那是 F42x/43x 的）——
                                           VOS 是普通 RW 配置位，写完即生效，没有可等待的回执；
                                           轮询它只会读回刚写入的 1，纯属误导。 */
     }
 
-    FLASH_ACR &= ~FLASH_ACR_LATENCY;
-    FLASH_ACR |= flash_latency_ws_3v3(sysclk_hz);
-    FLASH_ACR |= FLASH_ACR_PRFTEN;   /* 预取：顺序取指时提前搬运下一条 */
+    FLASH_ACR = (FLASH_ACR & ~FLASH_ACR_LATENCY)
+              | flash_latency_ws_3v3(sysclk_hz) | FLASH_ACR_PRFTEN;
 }
 
 
@@ -287,8 +302,10 @@ static void clock_tree_readback(uint32_t hsi_hz)
     if ((cfgr & RCC_CFGR_SWS) == RCC_CFGR_SWS_PLL) {
         uint32_t m =  pllcfgr & 0x3FUL;
         uint32_t n = (pllcfgr >> 6) & 0x1FFUL;
-        uint32_t p = ((pllcfgr >> 16) & 0x3UL) ? 4UL : 2UL;
+        uint32_t p = ((((pllcfgr >> 16) & 0x3UL) + 1UL) * 2UL);
         src = ((pllcfgr & RCC_PLLCFGR_PLLSRC) ? HSE_VALUE_HZ : hsi_hz) / m * n / p;
+    } else if ((cfgr & RCC_CFGR_SWS) == (1UL << 2)) {
+        src = HSE_VALUE_HZ; /* F407 CFGR.SWS=01: HSE，不是HSI。 */
     } else {
         src = hsi_hz;
     }
@@ -298,13 +315,13 @@ static void clock_tree_readback(uint32_t hsi_hz)
     g_clock_tree[2] = g_clock_tree[1] / ppre_div[(cfgr & RCC_CFGR_PPRE1) >> 10]; /* PCLK1 */
     g_clock_tree[3] = g_clock_tree[1] / ppre_div[(cfgr & RCC_CFGR_PPRE2) >> 13]; /* PCLK2 */
     /* 隐藏规则：APBx 预分频≠1 时，定时器时钟 = PCLK×2 */
-    g_clock_tree[4] = ((cfgr & RCC_CFGR_PPRE1) >> 10) ? g_clock_tree[2] * 2UL
+    g_clock_tree[4] = (ppre_div[(cfgr & RCC_CFGR_PPRE1) >> 10] != 1U) ? g_clock_tree[2] * 2UL
                                                       : g_clock_tree[2];
 
     SystemCoreClock = g_clock_tree[1];
 }
 
-/** 完整提频流程。返回 0 成功切到 PLL，非 0 表示回退到 HSI。 */
+/** 冷复位HSI16提频。返回0表示本路径成功(含默认HSI)，非0看SWS/状态，勿推定回退。 */
 static int clock_init(void)
 {
     const uint32_t hsi_hz = 16000000UL;
@@ -329,6 +346,11 @@ static int clock_init(void)
 
     /* 第 1 步：电压档 + Flash 等待周期，必须在提速之前 */
     flash_config(SYSCLK_TARGET_HZ, 1UL);
+    if ((FLASH_ACR & FLASH_ACR_LATENCY) != flash_latency_ws_3v3(SYSCLK_TARGET_HZ)) {
+        g_clock_status = 1;
+        clock_tree_readback(hsi_hz);
+        return -1; /* 等待周期未读回，不得升频。 */
+    }
 
     /* 第 2 步：开 HSE 并等就绪。晶振虚焊时 HSERDY 永远不来，必须带超时 */
     RCC_CR |= RCC_CR_HSEON;
@@ -349,16 +371,41 @@ static int clock_init(void)
 
     /* 第 3 步：配 PLL（先配参数，再开 PLL） */
     RCC_CR &= ~RCC_CR_PLLON;
-    while (RCC_CR & RCC_CR_PLLRDY) { }     /* 等待 PLL 完全停下 */
+    {
+        uint32_t timeout = 0x00100000UL;
+        while ((RCC_CR & RCC_CR_PLLRDY) && (timeout-- != 0UL)) { }
+        if (RCC_CR & RCC_CR_PLLRDY) {
+            g_clock_status = 1;
+            clock_tree_readback(hsi_hz);
+            return -1; /* 未停稳，不改PLLCFGR。 */
+        }
+    }
     RCC_PLLCFGR = m
                 | ((n & 0x1FFUL) << 6)
                 | (((p == 4UL) ? 1UL : 0UL) << 16)
                 | RCC_PLLCFGR_PLLSRC
                 | ((q & 0xFUL) << 24);
     RCC_CR |= RCC_CR_PLLON;
-    while ((RCC_CR & RCC_CR_PLLRDY) == 0UL) { }   /* 等 PLL 锁定 */
+    {
+        uint32_t timeout = 0x00100000UL;
+        while (((RCC_CR & RCC_CR_PLLRDY) == 0UL) && (timeout-- != 0UL)) { }
+        if ((RCC_CR & RCC_CR_PLLRDY) == 0UL) {
+            RCC_CR &= ~RCC_CR_PLLON;
+            g_clock_status = 1;
+            clock_tree_readback(hsi_hz);
+            return -1; /* 未锁定，不请求切源。 */
+        }
+    }
 
-    /* 第 4 步：切 SYSCLK，然后读 SWS 确认硬件真的换了 */
+    /* 冷复位HSI16路径：先保护APB，再请求168MHz，不能只看最终分频。 */
+    RCC_CFGR = (RCC_CFGR & ~(RCC_CFGR_HPRE | RCC_CFGR_PPRE1 | RCC_CFGR_PPRE2))
+              | (0x5UL << 10) | (0x4UL << 13); /* AHB=/1, APB1=/4, APB2=/2 */
+    (void)RCC_CFGR;
+    for (volatile uint32_t settle = 0; settle < 16UL; ++settle) {
+        __asm__ volatile ("nop"); /* 在旧低频上留出分频配置传播时间。 */
+    }
+
+    /* 第 5 步：切 SYSCLK，然后读 SWS 确认硬件真的换了 */
     RCC_CFGR = (RCC_CFGR & ~RCC_CFGR_SW) | 0x2UL;   /* 10 = PLL */
     {
         uint32_t timeout = 0x00100000UL;
@@ -366,15 +413,11 @@ static int clock_init(void)
         }
         if ((RCC_CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL) {
             g_clock_status = 1;
-            SystemCoreClock = hsi_hz;
+            clock_tree_readback(hsi_hz); /* 不把切换失败等同于已安全回退HSI。 */
             return -1;
         }
     }
 
-    /* 第 5 步：总线分频。AHB=168，APB1 上限 42 → /4，APB2 上限 84 → /2 */
-    RCC_CFGR = (RCC_CFGR & ~RCC_CFGR_HPRE)  | (0x0UL << 4);   /* AHB  = /1 */
-    RCC_CFGR = (RCC_CFGR & ~RCC_CFGR_PPRE1) | (0x5UL << 10);  /* APB1 = /4 */
-    RCC_CFGR = (RCC_CFGR & ~RCC_CFGR_PPRE2) | (0x4UL << 13);  /* APB2 = /2 */
 
     clock_tree_readback(hsi_hz);
     return 0;
@@ -390,7 +433,7 @@ int main(void)
     clock_tree_readback(16000000UL);   /* 无论成功与否都以硬件实际值为准 */
 
     systick_init(g_clock_tree[1]);     /* 关键：用"实际的 HCLK"配 1ms 节拍 */
-    mco1_init(g_clock_tree[0]);        /* PA8 输出 ≈42MHz */
+    mco1_init(g_clock_tree[0]);        /* 理论HSI16=/1；PLL168=/4，均待实测 */
 
     while (1) {
         if (rc == 0) {

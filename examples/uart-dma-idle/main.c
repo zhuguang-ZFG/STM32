@@ -230,9 +230,18 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
     if (huart->Instance == UART_INSTANCE)
     {
+        /* DMA_NORMAL: HT只报进度，接收仍活动；等IDLE/TC后复制整个前缀一次。
+         * 官方F1 HAL_UARTEx_GetRxEventType说明普通模式HT不终止接收。 */
+        if (HAL_UARTEx_GetRxEventType(huart) == HAL_UART_RXEVENT_HT)
+        {
+            return;
+        }
         rb_push(&g_rb, g_dma_rx_buf, Size);
         /* 重新武装：下一次不定长接收 */
-        (void)HAL_UARTEx_ReceiveToIdle_DMA(huart, g_dma_rx_buf, DMA_RX_BUF_SIZE);
+        if (HAL_UARTEx_ReceiveToIdle_DMA(huart, g_dma_rx_buf, DMA_RX_BUF_SIZE) != HAL_OK)
+        {
+            error_handler(); /* 明确停机；不把重装失败当作已恢复接收。 */
+        }
     }
 }
 
@@ -245,7 +254,10 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
     {
         __HAL_UART_CLEAR_OREFLAG(huart);    /* 清溢出标志 */
         __HAL_UART_CLEAR_FEFLAG(huart);     /* 清帧错误标志 */
-        (void)HAL_UARTEx_ReceiveToIdle_DMA(huart, g_dma_rx_buf, DMA_RX_BUF_SIZE);
+        if (HAL_UARTEx_ReceiveToIdle_DMA(huart, g_dma_rx_buf, DMA_RX_BUF_SIZE) != HAL_OK)
+        {
+            error_handler(); /* 明确停机；不把重装失败当作已恢复接收。 */
+        }
     }
 }
 

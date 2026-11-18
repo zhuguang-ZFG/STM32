@@ -1,11 +1,13 @@
 # exti-key —— EXTI 外部中断按键
 
-> 难度：★★☆☆　｜　涉及外设：GPIO + EXTI + NVIC　｜　对应章节：[04 中断与 NVIC](../../docs/04-中断与NVIC.md)
+> 难度：★★☆☆　｜　涉及外设：GPIO + EXTI + NVIC　｜　对应章节：[第10章中断与NVIC/EXTI](../../docs/v1-drivers/10-interrupts-nvic-exti.md)
 
 <p align="center">
   <img src="../../assets/animations/gpio-input-interrupt.svg" width="760" alt="轮询 vs 中断 vs EXTI 对比">
   <br><sub>▲ 动画：轮询 vs 外部中断 vs EXTI 触发方式对比（作者自绘矢量图）</sub>
 </p>
+
+> hardware_status: pending。已移除偶数IRQ计数强制点灯，生产key_process/回调的宿主测试验证有效事件的连续翻转；不是上板验证。这里只提供HAL示例main.c，没有完整HAL依赖、启动/链接与独立构建入口，本轮未全固件编译。
 
 ## 一、功能说明
 
@@ -87,13 +89,13 @@ if (g_key_event) {
 
 1. 用 CubeMX 生成 F103C8 工程，把本 `main.c` 覆盖 `Core/Src/main.c`（保留生成的 `stm32f1xx_it.c` 中 `SysTick_Handler`；若其中已有 `EXTI0_IRQHandler` 请删除以免重复定义）。
 2. 编译（Keil 按 `F7`；CubeIDE 点工具栏的编译按钮）→ 下载（Keil 按 `F8`；CubeIDE 点运行按钮）。
-3. PlatformIO：`pio run -t upload`。
+3. 仓库未提供PlatformIO配置，不把upload命令当成已有入口；先在完整工程中核启动向量、HAL版本与链接配置，再单独编译和申请硬件操作。
 
 ## 六、预期现象
 
 - 上电后 LED 熄灭；每按一次 PA0 按键，LED 亮/灭翻转一次；
-- 快速连按不会出现「按一次翻多次」的抖动现象（消抖生效）；
-- 在 ISR 里打断点，可看到每次按键进入一次中断。
+- 20ms后复核为低才翻转，但没有完整释放重装状态；快速连按/抖动是否重复仍待测，不能保证一次物理按压只一次事件；
+- 后续取证记录原始IRQ计数与有效翻转次数；断点会改变时序，不以一次快照宣称消抖通过。
 
 ## 七、常见问题
 

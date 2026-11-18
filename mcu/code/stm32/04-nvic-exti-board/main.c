@@ -49,6 +49,7 @@
 #define GPIOF_OTYPER        (*(volatile uint32_t *)(GPIOF_BASE + 0x04UL))
 #define GPIOF_OSPEEDR       (*(volatile uint32_t *)(GPIOF_BASE + 0x08UL))
 #define GPIOF_PUPDR         (*(volatile uint32_t *)(GPIOF_BASE + 0x0CUL))
+#define GPIOF_ODR          (*(volatile uint32_t *)(GPIOF_BASE + 0x14UL)) /* F407 GPIOx_ODR */
 #define GPIOF_BSRR          (*(volatile uint32_t *)(GPIOF_BASE + 0x18UL))
 
 /* SYSCFG (EXTI 复用) */
@@ -88,8 +89,8 @@ void EXTI0_IRQHandler(void)
     EXTI_PR = (1UL << KEY1_PIN);
     
     /* 翻转 PF6 红灯 */
-    if (GPIOF_BSRR & (1UL << (LED_R_PIN + 16))) {
-        /* 当前是灭（BR6=1），点亮 */
+    if (GPIOF_ODR & (1UL << LED_R_PIN)) {
+        /* ODR6=1为灭，写BR6点亮；BSRR不是状态寄存器。 */
         GPIOF_BSRR = (1UL << (LED_R_PIN + 16));
     } else {
         /* 当前是亮，熄灭 */

@@ -1,6 +1,8 @@
 # S04 EXTI 外部中断演示
 
-> 配套章节：[S4 NVIC 与 EXTI](../../docs/stm32/04-nvic-exti.md)
+> 配套章节：[第10章：中断与NVIC/EXTI](../../../../docs/v1-drivers/10-interrupts-nvic-exti.md)
+
+> hardware_status: pending。ISR现读GPIOF_ODR判断电平，再只写一次BSRR置/清PF6；生产ISR宿主回归与现有F407构建通过，未上板。PA0接地按下/上拉释放仅为源码约定，实际板型与接线待核实；PF6为LED，不是章节EXTI6演算按键。
 
 ## 实验目标
 
@@ -25,7 +27,7 @@
 开时钟 → 配 GPIO → SYSCFG 映射 → EXTI 使能 → NVIC 使能 → ISR
 ```
 
-## 构建与烧录
+## 构建与烧录（后续入口，本轮未执行）
 
 ```bash
 make            # 构建 build/exti.elf + .bin + .hex
@@ -38,8 +40,9 @@ make gdb        # 连接调试
 
 - 上电后红灯灭
 - 按下 KEY1 不触发（配置为上升沿）
-- **松开 KEY1 时红灯翻转**（上升沿触发 EXTI0）
-- 每次松开按键，红灯亮→灭→亮→灭...
+- 释放沿触发EXTI0是RTSR的配置意图，机械抖动仍可能产生多次请求。
+- 每次进入ISR会按ODR状态翻转一次（已作宿主回归）；“每次物理松开恰好一次”仍未验证，当前没有消抖，多个释放抖动沿仍会多次翻转。
+- 后续取证要同时记录PA0原始边沿、PR/ISR计数与PF6电平；只见PR清零不能证明恰好翻转一次。
 
 ## 关键代码解析
 
@@ -64,6 +67,6 @@ EXTI_PR = (1UL << KEY1_PIN);        /* 写 1 清 0（W1C） */
 
 ## 延伸阅读
 
-- [S4 NVIC 与 EXTI](../../docs/stm32/04-nvic-exti.md)：三层链路、优先级分组、向量表
-- [S3 GPIO](../../docs/stm32/03-gpio.md)：GPIO 配置四件套
+- [第10章：中断与NVIC/EXTI](../../../../docs/v1-drivers/10-interrupts-nvic-exti.md)：三层链路、优先级分组、向量表
+- [第9章GPIO](../../../../docs/v1-drivers/09-gpio.md)：GPIO 配置四件套
 - [host-probe 工程](../04-nvic-exti/)：主机端 `_Static_assert` 验证寄存器地址

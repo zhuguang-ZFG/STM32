@@ -97,7 +97,6 @@ static void key_process(void)
     /* 读到标志后先做临界区保护，避免处理期间标志被 ISR 改写 */
     __disable_irq();
     g_key_event = 0;
-    uint32_t cnt = g_key_count;
     __enable_irq();
 
     /* 软件消抖：等抖动过去再确认电平仍为低（按键按下） */
@@ -106,11 +105,6 @@ static void key_process(void)
     {
         HAL_GPIO_TogglePin(LED_PORT, LED_PIN);   /* 有效按键 → 翻转 LED */
 
-        /* 简单区分：按下的次数越多，越可能是抖动（仅用于调试观察） */
-        if ((cnt % 2U) == 0U)
-        {
-            HAL_GPIO_WritePin(LED_PORT, LED_PIN, GPIO_PIN_RESET); /* 点亮 */
-        }
     }
 }
 
