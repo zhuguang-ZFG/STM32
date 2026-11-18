@@ -56,8 +56,13 @@
 | Book CI `44363672911` / Merge Check `44363672951`（`6903417c`） | success |
 | Book CI `44366371871` / Motor Control `44366371717`（`88dc40e5`，v5 升级） | success，两条链路的 `upload-artifact@v5` 都实际执行 |
 | Book / Site / 部署 / Merge Check（`df141eed`，`workflow_dispatch` 补跑） | `44372755385` / `44372763574` / `44372770172` / `44372778962` 全部 success |
+| Book / Site / 部署 / Merge Check（`ca5583ec`，`workflow_dispatch` 补跑） | `44375569786` / `44375550379` / `44375555847` / `44375562693` 全部 success；`dist` 实测 55 个 HTML、无 `superpowers` 产物 |
 
-一次流程失误与修正：`df141eed`（补记本表）的提交消息带了 `[skip ci]`，导致 `docs/**` 触发的四门整体被跳过——`srcExclude` 只影响站点内容，不会豁免工作流触发，这与根 `AGENTS.md` 的「门禁不降级」冲突。该提交已推送，不能 force-push 改写，故对同一 HEAD `df141eed` 显式派发四门补齐覆盖。为避免每写一条验收记录就重建 13 分钟站点，`site.yml`/`deploy.yml` 的路径过滤加入 `!docs/superpowers/**`（VitePress 的 `srcExclude` 本就排除该目录，构建不消费它）；`book.yml` 与 `merge-check.yml` 仍对 `docs/**` 全量生效。
+一次流程失误与修正：`df141eed`（补记本表）的提交标题带了跳过标记，导致 `docs/**` 触发的四门整体被跳过——`srcExclude` 只影响站点内容，不会豁免工作流触发，这与根 `AGENTS.md` 的「门禁不降级」冲突。该提交已推送，不能 force-push 改写，故对同一 HEAD `df141eed` 显式派发四门补齐覆盖。
+
+`ca5583ec` 随即又出现「push 后零运行」。根因不是路径过滤器：本次提交消息的**正文**在描述上述失误时写出了那个跳过标记的字面量，而 GitHub 的跳过规则扫描整条提交消息（标题与正文），于是整次 push 的四门再次被跳过。官方文档确认 `!` 反选是**逐文件排除**（有任一改动文件匹配正向且未被排除即触发），不存在整体否决。`ca5583ec` 的四门同样以 `workflow_dispatch` 在 `44375550379` / `44375555847` / `44375562693` / `44375569786` 上补跑。
+
+为避免每写一条验收记录就重建 13 分钟站点，`site.yml`/`deploy.yml` 的路径过滤加入 `!docs/superpowers/**`（VitePress 的 `srcExclude` 本就排除该目录，构建不消费它）；`book.yml` 与 `merge-check.yml` 仍对 `docs/**` 全量生效。
 
 修复：新增 `book/requirements-print.txt`（markdown / lxml / PyMuPDF / Pillow / playwright），`book.yml` 一次安装；删掉重复的 Chromium 步骤。轻量 `merge-check.yml` 仍只装 `book/requirements.txt`。随后把 `actions/upload-artifact` 从 v4 升到 v5（v4 仍指向 Node 20，被强制在 Node 24 上运行并告警）；`book.yml` 与既有的 `motor-control.yml` 各改 1 行。
 
