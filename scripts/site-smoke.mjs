@@ -147,7 +147,23 @@ export async function smoke({ root, mount }) {
       check('中文搜索有结果', false, '未找到搜索入口按钮')
     }
 
-    // 10. 资源失败清单
+    // 10. 片段锚点：带 #标题 的深链要落到目标元素（AC3 的「锚点」项）
+    const anchorPage = 'v1-drivers/09-gpio.html'
+    const anchorHtml = fs.readFileSync(path.join(root, anchorPage), 'utf-8')
+    const anchorId = (anchorHtml.match(/<h[23][^>]*\sid="([^"]+)"/) || [])[1]
+    if (anchorId) {
+      await page.goto(`${base}/${anchorPage}#${anchorId}`, { waitUntil: 'load' })
+      const found = await page.evaluate((id) => {
+        const el = document.getElementById(id)
+        return !!el && el.getBoundingClientRect().top < window.innerHeight
+      }, anchorId)
+      const hash = decodeURIComponent(new URL(page.url()).hash.slice(1))
+      check('片段锚点定位', found && hash === anchorId, `#${anchorId} found=${found} hash=${hash}`)
+    } else {
+      check('片段锚点定位', false, '页面内没有带 id 的 h2/h3')
+    }
+
+    // 11. 资源失败清单
     check('同源资源无失败', failed.length === 0, failed.slice(0, 5).join(' | '))
   } finally {
     await browser.close()

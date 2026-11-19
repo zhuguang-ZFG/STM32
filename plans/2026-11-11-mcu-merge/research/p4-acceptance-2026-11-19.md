@@ -70,10 +70,35 @@ python -m book.build_html --check            # built 53 pages, 0 planned chapter
 | `/STM32/book/` | 404 | 合并书无在线下载目录 |
 | `/STM32/book/merged-book.pdf` | 404 | 同上 |
 
-**未通过**的原因有两条，都不是「看起来还行」能盖过的：
+**未通过**的原因是下载入口缺失，与浏览器回归无关——后者本轮已补：
 
-1. AC3 明确要求「下载入口可访问」，而合并书与 MCU 整书在线上都没有可下载文件。
-2. 搜索、锚点、动画、导读四项只做了 URL 连通性探测，没有浏览器回归。
+1. AC3 明确要求「下载入口可访问」，而合并书与 MCU 整书在线上都没有可下载文件（上表四条 404）。
+2. 浏览器回归已完成，见下节；它的结论是「站内导航正常」，不能替代第 1 条。
+
+### AC3 的浏览器回归（候选 staging，非线上发布证明）
+
+`npm run site:build` 生成 `.temp/pages-site`（根 = 合并书，`mcu/` = 131 条旧链存根），再跑 `npm run site:smoke`：脚本按真实挂载 `/STM32/` 起本地服务，用 Chromium 打开页面断言。
+
+```text
+OK   首页加载
+OK   v1 ch09 深链
+OK   旧链跳转落地 v1 ch09
+OK   附录 A 深链
+OK   ch40 深链
+OK   anim 资源 200 — status=200
+OK   quiz 答案展开交互 — open false→true
+OK   stick-scene 渲染 canvas — canvas=1
+OK   中文搜索有结果 — hits=16
+OK   片段锚点定位 — #本章罗盘 found=true hash=本章罗盘
+OK   同源资源无失败
+smoke passed: 11/11
+```
+
+标注三点，避免把这条证据读大：
+
+- 跑的是**本地组装产物**，不是线上部署；线上的独立观测只有上表那几条 HTTP 状态码。
+- 「片段锚点定位」是本轮新加的断言（`scripts/site-smoke.mjs`）：取页面里第一个 `h2/h3` 的 `id`，带 `#` 打开，要求元素存在且落在视口内、`hash` 保持不变。负向验证：把锚点换成不存在的 id，该条报 `FAIL 片段锚点定位 #definitely-not-a-heading found=false`，`smoke failed: 1/11`，说明断言有效。
+- 该冒烟已在 CI 中执行（`.github/workflows/site.yml:67`、`deploy.yml:64`），因此新增断言会随站点改动持续生效；但它只覆盖 staging，线上仍需 AC8 的回读。
 
 旧路径负例仍在：`scripts/legacy-redirects.mjs` + `scripts/tests/legacy-redirects.test.mjs`（32 项测试全过，含负例）。
 
@@ -143,4 +168,4 @@ cd mcu && python .trellis/scripts/get_context.py        # exit 0
 | 3 | AC4 当前 `main` 无 deploy 运行 | artifact 无从核对 | 下次 deploy 后补 artifact 清单与哈希 |
 | 4 | `CITATION.cff` `url` 指向存根 | 引用信息误导 | 改为指向合并书或明示为历史站点 |
 | 5 | `CITATION.cff` `1.0.0` vs manifest `0.1.0` | 版号不可信 | 统一口径 |
-| 6 | 浏览器回归未做（搜索/锚点/动画/导读） | AC3 缺口 | 用 Playwright 或人工走查补证 |
+| 6 | ~~浏览器回归未做~~ | 已完成 | `npm run site:smoke` 11/11（含新增片段锚点断言）；覆盖 staging，线上回读仍归 AC8 |
