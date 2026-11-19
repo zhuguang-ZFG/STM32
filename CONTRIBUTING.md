@@ -9,7 +9,7 @@
 | 纠错 | 指出错误的寄存器位 / 参数 / 公式 / 引脚，附上手册页码或实测截图 | 低 |
 | 补动画 | 用 `tools/svgkit.py` 写一个新原理动画，并在 `assets/README.md` 登记 | 中 |
 | 补示例 | 新增 `examples/<名字>/`，含 `main.c` + `README.md`，要求真实可编译 | 中 |
-| 补文档 | 新增或扩写 `docs/NN-xxx.md`，遵循 [写作规范](docs/CONTENT_GUIDE.md) | 中 |
+| 补文档 | 新增或扩写根 `docs/<分卷>/NN-xxx.md`，遵循 [写作规范](docs/CONTENT_GUIDE.md) | 中 |
 | 补实物结构图 | 用 `tools/gen_boards.py` 加一块板子的矢量结构图 | 高 |
 
 ## 二、动手前的三条约定
@@ -54,11 +54,15 @@ python3 tools/check_assets.py
 python3 tools/slop_lint.py
 
 # 4) 改了章节正文时，再跑整书契约（只改导航文档可以跳过）
-python3 -m unittest discover stm32-book/tests -v
-python3 stm32-book/build_html.py --check
+python -m unittest discover book/tests -v
+python -m book.build_html --check
+# 或一次跑完 book 域全部门（manifest/mapping/checks/单测/HTML 契约）：
+make book-check
 ```
 
 相对链接由 `tools/check_assets.py` 检查。它还会检查讲解正片，因此需要本机有 Pillow、ffmpeg、ffprobe。只改了 Markdown 导航时，至少确认新链接指向的文件存在。
+
+> 站点侧另有 `npm run site:build`（构建 + 页面对账 + 存根 + 组装 + 图片/尺寸门），以及 `make site-check`（含 `/STM32/` 冒烟）。章节正文现行放在根 `docs/`（分卷 `v0-foundations/`、`v1-drivers/`、`v2-reliability/`、`onramp/`、`appendix/`），旧的 `stm32-book/`、`docs/NN-*.md` 与 `mcu/docs/` 树已在 B5 合并中退役。
 
 `tools/md2mp.py`、`gen_mp_covers.py`、`gen_tietu.py` 会把产物写到 `.gitignore` 里的 `wechat-mp/` 和 `final-videos/`。不要把这两个目录提交上来。
 

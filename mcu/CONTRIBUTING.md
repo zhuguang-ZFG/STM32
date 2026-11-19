@@ -1,5 +1,7 @@
 # 贡献指南
 
+> **范围说明（2026-11-19）**：本文件写于 `mcu/` 独立书稿时期。B5 合并后，MCU 正文已并入根书稿（根 `docs/` + 根 `book/`），本目录的 `docs/`、`mcu-book/`、`scripts/`、`package*.json`、`.github/workflows/mcu-*.yml` 已退役，`mcu/` 只保留 `code/`、`.trellis/`、`video/`、`wiki/` 与仓库元文件。下面**写作标准（四件套、风格契约、动画规范、实物规范）是合并前的历史口径，只作历史参考**——现行写作要求以根 [内容风格指南](../docs/CONTENT_GUIDE.md) 为准（该指南用的是「教学合同 + 功能块」体系，不是四件套）。本文件中的路径与命令（`docs/<track>/…`、`docs/.vitepress/config.mts`、`scripts/local-gates.*`、`npm run …`、`mcu-book/…`）在本目录**不再可用**，站点与书稿门改在 Git 根执行，见根 [README](../README.md) 与根 [CONTRIBUTING](../CONTRIBUTING.md)。当前目录结构见 [README](README.md)。
+
 这个项目只有一个质量标准：**读者看完能讲给别人听，还能在板子上做出来**。以下规范都是为这一条服务的。
 
 ## 1. 内容深度标准（四件套）

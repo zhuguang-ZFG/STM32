@@ -1,6 +1,8 @@
 # 分阶段实施计划
 
-状态：全部为待执行项；已完成的历史导入只作为基线。参见 [需求](prd.md)、[设计](design.md) 与 [调查](research/findings.md)。
+状态：**部分已被后续决定取代**。本文成文于 B5 合并之前；B5（2026-11-14）把 MCU 正文并入根书稿并退役 `mcu/{docs,mcu-book,scripts,tests,package*,playwright.config.mjs}` 与 `mcu-*.yml` 五个工作流，因此原 P2/P3/P4 中依赖 MCU 独立站点的项不再适用。逐条判定见 [P0 执行快照](research/execution-snapshot-2026-11-19.md)（2026-11-19）。现行依据是 [`plans/2026-11-12-merged-book/`](../../2026-11-12-merged-book/README.md)。
+
+已完成的历史导入只作为基线。参见 [需求](prd.md)、[设计](design.md) 与 [调查](research/findings.md)。
 
 ## 1. 阶段与依赖
 
