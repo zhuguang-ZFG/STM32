@@ -138,3 +138,22 @@ Nov-11 计划（`implement.md`）成文于 B5 之前。按当前事实逐条判�
 - `links.yml` 的 `docs/**/*.md` 覆盖不到根 `CONTRIBUTING.md`，也覆盖不到 `mcu/`。
 
 因此本批的验证证据只有本地门：`tools/slop_lint.py`、`tools/check_assets.py`、`python -m book.build_html --check`、`python -m unittest discover -s book/tests`。扩展 `paths` 属 CI 策略变更，需明确指令后才动；本轮未修改任何工作流文件。
+
+### 手动补跑（2026-11-19）
+
+`paths` 不会自动触发，但 `merge-check.yml` 与 `book.yml` 都带 `workflow_dispatch`，因此按分支手动补跑，让这两道门在本批提交上真实留证：
+
+| 工作流 | run ID | 触发 | 覆盖 SHA | 结果 |
+| --- | --- | --- | --- | --- |
+| Merge Check | `44462385575` | `workflow_dispatch` | `df187f3d` | success（含 `Run book checks` 与 `Run script tests` 两步均 success） |
+| Book CI | `44462518910` | `workflow_dispatch` | `df187f3d` | success（`book` 作业含 `Build print HTML` / `Build PDF` / `Build EPUB` / 产物体量断言全部 success；`scripts` 作业 success） |
+
+本地等价复跑（同一批命令，同一台机器）：`book.manifest --check`、`book.mapping --check`、`unittest discover book/tests`（OK）、`book.checks --check`（checks passed）、`slop_lint` 全章节（干净）、`book.build_html --check`（53 页）、`node --test scripts/tests/*.test.mjs`（32 通过 / 0 失败）。
+
+两道门都在 `df187f3d` 上绿。此后写回本节会推进分支尖端，因此把「新尖端是否仍被覆盖」限定到**唯一变更路径**来核：
+
+- 相对 `df187f3d`，后续改变只有 `plans/2026-11-11-mcu-merge/research/execution-snapshot-2026-11-19.md` 一个文件。
+- 该文件不被任何门步骤读取。门实际从 `plans/` 读取的路径只有两处：`book/mapping.py:12` 的 `plans/2026-11-12-merged-book/mapping.json`、`book/mapping.py:68` 的 `plans/2026-11-11-motor-control/chapters-draft`；测试侧只有 `scripts/tests/legacy-redirects.test.mjs:11` 读同一个 `mapping.json`，`book/tests/test_figure_sources.py:10` 排除的是 `docs/superpowers/plans/`。在 `book/`、`scripts/`、`tools/` 全树 grep `2026-11-11-mcu-merge` 无命中。
+
+所以这条记录的写入不改变任何门的输入；`df187f3d` 的绿灯结果对后续尖端同样成立。这不等于缺口消失：下次改 `mcu/**`、本计划目录或根 `CONTRIBUTING.md` 依旧不会自动触发，仍要手动 dispatch 或先扩 `paths`。另：`main` 未设分支保护、无 required checks，「绿」不构成合入阻塞，只是证据。
+
