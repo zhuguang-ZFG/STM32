@@ -43,16 +43,18 @@ function walk(dir, out = []) {
 }
 
 /**
- * 汇总所有可能引用资源名的文本：HTML、CSS、运行时 JSON 与脚本。
+ * 汇总所有可能引用资源名的文本：HTML、CSS、VitePress 打包出的 JS
+ * （`scenes.json` 会整份嵌进 bundle，905 条资源路径在那里）、
+ * 以及 public 下的运行时 JSON 与脚本。
  * 用「文件名出现」而不是精确路径，宁可少剪也不要剪掉被引用的图。
  */
 export function collectReferences(dist, publicDir) {
   const parts = []
   for (const file of walk(dist)) {
-    if (/\.(html|css)$/i.test(file)) parts.push(fs.readFileSync(file, 'utf8'))
+    if (/\.(html|css|js|mjs)$/i.test(file)) parts.push(fs.readFileSync(file, 'utf8'))
   }
   for (const file of walk(publicDir)) {
-    if (/\.(json|js)$/i.test(file)) parts.push(fs.readFileSync(file, 'utf8'))
+    if (/\.(json|js|mjs)$/i.test(file)) parts.push(fs.readFileSync(file, 'utf8'))
   }
   return parts.join('\n')
 }

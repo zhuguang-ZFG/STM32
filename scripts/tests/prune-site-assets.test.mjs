@@ -75,3 +75,22 @@ test('runtime json and js references protect their images', () => {
     fs.rmSync(root, { recursive: true, force: true })
   }
 })
+test('bundled dist JS protects the images it builds URLs for', () => {
+  const root = makeTree({
+    'index.html': '<html></html>',
+    'assets/app.abc123.js': 'const src="/STM32/anim/runtime-only.svg"',
+    'anim/runtime-only.svg': '<svg/>',
+    'images/dead.png': 'x',
+  })
+  try {
+    const orphans = findOrphans(root, '').map((f) => path.relative(root, f))
+    // 空引用文本时两者都算孤儿；接入 collectReferences 后只剩真正没人提的那个
+    assert.equal(orphans.includes(path.join('images', 'dead.png')), true)
+    const { removed } = pruneSiteAssets({ dist: root, publicDir: root })
+    assert.equal(removed, 1)
+    assert.ok(fs.existsSync(path.join(root, 'anim/runtime-only.svg')), 'bundle 引用的 svg 必须保留')
+    assert.ok(!fs.existsSync(path.join(root, 'images/dead.png')))
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true })
+  }
+})

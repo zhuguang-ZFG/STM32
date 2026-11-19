@@ -108,3 +108,7 @@ CI 预置风险（首跑前写下的两条）已被证实必要：Chromium 必�
 新增回归：`scripts/tests/prune-site-assets.test.mjs` 3 项（只剪未引用位图 / `assets/`+`scenes/` 豁免 / 运行时 JSON+JS 引用保护 + dry-run 不删文件），`check-site-pages.test.mjs` 增 1 项图片属性检查。本地 `node --test scripts/tests/*.test.mjs` 28 项、`python -m unittest discover book/tests` 102 项全通过；`site:build` 与 `site:smoke` 10/10 通过。
 
 未做：把 29 MB PNG 转 WebP。印刷 HTML/EPUB 与站点共用同一批图片，换格式要同步改三条管线和全部正文引用；当前页面实际引用的大图最大仅 118 KB，收益不足以承担这个改动面。
+
+剪枝的引用语料必须含 VitePress 打包出的 JS：`scenes.json` 会整份嵌进 bundle，实测 905 条资源路径只出现在 `dist/assets/*.js` 里。补上后与旧语料的孤儿集合相同（214 个、18.8 MB），即此前的删除没有误伤运行时资源；`prune-site-assets.test.mjs` 增 1 项钉住「bundle 引用的 svg 必须保留」。
+
+首图保持 `lazy` 不改成 eager：浏览器会立即加载视口内的 `loading="lazy"` 图片（Chrome 的懒加载阈值远超首屏），而每张图都带显式 `width`/`height`，CLS 不受影响；引入「每页首图 eager」需要跨页计数，收益不抵复杂度。
