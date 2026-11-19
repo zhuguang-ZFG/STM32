@@ -147,6 +147,8 @@ Nov-11 计划（`implement.md`）成文于 B5 之前。按当前事实逐条判�
 | --- | --- | --- | --- | --- |
 | Merge Check | `44462385575` | `workflow_dispatch` | `df187f3d` | success（含 `Run book checks` 与 `Run script tests` 两步均 success） |
 | Book CI | `44462518910` | `workflow_dispatch` | `df187f3d` | success（`book` 作业含 `Build print HTML` / `Build PDF` / `Build EPUB` / 产物体量断言全部 success；`scripts` 作业 success） |
+| Merge Check | `44464230308` | `workflow_dispatch` | `818ef375`（记录提交后的尖端） | success |
+| Book CI | `44464237479` | `workflow_dispatch` | `818ef375`（记录提交后的尖端） | success（`book` 与 `scripts` 两个作业均 success，耗时 12 分钟级；唯一 annotation 是 `actions/upload-artifact@v5` 的 Node 20 弃用提示，不影响结论） |
 
 本地等价复跑（同一批命令，同一台机器）：`book.manifest --check`、`book.mapping --check`、`unittest discover book/tests`（OK）、`book.checks --check`（checks passed）、`slop_lint` 全章节（干净）、`book.build_html --check`（53 页）、`node --test scripts/tests/*.test.mjs`（32 通过 / 0 失败）。
 
@@ -155,5 +157,5 @@ Nov-11 计划（`implement.md`）成文于 B5 之前。按当前事实逐条判�
 - 相对 `df187f3d`，后续改变只有 `plans/2026-11-11-mcu-merge/research/execution-snapshot-2026-11-19.md` 一个文件。
 - 该文件不被任何门步骤读取。门实际从 `plans/` 读取的路径只有两处：`book/mapping.py:12` 的 `plans/2026-11-12-merged-book/mapping.json`、`book/mapping.py:68` 的 `plans/2026-11-11-motor-control/chapters-draft`；测试侧只有 `scripts/tests/legacy-redirects.test.mjs:11` 读同一个 `mapping.json`，`book/tests/test_figure_sources.py:10` 排除的是 `docs/superpowers/plans/`。在 `book/`、`scripts/`、`tools/` 全树 grep `2026-11-11-mcu-merge` 无命中。
 
-所以这条记录的写入不改变任何门的输入；`df187f3d` 的绿灯结果对后续尖端同样成立。这不等于缺口消失：下次改 `mcu/**`、本计划目录或根 `CONTRIBUTING.md` 依旧不会自动触发，仍要手动 dispatch 或先扩 `paths`。另：`main` 未设分支保护、无 required checks，「绿」不构成合入阻塞，只是证据。
+所以这条记录的写入不改变任何门的输入。该论证按**文件**成立，不绑定具体提交：此后凡只改 `plans/2026-11-11-mcu-merge/**` 的提交同样不影响任何门；纪律上仍以「先在尖端实跑一遍」为准，上表 `818ef375` 两行即为此而跑。这不等于缺口消失：下次改 `mcu/**`、本计划目录或根 `CONTRIBUTING.md` 依旧不会自动触发，仍要手动 dispatch 或先扩 `paths`。另：`main` 未设分支保护、无 required checks，「绿」不构成合入阻塞，只是证据。
 
