@@ -75,7 +75,7 @@
 
 | 对象 | 抽样 | 结果 |
 | --- | --- | --- |
-| 书页深链 | 从 `dist` 的 54 页按步长取 12 页（附录 A/E、v0 01/05、v1 09/13/17、v3 21/25、v4 29/33、v5 37），另补 `onramp` 首末、`v2-reliability` 首末、`v6-labs-projects` 首末、`v7-delivery` 首末共 7 页 | 19/19 HTTP 200，全部带指向自身的 `<link rel="canonical">`；无重复 `<title>` |
+| 书页深链 | 从 `dist` 的 54 页按步长取 12 页（附录 A/E、v0 01/05、v1 09/13/17、v3 21/25、v4 29/33、v5 37），另补 7 页：`onramp/00-from-box-to-blink`、`v2-reliability` 首末、`v6-labs-projects` 首末、`v7-delivery` 首末（`onramp` 全卷只有这 1 页） | 19/19 HTTP 200，全部带指向自身的 `<link rel="canonical">`；无重复 `<title>` |
 | 页面资产 | `v1-drivers/17-flash-iap-ota` 与 `v5-motion/37-dc-motor-openloop` 引用的 8 个 SVG/PNG + 两页各自的 `assets/app.*.js` | 10/10 HTTP 200 |
 | 旧链存根 | 131 条中取首/中/尾 3 条（`mcu/404.html`、`mcu/lab/e04-priority-inversion.html`、`mcu/video/f3-scheduler-storyboard.html`），解析 `meta refresh` 目标后**单独请求目标页** | 存根 200；目标页 200（27686 / 171378 / 113905 字节） |
 | `sitemap.xml` | 全量 | 54 条 `<loc>`，与 54 个书页一一对应 |
@@ -84,11 +84,12 @@
 
 ### 爬虫约定（本轮新增）
 
-审计 55 个产物页时发现两处缺口，均已修复并钉成构建后检查：
+审计 55 个产物页时发现 404 页可被索引，已修复并钉成构建后检查：
 
-- **404 可被索引**：VitePress 默认不给 `404.html` 加 `robots` 元信息。`config.mts` 的 `transformHead` 对 `pageData.isNotFound` 直接返回 `noindex`（不再输出 canonical）。
-- **没有 `robots.txt`**：新增 `docs/public/robots.txt`，声明 `Allow: /` 与绝对 `Sitemap:` 行。
-- 两者由 `scripts/check-site-pages.mjs` 的 `checkCrawlability()` 在构建后断言（`404 noindex 与 robots.txt 就位`），并有 1 项 Node 回归测试覆盖「缺文件 / 可索引 404 / 相对 Sitemap」三种失败形态。
+- **404 可被索引**：VitePress 默认不给 `404.html` 加 `robots` 元信息。`config.mts` 的 `transformHead` 对 `pageData.isNotFound` 直接返回 `noindex`（不再输出 canonical），构建产物里实测存在 `<meta name="robots" content="noindex">`。
+- 该不变量由 `scripts/check-site-pages.mjs` 的 `checkNotFoundIndexing()` 在构建后断言（`404 noindex 就位`），并有 1 项 Node 回归测试覆盖「缺文件 / 可索引 404 / 精确标签」三种形态。
+
+**未做且不做**：`robots.txt`。站点挂在 `/STM32/` 下，产物只能落到 `/STM32/robots.txt`，而爬虫只读源站根 `/robots.txt`——那属于 `zhuguang-ZFG.github.io` 仓库，本仓库无法控制。写入一份不生效的 robots 只会制造「已配置」的错觉，故改为在控制台手动提交 sitemap。`sitemap.xml` 本身 54 条 `<loc>` 正常产出。
 
 审计的其余项均通过：55 页全部有 canonical、`description`、`og:title`，标题无重复。
 

@@ -50,31 +50,25 @@ test('actualPages includes nested pages of a real tree', async () => {
   }
 })
 
-test('checkCrawlability requires 404 noindex and a sitemap robots.txt', async () => {
+test('checkNotFoundIndexing flags a missing or indexable 404', async () => {
   const { mkdtemp, writeFile, rm } = await import('node:fs/promises')
   const { tmpdir } = await import('node:os')
   const { join } = await import('node:path')
-  const { checkCrawlability } = await import('../check-site-pages.mjs')
-  const dist = await mkdtemp(join(tmpdir(), 'crawl-'))
+  const { checkNotFoundIndexing } = await import('../check-site-pages.mjs')
+  const dist = await mkdtemp(join(tmpdir(), 'indexing-'))
   try {
-    // 缺 404 与 robots.txt：两条都要报出来，不能只报第一条就短路
-    assert.equal(checkCrawlability(dist).ok, false)
-    assert.equal(checkCrawlability(dist).problems.length, 2)
+    // 没有 404.html：报缺文件
+    assert.equal(checkNotFoundIndexing(dist).ok, false)
+    assert.match(checkNotFoundIndexing(dist).problems[0], /不存在/)
 
-    // 404 可索引（VitePress 默认形态）：必须失败
+    // VitePress 默认形态（可索引）：必须失败
     await writeFile(join(dist, '404.html'), '<html><head></head></html>')
-    await writeFile(join(dist, 'robots.txt'), 'User-agent: *\nAllow: /\nSitemap: https://x/STM32/sitemap.xml\n')
-    const indexable = checkCrawlability(dist)
-    assert.equal(indexable.ok, false)
-    assert.match(indexable.problems[0], /404\.html/)
+    assert.equal(checkNotFoundIndexing(dist).ok, false)
+    assert.match(checkNotFoundIndexing(dist).problems[0], /noindex/)
 
-    // 两处都补齐后才通过
+    // transformHead 产出的精确标签才通过
     await writeFile(join(dist, '404.html'), '<html><head><meta name="robots" content="noindex"></head></html>')
-    assert.deepEqual(checkCrawlability(dist), { ok: true, problems: [] })
-
-    // 相对 Sitemap 行同样算失败：爬虫要求绝对 URL
-    await writeFile(join(dist, 'robots.txt'), 'User-agent: *\nSitemap: sitemap.xml\n')
-    assert.equal(checkCrawlability(dist).ok, false)
+    assert.deepEqual(checkNotFoundIndexing(dist), { ok: true, problems: [] })
   } finally {
     await rm(dist, { recursive: true, force: true })
   }
