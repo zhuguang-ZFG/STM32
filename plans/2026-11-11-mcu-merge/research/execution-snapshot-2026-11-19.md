@@ -112,3 +112,20 @@ Nov-11 计划（`implement.md`）成文于 B5 之前。按当前事实逐条判�
 - **现行段落**（`mcu/README.md` 的「现在读什么、跑什么」「书稿构建在哪里」、根 `CONTRIBUTING.md` 的改动处、本文件全部链接）：逐条实测存在，0 死链。
 - **历史段落**（`mcu/CONTRIBUTING.md` 正文）：4 条指向已删除树的引用（`docs/c/06-abi-stack.md`、`docs/stm32/00-env.md`、`docs/lab/e01-blink.md`、`docs/lab/template.md`）已从可点链接改为行内代码文本，只作历史记录、不提供跳转。文件顶部范围说明同时声明写作标准降为历史参考、现行要求指向根 `docs/CONTENT_GUIDE.md`。
 - 检查脚本会再报一条 `/anim/xxx.svg`：该处在反引号包裹的行内代码里，是说明图片语法的示例文本，不构成可点链接（扫描器按正则匹配到它，属误报）。
+
+## 8. 门禁覆盖缺口（2026-11-19 实测）
+
+候选分支 `feat/mcu-merge-p1` 推送后 `gh api repos/zhuguang-ZFG/STM32/actions/runs?head_sha=<sha>` 返回 `total_count = 0`。两条原因必须分开讲，不能合并成「等 CI」：
+
+| 工作流 | 触发条件 | 本批改动是否命中 |
+| --- | --- | --- |
+| `merge-check.yml` | `pull_request` + `push`（`main`），`paths`：`book/**`、`docs/**`、`plans/2026-11-12-merged-book/**`、`plans/2026-11-11-motor-control/**`、`scripts/legacy-redirects.mjs`、`scripts/tests/**`、`tools/slop_lint.py` | 否 |
+| `book.yml` | `push`（`main`）+ `pull_request`，`paths`：`docs/**`、`book/**`、`scripts/**`、`plans/2026-11-12-merged-book/**`、`tools/slop_lint.py`、自身 | 否 |
+| `site.yml`、`deploy.yml`、`motor-control.yml` | `push: branches: [main]` | 否（也未推 `main`） |
+
+1. **推特性分支不触发任何工作流**：所有 `push` 触发器都限定 `branches: [main]`。
+2. **开 PR 同样不会触发这两道门**：`pull_request` 的 `paths` 过滤器不包含本批任何路径。
+
+本批实际改动为 `mcu/README.md`、`mcu/CONTRIBUTING.md`、根 `CONTRIBUTING.md`、`plans/2026-11-11-mcu-merge/**`。`mcu/**`、根 `CONTRIBUTING.md`、`plans/2026-11-11-mcu-merge/**` 均不在任何 `paths` 列表内；列表里的 `plans/2026-11-12-merged-book/**` 与 `plans/2026-11-11-motor-control/**` 是另外两个计划目录，覆盖不到本计划。
+
+因此本批的验证证据只有本地门：`tools/slop_lint.py`、`tools/check_assets.py`、`python -m book.build_html --check`、`python -m unittest discover -s book/tests`。扩展 `paths` 属 CI 策略变更，需明确指令后才动；本轮未修改任何工作流文件。
