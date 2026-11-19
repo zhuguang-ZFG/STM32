@@ -1,6 +1,6 @@
 # P4 验收记录（2026-11-19）
 
-候选分支 `feat/mcu-merge-p1`，PR #140（草稿）；本记录成文时尖端 `1c0ee761`，此前各轮为 `6b8d9b48`、`c85bbb1e`、`6f151cb5`、`649fba2b`、`818ef375`、`df187f3d`。基线 `main@4882857e`（未动）。本记录逐条对照 [`prd.md`](../prd.md) §3 的 AC1–AC8 判，证据只写本次实测或可复算的值。
+候选分支 `feat/mcu-merge-p1`，PR #140（草稿）；本记录成文时尖端 `f3b3a55b`，此前各轮为 `1c0ee761`、`6b8d9b48`、`c85bbb1e`、`6f151cb5`、`649fba2b`、`818ef375`、`df187f3d`。基线 `main@4882857e`（未动）。本记录逐条对照 [`prd.md`](../prd.md) §3 的 AC1–AC8 判，证据只写本次实测或可复算的值。
 
 ## 结论
 
@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | AC1 | `PASS` | 来源祖先成立；1580 条差异全部落在已记录事件内；迁移前修改未被覆盖 |
 | AC2 | `SUPERSEDED` | 原文要求「两书并存且入口区分」，B5 已改为单书模型；后继检查另列，不计作 AC2 通过 |
-| AC3 | `NOT PASSED` | 下载入口 404；搜索/锚点/动画/导读的浏览器回归未做 |
+| AC3 | `NOT PASSED` | 下载入口四条 404；站内导航（深链、旧链、锚点、动画、搜索、交互）已由 staging 冒烟覆盖 |
 | AC4 | `UNVERIFIED` | 存根约束由组装脚本断言，但候选 SHA 与 `main` 都没有对应 deploy 运行，artifact 无从核对 |
 | AC5 | `NOT PASSED` | 英文书门与 MCU 的 quality/browser/book/ARM-host/ESP32 门都已不存在；AC5 原文规定缺门不得放行 |
 | AC6 | `PASS` | 23 个活动任务可解析；历史任务未被归档或改判 |
@@ -104,7 +104,7 @@ smoke passed: 11/11
   为什么不对「顶端对齐 0」下断言：锚点落地后，上方懒加载内容仍会撑高页面，实测把目标从 `top=0` 推到 `top=110`。那是回流，不是锚点失效，因此判据取「滚动发生 + 目标在视口内」。
 
   负向验证两条都做了：去掉 hash（元素在但没滚动）→ `FAIL ... scrollY=0 top=16338`；换成不存在的 id → `FAIL ... found=false scrollY=0 top=null`。两种都 `smoke failed: 1/11`，说明断言不是摆设。
-- 该冒烟已在 CI 中执行（`.github/workflows/site.yml:67`、`deploy.yml:64`），因此新增断言会随站点改动持续生效；但它只覆盖 staging，线上仍需 AC8 的回读。
+- 该冒烟已在 CI 中执行（`.github/workflows/site.yml:67`、`deploy.yml:64`），因此新增断言会随站点改动持续生效；`f3b3a55b` 的 Site CI（run `44472765437`）日志同样是 `smoke passed: 11/11`，锚点行为 `scrollY=16314 top=110`。但它只覆盖 staging，线上仍需 AC8 的回读。
 
 旧路径负例仍在：`scripts/legacy-redirects.mjs` + `scripts/tests/legacy-redirects.test.mjs`（32 项测试全过，含负例）。
 
