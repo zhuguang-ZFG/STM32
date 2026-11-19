@@ -103,7 +103,7 @@ CI 预置风险（首跑前写下的两条）已被证实必要：Chromium 必�
 | --- | --- | --- |
 | 图片懒加载 | 333 个 `<img>` 全部没有 `loading`；单页最多 13 张、合计 0.4–0.5 MB 的 PNG | Markdown 图片规则与 `StickScene` 的 `<noscript>` 回退图都补 `loading="lazy" decoding="async"`；333/333 通过 |
 | 死资源随站点发布 | `dist` 中 214 个未被引用的资源（18.8 MB）：103 PNG + 101 SVG + 5 GIF + 5 JPG，未被任何页面、CSS、`scenes/*.json` 或 `scenes/*.js` 引用 | 新增 `scripts/prune-site-assets.mjs`，只剪 `dist`，永不触碰 `assets/` 与 `scenes/`；`dist` 44 MB → 26 MB |
-| 图片策略无门 | 懒加载与尺寸注入分属 Markdown 规则与 Vue 组件两条路径，肉眼不可验 | 新增 `scripts/check-site-images.mjs`（`site images: 333 张全部 lazy + async`），`site.yml`/`deploy.yml` 与 `site:build` 都已接入 |
+| 图片策略无门 | 懒加载与尺寸注入分属 Markdown 规则与 Vue 组件两条路径，肉眼不可验 | 新增 `scripts/check-site-images.mjs`（`site images: 333 张全部 lazy + async + 有显式宽高`），`site.yml`/`deploy.yml` 与 `site:build` 都已接入 |
 
 新增回归：`scripts/tests/prune-site-assets.test.mjs` 4 项（只剪未引用资源 / `assets/`+`scenes/` 豁免 / 运行时 JSON+JS 引用保护 + dry-run 不删文件）、`check-site-images.test.mjs` 1 项（懒加载 + 异步解码 + 显式宽高）、`sync-scene-dims.test.mjs` 3 项（PNG 头解析 / 写入后校验通过 / 缺 fallback 不猜）。本地 `node --test scripts/tests/*.test.mjs` 32 项、`python -m unittest discover book/tests` 104 项全通过；`site:build` 与 `site:smoke` 10/10 通过。
 
