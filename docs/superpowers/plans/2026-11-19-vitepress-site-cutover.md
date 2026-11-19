@@ -111,4 +111,11 @@ CI 预置风险（首跑前写下的两条）已被证实必要：Chromium 必�
 
 剪枝的引用语料必须含 VitePress 打包出的 JS：`scenes.json` 会整份嵌进 bundle，实测 905 条资源路径只出现在 `dist/assets/*.js` 里。补上后与旧语料的孤儿集合相同（214 个、18.8 MB），即此前的删除没有误伤运行时资源；`prune-site-assets.test.mjs` 增 1 项钉住「bundle 引用的 svg 必须保留」。
 
-首图保持 `lazy` 不改成 eager：浏览器会立即加载视口内的 `loading="lazy"` 图片（Chrome 的懒加载阈值远超首屏），而每张图都带显式 `width`/`height`，CLS 不受影响；引入「每页首图 eager」需要跨页计数，收益不抵复杂度。
+首图保持 `lazy` 不改成 eager：浏览器会立即加载视口内的 `loading="lazy"` 图片（Chrome 的懒加载阈值远超首屏）；引入「每页首图 eager」需要跨页计数，收益不抵复杂度。
+
+尺寸补齐（333/333）：初测只有 323 张 `<img>` 带显式宽高。缺口分两类，都已修：
+
+- 附录 C 的原始 HTML 只写 `width="760"`：`book-markdown` 的 HTML 分支现在按原图比例补出高度。
+- `StickScene` 的 `<noscript>` 回退图没有尺寸：尺寸从 PNG 头读出写进 `docs/.vitepress/data/scenes.json`（`scripts/sync-scene-dims.mjs --write`），组件据此输出 `width`/`height`；`--check` 作为 `site:dims` 接进 `site:build`、`site.yml`、`deploy.yml`，换图后尺寸漂移会直接失败。
+
+`check-site-images.mjs` 现在同时断言「333 张全部 lazy + async + 有显式宽高」，不再只看前两项。

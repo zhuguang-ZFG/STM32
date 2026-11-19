@@ -24,7 +24,8 @@ python -m book.build_html --check
 ```sh
 npm run docs:build                    # 站点 → docs/.vitepress/dist（base /STM32/）
 npm run site:pages                    # 页面集合必须与 docs/manifest.json 一一对应
-npm run site:images                   # 每张 <img> 必须 loading="lazy" + decoding="async"
+npm run site:dims                     # 场景回退图尺寸必须与 PNG 头一致
+npm run site:images                   # 每张 <img> 必须 lazy + async + 有显式宽高
 npm run site:prune                    # 剪掉 dist 里未被任何页面/运行时引用的位图
 npm run site:stubs && npm run site:assemble && npm run site:smoke
 python -m book.build_html --check     # 内容渲染契约：53 页可渲染（不产站点）

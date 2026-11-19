@@ -18,6 +18,39 @@ function addLazyAttrs(tag: string, attrs: string): string {
   return `<img loading="lazy"${plus}${attrs}>`
 }
 
+function attrValue(attrs: string, name: string): string | null {
+  const match = attrs.match(new RegExp(`\\b${name}="([^"]*)"`, 'i'))
+  return match ? match[1] : null
+}
+
+/**
+ * Raw-HTML images: 正文只写 width 时按原图比例补高度，再补懒加载属性。
+ * 尺寸读不到就原样返回（宁可没尺寸，也不要写错比例）。
+ */
+function normalizeRawImg(tag: string, attrs: string, docsRoot: string): string {
+  let width = attrValue(attrs, 'width')
+  let height = attrValue(attrs, 'height')
+  const src = attrValue(attrs, 'src')
+  if ((!width || !height) && src) {
+    const size = imageSize(src, docsRoot)
+    if (size) {
+      if (!width && !height) {
+        width = String(size[0])
+        height = String(size[1])
+      } else if (width) {
+        height = String(Math.round((size[1] * Number.parseFloat(width)) / size[0]))
+      } else {
+        width = String(Math.round((size[0] * Number.parseFloat(height as string)) / size[1]))
+      }
+    }
+  }
+  if (width && height) {
+    const rest = attrs.replace(/\s(?:width|height)="[^"]*"/g, '')
+    tag = `<img width="${width}" height="${height}"${rest}>`
+  }
+  return addLazyAttrs(tag, tag.replace(/^<img\b/i, '').replace(/>$/, ''))
+}
+
 export interface BookMarkdownOptions {
   base: string
   docsRoot: string
@@ -158,10 +191,28 @@ export function bookMarkdown(md: any, options: BookMarkdownOptions): void {
   if (image) {
     md.renderer.rules.image = (tokens: any[], idx: number, opts: any, env: any, self: any) => {
       const token = tokens[idx]
-      let out: string = image(tokens, idx, opts, env, self)
-      if (!token.attrGet('width') && !token.attrGet('height')) {
+      let width = token.attrGet('width')
+      let height = token.attrGet('height')
+      if (!width || !height) {
+        // 正文常只写 width（`<img width="760">`）：按原图比例补出缺失的一维，
+        // 否则窄屏上仍会跳版。
         const size = imageSize(token.attrGet('src') ?? '', docsRoot)
-        if (size) out = out.replace(IMG_TAG_RE, `<img width="${size[0]}" height="${size[1]}"$1>`)
+        if (size) {
+          if (!width && !height) {
+            width = String(size[0])
+            height = String(size[1])
+          } else if (width) {
+            height = String(Math.round((size[1] * Number.parseFloat(width)) / size[0]))
+          } else {
+            width = String(Math.round((size[0] * Number.parseFloat(height)) / size[1]))
+          }
+        }
+      }
+      let out: string = image(tokens, idx, opts, env, self)
+      if (width && height) {
+        out = out.replace(IMG_TAG_RE, (tag: string, attrs: string) =>
+          `<img width="${width}" height="${height}"${attrs.replace(/\s(?:width|height)="[^"]*"/g, '')}>`,
+        )
       }
       return out.replace(IMG_TAG_RE, (tag: string, attrs: string) => addLazyAttrs(tag, attrs))
     }
@@ -174,7 +225,9 @@ export function bookMarkdown(md: any, options: BookMarkdownOptions): void {
       const content: string = inner
         ? inner(tokens, idx, opts, env, self)
         : tokens[idx].content
-      return content.replace(new RegExp(`<img\\b([^>]*)>`, 'gi'), (tag: string, attrs: string) => addLazyAttrs(tag, attrs))
+      return content.replace(new RegExp(`<img\\b([^>]*)>`, 'gi'), (tag: string, attrs: string) =>
+        normalizeRawImg(tag, attrs, docsRoot),
+      )
     }
   }
 }

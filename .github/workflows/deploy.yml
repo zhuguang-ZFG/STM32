@@ -47,6 +47,8 @@ jobs:
         run: npm run docs:build
       - name: Page set matches manifest
         run: npm run site:pages
+      - name: Scene fallback dims match the PNGs
+        run: npm run site:dims
       - name: Every image is lazy + async
         run: npm run site:images
       - name: Prune unreferenced site assets

@@ -48,7 +48,10 @@ export function checkImages(dist) {
   const images = scanImages(dist)
   const notLazy = images.filter(({ tag }) => !/\bloading="lazy"/.test(tag))
   const notAsync = images.filter(({ tag }) => !/\bdecoding="async"/.test(tag))
-  return { total: images.length, notLazy, notAsync, ok: notLazy.length === 0 && notAsync.length === 0 }
+  // 显式宽高是 CLS 的前提；懒加载不该把布局位移换成另一种抖动。
+  const notSized = images.filter(({ tag }) => !/\bwidth="\d+"/.test(tag) || !/\bheight="\d+"/.test(tag))
+  const ok = notLazy.length === 0 && notAsync.length === 0 && notSized.length === 0
+  return { total: images.length, notLazy, notAsync, notSized, ok }
 }
 
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
@@ -57,11 +60,12 @@ if (isMain) {
   if (!fs.existsSync(args.dist)) throw new Error(`${args.dist}: 构建产物不存在，先跑 npm run docs:build`)
   const result = checkImages(args.dist)
   if (result.ok) {
-    console.log(`site images: ${result.total} 张全部 lazy + async`)
+    console.log(`site images: ${result.total} 张全部 lazy + async + 有显式宽高`)
     process.exit(0)
   }
   for (const { page, tag } of result.notLazy) console.error(`NOT-LAZY ${page} ${tag.slice(0, 100)}`)
   for (const { page, tag } of result.notAsync) console.error(`NOT-ASYNC ${page} ${tag.slice(0, 100)}`)
-  console.error(`site images: ${result.notLazy.length} 未懒加载, ${result.notAsync.length} 未异步解码`)
+  for (const { page, tag } of result.notSized) console.error(`NO-SIZE ${page} ${tag.slice(0, 100)}`)
+  console.error(`site images: ${result.notLazy.length} 未懒加载, ${result.notAsync.length} 未异步解码, ${result.notSized.length} 缺宽高`)
   process.exit(1)
 }

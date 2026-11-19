@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import scenes from '../../data/scenes.json'
 
 const props = defineProps<{ scene: string }>()
-const meta = (scenes as Record<string, { label: string; caption: string; fallback: string }>)[props.scene]
+const meta = (scenes as Record<string, { label: string; caption: string; fallback: string; width: number; height: number }>)[props.scene]
 if (!meta) throw new Error(`unknown stick-scene id: ${props.scene}`)
 
 const base = import.meta.env.BASE_URL
@@ -21,7 +21,7 @@ function escapeAttr(value: string): string {
 const inner = computed(
   () =>
     `<stick-scene scene="${props.scene}" play="view" no-font aria-label="${escapeAttr(meta.label)}" style="height:240px;max-width:560px"></stick-scene>` +
-    `<noscript><img src="${base}${meta.fallback.replace(/^\//, '')}" alt="${escapeAttr(meta.caption)}" loading="lazy" decoding="async"></noscript>` +
+    `<noscript><img src="${base}${meta.fallback.replace(/^\//, '')}" alt="${escapeAttr(meta.caption)}" width="${meta.width}" height="${meta.height}" loading="lazy" decoding="async"></noscript>` +
     `<figcaption>${escapeAttr(meta.caption)}</figcaption>`,
 )
 
