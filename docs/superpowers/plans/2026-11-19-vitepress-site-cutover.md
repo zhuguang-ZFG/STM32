@@ -58,8 +58,11 @@
 | Book / Site / 部署 / Merge Check（`df141eed`，`workflow_dispatch` 补跑） | `44372755385` / `44372763574` / `44372770172` / `44372778962` 全部 success |
 | Book / Site / 部署 / Merge Check（`ca5583ec`，`workflow_dispatch` 补跑） | `44375569786` / `44375550379` / `44375555847` / `44375562693` 全部 success；`dist` 实测 55 个 HTML、无 `superpowers` 产物 |
 | Merge Check / Book CI（`60c91ae3`，真实 push 触发） | `44378016890` / `44378017168` success；Site CI 与部署未触发，`!docs/superpowers/**` 按预期生效 |
+| Site CI `44447390143` / Book CI `44447390190` / 部署 `44447390212` / Merge Check `44447390196`（`58ce14de`，性能与尺寸工作的最终 SHA） | 全部 success；Site CI 与部署实跑了 `site:dims` + `site:images` 两项新门，Book CI 实跑含新增 `test_scene_metadata` 的 104 项 |
+| 性能工作链上的中间 SHA（`760802da` / `a0d26f64` / `23430316`） | 只作过程参考：这三个推送的其余工作流被下一次 push 按 `cancel-in-progress` 取代（`cancelled`），并非失败；`760802da` 的 Merge Check、`a0d26f64` 的 Site CI+部署、`23430316` 的部署都已 success 后才被取代 |
+| `5f8a0951` / `4c3d623d` 无独立运行记录 | 二者随后一次 push 一同送达，事件头是后者（`a0d26f64` / `58ce14de`），GitHub 只对 head 提交建 run；不是丢跑 |
 
-上表截至 `60c91ae3`。此后仅改 `docs/superpowers/**` 的提交只会自然触发 Merge Check 与 Book CI，不再逐条登记。
+登记到此为止：再往后凡只改 `docs/superpowers/**` 的提交，按路径过滤只会触发 Merge Check 与 Book CI（Site CI 与部署排除该目录），不再逐条登记。
 
 一次流程失误与修正：`df141eed`（补记本表）的提交标题带了跳过标记，导致 `docs/**` 触发的四门整体被跳过——`srcExclude` 只影响站点内容，不会豁免工作流触发，这与根 `AGENTS.md` 的「门禁不降级」冲突。该提交已推送，不能 force-push 改写，故对同一 HEAD `df141eed` 显式派发四门补齐覆盖。
 
