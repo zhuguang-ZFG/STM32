@@ -47,6 +47,10 @@ jobs:
         run: npm run docs:build
       - name: Page set matches manifest
         run: npm run site:pages
+      - name: Every image is lazy + async
+        run: npm run site:images
+      - name: Prune unreferenced site assets
+        run: npm run site:prune
       # 旧 /mcu/** 全量跳转存根（131 页；覆盖率不足即失败）
       - name: Generate legacy redirect stubs
         run: npm run site:stubs

@@ -94,3 +94,17 @@
 审计的其余项均通过：55 页全部有 canonical、`description`、`og:title`，标题无重复。
 
 CI 预置风险（首跑前写下的两条）已被证实必要：Chromium 必须先装（否则印刷集成测试由 skipped 变失败）；Node 固定 `24` 是因为 `site-config.test.mjs` 直接导入 `.mts`。
+
+## 性能与体积优化（2026-11-19 续）
+
+三处按产物实测确定，不靠估算：
+
+| 项 | 实测 | 处理 |
+| --- | --- | --- |
+| 图片懒加载 | 333 个 `<img>` 全部没有 `loading`；单页最多 13 张、合计 0.4–0.5 MB 的 PNG | Markdown 图片规则与 `StickScene` 的 `<noscript>` 回退图都补 `loading="lazy" decoding="async"`；333/333 通过 |
+| 死资源随站点发布 | `dist` 中 214 个位图（18.8 MB）未被任何页面、CSS、`scenes/*.json` 或 `scenes/*.js` 引用 | 新增 `scripts/prune-site-assets.mjs`，只剪 `dist`，永不触碰 `assets/` 与 `scenes/`；`dist` 44 MB → 26 MB |
+| 图片策略无门 | 懒加载与尺寸注入分属 Markdown 规则与 Vue 组件两条路径，肉眼不可验 | 新增 `scripts/check-site-images.mjs`（`site images: 333 张全部 lazy + async`），`site.yml`/`deploy.yml` 与 `site:build` 都已接入 |
+
+新增回归：`scripts/tests/prune-site-assets.test.mjs` 3 项（只剪未引用位图 / `assets/`+`scenes/` 豁免 / 运行时 JSON+JS 引用保护 + dry-run 不删文件），`check-site-pages.test.mjs` 增 1 项图片属性检查。本地 `node --test scripts/tests/*.test.mjs` 28 项、`python -m unittest discover book/tests` 102 项全通过；`site:build` 与 `site:smoke` 10/10 通过。
+
+未做：把 29 MB PNG 转 WebP。印刷 HTML/EPUB 与站点共用同一批图片，换格式要同步改三条管线和全部正文引用；当前页面实际引用的大图最大仅 118 KB，收益不足以承担这个改动面。

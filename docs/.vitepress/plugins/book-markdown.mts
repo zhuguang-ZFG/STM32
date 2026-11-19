@@ -11,6 +11,13 @@ import path from 'node:path'
 const SCENE_RE = /^\s*<!--\s*stick-scene:\s*([a-z0-9-]+)\s*-->\s*$/
 const IMG_TAG_RE = /<img\b([^>]*)>/i
 
+/** Decode off the main thread and defer offscreen bitmaps; never double-add. */
+function addLazyAttrs(tag: string, attrs: string): string {
+  if (/loading=/.test(attrs)) return tag
+  const plus = `${/decoding=/.test(attrs) ? '' : ' decoding="async"'}`
+  return `<img loading="lazy"${plus}${attrs}>`
+}
+
 export interface BookMarkdownOptions {
   base: string
   docsRoot: string
@@ -145,16 +152,29 @@ export function bookMarkdown(md: any, options: BookMarkdownOptions): void {
   md.renderer.rules.table_open = () => '<div class="table-scroll"><table>'
   md.renderer.rules.table_close = () => '</table></div>'
 
-  // 4. Reserve layout space for images before they load.
+  // 4. Reserve layout space for images before they load, and keep offscreen
+  //    bitmaps (0.5–1 MB PNGs here) out of the initial fetch burst.
   const image = md.renderer.rules.image
   if (image) {
     md.renderer.rules.image = (tokens: any[], idx: number, opts: any, env: any, self: any) => {
-      const out: string = image(tokens, idx, opts, env, self)
       const token = tokens[idx]
-      if (token.attrGet('width') || token.attrGet('height')) return out
-      const size = imageSize(token.attrGet('src') ?? '', docsRoot)
-      if (!size) return out
-      return out.replace(IMG_TAG_RE, `<img width="${size[0]}" height="${size[1]}"$1>`)
+      let out: string = image(tokens, idx, opts, env, self)
+      if (!token.attrGet('width') && !token.attrGet('height')) {
+        const size = imageSize(token.attrGet('src') ?? '', docsRoot)
+        if (size) out = out.replace(IMG_TAG_RE, `<img width="${size[0]}" height="${size[1]}"$1>`)
+      }
+      return out.replace(IMG_TAG_RE, (tag: string, attrs: string) => addLazyAttrs(tag, attrs))
+    }
+  }
+
+  // 4b. Raw-HTML images (appendix C, generated pages) bypass the rule above.
+  for (const type of ['html_block', 'html_inline']) {
+    const inner = md.renderer.rules[type]
+    md.renderer.rules[type] = (tokens: any[], idx: number, opts: any, env: any, self: any) => {
+      const content: string = inner
+        ? inner(tokens, idx, opts, env, self)
+        : tokens[idx].content
+      return content.replace(new RegExp(`<img\\b([^>]*)>`, 'gi'), (tag: string, attrs: string) => addLazyAttrs(tag, attrs))
     }
   }
 }

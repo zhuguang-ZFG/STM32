@@ -36,7 +36,7 @@ B5 后两书正文已合为《通往单片机之路》：根 `docs/` 与 `book/`
 | `mcu/` | MCU 来源子树：保留 `code/` 固件、任务历史与仓库元信息；旧文档、VitePress 与 `mcu-book/` 已合并退役 | [mcu/README.md](mcu/README.md)、[mcu/AGENTS.md](mcu/AGENTS.md) |
 | `video/` | 长课机器可读分镜、实际字幕、联系表与媒体报告；大 MP4 仍在忽略的 `final-videos/` | [video/README.md](video/README.md) |
 | `Makefile` | `assets` / `check` / `book`（VitePress 站点）/ `book-html` / `book-pdf` / `book-epub` / `book-check` / `site-check` / `stats` | 文件头注释 |
-| `.github/workflows/` | 四套：`book.yml`（书稿门 + HTML/PDF/EPUB 契约）、`site.yml`（站点构建 + 冒烟）、`deploy.yml`（组装/Pages）、`links.yml`（外链巡检）；本次本地结果不能替代远程 CI 证据 | — |
+| `.github/workflows/` | 五套：`book.yml`（书稿门 + HTML/PDF/EPUB 契约）、`site.yml`（构建 + 页面/图片/剪枝门 + 冒烟）、`deploy.yml`（组装/Pages）、`links.yml`（外链巡检）、`merge-check.yml`（PR 轻门）；本次本地结果不能替代远程 CI 证据 | — |
 
 下面两项目录在 [.gitignore](.gitignore) 里，只出现在作者本机，克隆仓库看不到：
 

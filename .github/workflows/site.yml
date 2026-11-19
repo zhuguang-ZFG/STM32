@@ -51,6 +51,10 @@ jobs:
         run: npm run docs:build
       - name: Page set matches manifest
         run: npm run site:pages
+      - name: Every image is lazy + async
+        run: npm run site:images
+      - name: Prune unreferenced site assets
+        run: npm run site:prune
       - name: Generate legacy stubs
         run: npm run site:stubs
       - name: Assemble Pages staging

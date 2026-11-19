@@ -12,8 +12,10 @@
     "site:assemble": "node scripts/site-assemble.mjs --dist docs/.vitepress/dist --stubs .temp/legacy-stubs --out .temp/pages-site",
     "site:smoke": "node scripts/site-smoke.mjs --root .temp/pages-site --mount /STM32",
     "site:links": "node scripts/check-external-links.mjs --root docs/.vitepress/dist",
-    "site:build": "npm run docs:build && npm run site:pages && npm run site:stubs && npm run site:assemble",
-    "site:pages": "node scripts/check-site-pages.mjs --dist docs/.vitepress/dist"
+    "site:build": "npm run docs:build && npm run site:pages && npm run site:images && npm run site:prune && npm run site:stubs && npm run site:assemble",
+    "site:pages": "node scripts/check-site-pages.mjs --dist docs/.vitepress/dist",
+    "site:images": "node scripts/check-site-images.mjs --dist docs/.vitepress/dist",
+    "site:prune": "node scripts/prune-site-assets.mjs --dist docs/.vitepress/dist"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",

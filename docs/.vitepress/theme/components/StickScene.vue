@@ -21,7 +21,7 @@ function escapeAttr(value: string): string {
 const inner = computed(
   () =>
     `<stick-scene scene="${props.scene}" play="view" no-font aria-label="${escapeAttr(meta.label)}" style="height:240px;max-width:560px"></stick-scene>` +
-    `<noscript><img src="${base}${meta.fallback.replace(/^\//, '')}" alt="${escapeAttr(meta.caption)}"></noscript>` +
+    `<noscript><img src="${base}${meta.fallback.replace(/^\//, '')}" alt="${escapeAttr(meta.caption)}" loading="lazy" decoding="async"></noscript>` +
     `<figcaption>${escapeAttr(meta.caption)}</figcaption>`,
 )
 
