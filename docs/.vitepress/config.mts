@@ -54,6 +54,10 @@ export default defineConfig({
     },
   },
   transformHead({ pageData }) {
+    // 404 不是可索引内容：不加 canonical，明确 noindex（VitePress 默认不带）。
+    if (pageData.isNotFound) {
+      return [['meta', { name: 'robots', content: 'noindex' }]]
+    }
     const relative = pageData.relativePath.replace(/(^|\/)index\.md$/, '$1').replace(/\.md$/, '.html')
     const url = `${SITE_URL}${relative}`
     const title = pageData.frontmatter.title

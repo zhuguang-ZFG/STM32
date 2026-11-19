@@ -71,4 +71,25 @@
 
 线上抽查（`https://zhuguang-zfg.github.io/STM32/`）：首页 200 且为 VitePress 产物并带 canonical；`v1-drivers/09-gpio.html` 200（含 quiz/scene）；`mcu/stm32/03-gpio.html` 200（485 字节存根）；`sitemap.xml` 200 且 54 条 `<loc>`。
 
+### 线上抽样（`b2164db4` 发布后）
+
+| 对象 | 抽样 | 结果 |
+| --- | --- | --- |
+| 书页深链 | 从 `dist` 的 54 页按步长取 12 页（附录 A/E、v0 01/05、v1 09/13/17、v3 21/25、v4 29/33、v5 37），另补 `onramp` 首末、`v2-reliability` 首末、`v6-labs-projects` 首末、`v7-delivery` 首末共 7 页 | 19/19 HTTP 200，全部带指向自身的 `<link rel="canonical">`；无重复 `<title>` |
+| 页面资产 | `v1-drivers/17-flash-iap-ota` 与 `v5-motion/37-dc-motor-openloop` 引用的 8 个 SVG/PNG + 两页各自的 `assets/app.*.js` | 10/10 HTTP 200 |
+| 旧链存根 | 131 条中取首/中/尾 3 条（`mcu/404.html`、`mcu/lab/e04-priority-inversion.html`、`mcu/video/f3-scheduler-storyboard.html`），解析 `meta refresh` 目标后**单独请求目标页** | 存根 200；目标页 200（27686 / 171378 / 113905 字节） |
+| `sitemap.xml` | 全量 | 54 条 `<loc>`，与 54 个书页一一对应 |
+
+`mcu/docs/404.md → index.md` 是 `scripts/legacy-redirects.mjs` 里的 best-fit 决策（旧站该文件是文档页而非服务端 404），不在本轮修改范围。
+
+### 爬虫约定（本轮新增）
+
+审计 55 个产物页时发现两处缺口，均已修复并钉成构建后检查：
+
+- **404 可被索引**：VitePress 默认不给 `404.html` 加 `robots` 元信息。`config.mts` 的 `transformHead` 对 `pageData.isNotFound` 直接返回 `noindex`（不再输出 canonical）。
+- **没有 `robots.txt`**：新增 `docs/public/robots.txt`，声明 `Allow: /` 与绝对 `Sitemap:` 行。
+- 两者由 `scripts/check-site-pages.mjs` 的 `checkCrawlability()` 在构建后断言（`404 noindex 与 robots.txt 就位`），并有 1 项 Node 回归测试覆盖「缺文件 / 可索引 404 / 相对 Sitemap」三种失败形态。
+
+审计的其余项均通过：55 页全部有 canonical、`description`、`og:title`，标题无重复。
+
 CI 预置风险（首跑前写下的两条）已被证实必要：Chromium 必须先装（否则印刷集成测试由 skipped 变失败）；Node 固定 `24` 是因为 `site-config.test.mjs` 直接导入 `.mts`。

@@ -76,17 +76,41 @@ export function checkSitePages({ dist, manifest }) {
   return { ...comparePages({ expected, actual }), count: expected.size }
 }
 
+/** 爬虫约定：404 必须 noindex，robots.txt 必须指向真实 sitemap。 */
+export function checkCrawlability(dist) {
+  const problems = []
+  const notFound = path.join(dist, '404.html')
+  if (!fs.existsSync(notFound)) {
+    problems.push('404.html 不存在')
+  } else if (!/<meta name="robots" content="noindex">/.test(fs.readFileSync(notFound, 'utf8'))) {
+    problems.push('404.html 缺少 <meta name="robots" content="noindex">')
+  }
+  const robots = path.join(dist, 'robots.txt')
+  if (!fs.existsSync(robots)) {
+    problems.push('robots.txt 未随站点发布（docs/public/robots.txt 缺失？）')
+  } else {
+    const text = fs.readFileSync(robots, 'utf8')
+    if (!/^Sitemap: https:\/\/\S+\/sitemap\.xml$/m.test(text)) {
+      problems.push('robots.txt 没有绝对 Sitemap 行')
+    }
+  }
+  return { ok: problems.length === 0, problems }
+}
+
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 if (isMain) {
   const args = parseArgs(process.argv.slice(2))
   const result = checkSitePages(args)
-  const detail = { count: result.count }
-  if (result.ok) {
-    console.log(`site pages: manifest 与 dist 一一对应（${detail.count} 页）`)
+  const crawl = checkCrawlability(args.dist)
+  if (result.ok && crawl.ok) {
+    console.log(`site pages: manifest 与 dist 一一对应（${result.count} 页）；404 noindex 与 robots.txt 就位`)
     process.exit(0)
   }
   for (const page of result.missing) console.error(`MISSING ${page}`)
   for (const page of result.extra) console.error(`EXTRA ${page}`)
-  console.error(`site pages mismatch: ${result.missing.length} missing, ${result.extra.length} extra`)
+  for (const problem of crawl.problems) console.error(`CRAWL ${problem}`)
+  if (!result.ok) {
+    console.error(`site pages mismatch: ${result.missing.length} missing, ${result.extra.length} extra`)
+  }
   process.exit(1)
 }
