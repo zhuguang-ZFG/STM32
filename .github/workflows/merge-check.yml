@@ -5,8 +5,11 @@ on:
     paths:
       - 'book/**'
       - 'docs/**'
+      - 'mcu/**'
+      - 'CONTRIBUTING.md'
       - 'plans/2026-11-12-merged-book/**'
       - 'plans/2026-11-11-motor-control/**'
+      - 'plans/2026-11-11-mcu-merge/**'
       - 'scripts/legacy-redirects.mjs'
       - 'scripts/tests/**'
       - 'tools/slop_lint.py'
@@ -15,8 +18,11 @@ on:
     paths:
       - 'book/**'
       - 'docs/**'
+      - 'mcu/**'
+      - 'CONTRIBUTING.md'
       - 'plans/2026-11-12-merged-book/**'
       - 'plans/2026-11-11-motor-control/**'
+      - 'plans/2026-11-11-mcu-merge/**'
       - 'scripts/legacy-redirects.mjs'
       - 'scripts/tests/**'
       - 'tools/slop_lint.py'
