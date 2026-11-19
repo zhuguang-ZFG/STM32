@@ -118,7 +118,9 @@ node scripts/search-check.mjs --dist ../.temp/pages-site/mcu
 
 > **状态：部分适用，未放行。** 根书门仍在跑；MCU 侧 quality/browser/书籍门随树退役而不复存在，固件门以 `mcu/code/` 为范围。本轮只完成 P0/P1 与本记录，P4 的验收记录待候选分支合入前统一产出。
 
-根 STM32 命令，cwd 为仓库根：
+以下两组命令是 **B5 之前**的口径，路径已不存在（`git ls-files stm32-book` = 0，`mcu/mcu-book` 已整树删除）。保留原文供对照；现行等价物见每组下方。
+
+<details><summary>历史命令（stm32-book / mcu-book，已退役）</summary>
 
 ```powershell
 python tools/slop_lint.py
@@ -127,7 +129,6 @@ python -m unittest discover stm32-book/tests -v
 python stm32-book/build_html.py --check
 ```
 
-根 `book.yml` 还须在 CI 覆盖 SPL 构建、中英 PDF 生成及版式审计；以上本地命令不是替代。
 
 MCU 书籍命令，cwd 为 `mcu/`：
 
@@ -140,6 +141,22 @@ python mcu-book/check_pdf.py
 python mcu-book/publish_downloads.py --out-dir mcu-book/dist/downloads
 python mcu-book/publish_downloads.py --verify mcu-book/dist/downloads
 ```
+
+</details>
+
+现行 `book.yml` 覆盖：合并书稿的检查、渲染契约、印刷 HTML/PDF/EPUB 与产物体量断言（见该工作流 `jobs.book`）。它**不含**英文书门，也没有 SPL 构建——这两项在 B5 后没有对应工作流，属 AC5 的未通过项。
+
+**现行等价物**（2026-11-19 实测，见 [`research/p4-acceptance-2026-11-19.md`](research/p4-acceptance-2026-11-19.md)）：
+
+```bash
+python tools/slop_lint.py docs/v0-foundations/*.md docs/v1-drivers/*.md docs/v2-reliability/*.md docs/v3-rtos/*.md docs/v4-platforms/*.md docs/v5-motion/*.md docs/v6-labs-projects/*.md docs/v7-delivery/*.md docs/appendix/*.md
+python tools/check_assets.py
+python -m unittest discover book/tests
+python -m book.build_html --check
+node --test scripts/tests/*.test.mjs
+```
+
+MCU 书籍门已随 B5 取消（`mcu/mcu-book` 不存在）；离线整书产物只剩来源仓归档中的 `mcu-book/dist/`，见快照 §4。
 
 - [ ] MCU quality/browser 的最终结果对应候选提交；内容或配置再变化时重跑受影响门。
 - [ ] CI 的动画审计、Ruff、ARM-host `firmware:check`、ESP32 normal/faults 矩阵和下载包 GNU 哈希检查全部留证。

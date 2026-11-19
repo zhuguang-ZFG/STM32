@@ -1,6 +1,6 @@
 # P4 验收记录（2026-11-19）
 
-候选分支 `feat/mcu-merge-p1`，尖端 `6f151cb5`，基线 `main@4882857e`（未动）。本记录逐条对照 [`prd.md`](../prd.md) §3 的 AC1–AC8 判，证据只写本次实测或可复算的值。
+候选分支 `feat/mcu-merge-p1`，PR #140（草稿）；本记录成文时尖端 `6b8d9b48`，此前各轮为 `c85bbb1e`、`6f151cb5`、`649fba2b`、`818ef375`、`df187f3d`。基线 `main@4882857e`（未动）。本记录逐条对照 [`prd.md`](../prd.md) §3 的 AC1–AC8 判，证据只写本次实测或可复算的值。
 
 ## 结论
 
@@ -24,13 +24,13 @@
 ```bash
 git merge-base --is-ancestor cf161532c823446016a9deb60d31e5263397b7d7 4882857e   # exit 0
 git diff --name-status cf161532c8^{tree} 4882857e:mcu | wc -l                      # 1580
-git diff --name-status cf161532c8^{tree} 6f151cb5:mcu | wc -l                      # 1581
+git diff --name-status cf161532c8^{tree} 6b8d9b48:mcu | wc -l                      # 1581
 ```
 
 | 口径 | 路径数 | A | D | M |
 | --- | --- | --- | --- | --- |
 | `main@4882857e` 的 `mcu` | 1580 | 848 | 692 | 40 |
-| 候选尖端 `6f151cb5` 的 `mcu` | 1581 | 848 | 692 | 41 |
+| 候选尖端 `6b8d9b48` 的 `mcu` | 1581 | 848 | 692 | 41 |
 
 两个口径必须分开引用，不能混用：**P0 基线的 1580 条（40 M）针对 `main@4882857e`**，与[执行快照](execution-snapshot-2026-11-19.md) §2 一致；**候选尖端多出的 1 条是 `M mcu/CONTRIBUTING.md`**，来自本轮 P1 加的横幅与死链降级，属有意改动，不是新发现的导入差异。来源仓该文件在根目录（`cf161532:mcu/CONTRIBUTING.md` 不存在），比较对象是来源树根与目标 `mcu/` 子树。
 
