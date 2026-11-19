@@ -122,3 +122,17 @@ CI 预置风险（首跑前写下的两条）已被证实必要：Chromium 必�
 - `StickScene` 的 `<noscript>` 回退图没有尺寸：尺寸从 PNG 头读出写进 `docs/.vitepress/data/scenes.json`（`scripts/sync-scene-dims.mjs --write`），组件据此输出 `width`/`height`；`--check` 作为 `site:dims` 接进 `site:build`、`site.yml`、`deploy.yml`，换图后尺寸漂移会直接失败。
 
 `check-site-images.mjs` 现在同时断言「333 张全部 lazy + async + 有显式宽高」，不再只看前两项。
+
+### 生产侧确认（线上 = `58ce14de` 的构建）
+
+`gh api repos/zhuguang-ZFG/STM32/deployments` 最新的 `github-pages` 记录是 `58ce14de`，与下列探测同源。此后只改 `docs/superpowers/**`，站点不重建，线上仍是这份产物。
+
+| 检查 | 线上实测 |
+| --- | --- |
+| 附录 C 原始 HTML 图 | `width="760" height="570"` 且带 `loading="lazy" decoding="async"`——正文只写 `width="760"`，高度由原图比例补出 |
+| 章节页普通图 | `width="1152" height="864"`、`width="720" height="420"`，均 lazy + async |
+| `StickScene` 回退图 | `<noscript><img … width="720" height="460" loading="lazy" decoding="async">` |
+| 被剪的孤儿 | `anim/boot-sequence.svg`、`anim/boot0-low.gif`、`anim/can-500k.gif` 全部 404；三者源文件都在 `docs/public`，是真实样本 |
+| 保留的资源 | `anim/queue-passing.svg`、`images/ch00-unbox-blink-frame.png` 均 200 |
+
+探测中排除了两个假样本：`images/sample-00-boot.png` 源文件本就不存在，404 与剪枝无关；`anim/gpio-output.svg` 的命中来自外部链接 `stm32-gpio-output-config-using-registers` 的子串，不是资产引用。
