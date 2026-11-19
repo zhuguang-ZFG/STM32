@@ -137,7 +137,15 @@ Nov-11 计划（`implement.md`）成文于 B5 之前。按当前事实逐条判�
 - `plans/2026-11-11-mcu-merge/**` 同样不在；`merge-check` 与 `book` 列出的 `plans/2026-11-12-merged-book/**`、`merge-check` 的 `plans/2026-11-11-motor-control/**` 是另外两个计划目录。
 - `links.yml` 的 `docs/**/*.md` 覆盖不到根 `CONTRIBUTING.md`，也覆盖不到 `mcu/`。
 
-因此本批的验证证据只有本地门：`tools/slop_lint.py`、`tools/check_assets.py`、`python -m book.build_html --check`、`python -m unittest discover -s book/tests`。扩展 `paths` 属 CI 策略变更，需明确指令后才动；本轮未修改任何工作流文件。
+### 缺口处置：扩 `merge-check.yml` 的 `paths`（2026-11-19，获明确指令后）
+
+`merge-check.yml` 的 `pull_request` 与 `push` 两个触发块各补三条：`mcu/**`、`CONTRIBUTING.md`、`plans/2026-11-11-mcu-merge/**`。作业内容一字未改，只改触发范围；`book.yml` 与其他工作流未动（`mcu/**` 不改变书籍构建输入，触发 12 分钟的印刷构建没有收益）。
+
+静态核对（PyYAML 解析 + `fnmatch` 求匹配）：两个触发块各 10 条路径；本批 6 个改动路径在 `pull_request` 与 `push` 下均命中，未命中项为 0；反向抽查 `docs/v0-foundations/ch01.md`、`book/data/toc.tsv` 仍命中，`examples/motor-dc-speed/**` 不命中（归 `motor-control.yml` 管）。
+
+端到端验证的残余：`workflow_dispatch` 绕过 `paths`，推特性分支不触发 `push`（限 `main`），因此新过滤器只有真实 `pull_request` 事件才能证伪。创建 PR 属远程发布动作，待明确指令。
+
+在此之前，本批的验证证据是本地门：`tools/slop_lint.py`、`tools/check_assets.py`、`python -m book.build_html --check`、`python -m unittest discover -s book/tests`，加上上表手工 dispatch 的两道门。
 
 ### 手动补跑（2026-11-19）
 
