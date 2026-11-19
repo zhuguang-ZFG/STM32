@@ -15,7 +15,7 @@ python -m book.build_html --check
 
 `--check` 的 HTML 构建会在系统临时目录写入并清理站点，不覆盖 `book/dist/site`。其他上述检查不生成书稿或资产。`check_assets` 检查现行章节完整性、链接/锚点/测验，以及 `docs/public/` 的 SVG XML、PNG/JPEG/GIF/WebP 解码，不再要求已下线的英文旧章引用短视频。归档旧布局仍保留原像素/视频检查。
 
-站点 CI 的最小依赖仍是 `book/requirements.txt`。新增回归中的位图/印刷集成项仅在 Pillow / Playwright / PyMuPDF 对应模块可用时执行；缺依赖会明确显示 `skipped`，不能把这种最小 CI 结果当作 PDF 验收。本次本地完整验收已具备依赖，87 项均实际执行，无跳过。运行真实浏览器回归还需要已安装的 Chromium/Edge。
+站点 CI 的最小依赖仍是 `book/requirements.txt`。新增回归中的资源/印刷集成项仅在 Pillow / Playwright / PyMuPDF 对应模块可用时执行；缺依赖会明确显示 `skipped`，不能把这种最小 CI 结果当作 PDF 验收。本次本地完整验收已具备依赖，87 项均实际执行，无跳过。运行真实浏览器回归还需要已安装的 Chromium/Edge。
 
 ## 站点（VitePress）、内容渲染器与印刷 PDF
 
@@ -26,7 +26,7 @@ npm run docs:build                    # 站点 → docs/.vitepress/dist（base /
 npm run site:pages                    # 页面集合必须与 docs/manifest.json 一一对应
 npm run site:dims                     # 场景回退图尺寸必须与 PNG 头一致
 npm run site:images                   # 每张 <img> 必须 lazy + async + 有显式宽高
-npm run site:prune                    # 剪掉 dist 里未被任何页面/运行时引用的位图
+npm run site:prune                    # 剪掉 dist 里未被任何页面/运行时引用的资源（位图 + SVG）
 npm run site:stubs && npm run site:assemble && npm run site:smoke
 python -m book.build_html --check     # 内容渲染契约：53 页可渲染（不产站点）
 python -m book.build_print_edition    # 单文件印刷 HTML → book/dist/print/
