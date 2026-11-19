@@ -147,18 +147,44 @@ export async function smoke({ root, mount }) {
       check('中文搜索有结果', false, '未找到搜索入口按钮')
     }
 
-    // 10. 片段锚点：带 #标题 的深链要落到目标元素（AC3 的「锚点」项）
+    // 10. 片段锚点：带 #标题 的深链要真的滚到目标元素（AC3 的「锚点」项）
+    // 取最后一个 h2/h3：它必然在首屏之外，因此「元素存在」单独不足以通过——
+    // 必须看到页面滚动且目标落到视口顶部，否则等于没测到锚点行为。
     const anchorPage = 'v1-drivers/09-gpio.html'
     const anchorHtml = fs.readFileSync(path.join(root, anchorPage), 'utf-8')
-    const anchorId = (anchorHtml.match(/<h[23][^>]*\sid="([^"]+)"/) || [])[1]
+    const anchorIds = [...anchorHtml.matchAll(/<h[23][^>]*\sid="([^"]+)"/g)].map((m) => m[1])
+    const anchorId = anchorIds.at(-1)
     if (anchorId) {
       await page.goto(`${base}/${anchorPage}#${anchorId}`, { waitUntil: 'load' })
-      const found = await page.evaluate((id) => {
+      // 判据：页面确实滚动过，且目标落在视口内。不要求顶到 0——锚点落地后
+      // 上方懒加载内容仍可能撑高页面，把目标推移几十像素，那是回流不是缺陷。
+      const scrolledIntoView = await page
+        .waitForFunction(
+          (id) => {
+            const el = document.getElementById(id)
+            if (!el) return false
+            const top = el.getBoundingClientRect().top
+            return window.scrollY > 0 && top >= -24 && top < window.innerHeight
+          },
+          anchorId,
+          { timeout: 5000 },
+        )
+        .then(() => true)
+        .catch(() => false)
+      const pos = await page.evaluate((id) => {
         const el = document.getElementById(id)
-        return !!el && el.getBoundingClientRect().top < window.innerHeight
+        return {
+          found: !!el,
+          scrollY: Math.round(window.scrollY),
+          top: el ? Math.round(el.getBoundingClientRect().top) : null,
+        }
       }, anchorId)
       const hash = decodeURIComponent(new URL(page.url()).hash.slice(1))
-      check('片段锚点定位', found && hash === anchorId, `#${anchorId} found=${found} hash=${hash}`)
+      check(
+        '片段锚点定位',
+        scrolledIntoView && pos.found && pos.scrollY > 0 && hash === anchorId,
+        `#${anchorId} found=${pos.found} scrollY=${pos.scrollY} top=${pos.top} hash=${hash}`,
+      )
     } else {
       check('片段锚点定位', false, '页面内没有带 id 的 h2/h3')
     }

@@ -1,6 +1,6 @@
 # P4 验收记录（2026-11-19）
 
-候选分支 `feat/mcu-merge-p1`，PR #140（草稿）；本记录成文时尖端 `6b8d9b48`，此前各轮为 `c85bbb1e`、`6f151cb5`、`649fba2b`、`818ef375`、`df187f3d`。基线 `main@4882857e`（未动）。本记录逐条对照 [`prd.md`](../prd.md) §3 的 AC1–AC8 判，证据只写本次实测或可复算的值。
+候选分支 `feat/mcu-merge-p1`，PR #140（草稿）；本记录成文时尖端 `1c0ee761`，此前各轮为 `6b8d9b48`、`c85bbb1e`、`6f151cb5`、`649fba2b`、`818ef375`、`df187f3d`。基线 `main@4882857e`（未动）。本记录逐条对照 [`prd.md`](../prd.md) §3 的 AC1–AC8 判，证据只写本次实测或可复算的值。
 
 ## 结论
 
@@ -97,7 +97,13 @@ smoke passed: 11/11
 标注三点，避免把这条证据读大：
 
 - 跑的是**本地组装产物**，不是线上部署；线上的独立观测只有上表那几条 HTTP 状态码。
-- 「片段锚点定位」是本轮新加的断言（`scripts/site-smoke.mjs`）：取页面里第一个 `h2/h3` 的 `id`，带 `#` 打开，要求元素存在且落在视口内、`hash` 保持不变。负向验证：把锚点换成不存在的 id，该条报 `FAIL 片段锚点定位 #definitely-not-a-heading found=false`，`smoke failed: 1/11`，说明断言有效。
+- 「片段锚点定位」是本轮新加的断言（`scripts/site-smoke.mjs`）：取页面里**最后一个** `h2/h3` 的 `id`（必然在首屏之外），带 `#` 打开，要求页面真的滚动过（`scrollY > 0`）、目标进入视口、`hash` 解码后与 id 相同。
+
+  为什么不用第一个标题：首屏内的标题不滚动也「在视口里」，断言会假通过。实测该页首个 `h2`（`#本章罗盘`）只需滚 248px，末尾 `h2`（`#离开检查`）需滚 16228px。
+
+  为什么不对「顶端对齐 0」下断言：锚点落地后，上方懒加载内容仍会撑高页面，实测把目标从 `top=0` 推到 `top=110`。那是回流，不是锚点失效，因此判据取「滚动发生 + 目标在视口内」。
+
+  负向验证两条都做了：去掉 hash（元素在但没滚动）→ `FAIL ... scrollY=0 top=16338`；换成不存在的 id → `FAIL ... found=false scrollY=0 top=null`。两种都 `smoke failed: 1/11`，说明断言不是摆设。
 - 该冒烟已在 CI 中执行（`.github/workflows/site.yml:67`、`deploy.yml:64`），因此新增断言会随站点改动持续生效；但它只覆盖 staging，线上仍需 AC8 的回读。
 
 旧路径负例仍在：`scripts/legacy-redirects.mjs` + `scripts/tests/legacy-redirects.test.mjs`（32 项测试全过，含负例）。
