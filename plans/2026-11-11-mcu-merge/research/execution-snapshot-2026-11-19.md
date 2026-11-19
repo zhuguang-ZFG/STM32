@@ -115,17 +115,26 @@ Nov-11 计划（`implement.md`）成文于 B5 之前。按当前事实逐条判�
 
 ## 8. 门禁覆盖缺口（2026-11-19 实测）
 
-候选分支 `feat/mcu-merge-p1` 推送后 `gh api repos/zhuguang-ZFG/STM32/actions/runs?head_sha=<sha>` 返回 `total_count = 0`。两条原因必须分开讲，不能合并成「等 CI」：
+候选分支 `feat/mcu-merge-p1` 推送后 `gh api repos/zhuguang-ZFG/STM32/actions/runs?head_sha=<sha>` 返回 `total_count = 0`。下表是六份工作流的**全量**触发条件（逐文件读 `on:` 块，不靠 `grep -A3`）：
 
-| 工作流 | 触发条件 | 本批改动是否命中 |
+| 工作流 | 触发条件（全量） | 本批改动是否命中 |
 | --- | --- | --- |
-| `merge-check.yml` | `pull_request` + `push`（`main`），`paths`：`book/**`、`docs/**`、`plans/2026-11-12-merged-book/**`、`plans/2026-11-11-motor-control/**`、`scripts/legacy-redirects.mjs`、`scripts/tests/**`、`tools/slop_lint.py` | 否 |
-| `book.yml` | `push`（`main`）+ `pull_request`，`paths`：`docs/**`、`book/**`、`scripts/**`、`plans/2026-11-12-merged-book/**`、`tools/slop_lint.py`、自身 | 否 |
-| `site.yml`、`deploy.yml`、`motor-control.yml` | `push: branches: [main]` | 否（也未推 `main`） |
+| `book.yml` | `push`(main + paths)、`pull_request`(paths)、`workflow_dispatch`；paths：`docs/**`、`book/**`、`scripts/**`、`plans/2026-11-12-merged-book/**`、`tools/slop_lint.py`、自身 | 否 |
+| `merge-check.yml` | `pull_request`(paths)、`push`(main + paths)、`workflow_dispatch`；paths：`book/**`、`docs/**`、`plans/2026-11-12-merged-book/**`、`plans/2026-11-11-motor-control/**`、`scripts/legacy-redirects.mjs`、`scripts/tests/**`、`tools/slop_lint.py` | 否 |
+| `site.yml` | `push`(main + paths)、`pull_request`(paths)；paths：`docs/**`（排除 `docs/superpowers/**`）、`scripts/**`、`plans/2026-11-12-merged-book/mapping.json`、`package*.json`、自身 | 否 |
+| `deploy.yml` | `push`(main + paths)、`workflow_dispatch`；paths 同 `site.yml` | 否（无 PR 触发） |
+| `links.yml` | `schedule`（`17 3 * * 1`）、`workflow_dispatch`、`pull_request`(paths)；paths：`docs/**/*.md`、`scripts/check-external-links.mjs`、`scripts/external-links-allowlist.json`、`package*.json`、自身 | 否 |
+| `motor-control.yml` | `push`(main + paths)、`pull_request`(paths)、`workflow_dispatch`；paths：`examples/motor-dc-speed/**`、自身 | 否 |
 
-1. **推特性分支不触发任何工作流**：所有 `push` 触发器都限定 `branches: [main]`。
-2. **开 PR 同样不会触发这两道门**：`pull_request` 的 `paths` 过滤器不包含本批任何路径。
+两条原因必须分开讲，不能合并成「等 CI」：
 
-本批实际改动为 `mcu/README.md`、`mcu/CONTRIBUTING.md`、根 `CONTRIBUTING.md`、`plans/2026-11-11-mcu-merge/**`。`mcu/**`、根 `CONTRIBUTING.md`、`plans/2026-11-11-mcu-merge/**` 均不在任何 `paths` 列表内；列表里的 `plans/2026-11-12-merged-book/**` 与 `plans/2026-11-11-motor-control/**` 是另外两个计划目录，覆盖不到本计划。
+1. **推特性分支零运行**：六份工作流里有 `push` 触发器的都是 `branches: [main]`，没有任何一份监听特性分支。
+2. **开 PR 同样零运行**：五份带 `pull_request` 的工作流（`book`、`merge-check`、`site`、`links`、`motor-control`）的 `paths` 都不包含本批路径。
+
+本批实际改动为 `mcu/README.md`、`mcu/CONTRIBUTING.md`、根 `CONTRIBUTING.md`、`plans/2026-11-11-mcu-merge/**`。逐条对不上：
+
+- `mcu/**`、根 `CONTRIBUTING.md` 不在任何 `paths` 列表内。
+- `plans/2026-11-11-mcu-merge/**` 同样不在；`merge-check` 与 `book` 列出的 `plans/2026-11-12-merged-book/**`、`merge-check` 的 `plans/2026-11-11-motor-control/**` 是另外两个计划目录。
+- `links.yml` 的 `docs/**/*.md` 覆盖不到根 `CONTRIBUTING.md`，也覆盖不到 `mcu/`。
 
 因此本批的验证证据只有本地门：`tools/slop_lint.py`、`tools/check_assets.py`、`python -m book.build_html --check`、`python -m unittest discover -s book/tests`。扩展 `paths` 属 CI 策略变更，需明确指令后才动；本轮未修改任何工作流文件。
