@@ -143,7 +143,7 @@ Nov-11 计划（`implement.md`）成文于 B5 之前。按当前事实逐条判�
 
 静态核对（PyYAML 解析 + `fnmatch` 求匹配）：两个触发块各 10 条路径；本批 6 个改动路径在 `pull_request` 与 `push` 下均命中，未命中项为 0；反向抽查 `docs/v0-foundations/ch01.md`、`book/data/toc.tsv` 仍命中，`examples/motor-dc-speed/**` 不命中（归 `motor-control.yml` 管）。
 
-端到端验证的残余：`workflow_dispatch` 绕过 `paths`，推特性分支不触发 `push`（限 `main`），因此新过滤器只有真实 `pull_request` 事件才能证伪。创建 PR 属远程发布动作，待明确指令。
+端到端验证（已完成）：PR #140（`feat/mcu-merge-p1` → `main`，草稿）在创建时触发 `Merge Check` run `44468448536`（`event=pull_request`，`6f151cb5`，success），推送后续提交又触发 run `44469778804`（`c85bbb1e`，success）。同一 SHA 下 `gh api .../runs?event=pull_request` 只返回 Merge Check 一条，`Book CI`、`Site CI`、`Links`、`Motor Control` 均未触发，与上表的过滤器判定一致。PR 未合入、未动 Pages。
 
 在此之前，本批的验证证据是本地门：`tools/slop_lint.py`、`tools/check_assets.py`、`python -m book.build_html --check`、`python -m unittest discover -s book/tests`，加上上表手工 dispatch 的两道门。
 

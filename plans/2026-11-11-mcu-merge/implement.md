@@ -151,7 +151,7 @@ CPU/工具链缺失、浏览器未安装、硬件未接入分别记 `BLOCKED`/`U
 
 ## 7. P5：发布与关闭
 
-> **状态：待发布指令，未开始。** 候选分支已推送（`feat/mcu-merge-p1`）但未开 PR、未合入、未动 Pages。
+> **状态：待发布指令，未合入。** 候选分支已推送（`feat/mcu-merge-p1`），PR #140 以**草稿**形式存在（用于实测 `pull_request.paths` 触发并承载 P4 验收记录）；未合入、未动 Pages。P4 判定见 [`research/p4-acceptance-2026-11-19.md`](research/p4-acceptance-2026-11-19.md)：AC1/AC6 通过，AC3/AC5 未通过，AC2 由 B5 取代，AC4/AC8 未验证。
 
 - [ ] 收到后续发布指令后，才执行 PR 合入/推送/Pages 切换等远程动作；计划阶段不操作远程。
 - [ ] 发布前记录新旧 Pages 的真实 URL、旧 artifact、对应 SHA、required checks 和来源仓库维护状态。
