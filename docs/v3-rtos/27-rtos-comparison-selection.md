@@ -168,7 +168,7 @@ Zephyr 在这个漏斗里的定位：跨厂商板卡、Kconfig/Devicetree、协�
 <details><summary>参考答案</summary>方向随内核：FreeRTOS 数值大 = 高；RT-Thread 数值小 = 高（0 最高）；NVIC 数值小 = 高。「任务优先级数值越大越高」只是 FreeRTOS 的规则，不能当通则；拿任务优先级数字填 NVIC 寄存器要再反一次方向。</details>
 
 3. FreeRTOS 队列与 RT-Thread 消息队列的准确语义各是什么？
-<details><summary>参考答案</summary>FreeRTOS Queue 的 `uxItemSize` 创建时定死，变的只是条数；RT-Thread 消息队列槽宽 `msg_size` 固定、`rt_mq_send` 实发长度 ≤ 槽宽，每条另有消息头，是是「固定最大块的变长消息」。D28 的「定长」与 X0/R2 的「变长队列」都不准确。</details>
+<details><summary>参考答案</summary>FreeRTOS Queue 的 `uxItemSize` 创建时定死，变的只是条数；RT-Thread 消息队列槽宽 `msg_size` 固定、`rt_mq_send` 实发长度 ≤ 槽宽，每条另有消息头，是「固定最大块的变长消息」。D28 的「定长」与 X0/R2 的「变长队列」都不准确。</details>
 
 4. FreeRTOS 事件组的可用位宽怎么算？lab 是几位？
 <details><summary>参考答案</summary>`EventBits_t` 等于 `TickType_t`，高位留作控制位：16 位 tick 剩 8 位，32 位剩 24 位，64 位剩 56 位。lab 是 32 位 tick → 24 位事件。RT-Thread 事件集固定 32 位，按 32 位写的位操作搬到 16 位 tick 工程会丢位。</details>
