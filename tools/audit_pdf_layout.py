@@ -33,14 +33,21 @@ import pymupdf
 REPO = Path(__file__).resolve().parents[1]
 MM = 72 / 25.4
 PAGE_W, PAGE_H = 210 * MM, 297 * MM
-LEFT, RIGHT = 15 * MM, PAGE_W - 15 * MM
-BOTTOM = PAGE_H - 18 * MM
+LEFT, RIGHT = 17 * MM, PAGE_W - 17 * MM   # print_css @page 17mm 左右边距
+BOTTOM = PAGE_H - 19 * MM                 # 版心底：下边距 19mm
 STAMP_TOP = PAGE_H - 17 * MM  # printed margin; footer rule/label live below this line
 
 PDFS = (
-    (REPO / "stm32-book/dist/stm32-practical-book.pdf", "zh"),
-    (REPO / "stm32-book/dist/stm32-practical-book-en.pdf", "en"),
+    (REPO / "book/dist/print/merged-book.pdf", "zh"),
 )
+
+# 收尾类标点（W3C clreq）：悬挂在行尾右缘属于正常中文排版，不算溢出。
+CLOSING_PUNCT = "。，、；：！？）】》」』”’…～"
+
+
+def _is_white(d: dict) -> bool:
+    fill = d.get("fill")
+    return fill is None or all(c >= 0.98 for c in fill)
 
 
 def _content_rects(page: pymupdf.Page) -> list[pymupdf.Rect]:
@@ -57,11 +64,13 @@ def _content_rects(page: pymupdf.Page) -> list[pymupdf.Rect]:
     rects += [
         d["rect"]
         for d in page.get_drawings()
-        # skip the page-background fill Chromium paints across the whole
-        # content box, and anything in the stamped footer zone
+        # skip the page/column background fills Chromium paints (body/.book
+        # 白底竖栏 176mm 宽会盖住真实内容高度), and anything in the stamped
+        # footer zone
         if d["rect"].y1 < STAMP_TOP - 2
         and d["rect"].height > 3
-        and not (d["rect"].width > 500 and d["rect"].height > 700)
+        and not (d["rect"].width > 400 and d["rect"].height > 500
+                 and _is_white(d))
     ]
     return rects
 
@@ -105,8 +114,13 @@ def scan(path: Path) -> dict:
             if b["bbox"][2] > RIGHT + 3 and b["bbox"][1] < STAMP_TOP - 2:
                 text = " ".join(
                     s["text"] for line in b["lines"] for s in line["spans"]
-                )[:60]
-                issues["margin_overflow"].append({"page": pno, "text": text})
+                )
+                # text-justify: inter-ideograph 会把行尾收尾标点悬挂出右缘
+                # （~5pt 半个标点宽，clreq 允许），这不是溢出。
+                tail = text.rstrip()[-1:]
+                if tail in CLOSING_PUNCT:
+                    continue
+                issues["margin_overflow"].append({"page": pno, "text": text[:60]})
         if blocks:
             last = max(blocks, key=lambda b: b["bbox"][3])
             spans = [s for line in last["lines"] for s in line["spans"]]
@@ -116,10 +130,14 @@ def scan(path: Path) -> dict:
             if size >= 11 and bold and len(text) < 80 and last["bbox"][3] > BOTTOM - 8:
                 issues["orphan_heading"].append({"page": pno, "text": text[:60]})
             first = min(blocks, key=lambda b: b["bbox"][1])
-            ftext = " ".join(
-                s["text"] for line in first["lines"] for s in line["spans"]
-            ).strip()
-            if ftext.startswith("▲") and not page.get_images():
+            fspans = [s for line in first["lines"] for s in line["spans"]]
+            ftext = " ".join(s["text"] for s in fspans).strip()
+            # 合并书 figcaption = 0.8em ≈ 8.2pt，比正文所有起点元素都小
+            # （罗盘卡标签 8pt 前面必有 h2，表格 8.8pt、代码 8.6pt 均高于阈值）。
+            # 页眉字也是小字但贴着纸上缘（<50pt），版心从 21mm ≈ 59.5pt 起。
+            cap_size = max((s["size"] for s in fspans), default=0)
+            if ftext and cap_size < 8.5 and 55 < first["bbox"][1] < 130 \
+                    and not page.get_images():
                 issues["caption_orphan"].append({"page": pno, "text": ftext[:70]})
         chars = len(page.get_text().strip())
         if chars < 40 and pno > 1 and not page.get_images():
