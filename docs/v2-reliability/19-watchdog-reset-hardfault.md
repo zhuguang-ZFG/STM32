@@ -223,7 +223,7 @@ CFSR 是三个子寄存器拼成的：低 8 位 MMFSR、次 8 位 BFSR、高 16 
 
 `MMFAR`/`BFAR` 里的地址不是总可信：只有 `MMARVALID`/`BFARVALID` 为 1 时才对得上。`IMPRECISERR` 下总线写是缓冲的，出错时 PC 可能已经跑远；`STKERR`/`MSTKERR` 表示入栈本身就错了，`UNSTKERR`/`MUNSTKERR` 表示出栈错了，这两种情况下硬件压的那 8 个字可能不完整，不能直接解引用。
 
-![CFSR 的 19 个位：三个子寄存器、两个 VALID 位](/figures/stm32-16-cfsr-bits.svg)
+![手绘板：CFSR 三个子寄存器与 BFSR 常用标志，BFARVALID 置位 BFAR 才可信（原理示意，非实拍）](/images/ch17-cfsr-bits.png)
 
 异常进入时，硬件把 8 个寄存器压进当前栈，共 32 字节：
 

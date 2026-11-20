@@ -74,8 +74,6 @@ platforms: [generic]
 8. **`ESP_ERROR_CHECK` 在发布构建里会被移除**：`NDEBUG` 下只剩 `(void) sizeof(err_rc_);`：表达式仍求值（副作用保留），结果被丢弃且不判错。这是有意为之；发布版要自己写错误检查 `if (err != ESP_OK) {...}`。
 9. **错误码字符串表在链接期生成**：组件调 `idf_define_esp_err_codes()` 登记错误码，构建系统生成 `.esp_err_msg_tbl` 段。自己 `#define` 了新码没登记，`esp_err_to_name()` 返回 UNKNOWN：这不是函数 bug，而是新错误码没有登记到字符串表。
 
-![六个源码知识点：星标数替代不了这六条证据](/figures/sample-f-six-facts.svg)
-
 ![手绘板：九条源码知识点（原理示意，非实拍）](/images/app-f-six-facts.png)
 
 ## 三、许可边界：能不能链进你的固件
@@ -101,8 +99,6 @@ platforms: [generic]
 3. **三项版本信息**：芯片订货号、SDK/内核 commit（或 tag）、工具链版本。缺一个，回答只能靠猜。
 4. **给证据不给形容词**：「不工作」没有信息量；日志、`nm`/`objdump` 片段、示波器截图、寄存器转储有。
 5. **先搜再开**：重复 issue 是最快被忽略的方式；用报错原文搜，不用你理解的转述。
-
-![提问前五件事清单](/figures/sample-f-ask-before.svg)
 
 ![手绘板：提问前五件事，README、冻 commit、最小复现、原文日志、已排除路径（原理示意，非实拍）](/images/app-f-ask-before.png)
 

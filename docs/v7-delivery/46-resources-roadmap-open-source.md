@@ -31,6 +31,8 @@ platforms: [generic]
 | 进阶 | 6 周 | 定时器/ADC/DMA/总线/RTOS 入门 | 每个外设一次「押注→测量→对账」记录 |
 | 实战 | 8 周 | 综合项目/交付验收 | 一份交付包（[第 42 章](../v6-labs-projects/42-project-delivery-acceptance.md) 五件套） |
 
+![手绘板：三阶段路线 4/6/8 周与过关判据，周数是计划表、判据全部可测（原理示意，非实拍）](/images/ch46-roadmap-gates.png)
+
 三阶段展开成十八周，每周绑定章、配套例程（全表见[附录 B](../appendix/B-project-index.md)）与一个可展示物——周计划是文档推导（计划表），里程碑物的判据都指向对应章的离开检查与例程 README：
 
 | 周 | 章 | 配套例程 | 你手里多了什么（可展示物） |
@@ -198,8 +200,6 @@ L0 与 L1 都引用第 9 章：L0 只要求点灯闭环，L1 要求中断、定�
 | ES | Errata Sheet | 已知勘误 |
 
 查手册三步法：①定手册（RM 寄存器/DS 电气/AN 做法）→ ②Ctrl+F 搜寄存器名或位名 → ③读功能描述章的时序与公式。三个检索示例：TIM1 占空比（RM0008 的 CCR1 段）、PA11 的 USB 复用（DS5319 表 5）、F4 DMA 的 FIFO（AN4031 + RM0090，F1 DMAF1 DMA 无 FIFO/突发，F4 有，[v1 第 14 章](../v1-drivers/14-dma.md) 口径）。记忆口诀：**R 看寄存器、D 看数据、A 看应用、U 看工具、E 看坑**。
-
-![学习路线三阶段与三道门槛（原理示意）](/figures/sample-00-roadmap-gates.svg)
 
 ![手绘板：三条学习路径与 API 三 lanes 对照（原理示意，非实拍）](/images/ch00-three-api-lanes.png)
 

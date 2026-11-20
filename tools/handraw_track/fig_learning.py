@@ -129,9 +129,56 @@ def ch46_oss_four_lanes():
     return f
 
 
+def ch46_roadmap_gates():
+    """Three 4/6/8-week stages with their measurable exit gates (ch46 §1)."""
+    f = Fig("ch46-roadmap-gates", "三阶段路线：只认过关判据")
+    f.text(64, 126,
+           "周数是计划表（文档推导，非实测）；判据指向对应章的离开检查，全部可测。",
+           size=16, color=MUTED)
+
+    stages = [
+        (64, BLUE_D, "入门", "4 周", ["环境 · 点灯 · 串口 · 中断"],
+         ["首次点灯三道门槛全过", "串口回环可复查"]),
+        (416, AMBER_STROKE, "进阶", "6 周",
+         ["定时器 · ADC · DMA", "总线 · RTOS 入门"],
+         ["每个外设一次", "「押注→测量→对账」记录"]),
+        (768, GREEN_D, "实战", "8 周", ["综合项目 · 交付验收"],
+         ["一份交付包", "（第 42 章五件套）"]),
+    ]
+    for x, color, name, weeks, topics, gates in stages:
+        f.rect(x, 158, 320, 372, color=color, fill=WHITE, sw=2.4, double=False)
+        f.rect(x + 18, 178, 96, 52, color=color, fill=WHITE, sw=2.4,
+               double=False)
+        f.text(x + 66, 212, name, size=24, color=color, anchor="middle",
+               weight="bold")
+        f.text(x + 302, 206, weeks, size=27, color=color, anchor="end",
+               weight="bold")
+        f.text(x + 302, 232, "计划表", size=13, color=MUTED, anchor="end")
+        f.multi(x + 18, 274, topics, size=16.5, color=INK, lh=26)
+        f.line(x + 18, 330, x + 302, 330, color=MUTED, sw=1.4, amp=1.0)
+        f.text(x + 18, 358, "过关判据", size=14, color=color, weight="bold")
+        f.multi(x + 18, 390, gates, size=17, color=INK, lh=28)
+        f.text(x + 18, 500, "卡住时回本章逐周表，", size=14, color=MUTED)
+        f.text(x + 18, 516, "看这一周绑定哪个例程", size=14, color=MUTED)
+
+    f.arrow(390, 340, 414, 340, color=INK, head=9, bend=0)
+    f.arrow(742, 340, 766, 340, color=INK, head=9, bend=0)
+
+    f.panel(64, 566, 1024, 78, AMBER_FILL)
+    f.text(88, 600, "判据可测：能复现、能对账，才算过门。", size=19, color=INK,
+           weight="bold")
+    f.text(88, 628,
+           "排期自己定，判据不打折；每过一个阶段，手里多一份证据而不是一段读完的记忆。",
+           size=15, color=MUTED)
+    f.text(576, 694, "级别证据另看 L0–L5 阶梯：级别按证据划分，不按读完的章数划分。",
+           size=15, color=MUTED, anchor="middle")
+    return f
+
+
 PLATES = {
     "ch46-l0-l5-ladder": ch46_l0_l5_ladder,
     "ch46-oss-four-lanes": ch46_oss_four_lanes,
+    "ch46-roadmap-gates": ch46_roadmap_gates,
 }
 
 

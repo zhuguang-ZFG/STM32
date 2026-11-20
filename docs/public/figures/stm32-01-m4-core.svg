@@ -7,7 +7,7 @@
 <rect x="16" y="48" width="50" height="14" rx="3" stroke-width="1.4"/> <text x="20" y="58" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">FPU</text>
 <rect x="72" y="48" width="50" height="14" rx="3" stroke-width="1.4"/> <text x="76" y="58" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">MPU</text>
 <rect x="128" y="48" width="50" height="14" rx="3" stroke-width="1.4"/> <text x="132" y="58" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">NVIC</text>
-<rect x="16" y="66" width="162" height="10" rx="3" stroke-width="1.4"/> <text x="20" y="74" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">DWT / ITM 调试与跟踪</text>
+<rect x="16" y="64" width="162" height="13" rx="3" stroke-width="1.4"/> <text x="20" y="73.5" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">DWT / ITM 调试与跟踪</text>
 <path d="M204 30 L228 30" stroke-width="2.2"/>
 <rect x="228" y="20" width="84" height="20" rx="3" stroke-width="1.4"/> <text x="232" y="33" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">Flash / SRAM</text>
 <path d="M204 58 L228 58" stroke-width="2.2"/>
