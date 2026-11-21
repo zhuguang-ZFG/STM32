@@ -68,5 +68,33 @@
     "fallback": "/images/ch42-delivery-pack-frame.png",
     "width": 720,
     "height": 460
+  },
+  "ch37-pwm-speed": {
+    "label": "一个人推动占空比滑杆，从 25% 到 75%，电机风扇明显变快；顶格播放里 CCR=ARR 只到 99.97%，差一格才满压。",
+    "caption": "手绘动画：开环调速——占空比滑杆推多少，风扇转多快；顶格 CCR=ARR 差一格才满压（进入视野自动播放，点击重播）",
+    "fallback": "/images/ch37-pwm-speed-frame.png",
+    "width": 720,
+    "height": 460
+  },
+  "ch39-pi-loop": {
+    "label": "给 150 rpm 阶跃，实际转速曲线带超调追上目标并进入 ±5% 带整定；负载扰动让曲线跌 10 rpm，PI 输出 −20.05‰ 拉回，2 秒内恢复。",
+    "caption": "手绘动画：PI 闭环——阶跃整定与负载扰动恢复，e=−10 rpm 的手算对应 −20.05‰ 输出（进入视野自动播放，点击重播）",
+    "fallback": "/images/ch39-pi-loop-frame.png",
+    "width": 720,
+    "height": 460
+  },
+  "ch45-triage": {
+    "label": "拿着症状卡走到分诊表：乱码/丢字节插进串口行，指向 ch13；HSE 不起振插进时钟启动行，指向 ch08——先对现象，再查第一处边界。",
+    "caption": "手绘动画：分诊表用法——症状卡插进现象域行，行尾弹出指向章；一次只改一处（进入视野自动播放，点击重播）",
+    "fallback": "/images/ch45-triage-frame.png",
+    "width": 720,
+    "height": 460
+  },
+  "ch46-ladder": {
+    "label": "证据逐级投上台阶，L0 到 L5 逐级点亮；跳级投掷会在缺证据的那级被卡住——补上 L3 再前进。",
+    "caption": "手绘动画：L0–L5 证据台阶——每级一枚证据 token，跳级会被「证据缺口」卡住（进入视野自动播放，点击重播）",
+    "fallback": "/images/ch46-ladder-frame.png",
+    "width": 720,
+    "height": 460
   }
 }

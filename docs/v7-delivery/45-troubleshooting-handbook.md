@@ -48,6 +48,9 @@ platforms: [generic]
 | 运动 | 电机不转/闭环振荡 | 真值表/PI 手算 | [ch36](../v5-motion/36-motor-driver-power.md)–[ch39](../v5-motion/39-speed-closed-loop-pi.md) 失败分支 |
 | 网络无线 | 连不上/丢包 | reason 码/信道 | [ch32](../v4-platforms/32-esp32-wifi-ble-espnow.md)、[ch33](../v4-platforms/33-network-protocol-stack.md) 失败分支 |
 
+<!-- stick-scene: ch45-triage -->
+
+
 ## 第二层：38 条编号条目（F103 线，D18 原文收编）
 
 五域编号 **C1–C8**（编译链接）、**D1–D7**（下载调试）、**P1–P9**（外设）、**H1–H7**（硬件）、**R1–R7**（RTOS 工具链）：每条 现象/原因/解决 三段与出处列原样保留。这里不重写答案，只把根书章号按 mapping 重排。
