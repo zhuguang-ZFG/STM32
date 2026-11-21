@@ -212,7 +212,10 @@ table { width: 100%; table-layout: fixed; border-collapse: collapse;
 thead { display: table-header-group; }
 th, td { border: 1px solid var(--rule); padding: .3rem .45rem;
   text-align: left; vertical-align: top;
-  overflow-wrap: break-word; word-break: normal; }
+  overflow-wrap: break-word; word-break: normal;
+  /* 数据表满列的地址/数值按等宽数字排（craft-floor：built 而非
+     assembled 的最便宜信号）；Noto CJK 自带 tnum 特性。 */
+  font-variant-numeric: tabular-nums; }
 th { font-family: "NotoSansSC", sans-serif; white-space: normal;
   background: var(--paper-2); }
 tr { break-inside: avoid; }
@@ -268,7 +271,10 @@ figure.landscape { page: plate-landscape; break-before: page;
   display: flex; flex-direction: column; justify-content: center;
   min-height: 150mm; }
 figure.landscape figcaption { margin-top: 1.2rem; }
-/* 每道测验题不拆页；测验盒本身可跨页（见上）。 */
+/* 每道测验题不拆页；测验盒本身可跨页（见上）。
+   跨页断口用 clone：每个分片自带完整边框与内边距（默认 slice 会让
+   断口处文字贴边、只见左右边线）；不支持的阅读器回落 slice。 */
+.quiz, pre { box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .quiz-answer { break-inside: avoid; }
 /* 目录行不加下划线（纸上有 dotted rule 已够） */
 a.toc-row, a.toc-part { text-decoration: none; }

@@ -70,7 +70,8 @@ pre code { background: transparent; padding: 0; }
 table { border-collapse: collapse; width: 100%; font-size: 0.82em;
         margin: 0.8em 0; }
 th, td { border: 1px solid #d7dce1; padding: 0.35em 0.45em;
-         vertical-align: top; overflow-wrap: anywhere; }
+         vertical-align: top; overflow-wrap: anywhere;
+         font-variant-numeric: tabular-nums; }
 thead th { background: #edf3f6; }
 blockquote { border-left: 3px solid #075e84; margin: 0.8em 0;
              padding: 0.1em 0.9em; color: #2c3540; }
