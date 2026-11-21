@@ -69,7 +69,8 @@ jobs:
         run: python book/build_epub.py
       # EPUB 兼容门：SVG 图片一律光栅化（NeatReader 等阅读器不渲染 <img> SVG）。
       - name: Assert EPUB carries no SVG images
-        run: python -c "import zipfile,sys; bad=[n for n in zipfile.ZipFile('book/dist/print/merged-book.epub').namelist() if n.endswith('.svg')]; sys.exit('svg images remain: %r' % bad[:3] if bad else None)"
+        run: |
+          python -c "import zipfile,sys; bad=[n for n in zipfile.ZipFile('book/dist/print/merged-book.epub').namelist() if n.endswith('.svg')]; sys.exit('svg images remain: %r' % bad[:3] if bad else None)"
       - name: Assert artifacts exist and are non-trivial
         run: |
           status=0
