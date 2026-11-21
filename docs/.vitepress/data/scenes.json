@@ -33,5 +33,19 @@
     "fallback": "/images/ch18-stop-board-frame.png",
     "width": 720,
     "height": 460
+  },
+  "ch36-hbridge-gates": {
+    "label": "一个人在 TB6612 驱动板上拉起 STBY、拨 IN1/IN2，电机正转；对调两个开关电机反转；拉回 STBY 板子回到待机。",
+    "caption": "手绘动画：TB6612 三态——STBY 总闸、IN1/IN2 换向与待机（进入视野自动播放，点击重播）",
+    "fallback": "/images/ch36-hbridge-gates-frame.png",
+    "width": 720,
+    "height": 460
+  },
+  "ch38-encoder-window": {
+    "label": "一个人推动编码器轮，每个槽过光栅就闪一下、一个计数飞进 Δ 框；10 毫秒窗结束，票上盖出换算的转速。",
+    "caption": "手绘动画：编码器定窗计数——光栅每过一个槽计一个 Δ，窗结束按 CPR 换算 rpm（进入视野自动播放，点击重播）",
+    "fallback": "/images/ch38-encoder-window-frame.png",
+    "width": 720,
+    "height": 460
   }
 }
