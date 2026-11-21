@@ -51,8 +51,6 @@ nokeep.bin = 268 字节
 
 ## 机制
 
-## 机制
-
 ### 136 行链接脚本：契约头、MEMORY、SECTIONS
 
 `mcu/code/stm32/00-blink/stm32f407xx.ld` 共 136 行，按行号切成三段：

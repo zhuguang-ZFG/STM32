@@ -85,7 +85,10 @@ blockquote { border-left: 3px solid #075e84; margin: 0.8em 0;
 .cover h1 { color: #f4f1ea; }
 .part-divider { border-top: 4px solid #075e84; padding: 2.5em 0.2em; }
 .part-divider h1 { color: #075e84; }
-.contents ol { list-style: none; padding-left: 0; }
+.contents > ol { list-style: none; padding-left: 0; }
+/* 顶层章/卷不带编号；嵌套小节保留缩进（EPUB nav.xhtml 挂了
+   class="contents"，此规则此前从未命中）。 */
+.contents ol ol { padding-left: 1.4em; }
 .chapter > header { border-bottom: 1px solid #d7dce1; padding-bottom: 0.6em; }
 a { color: #075e84; text-decoration: none; }
 """
@@ -375,7 +378,7 @@ def build_epub(book_html: str, out_path: Path, language: str,
            '<html xmlns="http://www.w3.org/1999/xhtml" '
            'xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="' + language + '" lang="' + language + '">',
            '<head><title>TOC</title><link rel="stylesheet" type="text/css" href="epub.css"/></head>',
-           '<body><nav epub:type="toc" id="toc"><h1>' + ("目录" if language.startswith("zh") else "Contents") + '</h1><ol>']
+           '<body><nav epub:type="toc" id="toc" class="contents"><h1>' + ("目录" if language.startswith("zh") else "Contents") + '</h1><ol>']
     def _section_list(name: str) -> str:
         items = sections.get(name) or []
         rows = "".join(

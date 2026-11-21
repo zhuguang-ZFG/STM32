@@ -43,8 +43,6 @@ sh probe.sh steps
 
 ## 机制
 
-## 机制
-
 ### 三胞胎：build、host、target
 
 源码在 PC 上被工具链加工成 `blink.bin`，再经 OpenOCD 与 ST-Link 落进 F407 的 Flash。
