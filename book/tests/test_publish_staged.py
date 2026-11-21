@@ -65,8 +65,9 @@ class StagedPublishTests(unittest.TestCase):
     def test_real_staged_tree_is_fully_expected(self):
         """Every staged SVG in the repo is an expected published target."""
         expected = P.expected_plates()
-        self.assertGreaterEqual(len(expected), 63)
-        for stem in ("ch01-memory-two-addresses", "ch46-l0-l5-ladder"):
+        self.assertGreaterEqual(len(expected), 84)
+        for stem in ("ch01-memory-two-addresses", "ch46-l0-l5-ladder",
+                     "ch00-swd-four-wires", "ch45-first-failed-boundary"):
             self.assertIn(stem, expected)
 
 

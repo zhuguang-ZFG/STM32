@@ -24,6 +24,7 @@ Deterministic: hd.Fig seeds its own RNG; re-running gives the same SVG.
 """
 from __future__ import annotations
 
+from functools import partial
 import sys
 from pathlib import Path
 
@@ -137,81 +138,54 @@ def ch09_gpio_breaker_tables():
 
 
 def ch12_counter_three_knobs():
-    f = Fig("ch12-counter-three-knobs", "一只计数器，三个旋钮",
-            title_color=GREEN_D, tag="CH 12 · 定时器与 PWM")
-    f.text(64, 126, "PSC 定步速，ARR 定圈长，CCR 定翻点；频率的算式里没有 CCR。",
-           size=19, color=MUTED)
-
-    # ---- row 1: CNT ramp + CCR line + PWM wave; three knob cards ----
-    f.card(54, 150, 700, 250, GREEN_D, fill=GREEN_FILL)
-    f.text(70, 182, "CNT 从 0 数到 ARR，CCR 画一条开关线", size=19,
-           color=GREEN_D, weight="bold")
-    f.stroke([(90, 300), (390, 212)], color=GREEN_D, sw=2.4)
-    f.line(390, 212, 390, 300, color=GREEN_D, sw=2.4)
-    f.stroke([(390, 300), (690, 212)], color=GREEN_D, sw=2.4)
-    f.line(690, 212, 690, 300, color=GREEN_D, sw=2.4)
-    f.text(82, 316, "0", size=14, color=MUTED)
-    f.text(640, 206, "ARR=999", size=14, color=GREEN_D, weight="bold")
-    f.line(90, 256, 700, 256, color=AMBER_STROKE, sw=2.0, dash="7 5")
-    f.text(700, 248, "CCR=500", size=14, color=AMBER_STROKE,
-           anchor="end", weight="bold")
-    # PWM high while CNT < CCR: first half of each 300px period is top.
-    f.stroke([(90, 330), (240, 330), (240, 370), (390, 370), (390, 330),
-              (540, 330), (540, 370), (690, 370)], color=GREEN_D, sw=2.4,
-             amp=0.5)
-    f.text(90, 394, "PA6：1kHz · 高电平 0.5ms · CNT < CCR 输出有效电平",
-           size=14, color=MUTED)
+    figure = Fig("ch12-counter-three-knobs", "一只计数器，三个旋钮",
+                 title_color=GREEN_D, tag="CH 12 · 定时器与 PWM")
+    label = partial(figure.text, font="'Microsoft YaHei',sans-serif", halo=False)
+    label(64, 132, "本图：F407 TIM3 · TIMclk = 84 MHz · 向上计数 · PWM1 正极性",
+          size=23, color=INK)
 
     knobs = [
-        (150, "PSC = 83", "84MHz ÷ 84 = 1MHz", BLUE_D, BLUE_FILL),
-        (234, "ARR = 999", "1MHz ÷ 1000 = 1kHz · 1ms", GREEN_D, GREEN_FILL),
-        (318, "CCR = 500", "500/1000 = 50%，只动占空比", AMBER_STROKE,
-         AMBER_PALE),
+        (64, "PSC = 83", "计数步速", "84 MHz ÷ 84 = 1 MHz", BLUE_D, BLUE_FILL),
+        (416, "ARR = 999", "一圈计数", "0 到 999，共 1000 次", GREEN_D, GREEN_FILL),
+        (768, "CCR = 500", "高电平区间", "CNT < 500 时输出高", AMBER_STROKE, AMBER_PALE),
     ]
-    for y, name, note, color, fill in knobs:
-        f.card(778, y, 320, 74, color, fill=fill)
-        f.text(794, y + 30, name, size=22, color=color, weight="bold")
-        f.text(794, y + 58, note, size=15, color=INK)
+    for position, value, meaning, result, color, fill in knobs:
+        figure.card(position, 164, 320, 132, color, fill=fill)
+        label(position + 22, 204, value, size=29, color=color,
+              weight="bold", font=MONO)
+        label(position + 22, 243, meaning, size=24, color=INK)
+        label(position + 22, 278, result, size=22, color=INK)
 
-    # ---- row 2: real TIMclk + input capture ----
-    f.card(54, 420, 560, 160, BLUE_D, fill=BLUE_FILL)
-    f.text(70, 452, "先问真实的 TIMclk", size=19, color=BLUE_D,
-           weight="bold")
-    f.text(70, 482, "APB1=/4：PCLK1=42MHz，TIM3 = 42×2 = 84MHz", size=15,
-           color=INK)
-    f.text(70, 508, "×2 是手册规则；按 42MHz 算，频率正好差一倍", size=15,
-           color=INK)
-    f.pill(70, 522, 470, 40, "f = TIMclk / ((PSC+1)×(ARR+1))", BLUE_D,
-           fill=WHITE, size=16)
-    f.text(70, 574, "两个 +1：硬件从 0 数到 PSC、从 0 数到 ARR", size=14,
-           color=MUTED)
+    figure.card(64, 320, 1024, 304, GREEN_D, fill=WHITE)
+    label(88, 358, "上下对齐看：跨过 CCR 的时刻，就是高电平结束的时刻。",
+          size=24, color=INK)
+    label(88, 400, "CNT", size=27, color=GREEN_D, weight="bold", font=MONO)
+    label(88, 438, "CCR = 500", size=22, color=AMBER_STROKE, font=MONO)
+    label(254, 474, "0", size=22, color=INK, anchor="end", font=MONO)
+    label(1048, 390, "ARR = 999", size=22, color=GREEN_D,
+          anchor="end", font=MONO)
+    figure.stroke([(280, 476), (664, 392), (664, 476),
+                   (1048, 392), (1048, 476)], color=GREEN_D, sw=3.4, amp=0.4)
+    figure.line(280, 434, 1048, 434, color=AMBER_STROKE,
+                sw=2.0, dash="8 6", amp=0.2)
+    for position in (472, 664, 856):
+        figure.line(position, 434 if position != 664 else 476,
+                    position, 564, color=MUTED, sw=1.2, dash="5 5", amp=0.2)
+    label(88, 520, "PA6 高", size=24, color=BLUE_D)
+    label(88, 560, "低", size=24, color=BLUE_D)
+    figure.stroke([(280, 512), (472, 512), (472, 556), (664, 556),
+                   (664, 512), (856, 512), (856, 556), (1048, 556)],
+                  color=BLUE_D, sw=3.4, amp=0.3)
+    label(376, 598, "高 0.5 ms", size=22, color=BLUE_D, anchor="middle")
+    label(856, 598, "一周期 1 ms", size=22, color=GREEN_D, anchor="middle")
 
-    f.card(638, 420, 460, 160, AMBER_STROKE, fill=AMBER_PALE)
-    f.text(654, 452, "反过来用：输入捕获", size=19, color=AMBER_STROKE,
-           weight="bold")
-    f.text(654, 482, "边沿一到，硬件把 CNT 抄进 CCR", size=15, color=INK)
-    f.text(654, 508, "TIM2 32 位自由计数：1 计数 = 1µs", size=15,
-           color=INK)
-    f.text(654, 540, "拿 TIM3 测自己：差值恒为 0", size=15, color=RED,
-           weight="bold")
-    f.text(654, 566, "两次捕获差值 × 计数周期 = 脉宽", size=14, color=MUTED)
-
-    # ---- row 3: three bits + resolution tradeoff ----
-    f.card(54, 600, 600, 96, RED, fill=RED_FILL)
-    f.text(70, 632, "三位一个不能少：OC1M=110 · OC1PE=1 · CC1E=1", size=16,
-           color=INK, weight="bold")
-    f.text(70, 664, "少了 CC1E：定时器照跑、中断照进，引脚没波形", size=15,
-           color=RED)
-    f.pill(700, 612, 380, 40, "一圈 ARR+1 格 = 占空比档位", AMBER_STROKE,
-           fill=AMBER_PALE, size=16)
-    f.text(700, 676, "频率越高，格子越少，档位越粗", size=14, color=MUTED)
-
-    f.htext(54, 738, "频率看 PSC/ARR，占空比看 CCR；先核 TIMclk 再落位",
-            size=22, color=INK, weight="bold", hl=True)
-    f.text(576, 764,
-           "参数为公式推导 · APB×2 为手册规则 · e03 hardware_status pending · 布局示意，非实测",
-           size=15, color=MUTED, anchor="middle")
-    return f
+    label(64, 672, "频率 = TIMclk / ((PSC + 1) × (ARR + 1)) = 1 kHz",
+          size=26, color=INK)
+    label(64, 714, "高电平占比 = CCR / (ARR + 1) = 500 / 1000 = 50%",
+          size=26, color=INK)
+    label(576, 760, "改 CCR 只移动翻点；输入捕获另见正文。参数为算例，E03 待上板实测。",
+          size=19, color=MUTED, anchor="middle")
+    return figure
 
 
 def byte_cells(f, x0, y, values, w, gap, fills, outline, size=18):

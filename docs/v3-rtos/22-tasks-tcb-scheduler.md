@@ -248,6 +248,10 @@ if( xAlreadyYielded == pdFALSE )
 
 此后就绪表里没有这个任务，CPU 去跑别人；tick 到点再把它放回就绪表。`vTaskDelay(n)` 的等待区间是 (n−1, n] tick：调用落在两拍之间，唤醒对齐到第 n 个拍边界。1 kHz 下 `vTaskDelay(1)` 是 (0,1] ms，不是精确 1 ms。固定周期用 `vTaskDelayUntil`，以上次计划唤醒点为锚；实际入口仍有抖动，`do_work()` 超过周期时下一次会立即返回，周期追不回来，该减 WCET 或加长周期。SysTick 的 LOAD 与寄存器细节见 [v1 第 11 章](../v1-drivers/11-systick-timebase-rtc.md)，这里不重列。
 
+![手绘：1 kHz 下早调用与晚调用 vTaskDelay(1) 都在下一 tick 成为就绪，等待区间不同（原理示意，非实拍）](/images/ch22-delay-tick-phase.png)
+
+*等待为 (0,1] ms；到期成为就绪与真正获得 CPU 是两件事，运行时刻还受调度影响。*
+
 ### 七、RT-Thread 的 rt_thread：对象头、内嵌定时器、两步启动
 
 RT-Thread 的 `struct rt_thread`（RT-Thread 5.x `include/rtdef.h`）与 `tskTCB` 的对应关系（`R1:50-61`）：

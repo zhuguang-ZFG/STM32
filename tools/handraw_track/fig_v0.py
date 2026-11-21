@@ -5,6 +5,7 @@ Every number and label is copied from the chapter it belongs to; the plates
 are explanatory diagrams, not measurements or board photos. Deterministic:
 same code -> same SVG bytes -> same PNG pixels.
 """
+from functools import partial
 from pathlib import Path
 
 from hd import (AMBER_PALE, AMBER_STROKE, BLUE_D, BLUE_FILL, GRAY_FILL,
@@ -17,96 +18,66 @@ MONO = "'Consolas','Courier New',monospace"
 
 def ch01_memory_two_addresses():
     """Flash holds the .data backup; RAM holds the runtime copy."""
-    f = Fig("ch01-memory-two-addresses",
-            "一个变量，两个地址：Flash 备份与 RAM 本体",
-            title_color=BLUE_D, tag="CH 01 · 启动与内存")
-    f.text(64, 126,
-           ".data 的初值备份烧在 Flash，运行时本体住 RAM；上电后由 Reset_Handler 逐字搬过去。",
-           size=19, color=MUTED)
+    figure = Fig("ch01-memory-two-addresses",
+                 ".data：Flash 存初值，RAM 存运行值",
+                 title_color=BLUE_D, tag="CH 01 · 启动与内存")
+    label = partial(figure.text, font="'Microsoft YaHei',sans-serif", halo=False)
+    label(64, 132, "跟着 int g_init = 5，看复位后这 4 字节从哪里来。", size=23, color=INK)
 
-    # ---- Flash warehouse ----
-    f.card(64, 160, 500, 340, BLUE_D, fill=BLUE_FILL)
-    f.text(84, 194, "Flash 仓库 · 0x08000000", size=21, color=BLUE_D,
-           weight="bold")
-    f.text(84, 220, "烧录时只带 .data 的初值备份", size=14, color=MUTED)
-    f.pill(84, 234, 460, 36, "0x08000000 · .isr_vector · 392 B", BLUE_D,
-           fill=WHITE, size=15)
-    f.text(84, 296, "0x080002a0 · LMA · 文件里真有的 12 B", size=15,
-           color=AMBER_STROKE, weight="bold")
-    bytes12 = ["05", "00", "00", "00",
-               "01", "00", "00", "00",
-               "68", "69", "00", "00"]
-    for i, b in enumerate(bytes12):
-        x = 84 + i * 38
-        color = GREEN_D if i < 4 else (AMBER_STROKE if i < 8 else BLUE_D)
-        f.rect(x, 308, 38, 50, color=color, fill=WHITE, sw=1.8, double=False)
-        f.text(x + 19, 341, b, size=15, color=INK, anchor="middle", font=MONO)
-    for cx, label in ((160, "g_init = 5"), (312, "g_flag = 1"),
-                      (464, 'g_msg = "hi"')):
-        f.text(cx, 378, label, size=14, color=INK, anchor="middle")
-    f.text(84, 406, "FileSiz 0x0000c：备份 12 B 随固件烧进 Flash", size=14,
-           color=INK)
-    f.text(84, 430, ".bss 初值全 0，文件里不占字节（NOBITS）", size=14,
-           color=MUTED)
-    f.text(84, 462, "上电后谁搬？看下面的搬运条。", size=14, color=GREEN_D,
-           weight="bold")
-    f.text(84, 486, "改链接脚本或换芯片，LMA 与大小都会变。", size=13,
-           color=MUTED)
+    figure.card(64, 170, 414, 268, BLUE_D, fill=BLUE_FILL)
+    label(88, 210, "Flash · 初值备份", size=28, color=BLUE_D, weight="bold")
+    label(88, 258, "0x080002a0", size=30, color=INK, font=MONO)
+    label(88, 292, "LMA：初值存放的地址", size=21, color=INK)
+    for index, byte in enumerate(("05", "00", "00", "00")):
+        position = 88 + index * 88
+        figure.rect(position, 318, 78, 56, color=BLUE_D, fill=WHITE,
+                    sw=2.0, double=False)
+        label(position + 39, 355, byte, size=28, color=INK,
+              anchor="middle", font=MONO)
+    label(88, 414, "小端序：这 4 字节表示整数 5", size=21, color=INK)
 
-    # ---- RAM residence ----
-    f.card(588, 160, 500, 340, GREEN_D, fill=GREEN_FILL)
-    f.text(608, 194, "RAM 住所 · 0x20000000", size=21, color=GREEN_D,
-           weight="bold")
-    f.text(608, 220, "运行时本体住这里；地址向上增大 ↑", size=14, color=MUTED)
-    f.text(608, 242, "0x20020000 · _estack（RAM 顶）", size=13, color=MUTED)
-    f.rect(608, 250, 460, 48, color=RED, fill=RED_FILL, sw=2.0, double=False)
-    f.text(624, 272, "栈：最小 1 KB（_Min_Stack_Size = 0x400）", size=15,
-           color=RED, weight="bold")
-    f.text(624, 290, "向下长 ↓", size=13, color=RED)
-    f.rect(608, 306, 460, 32, color=MUTED, fill=WHITE, sw=1.8, dash="7 6",
-           double=False)
-    f.text(838, 328, "堆与栈尚未碰面的空地", size=14, color=MUTED,
-           anchor="middle")
-    f.rect(608, 346, 460, 48, color=AMBER_STROKE, fill=AMBER_PALE, sw=2.0,
-           double=False)
-    f.text(624, 368, "堆：最小 512 B（_Min_Heap_Size = 0x200）", size=15,
-           color=AMBER_STROKE, weight="bold")
-    f.text(624, 386, "从 _ebss 之后向上长 ↑", size=13, color=AMBER_STROKE)
-    f.rect(608, 402, 460, 32, color=AMBER_STROKE, fill=WHITE, sw=2.0,
-           double=False)
-    f.text(624, 424, ".bss 32 B：启动时清零（文件里 0 B）", size=14, color=INK)
-    f.rect(608, 442, 460, 32, color=GREEN_D, fill=WHITE, sw=2.0, double=False)
-    f.text(624, 464, '.data 12 B：g_init / g_flag / g_msg="hi"', size=14,
-           color=INK)
-    f.text(608, 490, "0x20000000 · 0x2000000c · 0x2000002c", size=12.5,
-           color=MUTED)
+    figure.card(674, 170, 414, 268, GREEN_D, fill=GREEN_FILL)
+    label(698, 210, "RAM · 运行值", size=28, color=GREEN_D, weight="bold")
+    label(698, 258, "0x20000000", size=30, color=INK, font=MONO)
+    label(698, 292, "VMA：程序访问的地址", size=21, color=INK)
+    figure.rect(698, 318, 366, 56, color=GREEN_D, fill=WHITE,
+                sw=2.0, double=False)
+    label(881, 355, "g_init = 5", size=30, color=INK,
+          anchor="middle", font=MONO)
+    label(698, 414, "初始化完成后，main 才能使用它", size=21, color=INK)
 
-    # ---- the mover ----
-    f.card(64, 516, 1024, 56, AMBER_STROKE, fill=AMBER_PALE)
-    f.arrow(88, 544, 148, 544, color=AMBER_STROKE, sw=2.6, bend=0.0, head=9)
-    f.text(168, 551,
-           "上电后 Reset_Handler 逐字读 Flash、写 RAM；.bss 另行清零，不搬。",
-           size=17, color=INK, weight="bold")
+    label(576, 282, "复位后搬运", size=23, color=AMBER_STROKE,
+          anchor="middle", weight="bold")
+    figure.arrow(488, 344, 664, 344, color=AMBER_STROKE,
+                 sw=4.0, bend=0.0, head=14)
+    label(576, 390, "Reset_Handler", size=22, color=INK,
+          anchor="middle", font=MONO)
 
-    # ---- readelf ledger ----
-    f.card(64, 588, 1024, 110, BLUE_D, fill=WHITE)
-    f.text(84, 618,
-           "readelf 第二条 LOAD：VirtAddr 0x20000000（RAM） / "
-           "PhysAddr 0x080002a0（Flash）", size=15, color=INK)
-    f.text(84, 646,
-           "FileSiz 0x0000c（12 B） < MemSiz 0x00002c（44 B：.data 12 + .bss 32）",
-           size=15, color=INK)
-    f.text(84, 674,
-           "判读形状：VMA 落 0x2000xxxx，LMA 落 0x0800xxxx，文件里的货比 RAM 里少。",
-           size=14, color=MUTED)
+    label(64, 486, "把这条 LOAD 记录读成一张分配图", size=25,
+          color=BLUE_D, weight="bold")
+    label(64, 526, "FileSiz = 12 B", size=23, color=BLUE_D, font=MONO)
+    figure.rect(352, 498, 201, 54, color=BLUE_D, fill=BLUE_FILL,
+                sw=2.2, double=False)
+    label(452, 534, ".data 初值", size=23, color=INK, anchor="middle")
+    label(680, 534, "文件中的 12 B 需要搬运", size=23, color=BLUE_D)
 
-    f.htext(576, 730,
-            "烧录文件只带初值备份；RAM 里的 5，要等 Reset_Handler 搬完才可信。",
-            size=22, color=INK, weight="bold", anchor="middle", hl=True)
-    f.text(576, 762,
-           "数字取自本章 mem_probe.elf 与 readelf 输出；布局示意，非实测。",
-           size=15, color=MUTED, anchor="middle")
-    return f
+    label(64, 602, "MemSiz = 44 B", size=23, color=GREEN_D, font=MONO)
+    figure.rect(352, 568, 201, 58, color=GREEN_D, fill=GREEN_FILL,
+                sw=2.2, double=False)
+    figure.rect(553, 568, 535, 58, color=AMBER_STROKE, fill=AMBER_PALE,
+                sw=2.2, double=False)
+    label(452, 606, ".data 12 B", size=23, color=INK, anchor="middle")
+    label(820, 606, ".bss 32 B · 启动时清零", size=23, color=INK,
+          anchor="middle")
+    figure.arrow(452, 554, 452, 566, color=BLUE_D, sw=2.4, bend=0.0, head=7)
+    label(352, 662, "12 + 32 = 44 B；.bss 只占 RAM，不在 Flash 里存一份零。",
+          size=22, color=INK)
+    figure.marker(192, 696, 768, 38)
+    label(576, 725, ".data 要搬，.bss 要清；两步完成再进入 main。",
+          size=26, color=INK, weight="bold", anchor="middle")
+    label(576, 764, "本章 mem_probe.elf 的链接结果；地址与大小随工程变化，非板上实测。",
+          size=18, color=MUTED, anchor="middle")
+    return figure
 
 
 def ch02_volatile_contract():
@@ -153,7 +124,7 @@ def ch02_volatile_contract():
     f.text(84, 492,
            "读-改-写三步仍可被中断打断：isr_toggle 三条指令、两个间隙。",
            size=14, color=RED, weight="bold")
-    f.text(84, 522, "要原子性：临界区、BSRR 一类外设侧原子入口，或内存屏障。",
+    f.text(84, 522, "要原子性：临界区或 BSRR 等原子入口；内存屏障只约束顺序。",
            size=13.5, color=MUTED)
 
     f.card(704, 388, 384, 160, RED, fill=RED_FILL)

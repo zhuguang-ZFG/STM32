@@ -330,6 +330,10 @@ ISR 优先级约束与 ch10 的 NVIC 配置是同一件事。lab 的 `configPRIO
 
 `xQueueSendFromISR`/`xQueueReceiveFromISR` 之外，`xSemaphoreGiveFromISR` 也走同一条延迟让出路径；任务通知的 `vTaskNotifyGiveFromISR`、`xTaskNotifyFromISR` 也一样带 `pxHigherPriorityTaskWoken`。规则统一：ISR 只记录，退出中断时只切一次。
 
+![手绘：FromISR 入队并设置唤醒 flag，中断末尾请求 PendSV，等待更高优先级异常退场后才切任务（原理示意，非实拍）](/images/ch24-fromisr-deferred-switch.png)
+
+*图示不表示在 API 内立即切换；满队列立即报错，ISR 优先级也必须满足内核调用阈值。*
+
 ### 六、宏定义：信号量与互斥锁都是队列
 
 `semphr.h` 里没有独立的信号量实现，只有三行宏：
