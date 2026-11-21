@@ -104,6 +104,10 @@ EEPROM 双槽与 NVS 单 blob 的取舍：双槽能在断电时回退到上一�
 
 `fault 1`/`fault 2` 的锁存状态直到复位才清除，`fault 3`/`fault 4` 按 1 s/2 s 自动恢复；`fault 1` 的 `id` 只允许 0/1，其余命令的 `id` 必须为 0，越界应答 `2`（参数错）。构建开关先开（F407 `FAULTS=1`、S3 `sdkconfig.defaults.faults`），普通固件对 fault 命令返回 UNSUPPORTED。应答入队后 200 ms 执行：注入也是被协议管理的动作。所有 fault 行保持「预期逻辑结果（非实测）」限定，真板验证待执行。
 
+![手绘：configure 改 RAM、save 提交持久化、重启加载有效槽，未保存与提交中断分别回到旧值（原理示意，非实拍）](/images/ch41-configure-save-reboot.png)
+
+*这里只画 EEPROM 双槽；NVS 单 blob 的 commit 按平台机制核对，不套用双槽的回退语义。*
+
 ### 七、协议承诺的边界
 
 **无硬件流控的 UART 不能确认对端真正接收**：发送成功 ≠ 对端收到。STATUS 应答是应用层的确认，不是传输层保证；这条决定了「上报丢帧」在协议里是常态而非异常，主机端的序号连续性检查是发现手段。

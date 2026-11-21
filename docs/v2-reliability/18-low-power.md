@@ -185,6 +185,10 @@ F407 的 4 KB 备份 SRAM 不是普通 SRAM：开 `RCC_AHB1ENR.BKPSRAMEN`（bit1
 
 备份域能扛复位与 Standby，但扛不住 VBAT 也掉电；没有纽扣电池时，拔掉主电源后备份域一样清空。RTC 的秒计数器、闹钟与备份寄存器的关系见[第 11 章](../v1-drivers/11-systick-timebase-rtc.md)；如果要把状态写进 Flash 而不是备份域，寿命与参数区规则见[第 17 章](../v1-drivers/17-flash-iap-ota.md)。
 
+![手绘：VDD 主域与 VBAT 备份域分开供电，F407 有额外备份 SRAM，F103C8 没有（原理示意，非实拍）](/images/ch18-backup-power-island.png)
+
+*VBAT 也失电就不能保留；这张供电关系图不表示所有复位源都保留备份内容。*
+
 ### 六、电流口径：手册值、板级值与量级
 
 引用电流前先问四件事：谁在供电、时钟多少、温度多少、稳压器在哪一档。缺一个条件，数字就不可比。

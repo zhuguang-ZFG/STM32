@@ -146,6 +146,10 @@ Cortex-M4F 的异常帧有两档：任务没跑过浮点，EXC_RETURN bit4 = 1�
 
 M4F 还有懒堆叠：FPCCR 的 LSPEN 默认开，异常入场时硬件先给 FPU 帧**预留空间**，真用到浮点才写数，不用浮点的中断省下这笔开销。这就是「先占座、后写真」；EXC_RETURN bit4 是这趟有没有行李的牌子（`F2:103-105,116-119,264`）。图与文字都是原理示意，没有示波器或 GDB 读数。
 
+![手绘：ARM_CM4F 基本上下文为硬件 8 字加软件 9 字，浮点上下文为 26 字加 25 字，另区分新任务 18 字首帧（原理示意，非实拍）](/images/ch23-fpu-frame-cost.png)
+
+*68 B 与 204 B 不含额外对齐余量；懒堆叠可能先预留空间，不能把预留空间都当作已写寄存器。*
+
 ### 六、PendSV 的十一条语义步骤
 
 V11.1.0 ARM_CM4F 的 `xPortPendSVHandler`（`port.c:505-560`）是 naked 内联汇编。下面按 F2:107-207 的语义转写，② 与 ⑥ 是教学写法：源码 ② 写 `ldr r3, pxCurrentTCBConst`，⑥ 写 `mov r0, %0` 并在操作数里代入 `configMAX_SYSCALL_INTERRUPT_PRIORITY`，编出来是 `#80`（即 `0x50`）。字节数不要按这段转写算。

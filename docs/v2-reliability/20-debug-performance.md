@@ -233,6 +233,10 @@ $ arm-none-eabi-nm -n -S debug_demo-O2.o | grep -E 'sum_bytes|scale'
 
 `-O2` 下 `scale` 的符号消失了：它被内联进 `main`，独立的函数体不再存在。`sum_bytes` 从 0x16 字节变成 0x18 字节，反而更大；`-O2` 优化的是执行速度，不是无条件缩小体积，别把"优化"等同于"更小"。`sum_bytes` 的 `noinline` 是为了让它保留独立符号，方便下一段对比；`scale` 没有这个属性，正好用来演示内联。
 
+![手绘：同带 -g3 的 -Og 与 -O2 对象中，scale 内联后符号消失，sum_bytes 字节数与第 7 行断点地址改变（原理示意，非实拍）](/images/ch20-optimization-symbols.png)
+
+*数字只对应本章 GNU Arm 10.3.1 宿主实验；有调试信息，不代表源码行始终对应独立指令。*
+
 两档反汇编（`objdump -d` 的 `sum_bytes` 段）：
 
 ```text

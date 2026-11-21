@@ -97,6 +97,10 @@ set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)   # 不试链接
 
 两条规则。第一，工具链文件必须在 `project()` 之前设置，否则 CMake 已经用主机 gcc 探测完环境，编出 x86 的东西。第二，`CMAKE_TRY_COMPILE_TARGET_TYPE` 设成 `STATIC_LIBRARY`，让探测停在编译，不去链接和运行一个 PC 上跑不了的交叉产物。生成层带来两段式命令：`cmake -B build` 生成，`make -C build` 构建。Ninja 只是换一个执行器，依赖图和命令行由生成物决定，人的工作方式不变。CMake 的价值在规模：两百个文件分在二十个目录，用 `add_subdirectory` 递归管理；代价是多一步生成，换了工具链文件不重新生成，构建还在用旧配置。
 
+![手绘：main.c 与头文件依赖沿箭头传播到 main.o 和 blink.elf，漏掉头文件的边就可能留下旧固件（原理示意，非实拍）](/images/ch07-header-dependency.png)
+
+*用 -MMD -MP 生成 .d，再由 Make 读回依赖；目录里文件变了，不等于图上的边已经补齐。*
+
 ### IDF 与 scons：两种脚本，同一类组件
 
 ESP-IDF 在 CMake 之上加了“组件”抽象。一个组件是一个目录，含 `CMakeLists.txt`、源码与 `Kconfig`，用 `idf_component_register` 声明自己：

@@ -159,6 +159,10 @@ esp_cache 的方向宏与 STM32 侧一一对应（`esp_cache.h:25-38` 逐行实�
 | msync 对经典 ESP32 无效果 | 那颗芯不支持 writeback（原话 will do nothing） | 换 S3 或改软件维护 |
 | MPU 配完更慢 | Non-Cacheable 区把 CPU 访问也拖慢 | 权衡两解法；热数据移出该区 |
 
+![手绘：窄 DMA 缓冲与脏变量共享一条 32 B cache 行时，整行 invalidate 也会丢掉邻居未写回的更新（原理示意，非实拍）](/images/ch34-cache-line-neighbor.png)
+
+*图示针对 M7 的共享行风险；缓冲要对齐并独占整数行，收发仍按各自所有权顺序交接。*
+
 ## 跨平台边界
 
 - S3 的 SMP 半场（中断分配、IRAM 纪律、`portMUX`、双核自旋锁）：归 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)，这里只回链。

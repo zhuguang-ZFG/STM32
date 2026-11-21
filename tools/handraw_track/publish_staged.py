@@ -33,6 +33,7 @@ MODULES = [
     "fig_v0", "fig_v1a", "fig_v1b", "fig_v1c",
     "fig_v2a", "fig_v2b", "fig_v2c", "fig_v2d", "fig_v2e",
     "fig_v4a", "fig_v7a", "fig_onramp", "fig_merged_b3", "fig_learning",
+    "fig_reading",
 ]
 
 
