@@ -47,5 +47,26 @@
     "fallback": "/images/ch38-encoder-window-frame.png",
     "width": 720,
     "height": 460
+  },
+  "ch34-cache-sync": {
+    "label": "DMA 机器人把新值写进内存，CPU 便签上的还是旧值——把便签撕掉重新抄一份才对；反方向则是先把便签誊回内存。",
+    "caption": "手绘动画：Cache 与 DMA 的两份抄本——RX 撕便签重抄（invalidate）、TX 先誊回内存（clean）（进入视野自动播放，点击重播）",
+    "fallback": "/images/ch34-cache-sync-frame.png",
+    "width": 720,
+    "height": 460
+  },
+  "ch40-bet-measure": {
+    "label": "先在记录板押注栏写下猜测，右侧 LED 台按按钮用秒表实测，回到实测栏写下读数对账——押错了就另标差值，押错最好。",
+    "caption": "手绘动画：押注→测量→对账——先写一个数，实测后回到板前对账，差值也是证据（进入视野自动播放，点击重播）",
+    "fallback": "/images/ch40-bet-measure-frame.png",
+    "width": 720,
+    "height": 460
+  },
+  "ch42-delivery-pack": {
+    "label": "五件交付物逐件飞进交付箱，盖子合上，验收章落下；缺一件（已知限制）就去取回来再盖章。",
+    "caption": "手绘动画：交付包五件套——逐件装箱、盖子合上、验收章落下；缺一件就取回来再盖（进入视野自动播放，点击重播）",
+    "fallback": "/images/ch42-delivery-pack-frame.png",
+    "width": 720,
+    "height": 460
   }
 }

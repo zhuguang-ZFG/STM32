@@ -44,6 +44,9 @@ H7 侧按 AN4891/AN5557/RM0433 口径（cache 行 32 B、CM7@D1/CM4@D2 的核域
 
 反方向照抄就全错：TX 前 invalidate 会把 CPU 刚写好的数据从 cache 里丢掉（内存里还是旧值）；RX 后 clean 会把 cache 旧值冲回内存，覆盖 DMA 刚写的新数据。
 
+<!-- stick-scene: ch34-cache-sync -->
+
+
 ## 机制
 
 ### 一、cache 行 32 B：整行生效与对齐纪律
