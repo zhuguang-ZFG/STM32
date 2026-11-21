@@ -61,10 +61,11 @@ jobs:
       - name: Build PDF
         run: python book/print_pdf.py --html book/dist/print/merged-book.html --meta book/dist/print/merged-book.meta.json --out book/dist/print/merged-book.pdf
       # 印刷版面门：横向溢出/孤行标题/孤儿图注/近空页硬失败；底部大空板
-      # （被不可拆块推走的页）按当前基线给余量（2026-11-21：823 页 147 空
-      # 板、>=400pt 14 页，全部来自 figure 整块推页，属可接受排版）。
+      # （被不可拆块推走的页）按当前基线给余量。max_large_gap_pages 统计
+      # 的是 250pt 以上合计（2026-11-21 基线：823 页，空板 147、其中
+      # 250pt 以上 96，全部来自 figure 整块推页，属可接受排版）。
       - name: Print layout audit
-        run: python tools/audit_pdf_layout.py --max-gap-pages 200 --max-large-gap-pages 25
+        run: python tools/audit_pdf_layout.py --max-gap-pages 200 --max-large-gap-pages 120
       - name: Build EPUB
         run: python book/build_epub.py
       # EPUB 兼容门：SVG 图片一律光栅化（NeatReader 等阅读器不渲染 <img> SVG）。
