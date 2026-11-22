@@ -212,6 +212,20 @@ export async function smoke({ root, mount, downloads: expectDownloads = false })
           `status=${got.status()} bytes=${bytes} floor=${floor}`,
         )
       }
+
+      // /book/ 自身的索引页：这是读者会收藏的地址，不能是 404。
+      // 断言它存在、且里面三条链接指向的正是上面验过的那三份产物——
+      // 否则改名后索引页会静默变成三条死链。
+      const indexRes = await page.request.get(`${base}/book/`)
+      const indexHtml = indexRes.ok() ? await indexRes.text() : ''
+      const indexHrefs = downloads.filter(([, rel]) =>
+        indexHtml.includes(rel.replace('book/', '')),
+      )
+      check(
+        '下载目录索引页',
+        indexRes.ok() && indexHrefs.length === downloads.length,
+        `status=${indexRes.status()} hrefs=${indexHrefs.length}/${downloads.length}`,
+      )
     }
 
     // 12. 首页必须把下载入口挂出来，否则「有文件但没人找得到」等于没有入口。

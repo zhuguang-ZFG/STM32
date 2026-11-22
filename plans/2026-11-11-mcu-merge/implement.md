@@ -170,7 +170,9 @@ CPU/工具链缺失、浏览器未安装、硬件未接入分别记 `BLOCKED`/`U
 
 ## 7. P5：发布与关闭
 
-> **状态：待合并与上线回读。** 候选分支已推送（`feat/mcu-merge-p1`），PR #140 承载 P4 验收记录与下载入口改动；未动 Pages。P4 判定见 [`research/p4-acceptance-2026-11-19.md`](research/p4-acceptance-2026-11-19.md)：AC1–AC3、AC5–AC7 通过（AC2/AC5 按 §3.1 修订口径），AC4/AC8 待发布后核对。合并后的 P5 动作：确认 deploy 运行与 artifact、回读 `/book/` 三件产物、记录旧站兼容决定。
+> **状态：已合入并上线回读完成，剩旧站兼容决定。** PR #140 以 merge commit `9e798499` 合入 `main`（保留 P4 记录引用的各轮 SHA），未删分支。首个 deploy `45034581583`（success）产出 artifact `github-pages-45034581583-1`，线上 `/`、`/book/` 与三件产物、`/mcu/` 存根全部实测通过（见 [P4 验收记录](research/p4-acceptance-2026-11-19.md) AC3/AC4 节）。AC8 因此从 `UNVERIFIED` 升为 `PARTIAL`，唯一未决项是旧仓入口与旧 Pages 的去留。
+>
+> 发布侧待办已清空；迁移侧仍待发布指令：① 旧仓入口是否长期保留；② 旧 Pages 何时下线；③ 维护入口（若 `mcu/README.md` 指向旧站，需改指新站）。
 
 - [ ] 收到后续发布指令后，才执行 PR 合入/推送/Pages 切换等远程动作；计划阶段不操作远程。
 - [ ] 发布前记录新旧 Pages 的真实 URL、旧 artifact、对应 SHA、required checks 和来源仓库维护状态。

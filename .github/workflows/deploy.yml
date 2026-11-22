@@ -86,6 +86,9 @@ jobs:
             test "$size" -ge "$floor"
             cp "$src" .temp/pages-site/book/
           done
+          # /book/ 自己没有 index，裸 URL 会落到 404，而这一层正是读者会收藏的。
+          # 索引页是仓库里的静态模板，直接拷过去，不在 YAML 里维护 HTML。
+          cp book/print/book-index.html .temp/pages-site/book/index.html
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Mounted smoke (/STM32/, incl. /book/ downloads)
