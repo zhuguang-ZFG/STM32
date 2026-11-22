@@ -176,8 +176,11 @@ Nov-11 计划（`implement.md`）成文于 B5 之前。按当前事实逐条判�
 | 输入 | 读它的门 | 触发它的是谁 |
 | --- | --- | --- |
 | `mcu/README.md`、`mcu/CONTRIBUTING.md`、`mcu/AGENTS.md` | `book.checks --check`（`Check` 步骤） | `merge-check.yml`（`paths` 含 `mcu/**`） |
+| 合并计划三件套与两份证据（共 6 份） | `book.checks --check`（`Check` 步骤） | `merge-check.yml`（`paths` 含 `plans/2026-11-11-mcu-merge/**`） |
 | `mcu/CITATION.cff`、`mcu/code/projects.json` | `unittest discover book/tests`（`Check` 步骤） | `merge-check.yml`（同上） |
 
 `book.yml` 的 `paths` 不含 `mcu/**`，所以它不会因为这些输入被触发；这不是遗漏——`merge-check.yml` 跑的是同一批 `book.checks --check` 与 `unittest discover book/tests`，触发范围已经覆盖。反过来说，改这些文件却只手动跑 `book.yml` 是不够的，要么跑 `merge-check.yml`，要么本地实跑 `make book-check`。
+
+**一个没落地的备选**：曾试过加 `pyrightconfig.json`（`extraPaths: ["."]`）专治 `from book import …` 在 LSP 里的 unresolved 误报。实测：它确实能把这三份文件的 pyright 报错刷到 0，但整仓本来就带着 ~1736 个 pyright 报错、且没有任何 CI 跑类型检查，加上它几乎不改变现状；更关键的是它会暴露 19 条先前被 unresolved import 掩盖的推断不足（例如 `assertGreater(scene["width"], 0)` 在 pyright 看来是 `str` 与 `int` 相比）。既然本仓不把 pyright 当门，就不留这个文件，也不顺手改一堆与合并收口无关的类型写法。
 
 **没做的**：没有为 `mcu/code/` 的 47 个工程加编译门。它们的 `kind` 有 22 个 `host-probe`、14 个 `arm-make`、10 个 `esp-idf`、1 个 `host-make`，需要交叉工具链与 ESP-IDF；那是一条独立的 CI 决策（新建工作流、固定工具链版本），不属于本批的文档收口范围。AC5 的固件门缺口因此仍按「随 B5 退役」记录，未重建。

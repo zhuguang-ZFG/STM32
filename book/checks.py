@@ -267,6 +267,15 @@ ENTRY_DOCS = (
     "mcu/README.md",
     "mcu/CONTRIBUTING.md",
     "mcu/AGENTS.md",
+    # 合并计划三件套与两份证据。它们互链 `research/*.md`、`plans/2026-11-12-*`
+    # 与仓内目录，是本次收口的可审计面：断一条链接，就是证据链断一条，而
+    # 阅读者恰好会把这些文档当成“去哪查”的入口。
+    "plans/2026-11-11-mcu-merge/prd.md",
+    "plans/2026-11-11-mcu-merge/design.md",
+    "plans/2026-11-11-mcu-merge/implement.md",
+    "plans/2026-11-11-mcu-merge/research/execution-snapshot-2026-11-19.md",
+    "plans/2026-11-11-mcu-merge/research/p4-acceptance-2026-11-19.md",
+    "plans/2026-11-12-merged-book/README.md",
 )
 
 

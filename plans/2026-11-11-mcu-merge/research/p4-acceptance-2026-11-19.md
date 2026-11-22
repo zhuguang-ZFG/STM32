@@ -136,12 +136,12 @@ AC5 原文：「发布所依赖检查缺失时不得放行」。按此，本候�
 
 | 门 | 位置 | 覆盖什么 |
 | --- | --- | --- |
-| `mcu/` 入口文档链接扫描 | `book/checks.py` 的 `ENTRY_DOCS` 新增 `mcu/README.md`、`mcu/CONTRIBUTING.md`、`mcu/AGENTS.md` | 本批重写 `mcu/README.md` 的原因就是它有 60+ 条链接指向已删除的树，而当时没有任何门会失败。三条现测 0 死链，加进去之后同类腐烂会被 `book.checks --check` 报出来 |
+| `mcu/` 入口文档与合并计划文档的链接扫描 | `book/checks.py` 的 `ENTRY_DOCS` 新增 `mcu/README.md`、`mcu/CONTRIBUTING.md`、`mcu/AGENTS.md`，以及 `plans/2026-11-11-mcu-merge/{prd,design,implement}.md`、`research/execution-snapshot-2026-11-19.md`、`research/p4-acceptance-2026-11-19.md`、`plans/2026-11-12-merged-book/README.md` | 本批重写 `mcu/README.md` 的原因就是它有 60+ 条链接指向已删除的树，而当时没有任何门会失败。计划文档同理：`implement.md` 指向 `research/*`，验收记录又指向 `prd.md` 与快照，断一条就是证据链断一条。九份现测 0 死链，加进去之后同类腐烂会被 `book.checks --check` 报出来 |
 | 引用元数据对账 | `book/tests/test_citation.py`（8 项） | title/version/repository/url、`identifiers` 指向的路径必须存在、许可正文、章数与附录数对 manifest、工程数对 `mcu/code/projects.json` |
 
 两者都不引入新依赖（只读 `markdown` 那套），因此 `merge-check.yml` 的 `Run book checks` 与 `book.yml` 的 `Run book checks` 会照常执行它们。触发侧要说清：`merge-check.yml` 的 `paths` 本轮已含 `mcu/**`，所以改 `mcu/CITATION.cff` 或 `mcu/README.md` 会真的跑这两道断言；`book.yml` 的 `paths` 不含 `mcu/**`，这部分由 `merge-check` 补齐而不是靠人工记得补跑。
 
-负向验证（两道门都验过会失败，不是摆设）：把 `mcu/CITATION.cff` 回退成修复前版本，`test_citation` 4 项失败（章数、`identifiers`、`url`、version）；往 `mcu/README.md` 塞一条指向不存在文件的链接，`ShippedEntryDocsTest` 报 `AssertionError: ['mcu/README.md:103: missing target: ../docs/retired-dir.md']`，恢复后回到 OK。
+负向验证（两道门都验过会失败，不是摆设）：把 `mcu/CITATION.cff` 回退成修复前版本，`test_citation` 4 项失败（章数、`identifiers`、`url`、version）；往 `mcu/README.md` 塞一条指向不存在文件的链接，`ShippedEntryDocsTest` 报 `AssertionError: ['mcu/README.md:103: missing target: ../docs/retired-dir.md']`；往 `implement.md` 塞一条 `../research/not-there.md`，同一测试报 `plans/2026-11-11-mcu-merge/implement.md:192: missing target`。两处恢复后均回到 OK。
 
 ## AC6 规范与任务可继续执行
 

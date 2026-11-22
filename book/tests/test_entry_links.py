@@ -119,6 +119,22 @@ class ShippedEntryDocsTest(unittest.TestCase):
         for rel in ("mcu/README.md", "mcu/CONTRIBUTING.md", "mcu/AGENTS.md"):
             self.assertIn(rel, ENTRY_DOCS, f"{rel} 掉了就不再被链接门扫描")
 
+    def test_merge_plan_docs_stay_scanned(self):
+        """合并计划自己的证据链也在扫描范围里。
+
+        `implement.md` 指向 `research/*`，验收记录又指向 `prd.md` 与快照：这些
+        链接断了不会让任何构建失败，只会让后来的人顺着读下去时点到 404。
+        """
+        for rel in (
+            "plans/2026-11-11-mcu-merge/prd.md",
+            "plans/2026-11-11-mcu-merge/design.md",
+            "plans/2026-11-11-mcu-merge/implement.md",
+            "plans/2026-11-11-mcu-merge/research/execution-snapshot-2026-11-19.md",
+            "plans/2026-11-11-mcu-merge/research/p4-acceptance-2026-11-19.md",
+            "plans/2026-11-12-merged-book/README.md",
+        ):
+            self.assertIn(rel, ENTRY_DOCS, f"{rel} 掉了就不再被链接门扫描")
+
 
 if __name__ == "__main__":
     unittest.main()

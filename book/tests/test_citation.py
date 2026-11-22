@@ -6,27 +6,28 @@
 - `identifiers[0]` 指向 `mcu/mcu-book`，该目录已整树删除，链接必然 404；
 - `url` 指向 `/STM32/mcu/`，那里现在是 396 字节的 `meta refresh` 跳转存根；
 - `version: 1.0.0` 与 `docs/manifest.json` 的 `0.1.0` 冲突；
-- 摘要称「88 章」，而合并书是 47 章 + 6 附录。
+- 摘要称「88 章」，而合并书是 47 章 + 6 附录，还说离线书「随站点发布」
+  （`/STM32/book/` 实测 404）。
 
 四处都是人工通读才发现的，没有一个门会失败。本文件把它们变成断言，并顺手
 把可复算的数字（章数、附录数、工程数）绑到真源上，避免再手写漂移。
 
+读的是**已提交的** `docs/manifest.json`，不是 `book.manifest` 的构建结果：
+读者与 GitHub 的引用面板看到的都是签发物，构建器与它是否一致由
+`test_manifest.test_committed_manifest_current` 另外保证。
+
 为什么不 import 一个 YAML 解析器：`book/requirements.txt` 只钉了 `markdown`，
-内容门要在没有 PyYAML 的环境里跑。下面只读它需要的几个顶层标量，形态一变
+内容门要能在没有 PyYAML 的环境里跑。下面只读它需要的几个顶层标量，形态一变
 就直接抛断言失败，不会静默跳过。
 """
 import json
 import re
-import sys
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT))
-
-from book import manifest as manifest_module
-
 CITATION = ROOT / "mcu" / "CITATION.cff"
+MANIFEST = ROOT / "docs" / "manifest.json"
 PROJECTS = ROOT / "mcu" / "code" / "projects.json"
 
 SCALAR_RE = r"^{key}:[ \t]*(.+)$"
@@ -59,7 +60,7 @@ def folded(text: str, key: str) -> str:
 class CitationTest(unittest.TestCase):
     def setUp(self):
         self.text = CITATION.read_text(encoding="utf-8")
-        self.manifest = manifest_module.build_manifest(manifest_module.load_toc())
+        self.manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
 
     def chapters(self) -> int:
         return sum(len(part["chapters"]) for part in self.manifest["parts"])
