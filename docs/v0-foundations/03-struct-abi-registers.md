@@ -55,8 +55,6 @@ CC=arm-none-eabi-gcc sh probe.sh
 
 ## 机制
 
-## 机制
-
 ### GPIO_TypeDef：寄存器地图的 C 版翻译
 
 CMSIS 头文件把“哪个偏移上住着哪个寄存器”翻译成一个结构体。下面是 `stm32f407xx.h` 第 526–537 行的定义，成员顺序与官方头文件一致：

@@ -16,7 +16,7 @@ platforms: [generic]
 本附录是全书配套工程的**双登记簿**：根书例程区（`examples/`，F103 线，15 条）与姊妹书工程区（`mcu/code/`，47 个可编译验证工程，F407/ESP32/GD32/宿主四类）。例程不是「复制后能编译」就结束。每个工程都要留下可观察结果，并写清不能由该结果推出什么。
 
 - 根书区：`examples/` 下 14 例程 + 补登的 `motor-dc-speed`（B3 批次新增，源表漏登），MIT 许可。
-- 姊妹书区：`mcu/code/` 下 47 工程，`mcu/code/projects.json` 登记（kind 四档：host-probe 22、arm-make 14、esp-idf 10、host-make 1），Apache-2.0。当前 CI 只对根书区的 `examples/motor-dc-speed` 跑宿主测试与三套 ARM 预设（`motor-control.yml`）；这批工程按各目录的 README/脚本本地验证。
+- 姊妹书区：`mcu/code/` 下 47 工程，`mcu/code/projects.json` 登记（kind 四档：host-probe 22、arm-make 14、esp-idf 10、host-make 1），Apache-2.0。这批工程按各目录的 README/脚本本地验证。根书区的 `motor-control.yml` 检查电机工程宿主测试与三套 ARM 预设，`gpio-blink.yml` 检查点灯工程的宿主测试、ARM 构建与向量表。
 
 完整许可边界见 附录 E。
 
@@ -30,7 +30,7 @@ platforms: [generic]
 | [ch12 PWM / E03](../v1-drivers/12-timers-pwm.md) | `labs/timer-pwm/README.md` | `mcu/code/stm32/02-tim-pwm` | 未实测；PA6→PA0，动态CCR不是静态50%证据 |
 | [ch13 UART / E02](../v1-drivers/13-uart-framed-protocol.md) | `labs/uart-dma/README.md` | `mcu/code/stm32/03-uart-dma` | 未实测；IDLE不等于应用帧，宿主测试不等于线上通过 |
 
-三个主样板启动目标均为STM32F407ZGT6，实际板型/芯片/容量与供电需现场核实。F103对照 `examples/gpio-blink`、`examples/timer-pwm` 是待集成HAL源码，不随目录提供完整工程；不能拿F103的PC13/72MHz/PSC71套给F407的PF6或回读时钟。所有硬件读数留待测；固定CCR、积压试验所需的新代码/工具只保留设计，不在本轮实施。
+三个主样板启动目标均为 STM32F407ZGT6，实际板型、芯片、容量与供电需现场核实。F103 的 `examples/gpio-blink` 已有固定 CubeF1 v1.8.6 的完整 CMake 工程、宿主回归测试和 ARM 向量检查，硬件仍待测；`examples/timer-pwm` 仍是待集成 HAL 源码。不能把 F103 的 PC13 / 72 MHz / PSC71 套给 F407 的 PF6 或回读时钟。固定 CCR、积压试验按各协议另行实施。
 
 ## 第一区 · 根书例程（F103 线，BluePill）
 

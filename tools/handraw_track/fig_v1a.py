@@ -13,6 +13,7 @@ Deterministic: hd.Fig seeds its own RNG; re-running gives the same SVG.
 from __future__ import annotations
 
 import sys
+from functools import partial
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -141,90 +142,55 @@ def ch08_clock_tree_path():
 
 
 def ch10_exti_nvic_path():
-    f = Fig("ch10-exti-nvic-path", "引脚到 ISR：四道门与优先级",
-            tag="CH 10 · 中断与 EXTI")
-    f.text(64, 126,
-           "PF6 的一个边沿，要走完四道门才变成 ISR；优先级决定谁能在半路插队。",
-           size=19, color=MUTED)
+    figure = Fig("ch10-exti-nvic-path", "PF6 到 ISR：沿请求找断点",
+                 tag="CH 10 · 中断与 EXTI")
+    label = partial(figure.text, font="'Microsoft YaHei',sans-serif", halo=False)
+    label(64, 132, "先追一条边沿，再看 IRQn 如何找到向量表里的函数入口。",
+          size=23, color=INK)
 
-    # A pulse leaves the pin and passes four gates.
-    f.chip(64, 166, 58, 54, GREEN_D, size=13)
-    f.text(93, 242, "PF6", size=16, color=GREEN_D, anchor="middle",
-           weight="bold")
-    f.line(93, 256, 93, 280, color=GREEN_D, sw=2.4)
-    f.arrow(93, 280, 93, 306, color=GREEN_D, sw=2.4, bend=0.0)
-    f.text(120, 292, "边沿", size=14, color=MUTED)
-
-    gates = [
-        ("1", "SYSCFG", BLUE_D, BLUE_FILL, [
-            "EXTICR2[11:8] = 0x5",
-            "PF6 → EXTI6",
-            "基址 0x40013800",
-        ]),
-        ("2", "EXTI", AMBER_STROKE, AMBER_PALE, [
-            "IMR / RTSR / FTSR bit6",
-            "PR bit6 挂起，写 1 清",
-            "基址 0x40013C00",
-        ]),
-        ("3", "NVIC", GREEN_D, GREEN_FILL, [
-            "IRQn 23 → 向量槽 39",
-            "ISER[0] bit23",
-            "IP 字节 0xE000E417",
-        ]),
-        ("4", "ISR", RED, RED_FILL, [
-            "EXTI9_5_IRQHandler",
-            "槽 39 / 偏移 0x009C",
-            "第一行清 PR",
-        ]),
+    stages = [
+        (64, 170, "1", "SYSCFG · 选引脚", BLUE_D, BLUE_FILL,
+         ("PF6 → EXTI6", "EXTICR2[11:8] = 0x5"),
+         "线号相同，也要选对端口 F"),
+        (616, 170, "2", "EXTI · 产生请求", AMBER_STROKE, AMBER_PALE,
+         ("IMR bit6 放行", "RTSR / FTSR 选择触发沿"),
+         "边沿到来，PR bit6 挂起"),
+        (616, 408, "3", "NVIC · 允许响应", GREEN_D, GREEN_FILL,
+         ("IRQn = 23", "ISER[0] bit23 使能"),
+         "优先级与内核屏蔽状态也要允许"),
+        (64, 408, "4", "ISR · 处理并清挂起", RED, RED_FILL,
+         ("EXTI9_5_IRQHandler", "PR bit6：写 1 清除"),
+         "共用入口，要判断是哪条线触发"),
     ]
-    x = 64
-    for i, (num, title, color, fill, lines) in enumerate(gates):
-        f.card(x, 318, 236, 178, color, fill=fill)
-        f.gate(x + 14, 330, 50, 64, color, num)
-        f.text(x + 20, 432, title, size=23, color=color, weight="bold")
-        for j, ln in enumerate(lines):
-            f.text(x + 20, 462 + j * 25, ln, size=15, color=INK)
-        if i < 3:
-            f.arrow(x + 238, 400, x + 258, 400, color=INK, sw=2.2,
-                    bend=0.0, head=8)
-        x += 256
+    for position_x, position_y, number, title, color, fill, lines, note in stages:
+        figure.card(position_x, position_y, 472, 192, color, fill=fill)
+        figure.circle(position_x + 32, position_y + 34, 18,
+                      color=color, fill=WHITE, sw=2.0)
+        label(position_x + 32, position_y + 42, number, size=23, color=color,
+              anchor="middle", weight="bold")
+        label(position_x + 66, position_y + 43, title, size=26,
+              color=color, weight="bold")
+        for index, line in enumerate(lines):
+            label(position_x + 24, position_y + 90 + index * 34, line,
+                  size=24, color=INK)
+        label(position_x + 24, position_y + 166, note, size=21, color=INK)
 
-    # Priority is a 4-bit field shifted into the IP byte.
-    f.card(64, 516, 482, 190, BLUE_D, fill=WHITE)
-    f.text(84, 550, "优先级：4 位字段，左移 4 位", size=21, color=BLUE_D,
-           weight="bold")
-    f.pill(84, 572, 122, 36, "逻辑 5", BLUE_D, fill=BLUE_FILL, size=16)
-    f.arrow(210, 590, 246, 590, color=BLUE_D, sw=2.0, bend=0.0, head=7)
-    f.pill(250, 572, 140, 36, "IP = 0x50", BLUE_D, fill=BLUE_FILL, size=16)
-    f.text(84, 642, "逻辑 16 → 截断成 0x00（最高）", size=16, color=INK)
-    f.text(84, 670, "AIRCR = 0x05FA0500：2 抢占 + 2 子", size=16, color=INK)
-    f.text(84, 696, "写 AIRCR 必带 VECTKEY 0x5FA", size=15, color=MUTED)
+    figure.arrow(542, 266, 610, 266, color=BLUE_D, sw=3.2, bend=0.0)
+    figure.arrow(852, 368, 852, 402, color=AMBER_STROKE,
+                 sw=3.2, bend=0.0, head=9)
+    figure.arrow(610, 504, 542, 504, color=GREEN_D, sw=3.2, bend=0.0)
+    label(344, 394, "按 1 → 2 → 3 → 4 追踪；不响应就逐段检查。",
+          size=21, color=INK, anchor="middle")
 
-    # Preemption: lower preempt number cuts the line; equal number queues.
-    f.card(574, 516, 514, 190, GREEN_D, fill=WHITE)
-    f.text(594, 550, "抢占：谁打断谁", size=21, color=GREEN_D,
-           weight="bold")
-    f.pill(594, 572, 204, 38, "EXTI0 · 抢占 2", GREEN_D, fill=GREEN_FILL,
-           size=15)
-    f.pill(594, 620, 204, 38, "EXTI9_5 · 同级 2", GREEN_D, fill=GREEN_FILL,
-           size=15)
-    f.pill(814, 572, 236, 38, "EXTI1 · 抢占 1", RED, fill=RED_FILL,
-           size=15)
-    f.arrow(812, 632, 812, 596, color=RED, sw=2.4, bend=0.0, head=8)
-    f.text(820, 652, "号更小 → 立刻压栈换人", size=15, color=RED,
-           weight="bold")
-    f.text(594, 688, "同级只在同时挂起时排队，不能打断。", size=15,
-           color=MUTED)
-
-    # Formula strip: two short lines beat one clipped line.
-    f.panel(64, 716, 1024, 54, AMBER_FILL, amp=1.2)
-    f.text(80, 740,
-           "IRQn/32 = ISER 下标；IRQn%32 = 位号；IP = 0xE000E400 + IRQn。",
-           size=15.5, color=INK, weight="bold")
-    f.text(80, 762,
-           "USART1：IRQn 37 → ISER[1] bit5、IP 0xE000E425；槽号 = IRQn + 16。",
-           size=14.5, color=MUTED)
-    return f
+    figure.card(64, 632, 1024, 100, BLUE_D, fill=WHITE)
+    label(88, 670, "入口怎么算？", size=25, color=BLUE_D, weight="bold")
+    label(310, 670, "向量槽 = 23 + 16 = 39；偏移 = 39 × 4 = 0x009C",
+          size=23, color=INK)
+    label(88, 710, "优先级字节 = 0xE000E400 + 23 = 0xE000E417；使能位与挂起位各管一件事。",
+          size=21, color=INK)
+    label(576, 764, "F407 算例；抢占、子优先级与屏蔽规则见正文；原理示意，非时延实测。",
+          size=18, color=MUTED, anchor="middle")
+    return figure
 
 
 def ch10_prio_four_bit_window():

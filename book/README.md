@@ -34,6 +34,8 @@ python -m book.print_pdf --html book/dist/print/merged-book.html --meta book/dis
 python -m book.build_epub             # EPUB 3（与 PDF 同源输入）
 ```
 
+EPUB 构建多一步：全部 SVG 图片光栅化为 PNG（按 viewBox 小图 2x、大图 1.5x，256 色量化）——NeatReader 等阅读器不渲染 `<img>` 指向的 SVG；PDF 与站点不受影响（Chromium 打印吃矢量，浏览器原生渲染 SVG）。
+
 站点是 VitePress 多页站；`book.build_html` 的完整构建（不带 `--check`）只用于兼容旧的静态站点产物，页面与锚点由 `book/checks.py` 与站点构建共同校验，两者共享 `cjk_slugify` 与 `docs/.vitepress/data/scenes.json`。后三条生成自包含印刷 HTML/元数据，再打印并后处理 PDF（页码、目录、书签、空页与横向溢出检查）。动画仅截取现有 SVG 的静帧用于印刷，不生成动画或视频。
 
 `make book`、`make book-pdf`、`make book-epub`、`make book-check`、`make site-check` 和 `make check` 分别封装站点、PDF、EPUB、书稿门、站点门和资产门。PDF 会覆盖指定输出；有 WIP 时先备份并将两阶段 `--out` 指向仓库外的新目录。禁止把历史验收页数当成本次结果，须记录实际文件大小、页数、哈希、源输入稳定性和抽查页。

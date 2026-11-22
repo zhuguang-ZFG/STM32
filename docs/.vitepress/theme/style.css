@@ -322,6 +322,13 @@
 }
 
 @media (max-width: 700px) {
+  /* 窄屏关掉两端对齐：390px 列宽 + 不可断的行内代码芯片，会把上一行
+     CJK 拉出「同 优 先 级 …」式的空隙行（Read 表面手机档实测），
+     左对齐不产生这种词间距。 */
+  .vp-doc {
+    text-align: left;
+  }
+
   .vp-doc h1 {
     font-size: 1.7rem;
   }

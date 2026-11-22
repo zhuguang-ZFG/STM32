@@ -140,7 +140,7 @@ def cfsr_bits():
         f.text(x + w / 2, 216, name, size=29, color=color, anchor="middle", weight="bold")
         f.text(x + w / 2, 249, bits, size=20, color=INK, anchor="middle")
     f.text(72, 317, "BFSR 展开", size=25, color=RED, weight="bold")
-    labels = [(15, "有效位", GREEN_D), (14, "保留", MUTED), (13, "保留", MUTED),
+    labels = [(15, "有效位", GREEN_D), (14, "保留", MUTED), (13, "懒浮点", RED),
               (12, "入栈", RED), (11, "出栈", RED), (10, "非精确", AMBER_STROKE),
               (9, "精确", BLUE_D), (8, "取指", BLUE_D)]
     for i, (bit, label, color) in enumerate(labels):

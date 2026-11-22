@@ -193,7 +193,10 @@ pre { background: var(--code-bg); border: 1px solid var(--code-line);
   padding: .55em .75em; font-family: "CascadiaMono", "NotoSansSC", "NotoSansSymbols2", "NotoSansMath", monospace;
   font-size: 8.6pt; line-height: 1.55; white-space: pre-wrap;
   word-break: break-word; overflow: visible; text-align: left;
-  color: var(--ink); }
+  color: var(--ink);
+  /* 高代码块（如 queue.c 90 行）允许跨页续排，避免整块推新页留下
+     半页空板；orphan/widow 保证断口至少各留 3 行。 */
+  break-inside: auto; orphans: 3; widows: 3; }
 code { font-family: "CascadiaMono", "NotoSansSC", "NotoSansSymbols2", "NotoSansMath", monospace; font-size: .88em;
   background: var(--code-bg); padding: .05em .22em; }
 /* 行内代码/链接可按字符换行：长 API 名（如 SCB_InvalidateDCache_by_Addr）
@@ -209,7 +212,10 @@ table { width: 100%; table-layout: fixed; border-collapse: collapse;
 thead { display: table-header-group; }
 th, td { border: 1px solid var(--rule); padding: .3rem .45rem;
   text-align: left; vertical-align: top;
-  overflow-wrap: break-word; word-break: normal; }
+  overflow-wrap: break-word; word-break: normal;
+  /* 数据表满列的地址/数值按等宽数字排（craft-floor：built 而非
+     assembled 的最便宜信号）；Noto CJK 自带 tnum 特性。 */
+  font-variant-numeric: tabular-nums; }
 th { font-family: "NotoSansSC", sans-serif; white-space: normal;
   background: var(--paper-2); }
 tr { break-inside: avoid; }
@@ -223,17 +229,22 @@ figure.book-figure figcaption { max-width: 150mm; margin: .45em auto 0; }
 figcaption { font-family: "NotoSansSC", sans-serif; font-size: .8em;
   color: var(--muted); margin-top: .35em; line-height: 1.5; }
 
-/* 测验：印刷版答案直接展开（details[open] 在构建时写入） */
+/* 测验：印刷版答案直接展开（details[open] 在构建时写入）。
+   整个测验盒允许跨页（此前 break-inside: avoid 让整盒不可拆，
+   自测节被整体推到新页，最多留下 678pt 空板）；每道题的
+   Q+答案仍然原子（.quiz-answer avoid），边框按 box-decoration
+   slice 在断口处断开、左右边线连续。 */
 .quiz { border: 1px solid var(--rule); padding: .7em 1em; margin: 1em 0;
-  break-inside: avoid; background: var(--paper-2); }
-.quiz h3 { margin: .1em 0 .5em; }
+  break-inside: auto; background: var(--paper-2); }
+.quiz h3 { margin: .1em 0 .5em; break-after: avoid; }
 .quiz-options { margin: .3em 0 .6em; padding-left: 1.4em; }
 .quiz-answer summary { color: var(--prussian); font-weight: 700; }
 .quiz-answer[open] summary { margin-bottom: .3em; }
 
-/* 通用防割 */
+/* 通用防割。pre 不在列：它自身规则里已放开跨页（orphans/widows 3 行
+   兜底），长代码块整块 avoid 会把自测节前的半页空成白板。 */
 h1, h2, h3 { break-after: avoid; }
-blockquote, .quiz, figure, pre { break-inside: avoid; }
+blockquote, figure { break-inside: avoid; }
 a { color: var(--ink); text-decoration: none; }
 
 /* ------- 印刷精修（参考 yuyu_book/style_print.py）------- */
@@ -260,8 +271,11 @@ figure.landscape { page: plate-landscape; break-before: page;
   display: flex; flex-direction: column; justify-content: center;
   min-height: 150mm; }
 figure.landscape figcaption { margin-top: 1.2rem; }
-/* 测验与附录块不拆页 */
-.quiz, .quiz-answer { break-inside: avoid; }
+/* 每道测验题不拆页；测验盒本身可跨页（见上）。
+   跨页断口用 clone：每个分片自带完整边框与内边距（默认 slice 会让
+   断口处文字贴边、只见左右边线）；不支持的阅读器回落 slice。 */
+.quiz, pre { box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.quiz-answer { break-inside: avoid; }
 /* 目录行不加下划线（纸上有 dotted rule 已够） */
 a.toc-row, a.toc-part { text-decoration: none; }
 /* 卷分隔页留白由 flex 居中提供，不再叠加 padding 推高内容 */

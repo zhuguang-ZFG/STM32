@@ -9,10 +9,10 @@ platforms: [f407, f103, gd32, esp32]
 
 ## 本章罗盘
 
-- **问题**：一条按键输入发生边沿后，为什么要在 SYSCFG、EXTI、NVIC 和 ISR 里各过一道门？`IRQn = 6` 怎样变成向量槽 22、`ISER[0]` 的 bit6 与 IP 字节 `0xE000E406`？逻辑优先级 5 为什么存成 `0x50`，写成 16 又为什么静默变成最高优先级 0？写 `SCB->AIRCR` 为什么必须带 `0x5FA`？把 `EXTI0_IRQHandler` 名字拼错，为什么中断会一直停在死循环里？ESP32-S3 的中断为什么不是固定向量，`IRAM_ATTR` 与双核分工又在守什么边界？
+- **问题**：引脚边沿怎样经 EXTI、NVIC 与向量表进入 ISR？如何从 `IRQn` 算出使能位、优先级字节和向量槽？换到 ESP32-S3，分配、IRAM 与双核共享有哪些不同？
 - **交付**：能从 `IRQn` 推出 ISER 下标、位号与 IP 字节地址；能按 PRIGROUP 表说清抢占与子优先级的切分，并写出带 `0x5FA` 的 AIRCR 值；能用槽号 `IRQn + 16` 与 weak 顶替的 objdump 证据解释 ISR 的落点；能照六步清单配通一条外部中断；能读懂 `esp_intr_alloc` 的源、级、核与 IRAM 标志，并在双核共享数据时选对锁。
 - **级别**：L1 驱动。证据位置：「测量与证据」与「离开检查」；读完留下 IRQn 到 ISER 位与 IP 字节的推导、槽号与 weak 顶替的 objdump 对账。
-- **旅程导航**：上一章（[第 9 章](./09-gpio.md)）你手里有一条从合闸到数据的引脚配置序列和 e01 记录表；本章结束多了 `IRQn`→ISER 位与 IP 字节的推导、槽号与 weak 顶替的 objdump 对账（宿主机 52 条断言与交叉链接反汇编；板上读数来源未记录，留作实验）——L1 的「引脚被你轮询」升到「引脚能打断你」：EXTI 出请求、NVIC 按优先级放行、向量槽 = `IRQn + 16`、逻辑优先级 5 存成 `0x50`，这些是位推导与 objdump 对账不是已量中断时延。
+- **旅程导航**：从[第 9 章](./09-gpio.md)的引脚配置与 e01 记录表进入外部中断。本章用宿主机 52 条断言与交叉链接反汇编核对 `IRQn`、NVIC 位、向量槽与 weak 顶替；板上读数和中断时延仍待测。
 - **开源读法**：翻 `CMSIS_6` 的 `CMSIS/Core/Include/core_cm4.h`，看 `NVIC_EnableIRQ` 与 `NVIC_SetPriority` 怎样从 `IRQn` 算出 ISER 位与 IP 字节；优先级位宽仍回 PM0214。
 - **边界**：四平台章。F407 的地址、位段、probe 读数来自 S4《NVIC 与 EXTI》与 RM0090、PM0214；F103 的 AFIO、HAL 分组与三把总闸来自根书第 04 章与 RM0008、PM0056；ESP32-S3 的中断分配器、IRAM 纪律与双核分工来自 P4《中断与双核》，Cache 一致性与多核内存模型留给[第 34 章](../v4-platforms/34-multicore-cache.md)；GD32 只写边界，CLIC/ECLIC 的完整对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)。SysTick 时基留给[第 11 章](./11-systick-timebase-rtc.md)，UART 中断留给[第 13 章](./13-uart-framed-protocol.md)，RTOS 上下文切换与 FromISR 约束留给[第 23 章](../v3-rtos/23-context-switch-porting.md)、[第 24 章](../v3-rtos/24-queue-semaphore-notification.md)，HardFault 现场留给[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)。来源没有记录上板读数，这里不把实验步骤写成已经量到的结果。
 - **依据锚点**：S4《S4 NVIC 与 EXTI：打断的艺术》（`mcu/docs/stm32/04-nvic-exti.md`）、根书第 04 章《中断与 NVIC》（`docs/04-中断与NVIC.md`）、P4《P4 中断与双核：IRAM 纪律与核间分工》（`mcu/docs/esp32/04-irq-dualcore.md`）；[第 8 章](./08-architecture-memory-clock.md)的 PPB 与时钟门控、[第 9 章](./09-gpio.md)的引脚配置、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体、[第 4 章](../v0-foundations/04-function-pointer-state-machine.md)的函数指针数组。PM0214、RM0090、RM0008、PM0056 与 ESP-IDF v5.5.2 的条文均转引自上述来源。
@@ -36,7 +36,9 @@ EXTI0          6     22 0x0058        0     6 0xE000E100 0xE000E406
 
 若缺少被忽略的 `mcu/.trellis/ref/cmsis/stm32f407xx.h` 或 `core_cm4.h`，脚本会跳过第 0–2 段；最终“全部步骤完成”不等于已经跑了 52 条断言，必须记录实际跳过项。本轮本机没有这两个缓存文件，未下载补齐。
 
-第一行说明地址来自头文件，第二行把向量槽、ISER 下标、位号与 IP 字节排成一排，第三行说明宿主机的断言全绿。读之前先做个判断：按键走的那条中断线，进入 NVIC 后的槽号是小于 5、5 到 10 之间，还是大于 10？判断完再往下看。
+第一行给出头文件里的中断编号；第二行以 `EXTI0` 开头，其后七列依次是：IRQn、向量槽号、槽的字节偏移、ISER 下标、ISER 位号、ISER 地址、IP 字节地址；第三行是来源记录的断言结果。
+
+先做一次 EXTI0 编号练习：从 `EXTI0_IRQn = 6` 算出槽号 `6 + 16 = 22`、字节偏移 `22 × 4 = 0x58`，再与输出核对。
 
 有板的人再加一步：在调试器里读 `NVIC->ISER[0]` 与 `EXTI->PR`，按一次键观察 EXTI_PR 的对应挂起位；NVIC_ISER 是使能状态，不会随每次按键在 0/1 间翻转。PR 很快被 ISR 清除时，单次调试读也未必捕获到 1。来源没有记录这一步的板上读数，这里把它留作实验，不写成已跑结果。
 
@@ -151,15 +153,23 @@ F407 的优先级寄存器每中断一个字节，但只实现了高 4 位：
 | 6 | 1 | 3 | `0x05FA0600` |
 | 7 | 0 | 4 | `0x05FA0700` |
 
-抢占优先级决定能不能打断正在执行的 ISR，数值越小优先级越高；子优先级只在两份请求**同时挂起**时决定谁先执行，它没有打断能力。上表第一列的 PRIGROUP 0~3 在 4 位实现下效果相同（4 抢占 + 0 子）。FreeRTOS 要 4 位全给抢占，落在 PRIGROUP 0~3 这一档；SPL/HAL 老代码常见的“组 2”是另一套编号：SPL/HAL 组 2 = 2 抢占 + 2 子（`0x05FA0500`），而 PRIGROUP=2 才是 4+0（`0x05FA0200`）。根书按 HAL 的 `NVIC_PRIORITYGROUP_x` 编号，那张表里的 `GROUP_4` 指“4 位抢占”，与这里的 PRIGROUP 值不是同一套编号；移植时先看位宽，再对名字。
+PRIGROUP 0~3 在 F407 的 4 位实现下效果相同，都是 4 抢占 + 0 子；FreeRTOS 使用这一拆分。SPL/HAL 的“组 2”指 2 抢占 + 2 子（`0x05FA0500`），PRIGROUP=2 却是 4+0（`0x05FA0200`）。根书按 HAL 的 `NVIC_PRIORITYGROUP_x` 编号，`GROUP_4` 指“4 位抢占”。移植时先核对抢占位数、子优先级位数，再核对名字。
 
 AIRCR 是带锁寄存器：写入时高 16 位必须是 VECTKEY = `0x5FA`，否则写操作被无视。上表第四列的每个值都是钥匙 `0x05FA0000` 再加 PRIGROUP 值左移 8 位拼出来的形状（PRIGROUP=5 即 `0x05FA0500`），出处是 `core_cm4.h:1661` 的 `0x5FAUL << SCB_AIRCR_VECTKEY_Pos`。`NVIC_SetPriorityGrouping()` 内部就是“读 AIRCR、改 [10:8]、带钥匙写回”。
 
 还有一条不能设的优先级：HardFault。打开 `stm32f407xx.h:68-69` 的 `IRQn_Type` 枚举，`NonMaskableInt_IRQn = -14` 之后直接跳到 `MemoryManagement_IRQn = -12`，**-13 被故意跳过**。Reset、NMI、HardFault 的优先级硬件固定：Reset 最高（-3）、NMI 次之（-2）、HardFault 最低（-1），数值从 -3 到 -1 递增、优先级正好递减，与“数值越小越横”一致。这三个不在 SHP 里、不可编程。可编程的内核异常只包括器件枚举中实际实现的 MemManage、BusFault、UsageFault、SVCall、DebugMonitor、PendSV、SysTick（走 SHP），不是 -12 到 -1 的每个整数都有效；外设中断也只用该芯片实现的 IRQn（走 IPR）。
 
-把“谁能打断谁”演成五幕的是下面这张动画：EXTI0（抢占 2）在跑 ISR 时，同抢占级的 EXTI9 只能挂起排队；抢占号更小的 EXTI1 一到，硬件立刻压栈换人；ISR1 退出后回到 ISR0 的断点，ISR0 再退出才轮到 EXTI9 补位。
+### 谁能抢占：先比较抢占级
 
-![NVIC 抢占判定：谁能打断谁](/anim/nvic-preempt-arbitration.svg)
+抢占级数值越小，优先级越高；同抢占级的请求只能挂起等待。
+
+![手绘：EXTI9_5 同级挂起，EXTI1 抢占，随后恢复 EXTI0；EXTI0 退出后才执行 EXTI9_5。时间轴不表示实测耗时（原理示意，非实拍）](/images/ch10-preemption-timeline.png)
+
+取 F407 的 `PRIGROUP=4`，即 3 位抢占 + 1 位子优先级：EXTI0=(2,0)，EXTI1=(1,0)，EXTI9_5=(2,1)。图中各请求已使能且未被屏蔽：EXTI9_5 到来后等待；EXTI1 打断 EXTI0；EXTI1 退出后，EXTI0 从断点继续；EXTI0 退出，EXTI9_5 才执行。
+
+子优先级用于挑选同抢占级、在仲裁时都已挂起的请求，数值小的先执行；它们不必在同一时刻到达，子优先级也不能让它们互相抢占。
+
+暂停不等于已经退出 ISR。EXTI1 正在执行时，EXTI0 仍为 **active**，所以 `NVIC->IABR` 可以同时有多个活跃位；这不表示多个 ISR 在单核上并行执行。Arm 的 `NVIC_GetActive` 说明明确保留了被抢占 ISR 的 active 状态。
 
 ### 向量表：槽号 IRQn + 16，weak 的位子谁来坐
 
@@ -247,7 +257,9 @@ void EXTI9_5_IRQHandler(void)          /* 强符号顶替 weak 默认 */
 }
 ```
 
-![手绘板：PF6 边沿经 SYSCFG 与 EXTI 6 到 NVIC，再由向量槽进 ISR，以及抢占与子优先级的排队（原理示意，非实拍）](/images/ch10-exti-nvic-path.png)
+下图沿用 PF6→EXTI6 的寄存器演算，对应 `IRQn=23`、槽 39；开头 EXTI0 算例的 `IRQn=6`、槽 22 是另一组编号。
+
+![PF6 经 SYSCFG 接到 EXTI6，由 IRQn23 的 ISER[0] bit23 放行，EXTI9_5_IRQHandler 写 1 清 PR bit6；向量槽 39、偏移 0x009C、IP 字节地址 0xE000E417（原理示意，非实拍）](/images/ch10-exti-nvic-path.png)
 
 ### 进出现场：八个字与 EXC_RETURN
 
@@ -378,6 +390,7 @@ sh probe.sh          # 构建后用 nm/.map 给七条链归类（需 ESP-IDF v5.
 | 调 HardFault 优先级没有效果 | HardFault 优先级硬件固定，`IRQn` 枚举里 -13 被跳过 | `IRQn_Type` 中没有 `HardFault_IRQn` | 不设；查 HardFault 现场见[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) |
 | 中断一直停在死循环 | ISR 函数名拼错，weak 默认 `Default_Handler` 没被顶替 | objdump 的槽内容仍指向默认处理函数 | 对照启动文件的 `.word` 行核对函数名 |
 | EXTI9_5 里分不清是谁触发 | 5~9 号线共用向量，ISR 没查 PR | PR 的 bit5~9 哪一个为 1 | ISR 里按 PR 位分支，再逐位清 |
+| IABR 有多个位为 1，以为 ISR 在并行执行 | 被抢占的 ISR 仍为 active | 用当前 PC/调用栈区分正在执行与暂停的 ISR | 沿抢占级与异常返回顺序核对，不能只凭 IABR 判定执行位置 |
 | 尾链打开后低优先级插进了高优先级 | 尾链不改变谁有权抢占 | 抢占级数值没有变小 | 改抢占级，不要指望尾链 |
 | `__disable_irq()` 之后仍进了 NMI | PRIMASK 不管 NMI | NMI 是硬件固定优先级 | 这是预期；CSS 的 NMI 要清 CSSC |
 | F1 上 EXTI 不进中断 | 没开 AFIO 时钟，或没写 `AFIO->EXTICR` | `AFIO->EXTICR` 读回不是目标编码 | 开 AFIO 时钟、写 EXTICR、清 PR |
@@ -422,6 +435,7 @@ Cache 映射、Cache 关闭窗口与多核一致性见[第 34 章](../v4-platfor
 6. 配通 PF6 → EXTI6 的六步是什么？EXTI6 为什么没有自己的向量？ISR 进门第一件事是什么？
 7. F103 的 EXTICR 在哪个外设里？HAL 的 `NVIC_PRIORITYGROUP_4` 与 S4 的 PRIGROUP 值为什么不混用？`PRIMASK` 挡不住谁？
 8. ESP32-S3 的中断为什么不走固定向量？`IRAM_ATTR` 只标 ISR 本体为什么不够？双核共享计数器为什么不能用 `volatile` 代替锁？
+9. EXTI0=(抢占 2, 子 1) 正在执行，EXTI9_5=(2,0) 到来，能抢占吗？再来一个 EXTI1=(1,0)，执行次序怎样变化？为什么此时 IABR 可能不止一个活跃位？
 
 <details>
 <summary>对照答案</summary>
@@ -434,6 +448,7 @@ Cache 映射、Cache 关闭窗口与多核一致性见[第 34 章](../v4-platfor
 6. 六步：开 GPIOF 时钟、PF6 配输入、开 SYSCFG 时钟、EXTICR2[11:8] = `0x5`、EXTI 的 IMR/RTSR/FTSR bit6、NVIC 设优先级并 `EnableIRQ`。EXTI6 与 5~9 号线共用 `EXTI9_5_IRQn`（槽 39），没有专属向量。ISR 进门第一件事是写 1 清 `EXTI_PR`。
 7. F103 的 EXTICR 在 AFIO 里，换端口前要先开 AFIO 时钟。HAL 的 `NVIC_PRIORITYGROUP_x` 按抢占位数命名；S4 的 PRIGROUP 是按 0~7 的值命名，两者不是同一套编号。`PRIMASK` 关可配置优先级中断，挡不住 NMI 与 HardFault；`FAULTMASK` 再挡 HardFault，仍留 NMI。
 8. ESP32-S3 用中断矩阵，源、级、核在运行时由 `esp_intr_alloc` 绑定，没有固定向量槽。`IRAM_ATTR` 只改变本体落址，ISR 调用的非内联函数与读的 rodata 仍可能在 Flash，Cache 关闭时取指断在半路。双核共享计数器的 `++` 是读-改-写，`volatile` 既不原子也不提供核间可见性，要用 `portMUX` 或内核对象。
+9. EXTI9_5 与 EXTI0 的抢占级相同，即使它的子优先级 0 比 EXTI0 的 1 高，也只能等待。EXTI1 抢占级为 1，可以打断抢占级为 2 的 EXTI0；它退出后先恢复 EXTI0，EXTI0 退出后才执行 EXTI9_5。被抢占的 EXTI0 尚未退出，仍为 active；单核此刻只执行 EXTI1。
 
 </details>
 

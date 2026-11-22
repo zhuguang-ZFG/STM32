@@ -53,10 +53,14 @@ h3 { font-size: 1.05em; margin: 1.2em 0 0.4em; text-align: left; }
 p, li { orphans: 2; widows: 2; }
 p { margin: 0 0 0.7em; }
 p + p { text-indent: 2em; }
-p[align="center"] + p { text-indent: 0; }
+.epub-align-center + p { text-indent: 0; }
+.epub-align-center { text-align: center; text-indent: 0; }
+.epub-align-left { text-align: left; }
+.epub-align-right { text-align: right; }
+.epub-align-justify { text-align: justify; }
 blockquote p, .quiz p { text-indent: 0; }
 figure { margin: 1em 0; text-align: center; page-break-inside: avoid; }
-figure img, p[align="center"] img, img { max-width: 100%; height: auto; }
+figure img, img { max-width: 100%; height: auto; }
 figcaption { font-size: 0.85em; color: #5e6872; line-height: 1.5;
              margin-top: 0.4em; text-align: center; text-indent: 0; }
 sub { font-size: 0.85em; color: #5e6872; }
@@ -70,7 +74,8 @@ pre code { background: transparent; padding: 0; }
 table { border-collapse: collapse; width: 100%; font-size: 0.82em;
         margin: 0.8em 0; }
 th, td { border: 1px solid #d7dce1; padding: 0.35em 0.45em;
-         vertical-align: top; overflow-wrap: anywhere; }
+         vertical-align: top; overflow-wrap: anywhere;
+         font-variant-numeric: tabular-nums; }
 thead th { background: #edf3f6; }
 blockquote { border-left: 3px solid #075e84; margin: 0.8em 0;
              padding: 0.1em 0.9em; color: #2c3540; }
@@ -84,7 +89,10 @@ blockquote { border-left: 3px solid #075e84; margin: 0.8em 0;
 .cover h1 { color: #f4f1ea; }
 .part-divider { border-top: 4px solid #075e84; padding: 2.5em 0.2em; }
 .part-divider h1 { color: #075e84; }
-.contents ol { list-style: none; padding-left: 0; }
+.contents > ol { list-style: none; padding-left: 0; }
+/* 顶层章/卷不带编号；嵌套小节保留缩进（EPUB nav.xhtml 挂了
+   class="contents"，此规则此前从未命中）。 */
+.contents ol ol { padding-left: 1.4em; }
 .chapter > header { border-bottom: 1px solid #d7dce1; padding-bottom: 0.6em; }
 a { color: #075e84; text-decoration: none; }
 """
@@ -171,6 +179,12 @@ def _to_xhtml_document(body_html: str, title: str, css_href: str) -> tuple[bytes
     link.set("href", css_href)
     body = doc.find("body")
     body.set("class", "epub-body")
+    for paragraph in doc.xpath("//p[@align]"):
+        alignment = paragraph.attrib.pop("align").strip().lower()
+        if alignment in {"left", "right", "center", "justify"}:
+            classes = paragraph.get("class", "").split()
+            classes.append(f"epub-align-{alignment}")
+            paragraph.set("class", " ".join(dict.fromkeys(classes)))
     # strip interactive helpers that have no meaning in EPUB
     for bad in doc.xpath("//a[contains(@class,'toc-jump') or contains(@class,'back-to-toc') or contains(@class,'skip-link')]"):
         bad.getparent().remove(bad)
@@ -374,7 +388,7 @@ def build_epub(book_html: str, out_path: Path, language: str,
            '<html xmlns="http://www.w3.org/1999/xhtml" '
            'xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="' + language + '" lang="' + language + '">',
            '<head><title>TOC</title><link rel="stylesheet" type="text/css" href="epub.css"/></head>',
-           '<body><nav epub:type="toc" id="toc"><h1>' + ("目录" if language.startswith("zh") else "Contents") + '</h1><ol>']
+           '<body><nav epub:type="toc" id="toc" class="contents"><h1>' + ("目录" if language.startswith("zh") else "Contents") + '</h1><ol>']
     def _section_list(name: str) -> str:
         items = sections.get(name) or []
         rows = "".join(

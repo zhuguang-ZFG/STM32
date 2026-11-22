@@ -51,8 +51,6 @@ nokeep.bin = 268 字节
 
 ## 机制
 
-## 机制
-
 ### 136 行链接脚本：契约头、MEMORY、SECTIONS
 
 `mcu/code/stm32/00-blink/stm32f407xx.ld` 共 136 行，按行号切成三段：
@@ -304,6 +302,10 @@ Memory region         Used Size  Region Size  %age Used
 ```
 
 5640 能手算：`.data` 4 + `.bss`（4 + 4096）+ `._user_heap_stack`（`0x200 + 0x400 = 1536`）= 5640。把 RAM 改小到 2K，ld 报 `region 'RAM' overflowed by 3592 bytes`，`5640 − 2048 = 3592`。只把栈预算从 `0x400` 撑到 `0x20000`，代码一个没多，ld 点名 `._user_heap_stack` 报 `overflowed by 4616 bytes`，RAM 到 `135688 B = 103.52%`，`135688 − 131072 = 4616`。**栈不够用在构建阶段以百分比报错，好过在客户现场以改写相邻内存的形式出现。**
+
+![手绘：text 280 B、data 12 B、bss 32 B 分别进入 Flash 与 RAM 两份预算，data 初值经启动复制（原理示意，非实拍）](/images/ch06-size-two-budgets.png)
+
+*本章算例得到 Flash 292 B、RAM 44 B；两条使用各自比例尺，栈与堆的预留仍查链接脚本。*
 
 ### map 文件：三块内容怎么读
 

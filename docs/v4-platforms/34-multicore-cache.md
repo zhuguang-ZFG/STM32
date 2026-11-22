@@ -44,6 +44,9 @@ H7 侧按 AN4891/AN5557/RM0433 口径（cache 行 32 B、CM7@D1/CM4@D2 的核域
 
 反方向照抄就全错：TX 前 invalidate 会把 CPU 刚写好的数据从 cache 里丢掉（内存里还是旧值）；RX 后 clean 会把 cache 旧值冲回内存，覆盖 DMA 刚写的新数据。
 
+<!-- stick-scene: ch34-cache-sync -->
+
+
 ## 机制
 
 ### 一、cache 行 32 B：整行生效与对齐纪律
@@ -155,6 +158,10 @@ esp_cache 的方向宏与 STM32 侧一一对应（`esp_cache.h:25-38` 逐行实�
 | 双核一核复位后通道死掉 | 没有代际号/重同步设计 | 第 5 层注入实验：分别复位看存活核行为 |
 | msync 对经典 ESP32 无效果 | 那颗芯不支持 writeback（原话 will do nothing） | 换 S3 或改软件维护 |
 | MPU 配完更慢 | Non-Cacheable 区把 CPU 访问也拖慢 | 权衡两解法；热数据移出该区 |
+
+![手绘：窄 DMA 缓冲与脏变量共享一条 32 B cache 行时，整行 invalidate 也会丢掉邻居未写回的更新（原理示意，非实拍）](/images/ch34-cache-line-neighbor.png)
+
+*图示针对 M7 的共享行风险；缓冲要对齐并独占整数行，收发仍按各自所有权顺序交接。*
 
 ## 跨平台边界
 

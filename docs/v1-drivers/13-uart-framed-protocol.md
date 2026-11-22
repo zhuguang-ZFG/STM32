@@ -258,6 +258,10 @@ uint16_t protocol_crc(const uint8_t *data, size_t n)
 
 CRC 的边界要说清：它能检出随机损坏，比如单比特错与突发错，但防不住有意篡改，改了数据的人顺手重算一遍 CRC 就行；要防篡改得用带密钥的 MAC。它覆盖的是 COBS 之前的 raw 字节，所以接收端先 COBS 解码、再验 CRC。
 
+![手绘：收到 0x00 后依次 COBS 解码、核对 length+8 与 CRC，任一失败即丢弃并计数（原理示意，非实拍）](/images/ch13-frame-validation.png)
+
+*分隔符只结束一段编码数据；版本与类型也要按协议检查，最大线上长度仍是 74 B。*
+
 ### COBS 手算一帧：10 个字节怎么来的
 
 以主机发出的第一条请求为例：INFO（type=0x01），seq=7，无负载。

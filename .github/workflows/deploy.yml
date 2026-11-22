@@ -1,8 +1,7 @@
 name: 部署合并书站点到 GitHub Pages（/STM32/）
 
-# 发布链路：VitePress 构建 → 页面集合对账 → 旧链存根 → staging 组装 → 离线整书
-# （印刷 HTML / PDF / EPUB，落在 /book/ 下）→ /STM32/ 冒烟 → upload-pages-artifact
-# → deploy-pages。任一步失败即不发布。
+# 发布链路：VitePress 构建 → 页面集合对账 → 旧链存根 → staging 组装 → /STM32/ 冒烟
+# → upload-pages-artifact → deploy-pages。任一步失败即不发布。
 on:
   push:
     branches: [main]
@@ -15,27 +14,24 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/deploy.yml'
+  pull_request:
+    paths:
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build-and-deploy:
-    if: github.ref == 'refs/heads/main'
+  build:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -59,8 +55,8 @@ jobs:
         run: npm run site:stubs
       - name: Assemble Pages staging (/STM32/ root = merged book)
         run: npm run site:assemble
-      # 离线整书（AC3 的下载入口）。字体随仓库分发（book/print/fonts），
-      # 不依赖 runner 装字体；动画帧截图需要 Chromium，故先装 Python 与浏览器。
+      # 离线整书（AC3 的下载入口）。字体随仓库分发（book/print/fonts），不依赖
+      # runner 装字体；动画帧截图需要 Chromium，故先装 Python 与浏览器。
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: "3.13"
@@ -76,6 +72,7 @@ jobs:
             --meta book/dist/print/merged-book.meta.json \
             --out book/dist/print/merged-book.pdf
           python -m book.build_epub
+      # 产物为空也算「构建成功」，所以先按字节下限验一遍再落进 staging。
       - name: Stage offline book under /book/
         run: |
           set -euo pipefail
@@ -95,9 +92,25 @@ jobs:
         run: |
           node scripts/site-smoke.mjs \
             --root .temp/pages-site --mount /STM32 --downloads
-      - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
+          name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
           path: .temp/pages-site
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v6
       - id: deployment
         uses: actions/deploy-pages@v5
+        with:
+          artifact_name: ${{ needs.build.outputs.artifact_name }}

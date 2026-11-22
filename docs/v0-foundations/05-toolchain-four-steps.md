@@ -43,8 +43,6 @@ sh probe.sh steps
 
 ## 机制
 
-## 机制
-
 ### 三胞胎：build、host、target
 
 源码在 PC 上被工具链加工成 `blink.bin`，再经 OpenOCD 与 ST-Link 落进 F407 的 Flash。
@@ -107,6 +105,10 @@ PC 上的 C 标准库由 glibc 提供。glibc 依赖 Linux 系统调用，裸机
 以 `printf` 为例：newlib 不替你决定“输出到哪”。你实现 `_write`，把收到的字节写进 UART 寄存器，`printf` 就走串口；也可以把输出接到 SWO，经 ITM 送出；或接到 Semihosting，经调试器送回 PC。上层代码不变，变的只是钩子的实现。串口章里的 printf 重定向就是这一步。
 
 一个版本差异先记在这里：老版 newlib 默认不带浮点 `printf`，`%f` 可能不工作，需要在链接时加 `-u _printf_float`。这不是语法错误，编译阶段不会提醒你。
+
+![手绘：printf 经 newlib 格式化后调用 _write，底层可接 USART、SWO 或 Semihosting（原理示意，非实拍）](/images/ch05-printf-hook.png)
+
+*箭头跟随输出字节；三个出口是可选实现，各自仍需要对应硬件或调试环境。*
 
 ### gcc -###：把调度剧本念出来
 

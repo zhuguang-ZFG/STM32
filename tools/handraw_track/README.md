@@ -23,7 +23,8 @@
 | `fig_v0_v6.py` | 合并卷 v0 基础篇、v6 实验项目篇的图设计 |
 | `fig_arch_*.py` | 各章静态知识板（DMA 期限、Flash 双槽、AI 防线、对账三关等），PNG 发布到 `docs/public/arch/` |
 | `render.py` | Playwright + Chromium 把 SVG 截成 1152×864 PNG（并做确定性 256 色重写） |
-| `publish_staged.py` | 暂存族一条命令重建：跑 14 个模块 → 渲染 → 同步进 `docs/public/images/`；期望集合取自生成器输出，缺图算漂移，`--check` 有漂移即退出码 1 |
+| `fig_reading.py` | 合并书阅读补图：接线、HAL 时基、构建依赖、中断抢占、完成时刻、缓冲区寿命、内存与排错等 23 张机制图 |
+| `publish_staged.py` | 暂存族一条命令重建：跑 15 个模块 → 渲染 → 同步进 `docs/public/images/`；期望集合取自生成器输出，缺图算漂移，`--check` 有漂移即退出码 1 |
 | `embed.py` | 把 `<p align="center">` 图块插到锚点图之后（zh+en 同步） |
 
 ## 重新生成某一章
@@ -34,7 +35,7 @@ python fig_ch28.py                          # 写 SVG 到 assets/illustrations/h
 python render.py ../../assets/illustrations/handraw/ch28-*.svg
 ```
 
-合并卷（v0 / v1 / v2 / b3 / onramp / learning）的 63 张图走另一条链：模块把 SVG
+合并卷（v0 / v1 / v2 / b3 / onramp / learning / reading）的 87 张图走另一条链：模块把 SVG
 写进 `assets/illustrations/staged/<组>/`（**在版本控制里**），PNG 发布到
 `docs/public/images/`。整条链一条命令，别手工复制：
 
@@ -44,7 +45,7 @@ python publish_staged.py            # 重建 + 渲染 + 同步
 python publish_staged.py --check    # 只比对，有漂移则退出码 1
 ```
 
-`--check` 会重渲 63 张并与已提交的 PNG 逐字节比对，用来防止"改了图忘了同步"。
+`--check` 会重渲 87 张并与已提交的 PNG 逐字节比对，用来防止"改了图忘了同步"。
 
 期望集合取自**生成器的输出**（`assets/illustrations/staged/` 下每个 SVG 都该有一张
 同名 PNG），不是取自 `docs/public/images/` 里现有的文件。所以删掉一张已发布图
@@ -68,13 +69,13 @@ PNG 已提交进 git，CI 与读者不需要这一步。
   自动补第二次更松的细描（`amp*1.5+0.4`、`sw*0.7`、`opacity 0.30`）。
   `rect(double=False)` 是唯一关掉它的开关，留给药丸、小图标和标签框。
 - 面板底色走两条路，别混：
-  1. **暂存族（会发布，14 个模块）**：`fig_v0`、`fig_v1a`、`fig_v1b`、
+  1. **暂存族（会发布，15 个模块）**：`fig_v0`、`fig_v1a`、`fig_v1b`、
      `fig_v1c`、`fig_v2a`、`fig_v2b`、`fig_v2c`、`fig_v2d`、`fig_v2e`、
-     `fig_v4a`、`fig_v7a`、`fig_onramp`、`fig_merged_b3`、`fig_learning`
+     `fig_v4a`、`fig_v7a`、`fig_onramp`、`fig_merged_b3`、`fig_learning`、`fig_reading`
      直接把 `BLUE_FILL` / `GREEN_FILL` / `AMBER_PALE` / `RED_FILL` /
      `SHADOW` 传进 `card()` / `rect()`。它们写 SVG 到
      `assets/illustrations/staged/`，PNG 再落到 `docs/public/images/`——
-     **改 `hd.py` 里的常量就会重涂这 63 张已发布图**。
+     **改 `hd.py` 里的常量就会重涂这 87 张已发布图**。
      权威清单是 `publish_staged.py` 的 `MODULES`，别照这段文字抄：
      漏跑任一模块都会留下旧色的 SVG，`python publish_staged.py` 一次跑全，
      `--check` 会比对漂移。

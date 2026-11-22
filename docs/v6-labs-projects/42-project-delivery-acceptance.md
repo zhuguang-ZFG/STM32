@@ -77,6 +77,9 @@ AC/H 编号矩阵（H01–H10、AC03 等）是 motor 专用；这里只取它的
 4. 接线图与验收记录（[第 40 章](./40-lab-method-instruments.md) 的记录表格式）；
 5. 已知限制与恢复步骤（「没做的部分」清单，做完的定义里的一半）。
 
+<!-- stick-scene: ch42-delivery-pack -->
+
+
 ACC §6 的 SHA256SUMS 与 metadata.json 字段表更严格，这里取两者并集：原始数据带哈希，metadata 记录版本三元组；[第 40 章](./40-lab-method-instruments.md) 的证据分级标签全程适用。
 
 ![IAP 验收门：从构建到交付的证据链（原理示意）](/figures/iap-acceptance-gates.svg)

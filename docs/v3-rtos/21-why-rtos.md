@@ -182,7 +182,7 @@ for (;;) {
 2. **TCB（任务控制块）**：任务的身份、状态、优先级、栈顶指针都记在 `tskTaskControlBlock` 里。`pxTopOfStack` 必须是结构体的第一个成员，因为切换现场时汇编要靠固定偏移找到它；`uxPriority` 是任务优先级，数值越大越高；`xStateListItem` 把任务挂在就绪、阻塞或挂起链表上。
 3. **PendSV 切换**：PendSV 异常里保存当前任务的现场、恢复下一个任务的现场。现场从哪来？就是 TCB 里的 `pxTopOfStack`。第 23 章会展开软硬栈帧与汇编。上下文切换做的就是这件事：把 `pxTopOfStack` 换成下一个任务的栈顶。
 
-![FreeRTOS 任务状态：Running、Ready、Blocked、Suspended](/figures/sample-15-task-states.svg)
+![手绘板：FreeRTOS 四状态，Running 只有一个，Ready 等调度，Blocked 等事件或延时，Suspended 显式恢复（原理示意，非实拍）](/images/ch15-task-states.png)
 
 图中 Running 只有一个；Ready 等 CPU；Blocked 等时间或事件；Suspended 要显式恢复。事件唤醒可以在两个 tick 之间发生，不必等到下一个节拍。状态图是原理示意。
 

@@ -5,14 +5,16 @@ platforms: [f407, f103, esp32]
 
 # 定时器与 PWM
 
-> 定时器的核心只有一个计数器：时钟驱动 CNT 递增，PSC 决定计数速率，ARR 决定回零值，CCR 决定一个计数周期内何时翻转电平。这三个参数配置正确，1kHz 的方波就从 PA6 出来；把同一个计数器反过来用，边沿一到，硬件把 CNT 写入 CCR，就得到输入捕获。下面把 F407 的 84MHz 与 F103 的 72MHz 两套时基并排算，再把 HAL 的三段初始化与手写落位逐项对照。ESP32 只划边界：它的 timer group 与 LEDC 不是这套寄存器，完整内容在[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。
+> PA6 要输出 1kHz PWM，时钟、分频和比较值该怎样配？
+
+ESP32 的 timer group 与 LEDC 见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。
 
 ## 本章罗盘
 
-- **问题**：F407 的 TIM3 挂在 APB1，PCLK1=42MHz，为什么定时器时钟是 84MHz，1kHz 要写 PSC=83、ARR=999？两个“+1”各来自哪一段计数？改 CCR 为什么只动占空比、不动频率？TIM 中断和 SysTick 都数数，什么时候该用哪一个？PWM 的 TIM3 为什么不能拿同一个定时器测自己的周期，输入捕获的 `uint32_t` 差值在什么前提下才跨得过回绕？HAL 的 `HAL_TIM_PWM_Init`、`ConfigChannel`、`Start` 与手写寄存器落位怎么一一对上，TIM1 为什么还多一个 MOE？e03 的示波器探头该接哪里、记录什么，来源又到底留下了哪些读数？
+- **问题**：同样要 1kHz，F407 为什么用 PSC=83、ARR=999，F103 用 71/999？两个“+1”从哪来，改 CCR 为什么只动占空比？怎样区分 PWM 配置、捕获回绕和测量方法的问题？
 - **交付**：能从真实的 TIMclk 算出任意目标频率的 PSC/ARR，并先检查它装不装得进 16 位或 32 位；能配出 PWM 模式 1 的 OC1M、OC1PE、CC1E 三位并算占空比；能按“内核心跳还是外设事件”给 TIM 与 SysTick 分工；能设计输入捕获的回绕判据，读懂 `capture.h` 的接受范围与过捕获处理；能配编码器模式 3 的 4 倍频并算出每计数多少度；能把 HAL 三段初始化对回手写寄存器；能按 e03 接线、读波形并留下可复现的记录。
 - **级别**：L1 驱动。证据位置：「测量与证据」与「离开检查」；读完留下 PSC/ARR 复算、PWM 三位落位与 e03 波形记录的对账。
-- **旅程导航**：上一章（[第 11 章](./11-systick-timebase-rtc.md)）你手里有 LOAD 复算、COUNTFLAG 读清与 RTC 三道边界的实验设计与判据；本章结束多了 PSC/ARR 复算、PWM 三位落位与 e03 的记录表与判据（来源未留下板读数，e03 表待填）——L1 驱动的证据到这一章收口：从内核心跳走到外设波形，波形、寄存器读回、可见结果三者要能对上才算真正驱动，这是验收判据不是已量结果。
+- **旅程导航**：接着[第 11 章](./11-systick-timebase-rtc.md)的 LOAD、COUNTFLAG 与 RTC 实验，转向 PSC/ARR 复算、PWM 配置和 e03 波形记录。波形、寄存器读回与可见结果要能对上；来源未留下板上读数，e03 表仍待填。
 - **开源读法**：对照 `STM32CubeF4` 的 `Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c`，看 `TIM_Base_SetConfig` 与 `TIM_OC1_SetConfig` 怎样落 PSC/ARR 和 CCMR1/CCER；寄存器语义仍回 RM0090。
 - **边界**：三平台章。F407 的 84MHz、PA6/AF2、TIM2 的 32 位与 HAL 行号来自 S6《定时器 TIM》及 RM0090、DS8626；F103 的 72MHz、16 位定时器、PA6 默认复用与 TIM1 的 MOE 来自根书第 05 章及 RM0008、DS5319；ESP32 只写 timer group 与 LEDC 的边界，细节指向[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。SysTick的24位上限（不代表1秒事件必须用TIM）与RTC留给[第 11 章](./11-systick-timebase-rtc.md)，DMA 留给[第 14 章](./14-dma.md)，ADC 触发留给[第 15 章](./15-adc-dac-sampling.md)，电机编码器测速留给[第 38 章](../v5-motion/38-encoder-speed-measurement.md)，仪器证据方法留给[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。三个来源都没有留下上板读数：S6 把捕获测频标成待实测，e03 的记录表是空的；S6 又说 APB ×2 由 `02-tim-pwm` 实测得出，同一工程的 README 与 `main.c` 却标着待上板实测，两处说法不一致。这里不把预期现象写成已经量到的结果。
 - **依据锚点**：S6《S6 定时器 TIM：一器多用的瑞士军刀》（`mcu/docs/stm32/06-tim.md`）、根书第 05 章《定时器与 PWM》（`docs/05-定时器与PWM.md`）的时基与 PWM 部分、E03《实验 E03 示波器看 PWM》（`mcu/docs/lab/e03-scope-pwm.md`）；[第 8 章](./08-architecture-memory-clock.md)的 APB 分频与定时器时钟、[第 9 章](./09-gpio.md)的复用配置与 PC13 灌电流、[第 10 章](./10-interrupts-nvic-exti.md)的 NVIC 使能、[第 11 章](./11-systick-timebase-rtc.md)的 SysTick 24 位上限、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体。RM0090、RM0008、DS8626、DS5319 与 HAL 源码行号均转引自上述来源。
@@ -40,15 +42,19 @@ f = TIMclk / ((PSC + 1) × (ARR + 1))
 
 ## 机制
 
-![手绘板：一只计数器三个旋钮——PSC=83 定步速、ARR=999 定圈长、CCR=500 定翻点；频率算式里没有 CCR，输入捕获是同一只计数器的反用（原理示意，非实拍）](/images/ch12-counter-three-knobs.png)
+![F407 TIM3 的 84MHz 经 PSC=83 得 1MHz，ARR=999 定 1ms 周期，CCR=500 得 PA6 高电平 0.5ms、占空比 50%；CNT 与 PA6 波形按时间对齐，频率由 PSC/ARR 决定（原理示意，非实拍）](/images/ch12-counter-three-knobs.png)
 
 <!-- stick-scene: ch12-pwm-dial -->
 
 ### 先问真实的 TIMclk：APB 分频不等于 1 就乘 2
 
-定时器的时钟不是 PCLK，而是 TIMxCLK。对本章 F407 与 F103C8 的内部定时器时钟，规则为：APB 预分频为 1 时 TIMxCLK = PCLK；不为 1 时 TIMxCLK = PCLK × 2。F407 的 TIM3 挂在 APB1，168MHz 主频下 PCLK1=42MHz、APB1 分频 /4，所以 TIM3 按 84MHz 计数；F103 的 TIM3 同样挂 APB1，72MHz 主频下 PCLK1=36MHz、APB1 分频 /2，TIM3 按 72MHz 计数。按 42MHz 或 36MHz 去算，得到的频率正好差一倍。
+先确定送进定时器的 TIMxCLK。对本章 F407 与 F103C8 的内部定时器时钟，规则为：APB 预分频为 1 时 TIMxCLK = PCLK；不为 1 时 TIMxCLK = PCLK × 2。
 
-这条 ×2 规则来自用户手册，不是从某次波形里读出来的。S6 正文说它由 `02-tim-pwm` 的对照实验实测得出；同一个工程的 `README.md` 末尾却写“待上板实测”，`main.c` 头注释也写 `Hardware measurements pending`，工程里没有留下波形或日志。两处说法不一致，这里把 ×2 当作手册规则使用，把“实测”当作待复核的来源说法；要把它变成板上证据，得在 APB1=/1 与 /2 下各读一次定时器时钟，并把两次读数记下来。当前工程的 /1↔/2 短暂对照仅允许在复位 HSI 16MHz 条件下解释；HCLK=168MHz 时 APB1 改成 /1 或 /2 都超出 42MHz 上限，不能照此实验。换到带 TIMPRE 的型号或外部计数模式必须另查规则，不把此式推广为所有 F4 的无条件结论。
+F407 的 TIM3 挂在 APB1，168MHz 主频下 PCLK1=42MHz、APB1 分频 /4，所以 TIM3 按 84MHz 计数。F103 的 TIM3 同样挂 APB1，72MHz 主频下 PCLK1=36MHz、APB1 分频 /2，TIM3 按 72MHz 计数。按 42MHz 或 36MHz 去算，得到的频率正好差一倍。
+
+这条 ×2 规则按用户手册使用。S6 正文说它由 `02-tim-pwm` 的对照实验实测得出；同一个工程的 `README.md` 末尾却写“待上板实测”，`main.c` 头注释也写 `Hardware measurements pending`，工程里没有留下波形或日志。这项“实测”说法仍待复核。
+
+要补充板上证据，当前工程的 APB1=/1 与 /2 短暂对照仅允许在复位 HSI 16MHz 条件下进行：分别核对时钟配置并记录波形与频率。HCLK=168MHz 时，APB1 改成 /1 或 /2 都超出 42MHz 上限，不能照此实验。换到带 TIMPRE 的型号或外部计数模式，必须另查时钟规则。
 
 计数时钟 = TIMclk/(PSC+1)，更新频率 = 计数时钟/(ARR+1)。两个 +1 是因为硬件从 0 数到 PSC、从 0 数到 ARR。F407 的 1kHz：84MHz/84 = 1MHz，1MHz/1000 = 1kHz，PSC=83、ARR=999；F103 的 1kHz：72MHz/72 = 1MHz，同样 PSC=71、ARR=999。两套参数都先把计数时钟压到 1MHz，再数 1000 下，周期 1ms。
 
@@ -58,7 +64,11 @@ f = TIMclk / ((PSC + 1) × (ARR + 1))
 
 ### PWM：CCR 在周期里画一条开关线
 
-向上计数的 PWM 模式 1：CNT < CCR 时输出有效电平，否则无效；向下计数、PWM2 与中心对齐须另看规则。有效电平由极性位 CCxP 决定，所以同一组数可以输出高有效或低有效。在正极性、CCR 不超过 ARR+1 时，高电平占比 = CCR/(ARR+1)，端点外要按比较结果饱和到 0或100%，不能算出超过100%的占比；反极性须换算高低电平。16位 TIM3 若 ARR=65535，CCR=65536 装不进去，不能靠该写值表达100%。频率只由 PSC/ARR 决定。ARR=999 时，CCR=250 是 25%，CCR=500 是 50%，CCR=750 是 75%，每一步 1/1000 = 0.1%，对应 1µs 的高电平步进。
+先限定模式：边沿对齐、向上计数的 PWM 模式 1，CNT < CCR 时输出有效电平，否则无效。有效电平由极性位 CCxP 决定；下面取正极性，即有效时为高电平。向下计数、PWM2 与中心对齐须另看规则，反极性须换算高低电平。
+
+当 CCR 不超过 ARR+1 时，高电平占比 = CCR/(ARR+1)；超出这一范围要按比较结果饱和到 100%，不能算出超过 100% 的占比，CCR=0 则为 0%。频率只由 PSC/ARR 决定。本章 1MHz 计数时钟、ARR=999 时，CCR=250 是 25%，CCR=500 是 50%，CCR=750 是 75%；每一步 1/1000 = 0.1%，对应 1µs 的高电平步进。
+
+再查位宽：16 位 TIM3 若 ARR=65535，CCR=65536 装不进去，不能靠这个写值表达 100%。
 
 三个位一个都不能少：`CCMR1.OC1M=110` 选 PWM 模式 1；`CCMR1.OC1PE=1` 让 CCR 预装载；`CCER.CC1E=1` 打开通道输出。少了 CC1E，定时器照跑、中断照进，引脚上却一直没有波形，这是新手第一大坑。极性配反，占空比会从 25% 变成 75%。
 
