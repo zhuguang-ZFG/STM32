@@ -261,6 +261,12 @@ ENTRY_DOCS = (
     "assets/README.md",
     "cheatsheets/README.md",
     "tools/handraw_track/README.md",
+    # `mcu/` 的入口文档。B5 把该子树的 `docs/`、`mcu-book/`、`scripts/`
+    # 整树退役后，`mcu/README.md` 仍有 60+ 条链接指向已删除的路径，而当时
+    # 没有任何门扫描它们——是人工逐条核对才发现的。现在按根入口文档同等对待。
+    "mcu/README.md",
+    "mcu/CONTRIBUTING.md",
+    "mcu/AGENTS.md",
 )
 
 

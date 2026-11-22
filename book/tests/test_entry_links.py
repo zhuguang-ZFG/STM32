@@ -108,6 +108,17 @@ class ShippedEntryDocsTest(unittest.TestCase):
             broken.extend(check_entry_doc(ROOT / rel, ROOT))
         self.assertEqual(broken, [], "broken links in entry documents")
 
+    def test_mcu_entry_docs_stay_scanned(self):
+        """`mcu/` 的入口文档必须在扫描名单里。
+
+        B5 退役了 `mcu/docs/`、`mcu/mcu-book/`、`mcu/scripts/` 之后，
+        `mcu/README.md` 仍有 60+ 条链接指向这些已删除的树，而 `ENTRY_DOCS`
+        只列根文档，所以 `checks passed` 照样能印出来。把这三份漏出名单等于
+        把那个缺口重新打开。
+        """
+        for rel in ("mcu/README.md", "mcu/CONTRIBUTING.md", "mcu/AGENTS.md"):
+            self.assertIn(rel, ENTRY_DOCS, f"{rel} 掉了就不再被链接门扫描")
+
 
 if __name__ == "__main__":
     unittest.main()
