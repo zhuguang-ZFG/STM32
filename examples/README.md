@@ -1,6 +1,6 @@
 # 示例代码总索引
 
-> 示例以**完整可编译**的 HAL 工程为主；`spl-f1-blink` 是独立的 SPL V3.5.0 + CMake 工程。
+> 完整构建入口：`gpio-blink`（HAL + CMake）、`spl-f1-blink`（SPL V3.5.0 + CMake）、`motor-dc-speed`（HAL + CMake）。其余例程为待集成源码，按各 README 配置启动、链接、时基与外设；不能只复制 main.c 就视为工程完整。
 > 每个说明给出功能、硬件接线、配置要点、关键代码、编译烧录、预期现象和常见问题。
 >
 > 目标平台以 **STM32F103C8T6（BluePill）** 为主，涉及 F4 的差异在正文中单独标注。
@@ -53,7 +53,7 @@
 examples/
 ├── README.md              ← 本文件（总索引）
 ├── spl-f1-blink/          ← SPL V3.5.0 + CMake + CLion/VS Code/OpenOCD
-├── gpio-blink/            ← main.c + README.md
+├── gpio-blink/            ← 固定 HAL/CMSIS + CMake + 启动/链接/时基 + 回归测试
 ├── exti-key/
 ├── timer-pwm/
 ├── uart-dma-idle/
@@ -71,7 +71,9 @@ examples/
 
 ## 四、如何把示例跑起来
 
-`spl-f1-blink` 不走 CubeMX 覆盖流程；按其 README 设置冻结 SPL 源码的 `SPL_ROOT`，再用 CMake Preset 构建。其命令行、CLion 与 VS Code 入口引用同一个 ELF、链接脚本和 OpenOCD 配置。
+第一次点灯先用 [gpio-blink](gpio-blink/README.md) 的固定 HAL 工程，从获取依赖到生成 ELF/BIN，再核对接线下载。`spl-f1-blink` 按其 README 设置冻结 SPL 源码的 `SPL_ROOT`；`motor-dc-speed` 按其 README 配置固定 CubeF1 和预设。这三个目录直接走各自的 CMake 入口，构建通过均不等于硬件已实测。
+
+其余待集成例程：
 
 1. 用 STM32CubeMX 新建对应型号（F103C8T6）的工程，按下例 README 的「CubeMX 关键配置」勾选外设。
 2. 用示例的 `main.c` 覆盖生成的 `Core/Src/main.c`；

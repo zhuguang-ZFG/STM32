@@ -1,0 +1,9 @@
+{
+  "STM32CubeF1": {
+    "repository": "https://github.com/STMicroelectronics/STM32CubeF1.git",
+    "ref": "v1.8.6",
+    "commit": "42472d601caa457b02d849c7de5f9792629ee324",
+    "hal": "77fbb30b7a1d02533980400083e48c559aae5a4f",
+    "cmsis_device": "8a76309ed1250d817e9c888c4417171d2ba3ba63"
+  }
+}

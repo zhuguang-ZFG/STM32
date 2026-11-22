@@ -3,15 +3,14 @@
  * @brief   gpio-blink —— GPIO 推挽输出闪烁 LED（STM32F103C8T6 / BluePill）
  *
  * 功能：
- *   1) 用 HAL_GPIO_TogglePin 让板载 LED(PC13) 以 1Hz 闪烁；
- *   2) 演示 BSRR 寄存器原子操作写法（与 HAL 函数等价）；
- *   3) 演示 HAL_Delay（基于 SysTick 中断）与「纯 SysTick 计数延时」两种延时；
+ *   1) 用 HAL_GPIO_TogglePin 让板载 LED(PC13) 约 1Hz 闪烁；
+ *   2) 演示读取 ODR 后写 BSRR 的翻转操作；
+ *   3) 对比 HAL_Delay 与轮询 HAL_GetTick，两者都依赖 SysTick 中断；
  *   4) 每 5 秒翻转一次外接 LED(PA0)，用于对比两种延时/两种写法的时序。
  *
  * 板载 LED 是共阳接法：PC13 输出低电平点亮，高电平熄灭。
  *
- * 说明：本文件不依赖 CubeMX 生成的其它源文件，可直接替换
- *       Core/Src/main.c 使用（SystemClock_Config 已在下方给出）。
+ * 说明：独立构建入口为本目录 CMakeLists.txt，时基见 stm32f1xx_it.c。
  *
  * 目标芯片：STM32F103C8T6，系统时钟 72MHz（HSE 8MHz × 9）。
  */
@@ -35,13 +34,11 @@ static void gpio_init(void);
 static void error_handler(void);
 
 /**
- * @brief  基于 SysTick 计数器的忙等延时（不依赖中断，微秒级）
+ * @brief  轮询 HAL 毫秒时基的忙等延时，依赖 SysTick 中断
  * @param  ms 延时毫秒数
- * @note   SysTick 由 HAL_Init() 配置为 1ms 中断一次；这里读的是
- *         SysTick->VAL（当前计数值，递减），只用于演示“纯计数”思路。
- *         实际工程里请直接用 HAL_Delay，除非在中断中需要短延时。
+ * @note   只在主循环调用；中断不能推进时，等待不会结束。
  */
-static void delay_systick_count(uint32_t ms)
+static void delay_poll_tick(uint32_t ms)
 {
     uint32_t start = HAL_GetTick();     /* HAL_GetTick 由 SysTick 中断累加 */
     while ((HAL_GetTick() - start) < ms)
@@ -59,9 +56,9 @@ static void led_write(GPIO_TypeDef *port, uint16_t pin, GPIO_PinState state)
 }
 
 /**
- * @brief  翻转 LED（BSRR 寄存器原子写法，等价于 HAL_GPIO_TogglePin）
+ * @brief  读 ODR 后写 BSRR 翻转；仅主循环拥有该引脚
  * @note   BSRR 高 16 位写 1 复位引脚，低 16 位写 1 置位引脚；
- *         一次性写整个寄存器，天然原子，不怕被中断打断。
+ *         单次写入是原子的，读取、判断与写入整体不是原子操作。
  */
 static void led_toggle_bsrr(GPIO_TypeDef *port, uint16_t pin)
 {
@@ -82,11 +79,6 @@ int main(void)
     HAL_Init();                         /* 复位外设、初始化 Flash 接口与 SysTick */
     SystemClock_Config();               /* 配置 72MHz 系统时钟 */
 
-    if (HAL_GetTick() == 0U)            /* 简单自检：HAL_Init 后 SysTick 应已运行 */
-    {
-        error_handler();
-    }
-
     gpio_init();                        /* 初始化 LED 引脚 */
 
     uint32_t last_led2 = 0U;
@@ -100,10 +92,8 @@ int main(void)
         /* 2) BSRR 寄存器写法：翻转板载 LED（再翻一次，肉眼与上面无差别） */
         led_toggle_bsrr(LED_PORT, LED_PIN);
 
-        /* 3) SysTick 计数延时（演示用），保持同样的半周期 */
-        delay_systick_count(BLINK_PERIOD_MS);
+        delay_poll_tick(BLINK_PERIOD_MS);
 
-        /* 4) 每 LED2_PERIOD_MS 翻转一次外接 LED，用 HAL 与 BSRR 交替 */
         uint32_t now = HAL_GetTick();
         if ((now - last_led2) >= LED2_PERIOD_MS)
         {
@@ -127,6 +117,9 @@ static void gpio_init(void)
     __HAL_RCC_GPIOA_CLK_ENABLE();       /* 使能端口时钟，否则寄存器写入无效 */
     __HAL_RCC_GPIOC_CLK_ENABLE();
 
+    HAL_GPIO_WritePin(LED_PORT, LED_PIN, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(LED2_PORT, LED2_PIN, GPIO_PIN_RESET);
+
     /* PC13 板载 LED：推挽输出，低速即可（低频闪烁，减小 EMI） */
     io.Pin   = LED_PIN;
     io.Mode  = GPIO_MODE_OUTPUT_PP;
@@ -140,10 +133,6 @@ static void gpio_init(void)
     io.Pull  = GPIO_NOPULL;
     io.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(LED2_PORT, &io);
-
-    /* 初始状态：板载 LED 熄灭（高电平），外接 LED 熄灭（低电平） */
-    HAL_GPIO_WritePin(LED_PORT, LED_PIN, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(LED2_PORT, LED2_PIN, GPIO_PIN_RESET);
 }
 
 /**
