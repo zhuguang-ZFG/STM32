@@ -95,12 +95,23 @@ class CitationTest(unittest.TestCase):
                 f"identifiers 指向的路径不存在: {match.group(1)}（{value}）",
             )
 
-    def test_license_text_matches_the_declared_identifier(self):
+    def test_license_matches_the_two_upstream_works(self):
+        """合并书来自两本上游作品，许可口径必须是两者的并集。
+
+        根 `LICENSE` §5 给原 MCU 书定 Apache-2.0，§2 给 `docs/` 定 CC BY 4.0；
+        合并书正文住在 `docs/` 但章节源自两书，所以 CITATION 两者都声明。
+        """
         declared = scalar(self.text, "license")
-        self.assertEqual(declared, "Apache-2.0")
-        text = (ROOT / "mcu" / "LICENSE").read_text(encoding="utf-8")
-        self.assertIn("Apache License", text)
-        self.assertIn("Version 2.0", text)
+        self.assertTrue(declared.startswith("["), f"license 应为列表，得 {declared!r}")
+        licenses = {
+            part.strip().strip("\"'")
+            for part in declared.strip("[]").split(",")
+        }
+        self.assertEqual(licenses, {"Apache-2.0", "CC-BY-4.0"})
+        mcu = (ROOT / "mcu" / "LICENSE").read_text(encoding="utf-8")
+        self.assertIn("Apache License", mcu)
+        root = (ROOT / "LICENSE").read_text(encoding="utf-8")
+        self.assertIn("CC BY 4.0", root)
 
     def test_abstract_chapter_and_appendix_counts(self):
         abstract = folded(self.text, "abstract")

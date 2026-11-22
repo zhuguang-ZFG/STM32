@@ -10,7 +10,7 @@ authors:
   - name: "zhuguang-ZFG 与贡献者"
 repository-code: "https://github.com/zhuguang-ZFG/STM32"
 url: "https://zhuguang-zfg.github.io/STM32/"
-license: "Apache-2.0"
+license: ["Apache-2.0", "CC-BY-4.0"]
 version: 0.1.0
 keywords:
   - microcontroller

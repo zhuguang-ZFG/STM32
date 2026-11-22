@@ -25,6 +25,11 @@ export default defineConfig({
   base: BASE,
   cleanUrls: false,
   srcExclude: ['superpowers/**', 'README.md', 'CONTENT_GUIDE.md'],
+  // 离线整书（`/book/*.pdf|html|epub`）不在源码树里：它们是 deploy 时由 Book CI
+  // 构建后写进 staging 的产物，所以 VitePress 把这几条当作“指向不存在的页面”报死链。
+  // 这里只豁免这条路径；链接到底通不通由 `site:smoke` 的「离线下载」断言在真实
+  // staging 上验（200 + 字节下限），不靠构建期猜测。
+  ignoreDeadLinks: [/\.\/book\//],
   sitemap: { hostname: SITE_URL },
   head: [['meta', { name: 'theme-color', content: '#fdf8ea' }]],
   markdown: {

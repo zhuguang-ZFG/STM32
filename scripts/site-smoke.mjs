@@ -9,10 +9,14 @@ import { fileURLToPath } from 'node:url'
 import { chromium } from '@playwright/test'
 
 export function parseArgs(argv) {
-  const args = { root: '.temp/pages-site', mount: '/STM32' }
+  // `--downloads`：staging 里已放入离线整书（/book/）时才断言三份产物。
+  // site.yml 只搭书站、不跑印刷链（那是 ~15 分钟的 Chromium 全量渲染），
+  // 所以默认不开；deploy.yml 在发布前带着它跑。
+  const args = { root: '.temp/pages-site', mount: '/STM32', downloads: false }
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--root') args.root = argv[++i]
     else if (argv[i] === '--mount') args.mount = argv[++i]
+    else if (argv[i] === '--downloads') args.downloads = true
     else throw new Error(`未知参数: ${argv[i]}`)
   }
   return args
@@ -57,7 +61,7 @@ export function serve(root, mount) {
   return new Promise((resolve) => server.listen(0, '127.0.0.1', () => resolve(server)))
 }
 
-export async function smoke({ root, mount }) {
+export async function smoke({ root, mount, downloads: expectDownloads = false }) {
   const server = await serve(root, mount)
   const base = `http://127.0.0.1:${server.address().port}${mount}`
   const browser = await chromium.launch()
@@ -189,7 +193,39 @@ export async function smoke({ root, mount }) {
       check('片段锚点定位', false, '页面内没有带 id 的 h2/h3')
     }
 
-    // 11. 资源失败清单
+    // 11. 离线整书：/book/ 下三份产物必须是真字节（AC3 的「下载入口可访问」）
+    // 只在 --downloads 时断言：site.yml 不跑印刷链，staging 里没有 /book/。
+    // 量真正收到的字节，不看 content-length：本地 serve() 是流式输出，没有该头，
+    // 而「有响应但空文件」才是这类交付真正会翻的车。
+    const downloads = [
+      ['print html', 'book/merged-book.html', 1_000_000],
+      ['pdf', 'book/merged-book.pdf', 5_000_000],
+      ['epub', 'book/merged-book.epub', 200_000],
+    ]
+    if (expectDownloads) {
+      for (const [name, rel, floor] of downloads) {
+        const got = await page.request.get(`${base}/${rel}`)
+        const bytes = (await got.body()).length
+        check(
+          `离线下载 ${name}`,
+          got.ok() && bytes >= floor,
+          `status=${got.status()} bytes=${bytes} floor=${floor}`,
+        )
+      }
+    }
+
+    // 12. 首页必须把下载入口挂出来，否则「有文件但没人找得到」等于没有入口。
+    // 这条不看 HTTP 状态（那由上一段管），只看渲染后的 href 是否指向 /book/。
+    await page.goto(`${base}/`, { waitUntil: 'load' })
+    const homeHtml = await page.content()
+    const linked = downloads.filter(([, rel]) => homeHtml.includes(rel))
+    check(
+      '首页挂出下载入口',
+      linked.length === downloads.length,
+      `linked=${linked.length}/${downloads.length}`,
+    )
+
+    // 13. 资源失败清单
     check('同源资源无失败', failed.length === 0, failed.slice(0, 5).join(' | '))
   } finally {
     await browser.close()

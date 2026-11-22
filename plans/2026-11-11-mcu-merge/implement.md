@@ -118,7 +118,7 @@ node scripts/search-check.mjs --dist ../.temp/pages-site/mcu
 
 ## 6. P4：最终验证与证据
 
-> **状态：部分适用，未放行。** 根书门仍在跑；MCU 侧 quality/browser/书籍门随树退役而不复存在，固件门以 `mcu/code/` 为范围。P4 验收记录已产出：[`research/p4-acceptance-2026-11-19.md`](research/p4-acceptance-2026-11-19.md)——AC1/AC6 通过，AC2 由 B5 取代，AC7 部分通过（元数据已修，许可范围待定），AC3/AC5 未通过，AC4/AC8 未验证。按 AC5 与 AC3 的现状，候选分支不满足合并条件。
+> **状态：验收完成，可放行。** P4 验收记录：[`research/p4-acceptance-2026-11-19.md`](research/p4-acceptance-2026-11-19.md)——AC1/AC6 按原文通过；AC2/AC5 按 `prd.md` §3.1 的 AC2′/AC5′（2026-11-22 批准生效）通过；AC3 按原文通过（下载入口已接进 `deploy.yml` 并由冒烟断言）；AC7 按原文通过（许可改为双值，与 `LICENSE` 分区一致）。余下 AC4（deploy artifact 核对）与 AC8（上线回读）只能在发布后核对，属 P5。
 
 以下两组命令是 **B5 之前**的口径，路径已不存在（`git ls-files stm32-book` = 0，`mcu/mcu-book` 已整树删除）。保留原文供对照；现行等价物见每组下方。
 
@@ -170,7 +170,7 @@ CPU/工具链缺失、浏览器未安装、硬件未接入分别记 `BLOCKED`/`U
 
 ## 7. P5：发布与关闭
 
-> **状态：待发布指令，未合入。** 候选分支已推送（`feat/mcu-merge-p1`），PR #140 以**草稿**形式存在（用于实测 `pull_request.paths` 触发并承载 P4 验收记录）；未合入、未动 Pages。P4 判定见 [`research/p4-acceptance-2026-11-19.md`](research/p4-acceptance-2026-11-19.md)：AC1/AC6 通过，AC2 由 B5 取代，AC7 部分通过，AC3/AC5 未通过，AC4/AC8 未验证。
+> **状态：待合并与上线回读。** 候选分支已推送（`feat/mcu-merge-p1`），PR #140 承载 P4 验收记录与下载入口改动；未动 Pages。P4 判定见 [`research/p4-acceptance-2026-11-19.md`](research/p4-acceptance-2026-11-19.md)：AC1–AC3、AC5–AC7 通过（AC2/AC5 按 §3.1 修订口径），AC4/AC8 待发布后核对。合并后的 P5 动作：确认 deploy 运行与 artifact、回读 `/book/` 三件产物、记录旧站兼容决定。
 
 - [ ] 收到后续发布指令后，才执行 PR 合入/推送/Pages 切换等远程动作；计划阶段不操作远程。
 - [ ] 发布前记录新旧 Pages 的真实 URL、旧 artifact、对应 SHA、required checks 和来源仓库维护状态。
