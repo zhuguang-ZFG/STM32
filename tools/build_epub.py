@@ -53,10 +53,14 @@ h3 { font-size: 1.05em; margin: 1.2em 0 0.4em; text-align: left; }
 p, li { orphans: 2; widows: 2; }
 p { margin: 0 0 0.7em; }
 p + p { text-indent: 2em; }
-p[align="center"] + p { text-indent: 0; }
+.epub-align-center + p { text-indent: 0; }
+.epub-align-center { text-align: center; text-indent: 0; }
+.epub-align-left { text-align: left; }
+.epub-align-right { text-align: right; }
+.epub-align-justify { text-align: justify; }
 blockquote p, .quiz p { text-indent: 0; }
 figure { margin: 1em 0; text-align: center; page-break-inside: avoid; }
-figure img, p[align="center"] img, img { max-width: 100%; height: auto; }
+figure img, img { max-width: 100%; height: auto; }
 figcaption { font-size: 0.85em; color: #5e6872; line-height: 1.5;
              margin-top: 0.4em; text-align: center; text-indent: 0; }
 sub { font-size: 0.85em; color: #5e6872; }
@@ -175,6 +179,12 @@ def _to_xhtml_document(body_html: str, title: str, css_href: str) -> tuple[bytes
     link.set("href", css_href)
     body = doc.find("body")
     body.set("class", "epub-body")
+    for paragraph in doc.xpath("//p[@align]"):
+        alignment = paragraph.attrib.pop("align").strip().lower()
+        if alignment in {"left", "right", "center", "justify"}:
+            classes = paragraph.get("class", "").split()
+            classes.append(f"epub-align-{alignment}")
+            paragraph.set("class", " ".join(dict.fromkeys(classes)))
     # strip interactive helpers that have no meaning in EPUB
     for bad in doc.xpath("//a[contains(@class,'toc-jump') or contains(@class,'back-to-toc') or contains(@class,'skip-link')]"):
         bad.getparent().remove(bad)

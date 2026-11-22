@@ -1,6 +1,6 @@
 # 第 10 章：把抢占过程留在纸上
 
-日期：2026-11-22。范围：NVIC 抢占小节、原创静态手绘及其生成链。现有 841 页 PDF 的物理第 167 页是本次抽样起点。
+日期：2026-11-22。范围：NVIC 抢占小节、原创静态手绘及其生成链，以及 EPUB 标准检查发现的两类格式错误。现有 841 页 PDF 的物理第 167 页是本次抽样起点。
 
 ## 编辑前审校
 
@@ -43,20 +43,22 @@ SEPIA REVIEW — 中文技术教程，STM32 合并书。
 
 ### 本地验证
 
-- Python 测试 104/104；Node 脚本测试 32/32；manifest、mapping、book checks、slop lint 与 53 页内容渲染检查通过。
+- Python 测试 106/106（含新增的两项 EPUB 回归，无跳过）；Node 脚本测试 32/32；manifest、mapping、book checks、slop lint 与 53 页内容渲染检查通过。
 - VitePress 54 页与清单一致；357 张图片的 lazy、async 和尺寸通过，14 个场景尺寸通过；131 条旧链生成完成；挂载站点 smoke 10/10。
 - 新图在 1280 px 和 390 px 视口内完整显示，无横向溢出，原图链接返回同一份 PNG。
 - 第一轮印刷为 842 页；发现图前留白后，将长解释移至图后，留下短结论紧接图。最终为 841 页，第 166 页标题、短结论、手绘和图注相邻；第 10 章样章 22 页（物理 160–181 页）。
 - 最终 PDF：margin_overflow、orphan_heading、caption_orphan、near_blank 均为 0；bottom_gap 155 页，≥250pt 大留白 104 页，沿用 200/120 门槛。上一版为 157/107，本轮分别减少 2/3 页。
 - 最终 EPUB：64 spine，339 张正文图片加 1 张封面；ZIP、XML 及无 SVG 图片检查通过。
+- EPUBCheck 5.4.0 首轮找到 5 处 RSC-005：附录 C 的 4 个 `p align` 属性，以及第 37 章 `CNT<CCR` 被 HTML 解析成 `ccr` 标签。导出器将段落对齐转换为 CSS 类，保留原 class、子节点和居中效果；第 37 章把比较式写进代码跨度。新增回归覆盖四种对齐和实际章节的公式保留。重导后 EPUBCheck：fatal 0、error 0、warning 0、info 0。
+- EPUBCheck 来自 W3C 官方 GitHub release `v5.4.0`，下载包 SHA-256：`33350c61038e71dfb3d45a76aed04bf5481e6d5500cb780f6e98db8bbd15a28c`。检查输出位于 `.temp/book-quality-20261122-nvic/epubcheck-final.json`。
 - 本地重新装配正文、静态图片和样式时，复用了上一轮标准构建的 81 张动画静帧；基线 HTML 的 SHA-256 为 `67f5ff29280c0267c503f19e94d058655b317ac787320d31aac1553fcc9e48c5`，逐张源 SVG 与 `8157d35d` 规范化比对一致，alt 映射唯一。本轮移除的一张动画未复用；远程标准全量构建以对应提交的 Book CI 为准。
 
 成品目录：`book/dist/quality-20261122-nvic/`。完整证据在被忽略的 `.temp/book-quality-20261122-nvic/`。
 
 | 成品 | 字节 | SHA-256 |
 | --- | ---: | --- |
-| HTML | 29,969,735 | `20d7f0cc25e479031b8617da63a449e322b9c49c218f51dbd77399c38b21dd0a` |
-| PDF | 30,953,242 | `427653fe286479683bbd5025c9cce54bc424b484a7d0fcb08f363ae44bec1656` |
-| EPUB | 21,473,785 | `dd7b49963eac3d4e993256afd8147e6e5ed10d8442310d5c62c55c69ad4a7b7c` |
+| HTML | 29,969,769 | `7bd2fb229bc81c3f2f9f7da1f3fb05ceab87f3503b3bd3ff91606febd0aa13af` |
+| PDF | 30,953,553 | `4e4fba4bc5764585ed632cee3aff8f4d073083d8efc8fe66b1c3357bb46a2642` |
+| EPUB | 21,473,840 | `bc6f677482b349606f767559858c21389fd427c46e2118e106391aa3a94f514a` |
 
-未完成项：新增上板实验、EPUBCheck、实体阅读器验证；本轮不将其记为通过。
+未完成项：新增上板实验、实体阅读器验证；本轮不将其记为通过。
