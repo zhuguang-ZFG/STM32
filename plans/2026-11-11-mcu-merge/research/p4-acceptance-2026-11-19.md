@@ -9,13 +9,13 @@
 | AC1 | `PASS` | 来源祖先成立；1580 条差异全部落在已记录事件内；迁移前修改未被覆盖 |
 | AC2 | `PASS`（按 AC2′） | 原不变量被 B5 取消；`prd.md` §3.1 的 AC2′ 已获 owner 批准生效，替换目标逐条实测通过 |
 | AC3 | `PASS` | 下载入口已接入交付链：`deploy.yml` 构建三件产物 → 落 `/book/` → 冒烟带 `--downloads` 断言 200 + 字节下限（本地 15/15） |
-| AC4 | `UNVERIFIED` | 存根约束由组装脚本断言；artifact 现在会含 `/book/`，但仍需一次候选 SHA 上的 deploy 运行才能核对 |
+| AC4 | `PASS` | 合入后首个 deploy（`45034581583`，`9e798499`）的 artifact 内实测含 `./book/` 三件产物，字节数与线上回读一致 |
 | AC5 | `PASS`（按 AC5′） | 退役门在 `prd.md` §3.1 有出处与等价门；现存门全绿，本轮另补三道会真失败的门 |
 | AC6 | `PASS` | 23 个活动任务可解析；历史任务未被归档或改判 |
 | AC7 | `PASS` | 四处元数据对齐真源；许可改为 `["Apache-2.0", "CC-BY-4.0"]` 双值，与根 `LICENSE` §2/§5 分区一致，并加了门 |
-| AC8 | `UNVERIFIED` | 发布门（P5）：合并后按线上回读核对 |
+| AC8 | `PARTIAL` | 部署运行、artifact、线上回读都已实测；仍差「旧站兼容决定」与维护入口切换 |
 
-**放行结论：代码与记录侧的 AC 全部满足。** 余下 AC4/AC8 是「发布之后才能核对」的项，属 P5 执行内容，不构成拒绝合并的理由；PR #140 转为正式并合入后按 P5 清单回读。
+**放行结论：AC1–AC7 全部满足，AC8 部分满足（见 AC8 节）。** 本分支已合入 `main`（merge commit `9e798499`，PR #140），下线回读在 §AC3/§AC4/§AC8 三节。
 
 ## AC1 导入可追溯、内容不丢失
 
@@ -106,6 +106,19 @@ smoke passed: 15/15
 
 成本：deploy 从此多约 12 分钟（HTML 11.5 + PDF 0.5 + EPUB 0.1，本机实测；runner 上另有 Chromium 安装）。只在 `main` 上触发，不进 PR 门。
 
+**线上回读（2026-11-23，合入后首个 deploy）**——这一节才是 AC3 要的证据，前面都是候选 staging：
+
+| URL | 状态 | 收到字节 |
+| --- | --- | --- |
+| `https://zhuguang-zfg.github.io/STM32/` | 200 | 28361 |
+| `/STM32/book/` | 200 | 索引页（补于本轮，见下） |
+| `/STM32/book/merged-book.html` | 200 | 32948417 |
+| `/STM32/book/merged-book.pdf` | 200 | 34632029 |
+| `/STM32/book/merged-book.epub` | 200 | 24005926 |
+| `/STM32/mcu/` | 200 | 420（仍为 meta refresh 存根） |
+
+首次上线时 `/STM32/book/` 本身还是 404——三份文件都在、首页也挂了链接，唯独这一层没有索引页，而它正是读者会收藏的地址。补法是把索引页做成仓库里的静态模板 `book/print/book-index.html`（不在 YAML 里维护 HTML），由 deploy 的 Stage 步骤拷进 `/book/`；冒烟新增「下载目录索引页」断言，同时校验它里面三条链接指向的正是上面验过的三份产物——否则产物改名后索引页会静默变成三条死链。本地实测 `smoke passed: 16/16`。
+
 ### AC3 的浏览器回归（候选 staging，非线上发布证明）
 
 `npm run site:build` 生成 `.temp/pages-site`（根 = 合并书，`mcu/` = 131 条旧链存根），再跑 `npm run site:smoke`：脚本按真实挂载 `/STM32/` 起本地服务，用 Chromium 打开页面断言。
@@ -147,7 +160,18 @@ B5 后的站点模型是「合并书直接当站点根，`mcu/` 下只放跳转�
 - `scripts/check-site-pages.mjs` 第 54 行把 `mcu/` 从页面清单里排除。
 - 线上 `/STM32/mcu/` 实测为存根（396 字节，`meta refresh` + `canonical` 指向 `/STM32/index.html`），与断言一致。
 
-缺口（因此判 `UNVERIFIED`，不是「部分通过」）：`gh api .../actions/runs?head_sha=4882857e` 返回空，即当前 `main` 没有 deploy 运行；最近一次 deploy 成功是 `58ce14de`（run `44447390212`），既不是候选 SHA 也不是 `main` 当前 SHA。**没有对应当前代码的 artifact 清单与哈希**。组装脚本的存根断言和线上首页 200 都不能替代「候选 artifact 内的目录与挂载深链实测」。
+**补证（2026-11-23）**：此前判 `UNVERIFIED` 的原因是「候选 SHA 与 `main` 都没有对应 deploy 运行，artifact 无从核对」。合入后第一个 deploy 就是这个对应关系：
+
+```text
+run        45034581583   sha 9e798499   event push   conclusion success
+artifact   github-pages-45034581583-1   99298767 bytes
+tar 内      ./book/merged-book.pdf    34632029
+           ./book/merged-book.html   32948417
+           ./book/merged-book.epub   24005926
+           共 734 个条目
+```
+
+artifact 里的三个字节数与线上回读逐字相同（`34632029` / `32948417` / `24005926`），说明「构建产物 → artifact → Pages」这条链没有中途改写。此前那次 `58ce14de`（run `44447390212`）不再需要引用。
 
 ## AC5 各门通过，缺门不得放行
 
@@ -246,7 +270,16 @@ cd mcu && python .trellis/scripts/get_context.py        # exit 0
 
 ## AC8 发布关闭条件
 
-未开始。需要：旧站/根站部署状态快照、候选 artifact SHA、发布运行 ID、上线回读报告。本条在 PR 合入与 Pages 切换之前无法验证。
+**判定 `PARTIAL`（2026-11-23 更新）。** 关闭条件四项，三项已有实测：
+
+| 要求 | 现状 |
+| --- | --- |
+| 发布运行 ID + 提交 SHA | `45034581583` / `9e798499`（`main` 上 `event=push`，success） |
+| artifact 清单与哈希 | `github-pages-45034581583-1`，99298767 字节，734 个条目，含 `/book/` 三件产物（见 AC4 节） |
+| 上线回读报告 | `/`、`/book/`、三件产物、`/mcu/` 全部实测（见 AC3 节） |
+| 旧站兼容决定 | **未做**。`mcu/` 仍是 420 字节的 meta refresh 存根；旧仓入口与旧 Pages 是否长期保留、何时下线，仍待发布指令 |
+
+所以 AC8 不是「做完了」，是「发布链侧已证、迁移侧未决」。
 
 ## 剩余问题清单
 
