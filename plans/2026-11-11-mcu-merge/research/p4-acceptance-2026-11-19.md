@@ -132,16 +132,17 @@ AC5 原文：「发布所依赖检查缺失时不得放行」。按此，本候�
 
 命令对照：`implement.md` §6 仍写着 `python -m unittest discover stm32-book/tests`、`python stm32-book/build_html.py --check` 与 `mcu/` 下的 `mcu-book/*` 命令，这些路径在 B5 后都不存在（`git ls-files stm32-book` = 0）。现行等价物是 `python -m unittest discover book/tests` 与 `python -m book.build_html --check`，本节引用的即后者。
 
-**本轮补的两道门（2026-11-22，`23ca1fcb`）**。AC5 的缺口里有一类不等于「被 B5 决定取消」，而是「本来就没人管」——本批把这类补成了门：
+**本轮补的门（2026-11-22）**。AC5 的缺口里有一类不等于「被 B5 决定取消」，而是「本来就没人管」——本批把这一类里的引用元数据补成了门：
 
 | 门 | 位置 | 覆盖什么 |
 | --- | --- | --- |
-| `mcu/` 入口文档与合并计划文档的链接扫描 | `book/checks.py` 的 `ENTRY_DOCS` 新增 `mcu/README.md`、`mcu/CONTRIBUTING.md`、`mcu/AGENTS.md`，以及 `plans/2026-11-11-mcu-merge/{prd,design,implement}.md`、`research/execution-snapshot-2026-11-19.md`、`research/p4-acceptance-2026-11-19.md`、`plans/2026-11-12-merged-book/README.md` | 本批重写 `mcu/README.md` 的原因就是它有 60+ 条链接指向已删除的树，而当时没有任何门会失败。计划文档同理：`implement.md` 指向 `research/*`，验收记录又指向 `prd.md` 与快照，断一条就是证据链断一条。九份现测 0 死链，加进去之后同类腐烂会被 `book.checks --check` 报出来 |
 | 引用元数据对账 | `book/tests/test_citation.py`（8 项） | title/version/repository/url、`identifiers` 指向的路径必须存在、许可正文、章数与附录数对 manifest、工程数对 `mcu/code/projects.json` |
 
-两者都不引入新依赖（只读 `markdown` 那套），因此 `merge-check.yml` 的 `Run book checks` 与 `book.yml` 的 `Run book checks` 会照常执行它们。触发侧要说清：`merge-check.yml` 的 `paths` 本轮已含 `mcu/**`，所以改 `mcu/CITATION.cff` 或 `mcu/README.md` 会真的跑这两道断言；`book.yml` 的 `paths` 不含 `mcu/**`，这部分由 `merge-check` 补齐而不是靠人工记得补跑。
+不引入新依赖（只读 stdlib 与已提交的 `docs/manifest.json`），因此 `merge-check.yml` 的 `Run book checks` 与 `book.yml` 的 `Run book checks` 会照常执行它。触发侧：`merge-check.yml` 的 `paths` 本轮已含 `mcu/**`，所以改 `mcu/CITATION.cff` 会真的跑这 8 项断言；`book.yml` 的 `paths` 不含 `mcu/**`，这部分由 `merge-check` 补齐而不是靠人工记得补跑。
 
-负向验证（两道门都验过会失败，不是摆设）：把 `mcu/CITATION.cff` 回退成修复前版本，`test_citation` 4 项失败（章数、`identifiers`、`url`、version）；往 `mcu/README.md` 塞一条指向不存在文件的链接，`ShippedEntryDocsTest` 报 `AssertionError: ['mcu/README.md:103: missing target: ../docs/retired-dir.md']`；往 `implement.md` 塞一条 `../research/not-there.md`，同一测试报 `plans/2026-11-11-mcu-merge/implement.md:192: missing target`。两处恢复后均回到 OK。
+负向验证：把 `mcu/CITATION.cff` 回退成修复前版本，`test_citation` 4 项失败（章数、`identifiers`、`url`、version）；恢复后 8 项全过。
+
+**试过又撤回的一道门（记录在案）**：把 `mcu/README.md`、`mcu/CONTRIBUTING.md`、`mcu/AGENTS.md` 与合并计划文档加进 `book/checks.py` 的 `ENTRY_DOCS`。功能上成立——九份现测 0 死链，往里塞一条死链会真的报 `missing target`——但落地时要动 `book/checks.py` 的包内导入：仓内静态分析器无法从文件位置解析 `from book import …`（仓库没有安装元数据），于是级联要求同时改造 `build_html.py`、`build_print_edition.py`、`build_epub.py` 的脚本式导入。那三个文件是印刷/EPUB 发布链的一部分，CI 还在用 `python book/xxx.py` 的脚本形式调它们；为一个不参与任何门禁的静态检查去重构发布链，风险大于收益。本批因此撤回该门，保持 `book/` 的导入形态不变，把这件事当作独立重构（见剩余问题 #8）。
 
 ## AC6 规范与任务可继续执行
 
@@ -214,3 +215,4 @@ B5 把 MCU 正文搬进了根 `docs/`，而根 `LICENSE` 的许可分区没跟�
 | 5 | ~~`CITATION.cff` `1.0.0` vs manifest `0.1.0`~~ | 已修 | `23ca1fcb` 改为 `0.1.0` 并删去与版本不对应的 `date-released`；断言对 manifest |
 | 6 | ~~浏览器回归未做~~ | 已完成 | `npm run site:smoke` 11/11（含新增片段锚点断言）；覆盖 staging，线上回读仍归 AC8 |
 | 7 | `LICENSE` 许可分区与 CITATION 口径不一 | AC7 仍 `PARTIAL`；读者按 CITATION 引用会被告知与 `LICENSE` 不同的口径 | owner 二选一：CITATION 改为 `["Apache-2.0", "CC-BY-4.0"]`，或在 `LICENSE` §2/§5 给合并书正文单列一条。见 AC7 节末 |
+| 8 | `mcu/` 入口文档与合并计划文档没有链接门 | `mcu/README.md` 曾攒下 60+ 条死链而 `checks passed` 照样印出来；同类腐烂仍只能靠人工核对 | 独立重构：把 `book/` 的包内导入统一成解析器可解的形式（`from book import …` → 包内相对导入，并把 `book.yml` 的 `python book/*.py` 调用改成 `python -m book.*`），再把九份入口/计划文档加进 `ENTRY_DOCS`。功能已验证可行，本批因风险大于收益撤回，理由见 AC5 节 |

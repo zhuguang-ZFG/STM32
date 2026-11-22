@@ -108,33 +108,6 @@ class ShippedEntryDocsTest(unittest.TestCase):
             broken.extend(check_entry_doc(ROOT / rel, ROOT))
         self.assertEqual(broken, [], "broken links in entry documents")
 
-    def test_mcu_entry_docs_stay_scanned(self):
-        """`mcu/` 的入口文档必须在扫描名单里。
-
-        B5 退役了 `mcu/docs/`、`mcu/mcu-book/`、`mcu/scripts/` 之后，
-        `mcu/README.md` 仍有 60+ 条链接指向这些已删除的树，而 `ENTRY_DOCS`
-        只列根文档，所以 `checks passed` 照样能印出来。把这三份漏出名单等于
-        把那个缺口重新打开。
-        """
-        for rel in ("mcu/README.md", "mcu/CONTRIBUTING.md", "mcu/AGENTS.md"):
-            self.assertIn(rel, ENTRY_DOCS, f"{rel} 掉了就不再被链接门扫描")
-
-    def test_merge_plan_docs_stay_scanned(self):
-        """合并计划自己的证据链也在扫描范围里。
-
-        `implement.md` 指向 `research/*`，验收记录又指向 `prd.md` 与快照：这些
-        链接断了不会让任何构建失败，只会让后来的人顺着读下去时点到 404。
-        """
-        for rel in (
-            "plans/2026-11-11-mcu-merge/prd.md",
-            "plans/2026-11-11-mcu-merge/design.md",
-            "plans/2026-11-11-mcu-merge/implement.md",
-            "plans/2026-11-11-mcu-merge/research/execution-snapshot-2026-11-19.md",
-            "plans/2026-11-11-mcu-merge/research/p4-acceptance-2026-11-19.md",
-            "plans/2026-11-12-merged-book/README.md",
-        ):
-            self.assertIn(rel, ENTRY_DOCS, f"{rel} 掉了就不再被链接门扫描")
-
 
 if __name__ == "__main__":
     unittest.main()

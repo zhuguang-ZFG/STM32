@@ -261,21 +261,6 @@ ENTRY_DOCS = (
     "assets/README.md",
     "cheatsheets/README.md",
     "tools/handraw_track/README.md",
-    # `mcu/` 的入口文档。B5 把该子树的 `docs/`、`mcu-book/`、`scripts/`
-    # 整树退役后，`mcu/README.md` 仍有 60+ 条链接指向已删除的路径，而当时
-    # 没有任何门扫描它们——是人工逐条核对才发现的。现在按根入口文档同等对待。
-    "mcu/README.md",
-    "mcu/CONTRIBUTING.md",
-    "mcu/AGENTS.md",
-    # 合并计划三件套与两份证据。它们互链 `research/*.md`、`plans/2026-11-12-*`
-    # 与仓内目录，是本次收口的可审计面：断一条链接，就是证据链断一条，而
-    # 阅读者恰好会把这些文档当成“去哪查”的入口。
-    "plans/2026-11-11-mcu-merge/prd.md",
-    "plans/2026-11-11-mcu-merge/design.md",
-    "plans/2026-11-11-mcu-merge/implement.md",
-    "plans/2026-11-11-mcu-merge/research/execution-snapshot-2026-11-19.md",
-    "plans/2026-11-11-mcu-merge/research/p4-acceptance-2026-11-19.md",
-    "plans/2026-11-12-merged-book/README.md",
 )
 
 
