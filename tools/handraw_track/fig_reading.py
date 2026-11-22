@@ -67,6 +67,36 @@ def ch00_uart():
     return figure
 
 
+def ch00_timebase():
+    figure, label = plate("ch00-hal-timebase", "计数从 0 开始，灯靠中断往前走", "BluePill · 默认 HAL 毫秒时基；两种等待都依赖 SysTick 中断。")
+    figure.rect(78, 212, 328, 150, color=BLUE_D, fill=BLUE_FILL)
+    label(242, 254, "HAL_Init 完成", size=29, color=BLUE_D, anchor="middle", weight="bold")
+    label(242, 304, "uwTick = 0", size=31, anchor="middle")
+    label(242, 340, "还没到首个 tick，也合法", size=23, anchor="middle")
+    figure.arrow(412, 280, 490, 280, color=BLUE_D, bend=0)
+    figure.rect(500, 212, 574, 150, color=GREEN_D, fill=GREEN_FILL)
+    label(787, 254, "SysTick_Handler → HAL_IncTick", size=27, color=GREEN_D, anchor="middle", weight="bold")
+    for position in range(6):
+        left = 540 + position * 88
+        figure.line(left, 333, left, 291, color=GREEN_D, sw=3)
+        figure.line(left, 291, left + 24, 291, color=GREEN_D, sw=3)
+        figure.line(left + 24, 291, left + 24, 333, color=GREEN_D, sw=3)
+        if position < 5:
+            figure.line(left + 24, 333, left + 88, 333, color=GREEN_D, sw=3)
+    label(790, 404, "默认每 1 ms 一次，中断被屏蔽时不会推进", size=24, color=GREEN_D, anchor="middle")
+    figure.arrow(790, 414, 790, 467, color=GREEN_D, bend=0)
+    figure.rect(500, 478, 574, 154, color=GREEN_D, fill=GREEN_FILL)
+    label(787, 522, "HAL_GetTick() 读出累计值", size=28, anchor="middle", weight="bold")
+    label(787, 582, "0 → 1 → 2 → … → 500", size=32, color=GREEN_D, anchor="middle")
+    figure.rect(78, 478, 328, 154, color=AMBER_STROKE, fill=AMBER_PALE)
+    label(242, 522, "主循环：翻转 → 等待", size=27, anchor="middle", weight="bold")
+    label(242, 566, "HAL_Delay / 轮询 tick", size=24, anchor="middle")
+    label(242, 605, "时间够了，才继续翻转", size=23, anchor="middle")
+    figure.arrow(493, 556, 413, 556, color=AMBER_STROKE, bend=0)
+    note(figure, label, "计数停住时，换成轮询也会卡住；计数推进仍无灯，继续查 GPIO 电平与接线。")
+    return figure
+
+
 def ch05_printf():
     figure, label = plate("ch05-printf-hook", "printf 的字节从哪里出去", "格式化由 C 库完成；把字节送到哪里，由底层钩子决定。")
     for position, (text, color, fill) in enumerate([
@@ -493,6 +523,7 @@ def ch45_boundaries():
 FIGS = {
     "ch00-swd-four-wires": ch00_swd,
     "ch00-uart-crossing": ch00_uart,
+    "ch00-hal-timebase": ch00_timebase,
     "ch05-printf-hook": ch05_printf,
     "ch06-size-two-budgets": ch06_size,
     "ch07-header-dependency": ch07_dependencies,

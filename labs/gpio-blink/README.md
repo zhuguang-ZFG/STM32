@@ -50,4 +50,4 @@
 
 共同表另填：`t10/Tavg/f=待测`、`高低电平时长=待测`、`PF6/灯对应=待测`、`照片/原始采样/日志哈希=待采集`。身份、构建、verify、冷复位、时序和复测均缺硬件证据，不能宣布已可硬件复现。
 
-F103对照：[examples/gpio-blink](../../examples/gpio-blink/README.md) 为BluePill STM32F103C8T6，PC13低亮、PA0外接LED、HSE8MHz×9；两段500ms延时均依赖HAL_GetTick/SysTick。目录缺完整工程骨架与时基中断文件，且启动时`HAL_GetTick()==0`检查可能过早进入error_handler，仍需构建/上板核实。本轮只登记不改代码，不能拿它替代PF6工程接线。
+F103 对照：[examples/gpio-blink](../../examples/gpio-blink/README.md) 为 BluePill STM32F103C8T6，PC13 低亮、PA0 外接 LED、HSE 8 MHz×9；两段约 500 ms 延时均依赖 HAL_GetTick / SysTick。现已补齐固定 CubeF1 v1.8.6 的 CMake 工程、启动/链接入口和 SysTick_Handler，删除首 tick 前零计数的错误自检。ARM 构建与宿主回归通过，下载、冷复位和十周期波形待测；不能拿它替代本协议 PF6 工程的接线或频率判据。
