@@ -169,7 +169,7 @@ Nov-11 计划（`implement.md`）成文于 B5 之前。按当前事实逐条判�
 
 **触发与输入是两件事，别混读。** `pull_request` 的 `paths` 按**整个 PR 的 diff** 求值，不是按最新一次提交。因此只要 PR 里任何一处命中某工作流的 `paths`，之后每次推送都会重启它。实测：推一个只改 `plans/2026-11-11-mcu-merge/research/p4-acceptance-2026-11-19.md` 的提交（`72a794a6`），`book.yml`、`site.yml`、`merge-check.yml` 三个工作流同时启动——前两者是因为本 PR 早先改过 `scripts/site-smoke.mjs`（命中它们的 `scripts/**`）。上表「是否命中」一列只针对该批路径，不代表后续提交的触发行为。上述「零触发」是扩 `paths` 之前的实测结论，现已失效：2026-11-19 给 `merge-check.yml` 的两个触发块补了 `mcu/**`、`CONTRIBUTING.md`、`plans/2026-11-11-mcu-merge/**`，并用 PR #140 实测到 `pull_request` 触发（run `44468448536`、`44469778804`、`44470181473`）。仍未覆盖的是其它工作流（`book.yml`、`site.yml` 等）对这些路径的过滤器——它们设计上就不该被这些路径触发。另：`main` 未设分支保护、无 required checks，「绿」不构成合入阻塞，只是证据。
 
-### 新增门带来的新输入（2026-11-19，`23ca1fcb`）
+### 新增门带来的新输入（2026-11-22，`23ca1fcb`）
 
 本批给 `book/checks.py` 的 `ENTRY_DOCS` 加了 `mcu/README.md`、`mcu/CONTRIBUTING.md`、`mcu/AGENTS.md`，并新增 `book/tests/test_citation.py`（读 `mcu/CITATION.cff` 与 `mcu/code/projects.json`）。这三条路径从此是**门的输入**，紧接上一段的口径要补一句：它们不属于「改了也不影响任何门」的那类文件。
 

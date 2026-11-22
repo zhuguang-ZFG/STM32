@@ -1,6 +1,6 @@
-# P4 验收记录（2026-11-19）
+# P4 验收记录（2026-11-19，2026-11-22 修订）
 
-候选分支 `feat/mcu-merge-p1`，PR #140（草稿）；本记录成文时尖端 `f3b3a55b`，此前各轮为 `1c0ee761`、`6b8d9b48`、`c85bbb1e`、`6f151cb5`、`649fba2b`、`818ef375`、`df187f3d`；AC7 修复与两道新门在 `23ca1fcb`。基线 `main@4882857e`（未动）。本记录逐条对照 [`prd.md`](../prd.md) §3 的 AC1–AC8 判，证据只写本次实测或可复算的值。
+候选分支 `feat/mcu-merge-p1`，PR #140（草稿）；本记录成文（2026-11-19）时尖端 `f3b3a55b`，此前各轮为 `1c0ee761`、`6b8d9b48`、`c85bbb1e`、`6f151cb5`、`649fba2b`、`818ef375`、`df187f3d`；2026-11-22 追加 AC7 修复与两道新门（`23ca1fcb`，本文件同步更新）。基线 `main@4882857e`（未动）。本记录逐条对照 [`prd.md`](../prd.md) §3 的 AC1–AC8 判，证据只写本次实测或可复算的值。
 
 ## 结论
 
@@ -132,7 +132,7 @@ AC5 原文：「发布所依赖检查缺失时不得放行」。按此，本候�
 
 命令对照：`implement.md` §6 仍写着 `python -m unittest discover stm32-book/tests`、`python stm32-book/build_html.py --check` 与 `mcu/` 下的 `mcu-book/*` 命令，这些路径在 B5 后都不存在（`git ls-files stm32-book` = 0）。现行等价物是 `python -m unittest discover book/tests` 与 `python -m book.build_html --check`，本节引用的即后者。
 
-**本轮补的两道门（2026-11-19，`cf96ea21` 之后）**。AC5 的缺口里有一类不等于「被 B5 决定取消」，而是「本来就没人管」——本批把这类补成了门：
+**本轮补的两道门（2026-11-22，`23ca1fcb`）**。AC5 的缺口里有一类不等于「被 B5 决定取消」，而是「本来就没人管」——本批把这类补成了门：
 
 | 门 | 位置 | 覆盖什么 |
 | --- | --- | --- |
@@ -141,7 +141,7 @@ AC5 原文：「发布所依赖检查缺失时不得放行」。按此，本候�
 
 两者都不引入新依赖（只读 `markdown` 那套），因此 `merge-check.yml` 的 `Run book checks` 与 `book.yml` 的 `Run book checks` 会照常执行它们。触发侧要说清：`merge-check.yml` 的 `paths` 本轮已含 `mcu/**`，所以改 `mcu/CITATION.cff` 或 `mcu/README.md` 会真的跑这两道断言；`book.yml` 的 `paths` 不含 `mcu/**`，这部分由 `merge-check` 补齐而不是靠人工记得补跑。
 
-负向验证（两道门都验过会失败，不是摆设）：把 `mcu/CITATION.cff` 回退成修复前的版本，`test_citation` 4 项失败（章数、`identifiers`、`url`、version）；往根入口文档塞一条指向不存在文件的链接，`ShippedEntryDocsTest` 报 `missing target`。
+负向验证（两道门都验过会失败，不是摆设）：把 `mcu/CITATION.cff` 回退成修复前版本，`test_citation` 4 项失败（章数、`identifiers`、`url`、version）；往 `mcu/README.md` 塞一条指向不存在文件的链接，`ShippedEntryDocsTest` 报 `AssertionError: ['mcu/README.md:103: missing target: ../docs/retired-dir.md']`，恢复后回到 OK。
 
 ## AC6 规范与任务可继续执行
 
@@ -164,7 +164,7 @@ cd mcu && python .trellis/scripts/get_context.py        # exit 0
 | `mcu/CITATION.cff` | 存在且受跟踪：`title=通往单片机之路`、`license=Apache-2.0`、`version=0.1.0`（本轮已对齐 manifest） |
 | 提交作者 | `mcu/code` 历史作者保留（`zhuguang-ZFG`） |
 
-### 本轮修掉的四处（`23ca1fcb` 之前的记录把它们列为待处理）
+### 本轮修掉的四处（2026-11-22，`23ca1fcb`；此前这份记录把它们列为待处理）
 
 四处都是人工通读发现的，没有一个门会失败。修法一律是「指向真源」，不是改文档措辞绕过：
 
