@@ -174,6 +174,37 @@ def ch14_completion():
     return figure
 
 
+def ch14_lifetime():
+    figure, label = plate("ch14-buffer-lifetime", "DMA 还在搬，缓冲区就得还在", "自动局部数组：作用域必须覆盖 DMA 使用期与后续软件访问。")
+    figure.rect(64, 181, 1024, 238, color=RED, fill=WHITE)
+    label(86, 219, "提前返回", size=28, color=RED, weight="bold")
+    for height, title in [(276, "数组有效期"), (345, "DMA 访问")]:
+        label(90, height, title, size=25)
+    figure.rect(290, 246, 260, 40, color=BLUE_D, fill=BLUE_FILL)
+    figure.rect(340, 315, 210, 40, color=GREEN_D, fill=GREEN_FILL)
+    figure.rect(550, 315, 460, 40, color=RED, fill=RED_FILL)
+    figure.line(550, 237, 550, 368, color=RED, dash="8 7")
+    label(340, 236, "启动", size=22, anchor="middle")
+    label(550, 236, "返回", size=22, color=RED, anchor="middle")
+    label(1010, 304, "搬完", size=22, anchor="end")
+    label(780, 345, "仍在访问失效的数组", size=24, color=RED, anchor="middle", weight="bold")
+    label(780, 394, "下一次调用可能复用这片存储区", size=24, color=RED, anchor="middle")
+    figure.rect(64, 445, 1024, 238, color=GREEN_D, fill=WHITE)
+    label(86, 484, "等待访问结束后返回", size=28, color=GREEN_D, weight="bold")
+    for height, title in [(552, "数组有效期"), (621, "DMA 访问")]:
+        label(90, height, title, size=25)
+    figure.rect(290, 522, 720, 40, color=BLUE_D, fill=BLUE_FILL)
+    figure.rect(340, 591, 470, 40, color=GREEN_D, fill=GREEN_FILL)
+    figure.line(810, 510, 810, 645, color=GREEN_D, dash="8 7")
+    figure.line(1010, 510, 1010, 645, color=BLUE_D, dash="8 7")
+    label(340, 512, "启动", size=22, anchor="middle")
+    label(810, 512, "DMA 停止", size=22, color=GREEN_D, anchor="middle")
+    label(1010, 512, "返回", size=22, color=BLUE_D, anchor="middle")
+    label(910, 659, "软件也已用完", size=22, color=GREEN_D, anchor="middle")
+    note(figure, label, "普通模式示意；静态数组仍不能提前重用，循环缓冲须先停止传输。")
+    return figure
+
+
 def ch15_settling():
     figure, label = plate("ch15-sampling-settle", "采样时间要留给电容充电", "F407 算例模型：τ = 408 ns；器件常数是假设值，精确值待手册复核。")
     figure.line(155, 575, 155, 230, color=INK)
@@ -430,6 +461,7 @@ FIGS = {
     "ch07-header-dependency": ch07_dependencies,
     "ch13-frame-validation": ch13_checks,
     "ch14-two-completions": ch14_completion,
+    "ch14-buffer-lifetime": ch14_lifetime,
     "ch15-sampling-settle": ch15_settling,
     "ch16-jedec-byte-lanes": ch16_jedec,
     "ch17-parameter-erase-units": ch17_erase_units,
