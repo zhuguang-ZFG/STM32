@@ -64,11 +64,13 @@ python .trellis/scripts/get_context.py --mode packages
 - 根 `CONTRIBUTING.md`：`stm32-book/tests` → `book/tests`，`docs/NN-xxx.md` → `docs/<分卷>/NN-xxx.md`。
 - 证据与适用性判定：`research/execution-snapshot-2026-11-19.md`。
 
-**门禁覆盖缺口（本轮实测）**：推 `feat/mcu-merge-p1` 后 `gh api …/actions/runs?head_sha=<sha>` 返回 `total_count = 0`。各工作流 `push` 只挂 `branches: [main]`，`merge-check.yml` 另走 `pull_request`；且 `mcu/**`、`plans/2026-11-11-mcu-merge/**`、根 `CONTRIBUTING.md` 均不在任何 `paths` 过滤器内。即本批改动**无 CI 覆盖**，仅本地门（slop_lint / check_assets / book.tests / build_html --check）作证。是否扩展过滤器属 CI 策略变更，待明确指令。
+**门禁覆盖缺口（2026-11-19 实测，已处置）**：当时推 `feat/mcu-merge-p1` 后 `gh api …/actions/runs?head_sha=<sha>` 返回 `total_count = 0`——各工作流 `push` 只挂 `branches: [main]`，`merge-check.yml` 另走 `pull_request`，而 `mcu/**`、`plans/2026-11-11-mcu-merge/**`、根 `CONTRIBUTING.md` 都不在任何 `paths` 过滤器内，即本批改动无 CI 覆盖。获明确指令后已扩 `merge-check.yml` 的两个触发块并实测到 `pull_request` 触发，全过程见[执行快照](research/execution-snapshot-2026-11-19.md) §8。
+
+同一轮补了一道更根本的门：`mcu/README.md`、`mcu/CONTRIBUTING.md`、`mcu/AGENTS.md` 现已进 `book/checks.py` 的 `ENTRY_DOCS`。此前这三份不在任何链接扫描范围内——那正是 `mcu/README.md` 攒下 60+ 条死链、而 `book.checks --check` 仍印 `checks passed` 的原因（`23ca1fcb`）。
 
 ## 4. P2：站点路径与仓库身份
 
-> **状态：已被 B5 取代，不执行。** 本阶段依赖的 `mcu/docs/`、`mcu/scripts/`、`mcu/package*.json`、`mcu/.github/workflows/` 已在 B5（`44c0fdb0`）整树退役，MCU 站点不复存在。逐条判定见[执行快照](research/execution-snapshot-2026-11-19.md) §5；其中「审查 CITATION 身份」已由 `27757966` 在 B5 期间完成，「旧 `/mcu/` 字符串分类」以文档核对形式在快照 §5/§6 完成。下列复选框按原样保留，代表**当时计划**而非待办。
+> **状态：已被 B5 取代，不执行。** 本阶段依赖的 `mcu/docs/`、`mcu/scripts/`、`mcu/package*.json`、`mcu/.github/workflows/` 已在 B5（`44c0fdb0`）整树退役，MCU 站点不复存在。逐条判定见[执行快照](research/execution-snapshot-2026-11-19.md) §5；其中「审查 CITATION 身份」只做到一半：`27757966` 把仓库身份换成了新仓，但指向 `mcu/mcu-book` 的 `identifiers`、指向 `/STM32/mcu/` 的 `url`、`1.0.0` 版号与「88 章」摘要都留了下来，直到 `23ca1fcb` 才对上真源并加上回归测试（见 [P4 验收记录](research/p4-acceptance-2026-11-19.md) AC7）。「旧 `/mcu/` 字符串分类」以文档核对形式在快照 §5/§6 完成。下列复选框按原样保留，代表**当时计划**而非待办。
 
 - [ ] 新建共享站点身份配置，替换运行时代码中分散的 base/host/repository 字面量。
 - [ ] 修复 Playwright 的 baseURL/webServer URL、robots、主题仓库按钮、自链校验、导读和下载生成路径。
@@ -116,7 +118,7 @@ node scripts/search-check.mjs --dist ../.temp/pages-site/mcu
 
 ## 6. P4：最终验证与证据
 
-> **状态：部分适用，未放行。** 根书门仍在跑；MCU 侧 quality/browser/书籍门随树退役而不复存在，固件门以 `mcu/code/` 为范围。本轮只完成 P0/P1 与本记录，P4 的验收记录待候选分支合入前统一产出。
+> **状态：部分适用，未放行。** 根书门仍在跑；MCU 侧 quality/browser/书籍门随树退役而不复存在，固件门以 `mcu/code/` 为范围。P4 验收记录已产出：[`research/p4-acceptance-2026-11-19.md`](research/p4-acceptance-2026-11-19.md)——AC1/AC6 通过，AC2 由 B5 取代，AC7 部分通过（元数据已修，许可范围待定），AC3/AC5 未通过，AC4/AC8 未验证。按 AC5 与 AC3 的现状，候选分支不满足合并条件。
 
 以下两组命令是 **B5 之前**的口径，路径已不存在（`git ls-files stm32-book` = 0，`mcu/mcu-book` 已整树删除）。保留原文供对照；现行等价物见每组下方。
 
@@ -168,7 +170,7 @@ CPU/工具链缺失、浏览器未安装、硬件未接入分别记 `BLOCKED`/`U
 
 ## 7. P5：发布与关闭
 
-> **状态：待发布指令，未合入。** 候选分支已推送（`feat/mcu-merge-p1`），PR #140 以**草稿**形式存在（用于实测 `pull_request.paths` 触发并承载 P4 验收记录）；未合入、未动 Pages。P4 判定见 [`research/p4-acceptance-2026-11-19.md`](research/p4-acceptance-2026-11-19.md)：AC1/AC6 通过，AC3/AC5 未通过，AC2 由 B5 取代，AC4/AC8 未验证。
+> **状态：待发布指令，未合入。** 候选分支已推送（`feat/mcu-merge-p1`），PR #140 以**草稿**形式存在（用于实测 `pull_request.paths` 触发并承载 P4 验收记录）；未合入、未动 Pages。P4 判定见 [`research/p4-acceptance-2026-11-19.md`](research/p4-acceptance-2026-11-19.md)：AC1/AC6 通过，AC2 由 B5 取代，AC7 部分通过，AC3/AC5 未通过，AC4/AC8 未验证。
 
 - [ ] 收到后续发布指令后，才执行 PR 合入/推送/Pages 切换等远程动作；计划阶段不操作远程。
 - [ ] 发布前记录新旧 Pages 的真实 URL、旧 artifact、对应 SHA、required checks 和来源仓库维护状态。

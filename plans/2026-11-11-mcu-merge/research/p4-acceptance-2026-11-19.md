@@ -1,6 +1,6 @@
 # P4 验收记录（2026-11-19）
 
-候选分支 `feat/mcu-merge-p1`，PR #140（草稿）；本记录成文时尖端 `f3b3a55b`，此前各轮为 `1c0ee761`、`6b8d9b48`、`c85bbb1e`、`6f151cb5`、`649fba2b`、`818ef375`、`df187f3d`。基线 `main@4882857e`（未动）。本记录逐条对照 [`prd.md`](../prd.md) §3 的 AC1–AC8 判，证据只写本次实测或可复算的值。
+候选分支 `feat/mcu-merge-p1`，PR #140（草稿）；本记录成文时尖端 `f3b3a55b`，此前各轮为 `1c0ee761`、`6b8d9b48`、`c85bbb1e`、`6f151cb5`、`649fba2b`、`818ef375`、`df187f3d`；AC7 修复与两道新门在 `23ca1fcb`。基线 `main@4882857e`（未动）。本记录逐条对照 [`prd.md`](../prd.md) §3 的 AC1–AC8 判，证据只写本次实测或可复算的值。
 
 ## 结论
 
@@ -12,7 +12,7 @@
 | AC4 | `UNVERIFIED` | 存根约束由组装脚本断言，但候选 SHA 与 `main` 都没有对应 deploy 运行，artifact 无从核对 |
 | AC5 | `NOT PASSED` | 英文书门与 MCU 的 quality/browser/book/ARM-host/ESP32 门都已不存在；AC5 原文规定缺门不得放行 |
 | AC6 | `PASS` | 23 个活动任务可解析；历史任务未被归档或改判 |
-| AC7 | `PARTIAL` | 许可与作者保留；`CITATION.cff` 有一处死指针、一处指向存根、一处版号不一致 |
+| AC7 | `PARTIAL` | 许可与作者保留；`CITATION.cff` 四处元数据已按真源修正并加了门，许可适用范围仍待 owner 决定 |
 | AC8 | `UNVERIFIED` | 发布门，尚未开始 |
 
 **放行结论：按 AC5 与 AC3 的现状，本候选分支不满足合并条件。** PR #140 保持草稿。
@@ -132,6 +132,17 @@ AC5 原文：「发布所依赖检查缺失时不得放行」。按此，本候�
 
 命令对照：`implement.md` §6 仍写着 `python -m unittest discover stm32-book/tests`、`python stm32-book/build_html.py --check` 与 `mcu/` 下的 `mcu-book/*` 命令，这些路径在 B5 后都不存在（`git ls-files stm32-book` = 0）。现行等价物是 `python -m unittest discover book/tests` 与 `python -m book.build_html --check`，本节引用的即后者。
 
+**本轮补的两道门（2026-11-19，`cf96ea21` 之后）**。AC5 的缺口里有一类不等于「被 B5 决定取消」，而是「本来就没人管」——本批把这类补成了门：
+
+| 门 | 位置 | 覆盖什么 |
+| --- | --- | --- |
+| `mcu/` 入口文档链接扫描 | `book/checks.py` 的 `ENTRY_DOCS` 新增 `mcu/README.md`、`mcu/CONTRIBUTING.md`、`mcu/AGENTS.md` | 本批重写 `mcu/README.md` 的原因就是它有 60+ 条链接指向已删除的树，而当时没有任何门会失败。三条现测 0 死链，加进去之后同类腐烂会被 `book.checks --check` 报出来 |
+| 引用元数据对账 | `book/tests/test_citation.py`（8 项） | title/version/repository/url、`identifiers` 指向的路径必须存在、许可正文、章数与附录数对 manifest、工程数对 `mcu/code/projects.json` |
+
+两者都不引入新依赖（只读 `markdown` 那套），因此 `merge-check.yml` 的 `Run book checks` 与 `book.yml` 的 `Run book checks` 会照常执行它们。触发侧要说清：`merge-check.yml` 的 `paths` 本轮已含 `mcu/**`，所以改 `mcu/CITATION.cff` 或 `mcu/README.md` 会真的跑这两道断言；`book.yml` 的 `paths` 不含 `mcu/**`，这部分由 `merge-check` 补齐而不是靠人工记得补跑。
+
+负向验证（两道门都验过会失败，不是摆设）：把 `mcu/CITATION.cff` 回退成修复前的版本，`test_citation` 4 项失败（章数、`identifiers`、`url`、version）；往根入口文档塞一条指向不存在文件的链接，`ShippedEntryDocsTest` 报 `missing target`。
+
 ## AC6 规范与任务可继续执行
 
 ```bash
@@ -148,18 +159,45 @@ cd mcu && python .trellis/scripts/get_context.py        # exit 0
 
 | 项 | 实测 |
 | --- | --- |
-| 根 `LICENSE` | 存在且受跟踪，Apache-2.0 正文 |
-| `mcu/LICENSE` | Apache-2.0 |
-| `mcu/CITATION.cff` | 存在且受跟踪：`title=通往单片机之路`、`license=Apache-2.0`、`version=1.0.0` |
+| 根 `LICENSE` | 存在且受跟踪，双许可：代码 MIT、`docs/` 与 `assets/` CC BY 4.0；§5 声明 `mcu/` 目录整体 Apache-2.0 |
+| `mcu/LICENSE` | Apache-2.0 正文 |
+| `mcu/CITATION.cff` | 存在且受跟踪：`title=通往单片机之路`、`license=Apache-2.0`、`version=0.1.0`（本轮已对齐 manifest） |
 | 提交作者 | `mcu/code` 历史作者保留（`zhuguang-ZFG`） |
 
-三处不一致，都是实测出来的：
+### 本轮修掉的四处（`23ca1fcb` 之前的记录把它们列为待处理）
 
-1. **死指针（确定失效）**：`identifiers[0].value = https://github.com/zhuguang-ZFG/STM32/tree/main/mcu/mcu-book`，描述是「整书构建器、书稿清单与出版契约门所在目录」。该目录已被 B5 整树删除（`git cat-file -e 4882857e:mcu/mcu-book` 失败），链接必然 404。
-2. **`url` 指向已改义的地址**：`https://zhuguang-zfg.github.io/STM32/mcu/` 实测 200，但内容是 `meta refresh` 跳转到 `/STM32/index.html` 的存根（396 字节），不再是《通往单片机之路》的落地页。不是 404，但也不再是它自称的东西。
-3. **版号不一致**：`CITATION.cff` 写 `1.0.0`，`docs/manifest.json` 写 `0.1.0`。
+四处都是人工通读发现的，没有一个门会失败。修法一律是「指向真源」，不是改文档措辞绕过：
 
-这三条要么改元数据，要么在合并任务里明确保留理由，不能默认过去。
+| # | 原断言 | 实测 | 处置 |
+| --- | --- | --- | --- |
+| 1 | `identifiers[0]` → `tree/main/mcu/mcu-book` | B5 已整树删除该目录，链接必然 404 | 改为 `tree/main/book`（整书构建器、清单与内容契约门所在目录，实测存在） |
+| 2 | `url` → `/STM32/mcu/` | 200，但内容是 396 字节 `meta refresh` 存根 | 改为站点根 `https://zhuguang-zfg.github.io/STM32/`（合并书首页，实测 200） |
+| 3 | `version: 1.0.0` | 与 `book/manifest.py:VERSION`、`docs/manifest.json`、`package.json` 的 `0.1.0` 冲突 | 改为 `0.1.0`；同时删 `date-released: 2026-10-23`（那是原 MCU 书 v1.0.0 的日期，`0.1.0` 没有对应发布日，留着就是编造） |
+| 4 | 摘要「88 章」＋「随站点发布的离线整书（单文件 HTML 与 A4 PDF）」 | 合并书是 47 章 + 6 附录（`docs/manifest.json`）；`/STM32/book/`、`/STM32/book/merged-book.pdf` 实测 404 | 章数改为 47；删掉「随站点发布」一句——印刷产物确实由 `book.yml` 产出（`book-print` artifact），但它**没有**随站点发布，原句是把 CI artifact 说成了下载入口 |
+
+### 新增门：`book/tests/test_citation.py`
+
+8 项断言，把上面四类错误变回回归测试：title/version 对 manifest、`repository-code` 对规范仓、`url` 必须是站点根（不能带 `/mcu/`）、每条 `identifiers` 的 GitHub tree 路径必须在树里存在、许可标识对应 `mcu/LICENSE` 正文、摘要里的章数/附录数对 manifest、工程数对 `mcu/code/projects.json`。
+
+不引 PyYAML：`book/requirements.txt` 只钉 `markdown`，内容门要能在没装 YAML 的环境跑，所以只读它需要的几个顶层标量，形态一变就直接抛断言失败。
+
+负向验证：把 `mcu/CITATION.cff` 回退成修复前版本，4 项失败（章数、`identifiers`、`url`、version），说明断言确实咬得住。
+
+### 仍不一致：许可适用范围（需 owner 决定，因此 AC7 仍判 `PARTIAL`）
+
+B5 把 MCU 正文搬进了根 `docs/`，而根 `LICENSE` 的许可分区没跟着搬：
+
+- §2 写「`docs/`、`assets/` … CC BY 4.0」——合并书正文现在就在 `docs/`；
+- §5 写「`mcu/` 目录（《通往单片机之路》）整体适用 Apache-2.0」——但该书正文已不在 `mcu/`。
+
+而 `mcu/CITATION.cff` 只声明 `Apache-2.0`。合并书的正文来自两本上游作品，两者许可都允许再分发，所以这不是侵权风险，是**声明与实际不一致**：读者按 CITATION 引用时，被告知的是与 `LICENSE` 不同的口径。
+
+两条路都行，但得选一条并写进 `LICENSE` 或 CITATION，不能两边并存：
+
+1. CITATION 改为 `license: ["Apache-2.0", "CC-BY-4.0"]`（CFF 允许列表），`LICENSE` 不动；
+2. 在 `LICENSE` §2/§5 里给合并书正文单列一条（例如「`docs/` 中源自《通往单片机之路》的章节适用 Apache-2.0」），CITATION 保持单值。
+
+本轮没有替 owner 做这个选择：改许可声明是法律口径，不是元数据对齐。
 
 ## AC8 发布关闭条件
 
@@ -169,9 +207,10 @@ cd mcu && python .trellis/scripts/get_context.py        # exit 0
 
 | # | 问题 | 影响 | 处理建议 |
 | --- | --- | --- | --- |
-| 1 | AC5 缺英文书门与 MCU 四门 | 按 AC5 不得放行 | 明确这些门是「随 B5 取消」并写进验收口径，或重建等价门 |
-| 2 | AC3 下载入口全 404 | 读者拿不到离线书 | 决定是否提供在线下载，或明确 AC3 修订 |
+| 1 | AC5 缺英文书门与 MCU 四门 | 按 AC5 不得放行 | 明确这些门是「随 B5 取消」并写进验收口径，或重建等价门。**B5 取消的部分已由已记录的 B5 决定解释（`plans/2026-11-12-merged-book/README.md`）；本批另补了两道真正缺的门（`mcu/` 入口链接、引用元数据），见 AC5 节** |
+| 2 | AC3 下载入口全 404 | 读者拿不到离线书 | 决定是否提供在线下载（`book.yml` 已产出 `book-print` artifact，缺的是把它放进 staging 并写进冒烟），或明确 AC3 修订。**本批只删掉 CITATION 里那句不成立的「随站点发布」，没改交付链** |
 | 3 | AC4 当前 `main` 无 deploy 运行 | artifact 无从核对 | 下次 deploy 后补 artifact 清单与哈希 |
-| 4 | `CITATION.cff` `url` 指向存根 | 引用信息误导 | 改为指向合并书或明示为历史站点 |
-| 5 | `CITATION.cff` `1.0.0` vs manifest `0.1.0` | 版号不可信 | 统一口径 |
+| 4 | ~~`CITATION.cff` `url` 指向存根~~ | 已修 | `23ca1fcb` 改为站点根；`book/tests/test_citation.py` 锁住不得再带 `/mcu/` |
+| 5 | ~~`CITATION.cff` `1.0.0` vs manifest `0.1.0`~~ | 已修 | `23ca1fcb` 改为 `0.1.0` 并删去与版本不对应的 `date-released`；断言对 manifest |
 | 6 | ~~浏览器回归未做~~ | 已完成 | `npm run site:smoke` 11/11（含新增片段锚点断言）；覆盖 staging，线上回读仍归 AC8 |
+| 7 | `LICENSE` 许可分区与 CITATION 口径不一 | AC7 仍 `PARTIAL`；读者按 CITATION 引用会被告知与 `LICENSE` 不同的口径 | owner 二选一：CITATION 改为 `["Apache-2.0", "CC-BY-4.0"]`，或在 `LICENSE` §2/§5 给合并书正文单列一条。见 AC7 节末 |
