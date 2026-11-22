@@ -131,6 +131,43 @@ def ch07_dependencies():
     return figure
 
 
+def ch10_preemption():
+    figure, label = plate("ch10-preemption-timeline", "同级等候，高一级先执行", "F407 · PRIGROUP=4（3 抢占 + 1 子）；已使能，未屏蔽。")
+    figure.arrow(300, 182, 1080, 182, color=INK, bend=0)
+    label(1080, 214, "时间（非等比例）", size=23, anchor="end")
+    for position, title, color in [(445, "EXTI9_5 请求", AMBER_STROKE), (585, "EXTI1 请求", GREEN_D)]:
+        label(position, 244, title, size=24, color=color, anchor="middle")
+        figure.line(position, 250, position, 645, color=color, sw=1.4, dash="5 7")
+    for top, title, priority, color in [
+        (260, "EXTI0", "抢占 2 / 子 0", BLUE_D),
+        (410, "EXTI1", "抢占 1 / 子 0", GREEN_D),
+        (560, "EXTI9_5", "抢占 2 / 子 1", AMBER_STROKE),
+    ]:
+        label(70, top + 35, title, size=31, color=color, weight="bold")
+        label(70, top + 70, priority, size=24, color=color)
+        figure.line(300, top + 38, 1080, top + 38, color=MUTED, sw=1.2)
+    for left, width, title in [(300, 285, "运行"), (750, 160, "续跑")]:
+        figure.rect(left, 260, width, 76, color=BLUE_D, fill=BLUE_FILL)
+        label(left + width / 2, 309, title, size=32, color=BLUE_D, anchor="middle", weight="bold")
+    figure.rect(585, 260, 165, 76, color=MUTED, fill=GRAY_FILL, dash="7 6")
+    label(667, 309, "暂停", size=30, color=MUTED, anchor="middle")
+    figure.rect(585, 410, 165, 76, color=GREEN_D, fill=GREEN_FILL)
+    label(667, 459, "运行", size=32, color=GREEN_D, anchor="middle", weight="bold")
+    figure.rect(445, 560, 465, 76, color=AMBER_STROKE, fill=AMBER_PALE, dash="7 6")
+    label(677, 609, "挂起：仍在等待", size=30, color=AMBER_STROKE, anchor="middle")
+    figure.rect(910, 560, 170, 76, color=AMBER_STROKE, fill=AMBER_PALE)
+    label(995, 609, "运行", size=32, color=AMBER_STROKE, anchor="middle", weight="bold")
+    figure.arrow(585, 341, 585, 404, color=GREEN_D, bend=0)
+    label(605, 382, "抢占", size=24, color=GREEN_D)
+    figure.arrow(750, 404, 750, 341, color=BLUE_D, bend=0)
+    label(770, 382, "返回断点", size=24, color=BLUE_D)
+    figure.arrow(910, 341, 910, 554, color=AMBER_STROKE, bend=0)
+    label(930, 434, "ISR0 退出", size=24, color=AMBER_STROKE)
+    label(576, 684, "ISR0 → ISR1 → ISR0（续）→ ISR9_5", size=30, anchor="middle", weight="bold")
+    note(figure, label, "只画执行顺序，不表示耗时；同抢占级不能靠子优先级打断 ISR。")
+    return figure
+
+
 def ch13_checks():
     figure, label = plate("ch13-frame-validation", "帧尾出现后，还要过三道检查", "0x00 只结束一段编码字节；收到分隔符不等于收到合法命令。")
     for position, (title, detail, color, fill) in enumerate([
@@ -459,6 +496,7 @@ FIGS = {
     "ch05-printf-hook": ch05_printf,
     "ch06-size-two-budgets": ch06_size,
     "ch07-header-dependency": ch07_dependencies,
+    "ch10-preemption-timeline": ch10_preemption,
     "ch13-frame-validation": ch13_checks,
     "ch14-two-completions": ch14_completion,
     "ch14-buffer-lifetime": ch14_lifetime,
