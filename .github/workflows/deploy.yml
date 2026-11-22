@@ -29,7 +29,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     outputs:
       artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
@@ -55,10 +55,43 @@ jobs:
         run: npm run site:stubs
       - name: Assemble Pages staging (/STM32/ root = merged book)
         run: npm run site:assemble
+      # 离线整书（AC3 的下载入口）。字体随仓库分发（book/print/fonts），不依赖
+      # runner 装字体；动画帧截图需要 Chromium，故先装 Python 与浏览器。
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.13"
+      - name: Install print build deps
+        run: python -m pip install -r book/requirements-print.txt
+      - name: Install Chromium (print capture)
+        run: python -m playwright install --with-deps chromium
+      - name: Build offline book (print HTML / PDF / EPUB)
+        run: |
+          python -m book.build_print_edition
+          python -m book.print_pdf \
+            --html book/dist/print/merged-book.html \
+            --meta book/dist/print/merged-book.meta.json \
+            --out book/dist/print/merged-book.pdf
+          python -m book.build_epub
+      # 产物为空也算「构建成功」，所以先按字节下限验一遍再落进 staging。
+      - name: Stage offline book under /book/
+        run: |
+          set -euo pipefail
+          mkdir -p .temp/pages-site/book
+          for spec in html:1000000 pdf:5000000 epub:200000; do
+            ext=${spec%%:*}
+            floor=${spec##*:}
+            src="book/dist/print/merged-book.$ext"
+            size=$(wc -c < "$src")
+            echo "$src bytes=$size floor=$floor"
+            test "$size" -ge "$floor"
+            cp "$src" .temp/pages-site/book/
+          done
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
-      - name: Mounted smoke (/STM32/)
-        run: npm run site:smoke
+      - name: Mounted smoke (/STM32/, incl. /book/ downloads)
+        run: |
+          node scripts/site-smoke.mjs \
+            --root .temp/pages-site --mount /STM32 --downloads
       - uses: actions/upload-pages-artifact@v5
         with:
           name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}

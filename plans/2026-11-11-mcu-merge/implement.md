@@ -1,6 +1,8 @@
 # 分阶段实施计划
 
-状态：全部为待执行项；已完成的历史导入只作为基线。参见 [需求](prd.md)、[设计](design.md) 与 [调查](research/findings.md)。
+状态：**部分已被后续决定取代**。本文成文于 B5 合并之前；B5（2026-11-14）把 MCU 正文并入根书稿并退役 `mcu/{docs,mcu-book,scripts,tests,package*,playwright.config.mjs}` 与 `mcu-*.yml` 五个工作流，因此原 P2/P3/P4 中依赖 MCU 独立站点的项不再适用。逐条判定见 [P0 执行快照](research/execution-snapshot-2026-11-19.md)（2026-11-19）。现行依据是 [`plans/2026-11-12-merged-book/`](../2026-11-12-merged-book/README.md)。
+
+已完成的历史导入只作为基线。参见 [需求](prd.md)、[设计](design.md) 与 [调查](research/findings.md)。
 
 ## 1. 阶段与依赖
 
@@ -17,11 +19,11 @@
 
 ## 2. P0：锁定实际起点
 
-- [ ] 重新读取两个 HEAD 和分支；与 `research/baseline.json` 比较。若已变化，新增执行快照，保留本次规划快照。
-- [ ] 验证来源 SHA 为目标祖先，审查来源 tree → `HEAD:mcu` 的 10 路径迁移差异。
-- [ ] 盘点所有已有 tracked/untracked 修改，备份实际字节并核对哈希；不只保存 Git patch，因为 patch 不包含未跟踪文件。
-- [ ] 检查外部来源的未跟踪/忽略资产，分类为可再生、可由已发布制品恢复、不可再生。重点看视频母版、PDF、字体、参考源码和硬件证据。依赖目录不得作为资产整树导入。
-- [ ] 后续在明确候选分支实施；如使用新 worktree，按清单带入确实需要的已有修改，不能把原工作区留存内容误认成已在候选分支。
+- [x] 重新读取两个 HEAD 和分支；与 `research/baseline.json` 比较。**已完成 2026-11-19**：目标已推进到 `main@4882857e`，新增 [`research/execution-snapshot-2026-11-19.md`](research/execution-snapshot-2026-11-19.md)，规划快照 `baseline.json` 原样保留。
+- [x] 验证来源 SHA 为目标祖先，审查来源 tree → `HEAD:mcu` 的迁移差异。**已完成**：`merge-base --is-ancestor` 退出码 0；差异由 10 条扩至 1580 条（848 A / 692 D / 40 M），逐类归于 B5 退役与导入后演进，见快照 §2。
+- [x] 盘点所有已有 tracked/untracked 修改，备份实际字节并核对哈希。**已完成**：2026-11-11 备份留在 `research/wip-backup-2026-11-11/`；2026-11-19 逐项重算 SHA-256，12 条字节不变、5 条由 `27757966` 与 `ec980bc7` 解释，见快照 §3。
+- [x] 检查外部来源的未跟踪/忽略资产并分类。**已完成**：重跑 `git status --porcelain --ignored`，按顶层分组归类；`.trellis/ref/` 按既有 [`p0-source-assets.md`](research/p0-source-assets.md) 判为公开可恢复，并回写第 5 节复核补充，见快照 §4。
+- [x] 后续在明确候选分支实施。**已完成**：候选分支 `feat/mcu-merge-p1`（base = 已确认集成 HEAD `4882857e`），两次提交只含本批文件；`main` 尖端未动。worktree 方案未采用（计划中为可选）。
 
 只读基线命令，cwd 为 `D:\Users\STM32`：
 
@@ -38,11 +40,11 @@ git diff --name-status cf161532c823446016a9deb60d31e5263397b7d7 HEAD:mcu
 
 ## 3. P1：规范与任务继续可用
 
-- [ ] 根 README/STRUCTURE 明确两个入口、两套正文和示例边界。
-- [ ] 根 AGENTS 路由到原书 spec、MCU AGENTS/spec 和本合并计划；不复制规则正文。
-- [ ] 从 `mcu/` 运行 Trellis context，逐项解析活动任务 jsonl 文件路径；区分 Git 根和 MCU 项目根。
-- [ ] 输出历史绝对路径分类：仍用于执行的需适配，历史记录保留；校验 parent/children 和会话指针。
-- [ ] 记录历史任务状态前后差异；本合并不得自动把任何历史任务归档或改为通过。
+- [x] 根 README/STRUCTURE 的入口与边界。**已完成（以核对为主）**：B5 后根书稿已合一，`README.md`、`STRUCTURE.md` 写明 `mcu/` 保留固件与任务历史、不再有独立书稿站点；本轮未改这两份，改为修正仍按旧结构写的 `mcu/README.md`（见「P1 追加」）。
+- [x] 根 AGENTS 路由。**已完成（以核对为主）**：已路由到 `mcu/AGENTS.md`、`mcu/.trellis/spec/index.md`、`mcu/.trellis/workflow.md`、`mcu/.trellis/tasks/` 与本计划三件套，并注明旧书稿/站点/脚本已退役；无规则正文复制。
+- [x] 从 `mcu/` 运行 Trellis context 并逐项解析。**已完成**：`get_context.py` 退出码 0，23 个活动任务、8 层 spec、journal 指针正常；`--mode packages` 报 `Single-repo project`；23 个任务目录均可解析 `task.json`。
+- [x] 历史绝对路径分类。**已完成**：`D:/Users/mcu` 命中 3 个文件，均为历史记录中的操作叙述，来源目录仍在；无用于执行需适配者。
+- [x] 记录历史任务状态前后差异。**已完成**：活动任务 `planning` 9 / `in_progress` 14；唯一状态变化为 `11-07-historical-spec-closure` 的 `planning → in_progress`（`ec980bc7`），无归档、无改为通过。
 
 MCU 工作目录命令：
 
@@ -53,7 +55,22 @@ python .trellis/scripts/get_context.py --mode packages
 
 回退点：只撤销本批导航和路由变更，不动 `mcu/.trellis/tasks` 既有工作。
 
+### P1 追加（2026-11-19 执行）
+
+本轮在候选分支 `feat/mcu-merge-p1` 提交 `1c305381`、`b6a50290`，修复仍按退役前结构书写的入口文档：
+
+- `mcu/README.md`：改写为来源子树入口（读什么/跑什么、书稿构建在根 `book/`）；历史段落明确标注归档。
+- `mcu/CONTRIBUTING.md`：加范围说明——写作标准降为历史参考，现行指向根 `docs/CONTENT_GUIDE.md`；4 条死链改为行内代码。
+- 根 `CONTRIBUTING.md`：`stm32-book/tests` → `book/tests`，`docs/NN-xxx.md` → `docs/<分卷>/NN-xxx.md`。
+- 证据与适用性判定：`research/execution-snapshot-2026-11-19.md`。
+
+**门禁覆盖缺口（2026-11-19 实测，已处置）**：当时推 `feat/mcu-merge-p1` 后 `gh api …/actions/runs?head_sha=<sha>` 返回 `total_count = 0`——各工作流 `push` 只挂 `branches: [main]`，`merge-check.yml` 另走 `pull_request`，而 `mcu/**`、`plans/2026-11-11-mcu-merge/**`、根 `CONTRIBUTING.md` 都不在任何 `paths` 过滤器内，即本批改动无 CI 覆盖。获明确指令后已扩 `merge-check.yml` 的两个触发块并实测到 `pull_request` 触发，全过程见[执行快照](research/execution-snapshot-2026-11-19.md) §8。
+
+同一轮补了一道更根本的门：`mcu/README.md`、`mcu/CONTRIBUTING.md`、`mcu/AGENTS.md` 现已进 `book/checks.py` 的 `ENTRY_DOCS`。此前这三份不在任何链接扫描范围内——那正是 `mcu/README.md` 攒下 60+ 条死链、而 `book.checks --check` 仍印 `checks passed` 的原因（`23ca1fcb`）。
+
 ## 4. P2：站点路径与仓库身份
+
+> **状态：已被 B5 取代，不执行。** 本阶段依赖的 `mcu/docs/`、`mcu/scripts/`、`mcu/package*.json`、`mcu/.github/workflows/` 已在 B5（`44c0fdb0`）整树退役，MCU 站点不复存在。逐条判定见[执行快照](research/execution-snapshot-2026-11-19.md) §5；其中「审查 CITATION 身份」只做到一半：`27757966` 把仓库身份换成了新仓，但指向 `mcu/mcu-book` 的 `identifiers`、指向 `/STM32/mcu/` 的 `url`、`1.0.0` 版号与「88 章」摘要都留了下来，直到 `23ca1fcb` 才对上真源并加上回归测试（见 [P4 验收记录](research/p4-acceptance-2026-11-19.md) AC7）。「旧 `/mcu/` 字符串分类」以文档核对形式在快照 §5/§6 完成。下列复选框按原样保留，代表**当时计划**而非待办。
 
 - [ ] 新建共享站点身份配置，替换运行时代码中分散的 base/host/repository 字面量。
 - [ ] 修复 Playwright 的 baseURL/webServer URL、robots、主题仓库按钮、自链校验、导读和下载生成路径。
@@ -78,6 +95,8 @@ npm run test:browser
 
 ## 5. P3：工作流与实际部署结构
 
+> **状态：已被 B5 取代，不执行。** Pages 组装已由根 `scripts/assemble-site.mjs` + 131 条旧链存根实现，且 CI 断言 `/mcu/` 下只能是存根页；`mcu/` 子目录不再承载站点。触发矩阵的**当前事实**已在本轮实测记录（见 §3「P1 追加」的门禁覆盖缺口），与原计划设想的 MCU staging 无关。下列复选框按原样保留，代表**当时计划**而非待办。
+
 - [ ] 实现 Pages staging 组装：上传根包含 `mcu/` 子目录；根入口根据部署前调查保留或生成。
 - [ ] 修改部署 workflow，检查最终 staging 里的 MCU 子目录，并上传整个 staging 根。
 - [ ] 为组装脚本增加有实际意义的回归：缺 MCU index 必须失败、根入口不能被覆盖、资源必须在 `mcu/` 下。
@@ -99,7 +118,11 @@ node scripts/search-check.mjs --dist ../.temp/pages-site/mcu
 
 ## 6. P4：最终验证与证据
 
-根 STM32 命令，cwd 为仓库根：
+> **状态：验收完成，可放行。** P4 验收记录：[`research/p4-acceptance-2026-11-19.md`](research/p4-acceptance-2026-11-19.md)——AC1/AC6 按原文通过；AC2/AC5 按 `prd.md` §3.1 的 AC2′/AC5′（2026-11-22 批准生效）通过；AC3 按原文通过（下载入口已接进 `deploy.yml` 并由冒烟断言）；AC7 按原文通过（许可改为双值，与 `LICENSE` 分区一致）。余下 AC4（deploy artifact 核对）与 AC8（上线回读）只能在发布后核对，属 P5。
+
+以下两组命令是 **B5 之前**的口径，路径已不存在（`git ls-files stm32-book` = 0，`mcu/mcu-book` 已整树删除）。保留原文供对照；现行等价物见每组下方。
+
+<details><summary>历史命令（stm32-book / mcu-book，已退役）</summary>
 
 ```powershell
 python tools/slop_lint.py
@@ -108,7 +131,6 @@ python -m unittest discover stm32-book/tests -v
 python stm32-book/build_html.py --check
 ```
 
-根 `book.yml` 还须在 CI 覆盖 SPL 构建、中英 PDF 生成及版式审计；以上本地命令不是替代。
 
 MCU 书籍命令，cwd 为 `mcu/`：
 
@@ -122,6 +144,22 @@ python mcu-book/publish_downloads.py --out-dir mcu-book/dist/downloads
 python mcu-book/publish_downloads.py --verify mcu-book/dist/downloads
 ```
 
+</details>
+
+现行 `book.yml` 覆盖：合并书稿的检查、渲染契约、印刷 HTML/PDF/EPUB 与产物体量断言（见该工作流 `jobs.book`）。它**不含**英文书门，也没有 SPL 构建——这两项在 B5 后没有对应工作流，属 AC5 的未通过项。
+
+**现行等价物**（2026-11-19 实测，见 [`research/p4-acceptance-2026-11-19.md`](research/p4-acceptance-2026-11-19.md)）：
+
+```bash
+python tools/slop_lint.py docs/v0-foundations/*.md docs/v1-drivers/*.md docs/v2-reliability/*.md docs/v3-rtos/*.md docs/v4-platforms/*.md docs/v5-motion/*.md docs/v6-labs-projects/*.md docs/v7-delivery/*.md docs/appendix/*.md
+python tools/check_assets.py
+python -m unittest discover book/tests
+python -m book.build_html --check
+node --test scripts/tests/*.test.mjs
+```
+
+MCU 书籍门已随 B5 取消（`mcu/mcu-book` 不存在）；离线整书产物只剩来源仓归档中的 `mcu-book/dist/`，见快照 §4。
+
 - [ ] MCU quality/browser 的最终结果对应候选提交；内容或配置再变化时重跑受影响门。
 - [ ] CI 的动画审计、Ruff、ARM-host `firmware:check`、ESP32 normal/faults 矩阵和下载包 GNU 哈希检查全部留证。
 - [ ] 两书产物命名、版本、哈希、许可/出处和根导航审查通过。
@@ -131,6 +169,8 @@ python mcu-book/publish_downloads.py --verify mcu-book/dist/downloads
 CPU/工具链缺失、浏览器未安装、硬件未接入分别记 `BLOCKED`/`UNVERIFIED`；编译不能代替真实上板证据。合并本身不追加硬件实测要求，但必须保持原项目的验证状态。
 
 ## 7. P5：发布与关闭
+
+> **状态：待合并与上线回读。** 候选分支已推送（`feat/mcu-merge-p1`），PR #140 承载 P4 验收记录与下载入口改动；未动 Pages。P4 判定见 [`research/p4-acceptance-2026-11-19.md`](research/p4-acceptance-2026-11-19.md)：AC1–AC3、AC5–AC7 通过（AC2/AC5 按 §3.1 修订口径），AC4/AC8 待发布后核对。合并后的 P5 动作：确认 deploy 运行与 artifact、回读 `/book/` 三件产物、记录旧站兼容决定。
 
 - [ ] 收到后续发布指令后，才执行 PR 合入/推送/Pages 切换等远程动作；计划阶段不操作远程。
 - [ ] 发布前记录新旧 Pages 的真实 URL、旧 artifact、对应 SHA、required checks 和来源仓库维护状态。

@@ -1,5 +1,7 @@
 # 贡献指南
 
+> **范围说明（2026-11-19）**：本文件写于 `mcu/` 独立书稿时期。B5 合并后，MCU 正文已并入根书稿（根 `docs/` + 根 `book/`），本目录的 `docs/`、`mcu-book/`、`scripts/`、`package*.json`、`.github/workflows/mcu-*.yml` 已退役，`mcu/` 只保留 `code/`、`.trellis/`、`video/`、`wiki/` 与仓库元文件。下面**写作标准（四件套、风格契约、动画规范、实物规范）是合并前的历史口径，只作历史参考**——现行写作要求以根 [内容风格指南](../docs/CONTENT_GUIDE.md) 为准（该指南用的是「教学合同 + 功能块」体系，不是四件套）。本文件中的路径与命令（`docs/<track>/…`、`docs/.vitepress/config.mts`、`scripts/local-gates.*`、`npm run …`、`mcu-book/…`）在本目录**不再可用**，站点与书稿门改在 Git 根执行，见根 [README](../README.md) 与根 [CONTRIBUTING](../CONTRIBUTING.md)。当前目录结构见 [README](README.md)。
+
 这个项目只有一个质量标准：**读者看完能讲给别人听，还能在板子上做出来**。以下规范都是为这一条服务的。
 
 ## 1. 内容深度标准（四件套）
@@ -30,7 +32,7 @@
 
 ## 3. 章节页模板
 
-骨架页金样例：[`docs/c/06-abi-stack.md`](docs/c/06-abi-stack.md)。成稿章金样例：[`docs/stm32/00-env.md`](docs/stm32/00-env.md)。实验金样例：[`docs/lab/e01-blink.md`](docs/lab/e01-blink.md)，实验模板：[`docs/lab/template.md`](docs/lab/template.md)。
+合并前的取样文件（路径已随 B5 退役，只作历史记录、不提供跳转）：骨架页 `docs/c/06-abi-stack.md`、成稿章 `docs/stm32/00-env.md`、实验 `docs/lab/e01-blink.md`、实验模板 `docs/lab/template.md`。
 
 文件约定：
 
@@ -44,7 +46,7 @@
 
 完整细则见 `.trellis/spec/docs-site/animation.md`（色板与字号、SMIL 阶段槽位的坑、三件动效武器、站点内联机制）。要点：
 
-- 形式：独立 `.svg` 于 `docs/public/anim/`，SMIL（`<animate>`/`<animateTransform>`，`repeatCount="indefinite"`），viewBox 宽 720；页面用 markdown 图片语法 `![一句话描述](/anim/xxx.svg)` 引用（构建期自动内联成 `<AnimFigure>`，随站点深浅主题换色；禁 raw `<img>`、禁外链播放器、禁 JS 依赖）。
+- 形式：独立 `.svg` 于 `docs/public/anim/`，SMIL（`<animate>`/`<animateTransform>`，`repeatCount="indefinite"`），viewBox 宽 720；页面用 markdown 图片语法 `![一句话描述](/anim/xxx.svg)` 引用（合并前站点；该语法在根书稿里由 `book-markdown` 插件承担）（构建期自动内联成 `<AnimFigure>`，随站点深浅主题换色；禁 raw `<img>`、禁外链播放器、禁 JS 依赖）。
 - 必带 `<title>`/`<desc>`：`<desc>` 要把因果讲完，关动效的人只看得这两行。
 - 颜色只能取规范色板：站点用一张固定映射表换主题 class，自造十六进制值或写 `rgba()` 底纹 = 深色模式漏网。
 - **只有阶段切换不算动画**：每张图至少一处连续运动（爬线 / 生长箭头 / 节拍脉冲），且运动本身承载结论。**禁装饰性动画**——不能帮助理解的动画不如不放。

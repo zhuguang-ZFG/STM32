@@ -41,3 +41,9 @@
 ## 结论与阻塞
 - 已完成来源侧规模与类别盘点（证据：本次 `git ls-files --others --ignored --exclude-standard` 分类统计）。**未发现**可直接证明“仅存在于忽略区且无任何可恢复途径的唯一视频母版/硬件证据文件”的确证记录，但 `.temp` 内历史 master 样本与 `.trellis/ref` 文档需在 P4/P5 前按需复核与留痕。
 - 依赖/缓存/构建产物不构成 Git subtree 内容迁移阻塞；不可再生风险项需在后续发布与资产收口阶段显式决策，不在本轮静默丢弃或复制。
+
+### 5) 2026-11-19 复核补充
+
+对 `D:\Users\mcu` 重跑 `git status --porcelain --ignored`：仍为 116 条忽略项，顶层分布 `code` 55、`video` 14、`mcu-book` 6、`.trellis` 5、`docs` 4、`scripts` 2，其余为缓存/虚拟环境。`.trellis/ref/` 实测 105 MB，构成：8 个厂商 PDF（`st-docs/rm0090.pdf`、`st-docs/stm32f407vg-ds.pdf`、`gd32/` 5 个、`f407-ds.pdf`）+ `gd32/` 41 MB、`freertos-v11/` 18 MB、`rt-thread/` 10 MB、`cmsis/` 1.3 MB 上的上游源码镜像 + 顶层 74 个脚本/日志（`capstone-*.log` 等本机一次性产物）。
+
+据此维持原文结论：厂商文档与上游源码**公开可恢复**（版本需重新核对），本文件的「不可再生风险」仍只落在 §3 列出的 `.temp` 母版样本与来源不明的零散下载件上；`.trellis/ref/` 不构成不可再生资产。逐项判定见 [`execution-snapshot-2026-11-19.md`](execution-snapshot-2026-11-19.md) §4。
