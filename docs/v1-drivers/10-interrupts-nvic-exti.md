@@ -153,15 +153,23 @@ F407 的优先级寄存器每中断一个字节，但只实现了高 4 位：
 | 6 | 1 | 3 | `0x05FA0600` |
 | 7 | 0 | 4 | `0x05FA0700` |
 
-抢占优先级决定能不能打断正在执行的 ISR，数值越小优先级越高；子优先级只在两份请求**同时挂起**时决定谁先执行，它没有打断能力。上表第一列的 PRIGROUP 0~3 在 4 位实现下效果相同（4 抢占 + 0 子）。FreeRTOS 要 4 位全给抢占，落在 PRIGROUP 0~3 这一档；SPL/HAL 老代码常见的“组 2”是另一套编号：SPL/HAL 组 2 = 2 抢占 + 2 子（`0x05FA0500`），而 PRIGROUP=2 才是 4+0（`0x05FA0200`）。根书按 HAL 的 `NVIC_PRIORITYGROUP_x` 编号，那张表里的 `GROUP_4` 指“4 位抢占”，与这里的 PRIGROUP 值不是同一套编号；移植时先看位宽，再对名字。
+PRIGROUP 0~3 在 F407 的 4 位实现下效果相同，都是 4 抢占 + 0 子；FreeRTOS 使用这一拆分。SPL/HAL 的“组 2”指 2 抢占 + 2 子（`0x05FA0500`），PRIGROUP=2 却是 4+0（`0x05FA0200`）。根书按 HAL 的 `NVIC_PRIORITYGROUP_x` 编号，`GROUP_4` 指“4 位抢占”。移植时先核对抢占位数、子优先级位数，再核对名字。
 
 AIRCR 是带锁寄存器：写入时高 16 位必须是 VECTKEY = `0x5FA`，否则写操作被无视。上表第四列的每个值都是钥匙 `0x05FA0000` 再加 PRIGROUP 值左移 8 位拼出来的形状（PRIGROUP=5 即 `0x05FA0500`），出处是 `core_cm4.h:1661` 的 `0x5FAUL << SCB_AIRCR_VECTKEY_Pos`。`NVIC_SetPriorityGrouping()` 内部就是“读 AIRCR、改 [10:8]、带钥匙写回”。
 
 还有一条不能设的优先级：HardFault。打开 `stm32f407xx.h:68-69` 的 `IRQn_Type` 枚举，`NonMaskableInt_IRQn = -14` 之后直接跳到 `MemoryManagement_IRQn = -12`，**-13 被故意跳过**。Reset、NMI、HardFault 的优先级硬件固定：Reset 最高（-3）、NMI 次之（-2）、HardFault 最低（-1），数值从 -3 到 -1 递增、优先级正好递减，与“数值越小越横”一致。这三个不在 SHP 里、不可编程。可编程的内核异常只包括器件枚举中实际实现的 MemManage、BusFault、UsageFault、SVCall、DebugMonitor、PendSV、SysTick（走 SHP），不是 -12 到 -1 的每个整数都有效；外设中断也只用该芯片实现的 IRQn（走 IPR）。
 
-把“谁能打断谁”演成五幕的是下面这张动画：EXTI0（抢占 2）在跑 ISR 时，同抢占级的 EXTI9 只能挂起排队；抢占号更小的 EXTI1 一到，硬件立刻压栈换人；ISR1 退出后回到 ISR0 的断点，ISR0 再退出才轮到 EXTI9 补位。
+### 谁能抢占：先比较抢占级
 
-![NVIC 抢占判定：谁能打断谁](/anim/nvic-preempt-arbitration.svg)
+抢占级数值越小，优先级越高；同抢占级的请求只能挂起等待。
+
+![手绘：EXTI9_5 同级挂起，EXTI1 抢占，随后恢复 EXTI0；EXTI0 退出后才执行 EXTI9_5。时间轴不表示实测耗时（原理示意，非实拍）](/images/ch10-preemption-timeline.png)
+
+取 F407 的 `PRIGROUP=4`，即 3 位抢占 + 1 位子优先级：EXTI0=(2,0)，EXTI1=(1,0)，EXTI9_5=(2,1)。图中各请求已使能且未被屏蔽：EXTI9_5 到来后等待；EXTI1 打断 EXTI0；EXTI1 退出后，EXTI0 从断点继续；EXTI0 退出，EXTI9_5 才执行。
+
+子优先级用于挑选同抢占级、在仲裁时都已挂起的请求，数值小的先执行；它们不必在同一时刻到达，子优先级也不能让它们互相抢占。
+
+暂停不等于已经退出 ISR。EXTI1 正在执行时，EXTI0 仍为 **active**，所以 `NVIC->IABR` 可以同时有多个活跃位；这不表示多个 ISR 在单核上并行执行。Arm 的 `NVIC_GetActive` 说明明确保留了被抢占 ISR 的 active 状态。
 
 ### 向量表：槽号 IRQn + 16，weak 的位子谁来坐
 
@@ -382,6 +390,7 @@ sh probe.sh          # 构建后用 nm/.map 给七条链归类（需 ESP-IDF v5.
 | 调 HardFault 优先级没有效果 | HardFault 优先级硬件固定，`IRQn` 枚举里 -13 被跳过 | `IRQn_Type` 中没有 `HardFault_IRQn` | 不设；查 HardFault 现场见[第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) |
 | 中断一直停在死循环 | ISR 函数名拼错，weak 默认 `Default_Handler` 没被顶替 | objdump 的槽内容仍指向默认处理函数 | 对照启动文件的 `.word` 行核对函数名 |
 | EXTI9_5 里分不清是谁触发 | 5~9 号线共用向量，ISR 没查 PR | PR 的 bit5~9 哪一个为 1 | ISR 里按 PR 位分支，再逐位清 |
+| IABR 有多个位为 1，以为 ISR 在并行执行 | 被抢占的 ISR 仍为 active | 用当前 PC/调用栈区分正在执行与暂停的 ISR | 沿抢占级与异常返回顺序核对，不能只凭 IABR 判定执行位置 |
 | 尾链打开后低优先级插进了高优先级 | 尾链不改变谁有权抢占 | 抢占级数值没有变小 | 改抢占级，不要指望尾链 |
 | `__disable_irq()` 之后仍进了 NMI | PRIMASK 不管 NMI | NMI 是硬件固定优先级 | 这是预期；CSS 的 NMI 要清 CSSC |
 | F1 上 EXTI 不进中断 | 没开 AFIO 时钟，或没写 `AFIO->EXTICR` | `AFIO->EXTICR` 读回不是目标编码 | 开 AFIO 时钟、写 EXTICR、清 PR |
@@ -426,6 +435,7 @@ Cache 映射、Cache 关闭窗口与多核一致性见[第 34 章](../v4-platfor
 6. 配通 PF6 → EXTI6 的六步是什么？EXTI6 为什么没有自己的向量？ISR 进门第一件事是什么？
 7. F103 的 EXTICR 在哪个外设里？HAL 的 `NVIC_PRIORITYGROUP_4` 与 S4 的 PRIGROUP 值为什么不混用？`PRIMASK` 挡不住谁？
 8. ESP32-S3 的中断为什么不走固定向量？`IRAM_ATTR` 只标 ISR 本体为什么不够？双核共享计数器为什么不能用 `volatile` 代替锁？
+9. EXTI0=(抢占 2, 子 1) 正在执行，EXTI9_5=(2,0) 到来，能抢占吗？再来一个 EXTI1=(1,0)，执行次序怎样变化？为什么此时 IABR 可能不止一个活跃位？
 
 <details>
 <summary>对照答案</summary>
@@ -438,6 +448,7 @@ Cache 映射、Cache 关闭窗口与多核一致性见[第 34 章](../v4-platfor
 6. 六步：开 GPIOF 时钟、PF6 配输入、开 SYSCFG 时钟、EXTICR2[11:8] = `0x5`、EXTI 的 IMR/RTSR/FTSR bit6、NVIC 设优先级并 `EnableIRQ`。EXTI6 与 5~9 号线共用 `EXTI9_5_IRQn`（槽 39），没有专属向量。ISR 进门第一件事是写 1 清 `EXTI_PR`。
 7. F103 的 EXTICR 在 AFIO 里，换端口前要先开 AFIO 时钟。HAL 的 `NVIC_PRIORITYGROUP_x` 按抢占位数命名；S4 的 PRIGROUP 是按 0~7 的值命名，两者不是同一套编号。`PRIMASK` 关可配置优先级中断，挡不住 NMI 与 HardFault；`FAULTMASK` 再挡 HardFault，仍留 NMI。
 8. ESP32-S3 用中断矩阵，源、级、核在运行时由 `esp_intr_alloc` 绑定，没有固定向量槽。`IRAM_ATTR` 只改变本体落址，ISR 调用的非内联函数与读的 rodata 仍可能在 Flash，Cache 关闭时取指断在半路。双核共享计数器的 `++` 是读-改-写，`volatile` 既不原子也不提供核间可见性，要用 `portMUX` 或内核对象。
+9. EXTI9_5 与 EXTI0 的抢占级相同，即使它的子优先级 0 比 EXTI0 的 1 高，也只能等待。EXTI1 抢占级为 1，可以打断抢占级为 2 的 EXTI0；它退出后先恢复 EXTI0，EXTI0 退出后才执行 EXTI9_5。被抢占的 EXTI0 尚未退出，仍为 active；单核此刻只执行 EXTI1。
 
 </details>
 
