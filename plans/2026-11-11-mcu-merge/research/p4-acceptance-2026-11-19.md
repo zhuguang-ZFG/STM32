@@ -119,6 +119,8 @@ smoke passed: 15/15
 
 首次上线时 `/STM32/book/` 本身还是 404——三份文件都在、首页也挂了链接，唯独这一层没有索引页，而它正是读者会收藏的地址。补法是把索引页做成仓库里的静态模板 `book/print/book-index.html`（不在 YAML 里维护 HTML），由 deploy 的 Stage 步骤拷进 `/book/`；冒烟新增「下载目录索引页」断言，同时校验它里面三条链接指向的正是上面验过的三份产物——否则产物改名后索引页会静默变成三条死链。本地实测 `smoke passed: 16/16`。
 
+**同一轮发现的第二个失败模式：产物过期。** PR #147（改 `build_epub.py` 与印刷链）合入后**没有触发 deploy**——`deploy.yml` 的 `paths` 不含 `book/**`。而 `/book/` 的三件产物正是 deploy 用 `book/` 里的构建器现场产出的，改印刷 CSS、EPUB 合成器或字体子集化都会让已发布的产物过期。这类故障比 404 更难发现：文件在、状态 200、字节数也不为 0。修法是把 `book/**` 加进 `paths`（`book.yml` 早已有）；代价是改 `book/` 也会跑一次约 12 分钟的印刷链，但那本来就该重建。
+
 ### AC3 的浏览器回归（候选 staging，非线上发布证明）
 
 `npm run site:build` 生成 `.temp/pages-site`（根 = 合并书，`mcu/` = 131 条旧链存根），再跑 `npm run site:smoke`：脚本按真实挂载 `/STM32/` 起本地服务，用 Chromium 打开页面断言。
@@ -293,5 +295,7 @@ cd mcu && python .trellis/scripts/get_context.py        # exit 0
 | 6 | ~~浏览器回归未做~~ | 已完成 | `npm run site:smoke` 11/11（含新增片段锚点断言）；覆盖 staging，线上回读仍归 AC8 |
 | 7 | ~~`LICENSE` 许可分区与 CITATION 口径不一~~ | 已修 | CITATION 改为 `["Apache-2.0", "CC-BY-4.0"]`，`LICENSE` 未动；`test_license_matches_the_two_upstream_works` 锁住并集口径。见 AC7 节末 |
 | 9 | `mcu/code/` 47 个工程无编译/运行门 | 动了固件没人拦 | 补 ARM/ESP 工具链门后才能改 `mcu/code/`；现状是「保留的来源固件」，不属本仓发布物。见 AC5′ 表第三行 |
+| 11 | ~~`/book/` 裸 URL 404~~ | 已修 | 索引页做成静态模板 `book/print/book-index.html`，deploy 拷进 `/book/`；冒烟断言 200 + 三条链接指向正确产物（16/16） |
+| 12 | ~~`deploy.yml` 不跟 `book/**`，改构建器后已发布产物静默过期~~ | 已修 | `book/**` 已加进 `paths`（与 `book.yml` 对齐）。见 AC3 节末 |
 | 10 | deploy 多约 12 分钟（印刷链） | `main` 每次站点改动都跑全量印刷 | 只在 `main` 触发，不进 PR 门；若嫌慢可加 `book/**` 才构建的条件，但会把「产物过期」变成新的失败面，本批没做 |
 | 8 | `mcu/` 入口文档与合并计划文档没有链接门 | `mcu/README.md` 曾攒下 60+ 条死链而 `checks passed` 照样印出来；同类腐烂仍只能靠人工核对 | 独立重构：把 `book/` 的包内导入统一成解析器可解的形式（`from book import …` → 包内相对导入，并把 `book.yml` 的 `python book/*.py` 调用改成 `python -m book.*`），再把九份入口/计划文档加进 `ENTRY_DOCS`。功能已验证可行，本批因风险大于收益撤回，理由见 AC5 节 |
