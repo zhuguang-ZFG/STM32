@@ -127,6 +127,8 @@ PC13 的 ODR 位按这个式子算；[第 8 章](./08-architecture-memory-clock.
 
 HAL 的 `HAL_GPIO_WritePin()` 底层同样落到 BSRR，所以“用库还是手写”在这里不影响原子性结论；根书把 HAL 与直接 BSRR 并排放过，两种写法都原子，ODR 的读改写两种写法都有窗口。
 
+书里登记的另一份开源实现 `libopencm3` 把这件事写得更短：置位只有一行 `GPIO_BSRR(port) = gpios`，清位也只有一行 `GPIO_BSRR(port) = (gpios << 16)`——低 16 位管置位、高 16 位管清位，和上面两句直接赋值是同一件事。它的翻转函数还特意留了一句注解："toggling is not atomic"：BSRR 那一次写是原子的，但「先读 ODR 再决定翻哪一位」这整段不是。这正是本节反复划的那条线——**单次 BSRR 写原子，判断加翻转不原子**。
+
 ### 推挽与开漏：两种输出级的驱动能力
 
 | | 推挽（PP） | 开漏（OD） |
