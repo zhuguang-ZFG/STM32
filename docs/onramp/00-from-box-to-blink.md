@@ -5,7 +5,7 @@ platforms: [generic]
 
 # 从开箱到点灯：买板、装环境与第一次下载
 
-拿到新板子，先让 PC13 的 LED 亮 500 ms、灭 500 ms。本章带你完成第一次构建与烧录，留下构建日志、烧录记录和闪烁现象，作为 [L0 级别](../v7-delivery/46-resources-roadmap-open-source.md)的起步证据。
+新板子到手，第一件事不是啃时钟树，而是让它闪起来：PC13 上的 LED 亮 500 ms、灭 500 ms。这条路线走完，你手里会多出构建日志、烧录记录和一段预期约 1 Hz 的闪烁——三样合起来，就是 [L0 级别](../v7-delivery/46-resources-roadmap-open-source.md)的起步证据。
 
 第一次点灯按这条路线走：
 
@@ -100,7 +100,7 @@ openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program build/bluepil
 
 <!-- stick-scene: ch00-unbox-blink -->
 
-「灯不闪」的四条失败分支（完整分诊表见[第 45 章](../v7-delivery/45-troubleshooting-handbook.md) 与例程 README）：
+灯不闪的时候，最容易被误导的是「程序没跑起来」这个判断。实际卡点通常落在四个地方，按顺序查（完整分诊表见[第 45 章](../v7-delivery/45-troubleshooting-handbook.md) 与例程 README）：
 
 | 症状 | 第一条假设 | 动作 |
 | --- | --- | --- |
