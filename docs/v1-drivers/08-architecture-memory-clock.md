@@ -86,7 +86,7 @@ Cortex-M4 是 32 位机，地址空间正好 4GB。ARM 把这 4GB 按 512MB 一�
 | 搬 SRAM 缓冲 | DMA | DMA → 矩阵 → SRAM | 不占指令周期，但要跟 CPU 抢同一块 SRAM |
 | 访问 CCM | DMA | 无路 | CCM 只接 CPU，DMA 看不到这段地址，该地址不能作为 DMA 缓冲区 |
 
-矩阵是**并发**的：DMA 在搬 SRAM 时，CPU 能同时从 Flash 取指。这就是[第 14 章](./14-dma.md)敢说 DMA“不占指令周期”的硬件底气，也是 CCM 那条路必须单独记住的原因。
+关键在“同时”两个字：这张矩阵是**并发**的。DMA 搬 SRAM 的时候，CPU 还能从 Flash 取指——两件事走不同的线，各走各的。这正是[第 14 章](./14-dma.md)敢说 DMA“不占指令周期”的硬件底气：它不抢 CPU 的取指口，只在某些地方跟 CPU 抢同一块 SRAM。CCM 那条路也要放到这张图里看才明白——它只接 CPU，DMA 根本看不到，所以那块地址永远当不了 DMA 缓冲区。
 
 ![总线矩阵动画：CPU 三个端口与 DMA 争用同一条 AHB 矩阵](/anim/bus-matrix.svg)
 
