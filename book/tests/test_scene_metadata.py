@@ -36,8 +36,11 @@ class SceneMetadataTests(unittest.TestCase):
                 self.assertTrue(scene[key], f"{scene_id}: empty {key}")
             for key in ("width", "height"):
                 self.assertIn(key, scene, f"{scene_id}: missing {key}")
-                self.assertIsInstance(scene[key], int)
-                self.assertGreater(scene[key], 0)
+                value = scene[key]
+                self.assertIsInstance(value, int)
+                if not isinstance(value, int):
+                    continue
+                self.assertGreater(value, 0)
 
     def test_dimensions_match_the_real_png_header(self):
         scenes = json.loads(SCENES.read_text(encoding="utf-8"))
