@@ -8,17 +8,20 @@
 # 1. 不列 tests/。那里的 stm32f1xx_hal.h 是宿主测试用的桩，只有 blink-tests 目标
 #    才把 tests 放进 include 路径；列进来会让 `#include "stm32f1xx_hal.h"` 命中桩
 #    而不是真 HAL，GPIO_TypeDef 被定义两次。
-# 2. include/stm32f1xx_hal_conf.h 是 ST 的「配置片段」，按设计只能由
-#    stm32f1xx_hal.h 引入（此时 stm32f1xx_hal_def.h 已先给出 HAL_StatusTypeDef）。
-#    把它当独立编译单元分析会走进循环包含
-#    （conf → hal_rcc → hal_def → stm32f1xx → hal → conf），
-#    arm-none-eabi-gcc 与 clang 单独编译它同样报错：
+# 2. 这里不定义 USE_HAL_DRIVER。CMakeLists 在真实构建里定义它，作用是让
+#    CMSIS 的 stm32f1xx.h 顺手把头文件 stm32f1xx_hal.h 引进来。本工程的源文件
+#    都是自己显式 #include "stm32f1xx_hal.h"，不依赖这个副作用，因此静态检查
+#    不需要它。
+#
+#    更要紧的是：带上这个宏会让 include/stm32f1xx_hal_conf.h 走进循环包含
+#    （conf → hal_rcc → hal_def → stm32f1xx → hal → conf），该头是 ST 的
+#    「配置片段」、不是编译单元，于是 arm-none-eabi-gcc、clang 单独编译它都会报
 #        error: unknown type name 'HAL_StatusTypeDef'
-#    而真实固件源文件（main.c、stm32f1xx_it.c）编译干净，CI 也一直是绿的。
+#    而 clangd 会报 main file cannot be included recursively。去掉这个宏后，
+#    两种编译器单独编译该头均 0 error，main.c 与 stm32f1xx_it.c 也仍然干净。
 -Iinclude
 -I../../.temp/STM32CubeF1/Drivers/CMSIS/Include
 -I../../.temp/STM32CubeF1/Drivers/CMSIS/Device/ST/STM32F1xx/Include
 -I../../.temp/STM32CubeF1/Drivers/STM32F1xx_HAL_Driver/Inc
 -DSTM32F103xB
--DUSE_HAL_DRIVER
 -std=c11
