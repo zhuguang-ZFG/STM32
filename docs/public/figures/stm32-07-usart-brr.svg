@@ -1,12 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="USART 波特率寄存器 BRR：PCLK 与 baud 相除后拆成整数与小数两个字段"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
-<text x="8" y="12" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">USARTDIV = 84M / (16 × 115200) = 45.5729</text>
-<rect x="8" y="18" width="140" height="16" rx="3" stroke-width="1.4"/> <text x="12" y="29" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">整数 45 → Mantissa</text>
-<rect x="8" y="40" width="140" height="16" rx="3" stroke-width="1.4"/> <text x="12" y="51" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">小数 .5729 × 16 ≈ 9</text>
-<path d="M150 26 L166 26" stroke-width="1.8"/>
-<path d="M150 48 L166 48" stroke-width="1.8"/>
-<rect x="170" y="18" width="142" height="38" rx="3" stroke-width="1.4"/>
-<text x="176" y="32" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">BRR = (45 &lt;&lt; 4) | 9</text>
-<text x="176" y="46" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">= 0x2D9</text>
-<text x="8" y="70" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">OVER8=0：小数 4 位；OVER8=1：3 位</text>
-<text x="8" y="82" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">两处都写错 → 波特率偏 1 位就丢帧</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 344 114" role="img" aria-label="USART BRR 的本质是一个 16 位整数：84MHz 下 USARTDIV 等于 45.5729，把 16 乘进公式得 729 即 0x2D9，固件直接写 BRR 等于 729；同一个整数按字段读，高 12 位 Mantissa 是 45、低 4 位 Fraction 是 9，45 乘 16 加 9 得 729；OVER8 为 1 时小数 3 位除数改 8，余数取整带来波特率误差"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+<text x="8" y="13" font-size="8" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">BRR 的本质：一个 16 位整数，直接写寄存器</text>
+<text x="8" y="23" font-size="6" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">84MHz 算例 · 16 倍过采样（OVER8=0）</text>
+<rect x="8" y="32" width="158" height="18" rx="3" stroke-width="1.4"/> <text x="14" y="44" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">USARTDIV = 84M/(16×115200) = 45.5729</text>
+<path d="M87 50 L87 57" stroke-width="1.4"/>
+<rect x="8" y="58" width="158" height="18" rx="3" stroke-width="1.4"/> <text x="14" y="70" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">16 × USARTDIV = 729 = 0x2D9</text>
+<text x="8" y="90" font-size="6.5" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">固件一行写 BRR = 729，不必先拆小数再拼字段</text>
+<rect x="182" y="32" width="154" height="50" rx="3" stroke-width="1.4"/>
+<text x="188" y="44" font-size="6.5" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">同一整数的字段读法（可选视角）</text>
+<text x="188" y="55" font-size="6.5" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">高 12 位 Mantissa = 45（0x2D）</text>
+<text x="188" y="66" font-size="6.5" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">低 4 位 Fraction = 9（0x9）</text>
+<text x="188" y="77" font-size="6.5" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">45×16 + 9 = 729 = 0x2D9</text>
+<path d="M166 67 C 174 67, 176 57, 182 57" stroke-width="1.2" stroke-dasharray="3 2"/>
+<text x="8" y="106" font-size="6" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">OVER8=1 时小数 3 位、除数改 /8；余数取整带来波特率误差，偏一位即丢帧</text>
 </g></svg>
