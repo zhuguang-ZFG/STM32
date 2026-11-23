@@ -73,7 +73,8 @@ def build(source: Path, out: Path, chars: set[str], axes: dict[str, float] | Non
             font, axes, inplace=False, updateFontNames=True)
     options = subset.Options()
     options.layout_features = ["*"]
-    options.name_IDs = "*"
+    # fontTools 的桩把 name_IDs 声明成 list，运行时 "*" 表示「全部」。
+    options.name_IDs = "*"  # pyright: ignore[reportAttributeAccessIssue]
     options.notdef_outline = True
     options.recalc_bounds = True
     options.desubroutinize = False
@@ -140,7 +141,8 @@ def main() -> int:
     head.flavor = None
     for rec in head["name"].names:
         if rec.nameID in (1, 4, 6):
-            rec.string = "NotoSansSC"
+            # 桩写的是 bytes，运行时对 nameID 1/4/6 直接给 str 即可（内部编码）。
+            rec.string = "NotoSansSC"  # pyright: ignore[reportAttributeAccessIssue]
     head.save(out_dir / "head-regular.ttf")
 
     provenance = {

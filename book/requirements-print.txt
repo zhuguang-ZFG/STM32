@@ -7,3 +7,7 @@ lxml>=6
 PyMuPDF>=1.28,<1.29
 Pillow>=12
 playwright>=1.50
+
+# 字体子集化（book/build_fonts.py）。字体产物随仓库提交，所以 CI 平时不跑它；
+# 但要重新生成就必须装这份，否则 `import fontTools` 直接失败。
+fonttools>=4.50
