@@ -66,7 +66,10 @@ def anim_frame_uri(svg_path: Path) -> str:
     text = svg_path.read_text(encoding="utf-8")
     durs = [float(v) for v in re.findall(r'dur="([0-9.]+)s"', text)]
     seek_ms = int((max(durs) if durs else 10.0) * ANIM_SEEK_RATIO * 1000)
-    width = int(re.search(r'viewBox="0 0 ([\d.]+)', text).group(1))
+    box = re.search(r'viewBox="0 0 ([\d.]+)', text)
+    if box is None:
+        raise RuntimeError(f"no viewBox in {svg_path}")
+    width = int(box.group(1))
     with sync_playwright() as pw:
         browser = pw.chromium.launch()
         page = browser.new_page(viewport={"width": width + 20, "height": 900})
@@ -152,7 +155,7 @@ def chapter_number(anchor: str) -> str:
 
 
 def chapter_section(entry: dict, docs_root: Path,
-                    file_to_id: dict[str, str]) -> str:
+                    file_to_id: dict[str, str]) -> tuple[str, str]:
     """一章 → <section id=…>。返回 (html, 标题)。
 
     Markdown 自己的 H1 就是章标题；不再额外包一层 H1，否则纸上会印两遍。

@@ -22,7 +22,10 @@ class CoverCopyTests(unittest.TestCase):
             ):
                 build(out)
             html = out.read_text(encoding="utf-8")
-        subtitle = re.search(r'<p class="book-sub">([^<]*)</p>', html).group(1)
+        matched = re.search(r'<p class="book-sub">([^<]*)</p>', html)
+        if matched is None:
+            self.fail("渲染结果里没有 book-sub 段落")
+        subtitle = matched.group(1)
         self.assertEqual(subtitle, "原理讲解 · 工程示例 · 实验指南")
         self.assertNotIn("全程实物实验", subtitle)
         self.assertNotIn("全程实测", subtitle)

@@ -42,3 +42,11 @@
 - **门禁不降级**：STM32 与 MCU 既有验证门完整保留；通过/失败/未验证分开报告。
 - **历史保真**：不因 subtree/路径调整自动归档任务或将历史状态改为通过。
 - **发布受控**：本收口未合并/未发布；P5 需明确指令与 AC1–AC8 证据。
+
+## 静态检查（pyright）
+
+仓库**没有** CI 类型门；`pyrightconfig.json` 只服务本地分析器，让仓库自己的路径导入能被解析：
+
+- `extraPaths` 含仓库根、`book/`、`scripts/`、`tools/`——书稿构建器与脚本之间是「`from book import …` + 按路径加载」混用，没有安装元数据；
+- `reportMissingImports` 降为 warning——第三方依赖（PIL / playwright / pymupdf）装没装取决于各自环境，CI 在每个作业里单独 `pip install`，静态分析器不该替它下结论；
+- 其余规则保持 error。**新代码不要把 error 降级来换绿灯**。

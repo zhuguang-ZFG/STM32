@@ -14,6 +14,8 @@ class EpubCompatibilityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         spec = importlib.util.spec_from_file_location("epub_compat", ROOT / "tools/build_epub.py")
+        if spec is None or spec.loader is None:
+            raise unittest.SkipTest("tools/build_epub.py 无法按文件路径加载")
         cls.epub = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(cls.epub)
 
@@ -24,6 +26,8 @@ class EpubCompatibilityTests(unittest.TestCase):
                     f'<p align="{alignment}" class="figure-caption">Figure <sub>caption</sub></p>',
                     "Alignment", "epub.css")
                 paragraph = ElementTree.fromstring(payload).find(".//html:p", XHTML)
+                if paragraph is None:
+                    self.fail("XHTML 里没有 <p>，合成器没按预期输出")
                 self.assertNotIn("align", paragraph.attrib)
                 self.assertIn("figure-caption", paragraph.attrib["class"].split())
                 self.assertIn(f"epub-align-{alignment}", paragraph.attrib["class"].split())
