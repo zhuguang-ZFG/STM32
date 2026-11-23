@@ -1,6 +1,13 @@
 {
-  "include": ["book", "scripts", "tools"],
-  "extraPaths": [".", "book", "scripts", "tools"],
+  "include": [
+    "book"
+  ],
+  "extraPaths": [
+    ".",
+    "book",
+    "scripts",
+    "tools"
+  ],
   "pythonVersion": "3.13",
   "reportMissingImports": "warning"
 }

@@ -103,13 +103,13 @@ def main() -> int:
     if not chars:
         raise SystemExit("no source characters found")
 
-    jobs = (
-        ("Noto Serif SC", {"wght": 400}, "serif-regular.woff2"),
-        ("Noto Serif SC", {"wght": 700}, "serif-bold.woff2"),
-        ("Noto Sans SC", {"wght": 400}, "sans-regular.woff2"),
-        ("Noto Sans SC", {"wght": 700}, "sans-bold.woff2"),
-        ("Cascadia Mono", {"wght": 400}, "mono-regular.woff2"),
-        ("Cascadia Mono", {"wght": 700}, "mono-bold.woff2"),
+    jobs: tuple[tuple[str, dict[str, float], str], ...] = (
+        ("Noto Serif SC", {"wght": 400.0}, "serif-regular.woff2"),
+        ("Noto Serif SC", {"wght": 700.0}, "serif-bold.woff2"),
+        ("Noto Sans SC", {"wght": 400.0}, "sans-regular.woff2"),
+        ("Noto Sans SC", {"wght": 700.0}, "sans-bold.woff2"),
+        ("Cascadia Mono", {"wght": 400.0}, "mono-regular.woff2"),
+        ("Cascadia Mono", {"wght": 700.0}, "mono-bold.woff2"),
     )
     records = []
     for family, axes, name in jobs:

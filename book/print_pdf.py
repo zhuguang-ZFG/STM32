@@ -176,7 +176,9 @@ class _Head:
 
     def width(self, text: str, size: float) -> float:
         if self.face:
-            return self.face.text_length(text, fontsize=size)
+            # PyMuPDF 的类型桩把 fontsize 声明成 int，运行时接受 float；
+            # 取整会改变版面（0.5pt 的差别会推动换行），所以保留原值。
+            return self.face.text_length(text, fontsize=size)  # pyright: ignore[reportArgumentType]
         return fitz.get_text_length(text, fontname="helv", fontsize=size)
 
     def draw(self, page, x: float, y: float, text: str, size: float,
