@@ -232,6 +232,30 @@ cd mcu && python .trellis/scripts/get_context.py        # exit 0
 - 状态分布 `planning` 9 / `in_progress` 14；唯一变化是 `11-07-historical-spec-closure` 的 `planning → in_progress`（`ec980bc7`），无归档、无改为通过。
 - 历史绝对路径 `D:/Users/mcu` 命中 3 个文件，均为操作叙述，来源目录仍在。
 
+## AC5 补充：静态检查（type check / C 分析）的现状（2026-11-23）
+
+AC5 的门都是「跑起来会失败」的行为门。静态检查不在任何 CI 门里，但本批改了它，因此把现状与两条真实教训记在这里，免得下次有人重新踩。
+
+**现状**：`pyright`（仓库根，`pyrightconfig.json` 的 `include` 收在 `book/`）**0 errors**；`tools/audit_pdf_layout.py` 单文件 0 errors 0 warnings。`book/tests` 114 项、`book.checks --check`、`build_html --check`、`slop_lint`、32 项脚本测试全绿。
+
+**为什么 `include` 只收 `book/`**：`tools/` 下装了依赖后暴露出 PyMuPDF `get_text("dict")` 的桩精度问题（40+ 条），属既有维护工具的桩问题，不在本批范围。`reportMissingImports` 降为 warning，因为第三方依赖装没装由各自环境决定、CI 在各作业里单独 `pip install`；其余规则保持 error。
+
+**教训一：`fonttools` 是没声明的依赖（真缺陷，已修）**。`book/build_fonts.py` 导入 `fontTools`，但 `requirements.txt` 与 `requirements-print.txt` 都没列它。CI 从不跑这个构建器（字体产物随仓库提交），所以缺依赖一直没暴露——但任何人在干净环境重新生成字体子集都会在 `import fontTools` 直接失败，而 `print_css.py` 只会提示「字体缺失，先跑 build_fonts.py」，指向的又是个跑不起来的脚本。已补进 `requirements-print.txt`。**这类「产物提交进仓库、生成器却不跑」的构建器，是缺依赖最容易藏身的地方。**
+
+**教训二：`USE_HAL_DRIVER` 让 ST 的 HAL 配置头无法被单独分析（已修）**。`examples/gpio-blink/compile_flags.txt` 最初照抄 CMakeLists 写了 `USE_HAL_DRIVER`。这个宏让 CMSIS 的 `stm32f1xx.h` 回头包含 `stm32f1xx_hal.h`，于是 ST 那份「配置片段」`include/stm32f1xx_hal_conf.h` 走进循环：
+
+```text
+conf → hal_rcc → hal_def → stm32f1xx → hal → conf
+```
+
+`hal_def.h` 第 29 行就引 `stm32f1xx.h`，而 `HAL_StatusTypeDef` 要到第 44 行才定义。于是 arm-none-eabi-gcc 与 clang 单独编译该头都报 `unknown type name 'HAL_StatusTypeDef'`，clangd 报 `main file cannot be included recursively`。先引 `hal_def.h` 也没用——定义位置就在环后面。
+
+该宏在真实构建里的唯一作用是让 `stm32f1xx.h` 顺手带出 `stm32f1xx_hal.h`；本工程源文件都自己显式 `#include "stm32f1xx_hal.h"`，且**源码里没有任何以 `USE_HAL_DRIVER` 为条件的分支**（grep 确认，只有 `CMakeLists.txt` 第 51 行定义它）。分析参数集里去掉它，环就断了：gcc、clang 单独编译该头均 0 error，`main.c`/`stm32f1xx_it.c` 仍干净，而**真实构建仍带着这个宏**（CMakeLists 未改）。
+
+另外同一组 include 写了两种基准（相对 `compile_flags.txt` 所在目录 / 相对仓库根）：有些分析器按前者解析相对 `-I`，有些按工作目录，只写一种时另一种基准下必然报 `file not found`。不存在的 `-I` 目录编译器直接跳过，对真实构建零影响。
+
+这两条都是「分析器看不懂」而不是代码错，但都用了改配置/改依赖的方式修，没有关掉规则换绿灯。
+
 ## AC7 许可、出处、身份一致
 
 | 项 | 实测 |
@@ -299,3 +323,4 @@ cd mcu && python .trellis/scripts/get_context.py        # exit 0
 | 12 | ~~`deploy.yml` 不跟 `book/**`，改构建器后已发布产物静默过期~~ | 已修 | `book/**` 已加进 `paths`（与 `book.yml` 对齐）。见 AC3 节末 |
 | 10 | deploy 多约 12 分钟（印刷链） | `main` 每次站点改动都跑全量印刷 | 只在 `main` 触发，不进 PR 门；若嫌慢可加 `book/**` 才构建的条件，但会把「产物过期」变成新的失败面，本批没做 |
 | 8 | `mcu/` 入口文档与合并计划文档没有链接门 | `mcu/README.md` 曾攒下 60+ 条死链而 `checks passed` 照样印出来；同类腐烂仍只能靠人工核对 | 独立重构：把 `book/` 的包内导入统一成解析器可解的形式（`from book import …` → 包内相对导入，并把 `book.yml` 的 `python book/*.py` 调用改成 `python -m book.*`），再把九份入口/计划文档加进 `ENTRY_DOCS`。功能已验证可行，本批因风险大于收益撤回，理由见 AC5 节 |
+| 13 | 静态检查（`pyright`、C 分析）不在任何 CI 门里 | 本地 0 errors 靠人记得跑；改坏了没人拦 | 本批把现有噪声清到 0（`pyright` 仓库门 0 errors；`tools/audit_pdf_layout.py` 0/0；C 侧三个文件 error 数 0），但**没有把 `pyright` 加进 CI**：它是新门禁，一旦加上就得先保证它在各作业的依赖集下稳定，且 `reportMissingImports` 的 warning 口径需要和 `pip install` 步骤对齐。建议单独一批做，并带负向验证（植入一个类型错误看它是否真的红）。见 AC5 补充节 |
