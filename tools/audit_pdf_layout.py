@@ -27,6 +27,7 @@ import json
 import sys
 from collections import Counter
 from pathlib import Path
+from typing import Any, cast
 
 import pymupdf
 
@@ -49,11 +50,24 @@ def _is_white(d: dict) -> bool:
     fill = d.get("fill")
     return fill is None or all(c >= 0.98 for c in fill)
 
+def _text_dict(page: pymupdf.Page) -> dict[str, Any]:
+    """`get_text("dict")` 的结构化结果。
+
+    PyMuPDF 的 `Page.get_text` 运行时是 `(*args, **kwargs)`，`utils.get_text`
+    又没有返回注解，静态检查只能把返回值推断成 `str | list | dict` 的联合。
+    这里按实际返回类型收窄，免得下游每次取 `["blocks"]` 都被判为类型错误。
+    """
+    return cast(dict[str, Any], page.get_text("dict"))
+
+def _plain_text(page: pymupdf.Page) -> str:
+    """`get_text()` 的纯文本结果，理由同 `_text_dict`。"""
+    return cast(str, page.get_text())
+
 
 def _content_rects(page: pymupdf.Page) -> list[pymupdf.Rect]:
     rects = [
         pymupdf.Rect(b["bbox"])
-        for b in page.get_text("dict")["blocks"]
+        for b in _text_dict(page)["blocks"]
         if b.get("lines") and b["bbox"][3] < STAMP_TOP - 2
     ]
     rects += [
@@ -107,7 +121,7 @@ def scan(path: Path) -> dict:
         pno = index + 1
         blocks = [
             b
-            for b in page.get_text("dict")["blocks"]
+            for b in _text_dict(page)["blocks"]
             if b.get("lines") and b["bbox"][3] < STAMP_TOP - 2
         ]
         for b in blocks:
@@ -139,7 +153,7 @@ def scan(path: Path) -> dict:
             if ftext and cap_size < 8.5 and 55 < first["bbox"][1] < 130 \
                     and not page.get_images():
                 issues["caption_orphan"].append({"page": pno, "text": ftext[:70]})
-        chars = len(page.get_text().strip())
+        chars = len(_plain_text(page).strip())
         if chars < 40 and pno > 1 and not page.get_images():
             issues["near_blank"].append({"page": pno, "chars": chars})
         rects = _content_rects(page)
@@ -179,9 +193,13 @@ def _has_visual_anchor(page: pymupdf.Page) -> bool:
             return True
     for d in page.get_drawings():
         r = d["rect"]
-        if r.y1 < STAMP_TOP - 2 and r.width > 250 and r.height > 100:
-            if not (r.width > 500 and r.height > 700):  # page background fill
-                return True
+        if (
+            r.y1 < STAMP_TOP - 2
+            and r.width > 250
+            and r.height > 100
+            and not (r.width > 500 and r.height > 700)  # page background fill
+        ):
+            return True
     return False
 
 
