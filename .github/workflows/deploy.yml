@@ -10,6 +10,10 @@ on:
       # 验收/设计记录不是站点输入（config 的 srcExclude 已排除 superpowers），改它不重建站点。
       - '!docs/superpowers/**'
       - 'scripts/**'
+      # 站点的 /book/ 下载区是 deploy 用 book/ 里的构建器现场产出的：改印刷 CSS、
+      # EPUB 合成器或字体子集化都会改变那三件产物。不跟进就会静默发出旧版
+      # ——这正是「有文件但内容过期」，比 404 更难发现。（book.yml 早已含 book/**。）
+      - 'book/**'
       - 'plans/2026-11-12-merged-book/mapping.json'
       - 'package.json'
       - 'package-lock.json'
