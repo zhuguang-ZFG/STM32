@@ -88,7 +88,7 @@ typedef struct
 #define GPIOF               ((GPIO_TypeDef *) GPIOF_BASE)   /* GPIOF_BASE = 0x40021400 */
 ```
 
-于是那一行“好看一百倍”的访问，完整展开是：
+于是那一行“好看一百倍”的访问，拆开只是普通的一次地址写入：从基址加上偏移，当 `volatile uint32_t *` 写值。完整展开是：
 
 ```c
 GPIOF->BSRR = 1 << 6;
