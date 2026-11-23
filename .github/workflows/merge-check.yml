@@ -12,7 +12,8 @@ on:
       - 'plans/2026-11-11-mcu-merge/**'
       - 'scripts/legacy-redirects.mjs'
       - 'scripts/tests/**'
-      - 'tools/slop_lint.py'
+      - 'tools/**'
+      - 'pyrightconfig.json'
   push:
     branches: [main]
     paths:
@@ -25,7 +26,8 @@ on:
       - 'plans/2026-11-11-mcu-merge/**'
       - 'scripts/legacy-redirects.mjs'
       - 'scripts/tests/**'
-      - 'tools/slop_lint.py'
+      - 'tools/**'
+      - 'pyrightconfig.json'
   workflow_dispatch:
 
 permissions:
@@ -54,7 +56,10 @@ jobs:
           python -m book.mapping --check
           python -m unittest discover book/tests -v
           python -m book.checks --check
-          python tools/slop_lint.py docs/v0-foundations/*.md docs/v1-drivers/*.md docs/v2-reliability/*.md docs/v3-rtos/*.md docs/v4-platforms/*.md docs/v5-motion/*.md docs/v6-labs-projects/*.md docs/v7-delivery/*.md docs/appendix/*.md
+          python tools/slop_lint.py \
+            docs/v0-foundations/*.md docs/v1-drivers/*.md docs/v2-reliability/*.md \
+            docs/v3-rtos/*.md docs/v4-platforms/*.md docs/v5-motion/*.md \
+            docs/v6-labs-projects/*.md docs/v7-delivery/*.md docs/appendix/*.md
           python -m book.build_html --check
       - name: Set up Node
         uses: actions/setup-node@v7
@@ -65,3 +70,22 @@ jobs:
         run: npm ci
       - name: Run script tests
         run: node --test scripts/tests/*.test.mjs
+
+  typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.13"
+      - name: Install type checker
+        # 锁版本：pyright 的规则集随版本变，浮动版本会让门禁在无人改代码时变色。
+        run: python -m pip install pyright==1.1.411
+      - name: Type check
+        # 第三方依赖故意不装：pyrightconfig.json 把 reportMissingImports 降为
+        # warning，所以「依赖装没装」不影响门禁；其余规则保持 error。
+        # 本地负向验证：往 book/ 塞一个 `def f() -> int: return "x"`，退出码为 1。
+        run: python -m pyright
