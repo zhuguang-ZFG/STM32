@@ -380,7 +380,7 @@ HardFault 是 Cortex-M 的概念。ESP32 没有 CFSR、HFSR、MMFAR/BFAR，也�
 4. **HardFault 现场**：在 F407 上触发空指针写与栈溢出，记录 `CFSR`、`HFSR`、`BFAR`、栈帧 PC 与 `addr2line` 行号；在 RTOS 任务里再触发一次，确认 `EXC_RETURN` 的 bit2。
 5. **ESP32 TWDT**：故障固件下分别停 worker 与停监督，记录 panic 时刻、`esp_reset_reason()` 原始值与 `RTC_NOINIT_ATTR` 记录。
 
-这些台架都还没做。没有读数之前，这里只给判据与记录方法。
+这些台架都还没做。没有复位现场的寄存器快照和 `addr2line` 输出之前，本节只到「该抓哪几个字」，复位原因仍属未定。
 
 | 日期 | 平台/板卡 | 故障输入 | 原始结果 | 结论 |
 | --- | --- | --- | --- | --- |
