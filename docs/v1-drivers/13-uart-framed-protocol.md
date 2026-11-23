@@ -76,7 +76,7 @@ print(hex(crc16_ccitt_false(b"123456789")))   # 0x29b1
 
 ### 波特率：BRR 的整数值就是分母
 
-把 BRR 拆成两个字段看，`DIV_Mantissa[15:4]` 是整数部分，`DIV_Fraction[3:0]` 是小数部分，手册写的是 `USARTDIV = Mantissa + Fraction/16`、`baud = PCLK/(16 × USARTDIV)`。把 16 乘进去：`16 × USARTDIV = 16 × Mantissa + Fraction`，右边正好是寄存器里那 16 位。所以固件直接写一个整数（625 = `0x271`，Mantissa 39、Fraction 1），不需要先算小数再拼字段；`baud = PCLK / BRR` 里的 BRR 就是这个整数值。
+BRR 看着唬人：一个 16 位数被切成整数和小数两半，手册还写 `USARTDIV = Mantissa + Fraction/16`。别急着拼字段——把 16 乘进公式，小数就没了：`16 × USARTDIV = 16 × Mantissa + Fraction`，右边正好是寄存器里那 16 位（`DIV_Mantissa[15:4]` 整数，`DIV_Fraction[3:0]` 小数）。所以固件直接写一个整数（625 = `0x271`，Mantissa 39、Fraction 1），不需要先算小数再拼字段；`baud = PCLK / BRR` 里的 BRR 就是这个整数值。
 
 字段定义见 RM0008 27.3.4（BRR 寄存器描述 27.6.3）与 RM0090 30.3.4，仓库的寄存器速查表也按同一拆法登记；下面每一行按这个定义复算。
 
