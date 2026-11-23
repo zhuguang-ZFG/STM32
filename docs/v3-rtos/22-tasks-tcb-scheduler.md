@@ -340,7 +340,7 @@ tick 侧：`SysTick_Handler` 调 `rt_interrupt_enter()` → `rt_tick_increase()`
 | 待实测 | F407 lab | RT-Thread `list_thread` 看栈水位；对照 `rt_thread` 字段与就绪组 | | |
 | 待实测 | F407 | 同一板刷 FreeRTOS 与 RT-Thread，GDB 对照两边的就绪组；要观察二级表，另把 RT-Thread 配到 >32 | | |
 
-这些台架都还没做。没有原始输出之前，这里只给源码结构与算术；表中的空白不是「通过」，是「未测」。
+这些台架都还没做。在拿到 GDB 逐字输出与逻辑分析仪波形之前，本节只给源码结构与算术；空白格是「未测」，不是「通过」。
 
 ## 失败分支
 
