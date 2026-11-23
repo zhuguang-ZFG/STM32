@@ -27,7 +27,7 @@ make clean && make          # 先真构建，让 build/ 里每个目标都有产
 touch main.c && make -n     # 只动 main.c，再干跑
 ```
 
-顺序不能省：来源书只记了 `make clean && make -n` 接 `touch main.c && make -n` 两条连跑的干跑，但 `make clean` 刚删掉 `build/`，`make -n` 又不产出文件，第二次干跑看到每个目标都缺失，仍会打印全量命令；那不是局部重建失效，而是实验里没有可比较的旧产物，读者复现这个观察应先跑一次真的 `make`。
+这里有个顺序陷阱：来源书只写了 `make clean && make -n` 接 `touch main.c && make -n` 两条连跑的干跑，照抄下来第二次仍会打印全量命令——别以为局部重建坏了。`make clean` 刚把 `build/` 删空，`make -n` 又只干跑、不产出文件，第二次看到的每个目标都缺产物，自然全列一遍。想看到真正的局部重建，先老老实实跑一次真的 `make`，让 `build/` 里有旧产物可比。
 
 干跑输出要按“出现了哪些目标”读，而不是按行数读：`build/main.o` 因 `main.c` 变新而重建，`build/blink.elf` 与由它派生的 `build/blink.bin`、`build/blink.hex` 沿依赖边跟着重建，启动文件对应的 `build/startup_stm32f407xx.o` 不再重新编译；`all` 是伪目标，末尾那条 `$(SIZE)` 每次都会打印。如果改一个文件后所有 `.o` 都重新出现，说明依赖写成了“所有目标依赖所有源文件”，局部重建已经失效。
 
