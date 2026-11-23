@@ -19,9 +19,16 @@
 #        error: unknown type name 'HAL_StatusTypeDef'
 #    而 clangd 会报 main file cannot be included recursively。去掉这个宏后，
 #    两种编译器单独编译该头均 0 error，main.c 与 stm32f1xx_it.c 也仍然干净。
+# 同一组路径写两种基准：相对本目录（clangd 按 compile_flags.txt 所在目录解析）
+# 和相对仓库根（有些分析器按工作目录解析）。不存在的 -I 目录编译器会直接跳过，
+# 所以多写一份不影响任何真实构建，只是让两种解析基准都能命中。
 -Iinclude
+-Iexamples/gpio-blink/include
 -I../../.temp/STM32CubeF1/Drivers/CMSIS/Include
+-I.temp/STM32CubeF1/Drivers/CMSIS/Include
 -I../../.temp/STM32CubeF1/Drivers/CMSIS/Device/ST/STM32F1xx/Include
+-I.temp/STM32CubeF1/Drivers/CMSIS/Device/ST/STM32F1xx/Include
 -I../../.temp/STM32CubeF1/Drivers/STM32F1xx_HAL_Driver/Inc
+-I.temp/STM32CubeF1/Drivers/STM32F1xx_HAL_Driver/Inc
 -DSTM32F103xB
 -std=c11
