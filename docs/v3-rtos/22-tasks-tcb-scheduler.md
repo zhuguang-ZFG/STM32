@@ -193,7 +193,11 @@ do { \
 
 **优化路径（= 1，ARM_CM4F 默认）：32 位位图 + CLZ。** 每个优先级占一位；`portRECORD_READY_PRIORITY` 置位，`portGET_HIGHEST_PRIORITY` 用 `31 − CLZ(bitmap)` 取最高置位。M4F 上 `CLZ` 是一条指令，选最高与任务数无关。
 
-配置陷阱在这里：`FreeRTOS.h` 里这个宏的通用默认是 0，但 `portmacro.h:144-145` 在 ARM_CM4F 上用 `#ifndef` 把它设成 1。只看 `FreeRTOS.h` 会以为 lab 走标量扫描，实际走位图。位图路径硬性要求 `configMAX_PRIORITIES ≤ 32`；优化路径开启时，`portmacro.h:161-162` 用 `#error` 拦住 33 级。关掉优化路径后，通用路径没有这个上限，代价是更多 `List_t` 与更长扫描。R1:89 写「FreeRTOS 最大优先级数 32」，只对优化路径成立；来源说法有误（范围错位），已按两条路径更正。
+把这两副面孔读到源码这一层，会看到两条路径复用的是同一个变量。`uxTopReadyPriority`（`tasks.c:488`）在通用路径里是标量，装的是"当前最高就绪优先级"这个编号，`taskRECORD_READY_PRIORITY` 只在 `uxPriority > uxTopReadyPriority` 时才覆盖它（`tasks.c:167-173`）。到了优化路径，同名宏被重定义成 `portRECORD_READY_PRIORITY`（`tasks.c:215`），同一个 32 位变量立刻改当位图用：置位是 `bitmap |= (1UL << prio)`，清位是 `bitmap &= ~(1UL << prio)`（`portmacro.h:166-167`）。变量还是那个变量，换的是读法——通用路径读它的数值，优化路径读它的位。看懂这一点，就不会再把两条路径当成两套独立的速查器。
+
+`31 − CLZ` 也不是什么巧妙算法，是 CLZ 这条指令的定义在说话。CLZ 从一个 32 位字的最高位往下数连续的零；最高置位落在第 N 位，它前面就恰好有 31−N 个前导零，于是 `CLZ = 31 − N`，反解出 `N = 31 − CLZ`——`portGET_HIGHEST_PRIORITY`（`portmacro.h:171`）写的正是这一步。`ucPortCountLeadingZeros`（`portmacro.h:151-158`）声明成 `always_inline`，函数体里只有一条 `clz %0, %1` 内联汇编，没有循环也没有调用。这才是"选最高与任务数无关"的物理来源：不是算法写得巧，是芯片给了一条指令。
+
+配置陷阱在这里：`FreeRTOS.h` 里这个宏的通用默认是 0，但 `portmacro.h:144-145` 在 ARM_CM4F 上用 `#ifndef` 把它设成 1。只看 `FreeRTOS.h` 会以为 lab 走标量扫描，实际走位图。位图路径硬性要求 `configMAX_PRIORITIES ≤ 32`；优化路径开启时，`portmacro.h:161-162` 用 `#error` 拦住 33 级。这条上限卡在 32 位字长上——位图一位一级，32 位最多装 32 级。源码注释顺手给了取舍的理由：真实系统很少需要超过 10 到 15 个不同优先级，同优先级的任务本来就会时间片轮转。关掉优化路径后，通用路径没有这个上限，代价是更多 `List_t` 与更长扫描。R1:89 写「FreeRTOS 最大优先级数 32」，只对优化路径成立；来源说法有误（范围错位），已按两条路径更正。
 
 算例：位图 `0x00200008` 的置位是 bit 3 与 bit 21。最高置位是 21，`CLZ` 数出 31 − 21 = 10 个前导零，`31 − 10 = 21`，所以 FreeRTOS 选优先级 21（lab 只到 4，这里只是算术）。位图只记录哪些级有就绪任务；bit 21 为 1 就说明 21 级链表非空，具体是哪个任务由 `listGET_OWNER_OF_NEXT_ENTRY` 取。
 
