@@ -37,6 +37,8 @@ sys.path.insert(0, str(BOOK_DIR))
 import importlib.util as _ilu
 _spec = _ilu.spec_from_file_location(
     'tools_build_epub', REPO_ROOT / 'tools' / 'build_epub.py')
+if _spec is None or _spec.loader is None:
+    raise ImportError(f'无法从 {REPO_ROOT / "tools"} 加载 build_epub.py')
 epub_lib = _ilu.module_from_spec(_spec)
 _spec.loader.exec_module(epub_lib)
 from build_print_edition import DEFAULT_OUT  # noqa: E402
@@ -53,7 +55,8 @@ def _quantize_png(shot: bytes) -> bytes:
     from PIL import Image
 
     im = Image.open(io.BytesIO(shot)).convert("RGB")
-    q = im.quantize(colors=256, method=Image.MEDIANCUT, dither=Image.NONE)
+    q = im.quantize(colors=256, method=Image.Quantize.MEDIANCUT,
+                    dither=Image.Dither.NONE)
     buf = io.BytesIO()
     q.save(buf, format="PNG", optimize=True)
     return buf.getvalue()

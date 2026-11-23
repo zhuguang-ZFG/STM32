@@ -13,6 +13,8 @@ HAS_FITZ = importlib.util.find_spec("fitz") is not None
 
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location("asset_entry", ROOT / "tools/check_assets.py")
+if SPEC is None or SPEC.loader is None:
+    raise ImportError("无法按文件路径加载 tools/check_assets.py")
 assets = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(assets)
 
@@ -52,6 +54,8 @@ class BuildEntrypointTests(unittest.TestCase):
                 page.emulate_media(media="print")
                 image = page.locator("img").bounding_box()
                 container = page.locator("li").bounding_box()
+                if image is None or container is None:
+                    self.fail("打印视口里量不到 img / li 的位置")
                 self.assertLessEqual(image["width"], container["width"] + 1,
                                      "a list image must not shrink the entire printed book")
             finally:
