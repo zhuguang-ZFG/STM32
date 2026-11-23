@@ -1,0 +1,24 @@
+# clangd / 静态检查用的解析参数，等价于 CMakeLists.txt 里 gpio-blink.elf 目标的
+# include 集合与宏定义。不参与构建：固件构建仍走 CMake + dependencies.lock.json。
+#
+# README 要求把 STM32CubeF1 v1.8.6 取到 <仓库根>/.temp/STM32CubeF1；没取时这些
+# -I 指向不存在的目录，clangd 只会说「找不到头文件」——那是环境没准备，不是代码问题。
+#
+# 两点说明：
+# 1. 不列 tests/。那里的 stm32f1xx_hal.h 是宿主测试用的桩，只有 blink-tests 目标
+#    才把 tests 放进 include 路径；列进来会让 `#include "stm32f1xx_hal.h"` 命中桩
+#    而不是真 HAL，GPIO_TypeDef 被定义两次。
+# 2. include/stm32f1xx_hal_conf.h 是 ST 的「配置片段」，按设计只能由
+#    stm32f1xx_hal.h 引入（此时 stm32f1xx_hal_def.h 已先给出 HAL_StatusTypeDef）。
+#    把它当独立编译单元分析会走进循环包含
+#    （conf → hal_rcc → hal_def → stm32f1xx → hal → conf），
+#    arm-none-eabi-gcc 与 clang 单独编译它同样报错：
+#        error: unknown type name 'HAL_StatusTypeDef'
+#    而真实固件源文件（main.c、stm32f1xx_it.c）编译干净，CI 也一直是绿的。
+-Iinclude
+-I../../.temp/STM32CubeF1/Drivers/CMSIS/Include
+-I../../.temp/STM32CubeF1/Drivers/CMSIS/Device/ST/STM32F1xx/Include
+-I../../.temp/STM32CubeF1/Drivers/STM32F1xx_HAL_Driver/Inc
+-DSTM32F103xB
+-DUSE_HAL_DRIVER
+-std=c11
