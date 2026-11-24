@@ -8,7 +8,7 @@
 
 PY ?= python3
 
-.PHONY: assets animations boards diagrams stack-diagrams gpio-classic illustrations samples gifs videos lesson-check book book-html book-pdf book-epub book-check site-check check lint-voice verify clean stats
+.PHONY: assets animations boards diagrams stack-diagrams gpio-classic illustrations samples gifs videos lesson-check book book-html book-pdf book-epub book-check site-check check lint-voice verify clean stats audit
 
 assets: animations boards diagrams illustrations samples gifs videos
 
@@ -94,11 +94,14 @@ clean:
 	find . -name '*.pyc' -delete
 
 stats:
-	@echo "章节   : $$(ls docs/[0-9][0-9]-*.md | wc -l) 章中文 + $$(ls docs/en/[0-9][0-9]-*.md | wc -l) 章英文，中文正文 $$(cat docs/[0-9][0-9]-*.md | wc -l) 行"
-	@echo "示例   : $$(ls -d examples/*/ | wc -l) 个"
-	@echo "速查表 : $$(ls cheatsheets/*速查表.md 2>/dev/null | wc -l) 份中文 + $$(ls docs/en/cheatsheets/*.md 2>/dev/null | wc -l) 份英文"
-	@echo "SVG    : $$(find assets -name '*.svg' | wc -l) 张（动画 $$(ls assets/animations/*.svg | wc -l)）"
-	@echo "GIF    : $$(find assets/gif -name '*.gif' | wc -l) 个"
-	@echo "讲解片 : $$(find assets/video -name '*.mp4' 2>/dev/null | wc -l) 个 MP4"
-	@echo "Renode : $$(ls sim/renode/*.resc 2>/dev/null | wc -l) 个脚本"
-	@echo "体积   : $$(du -sh assets | cut -f1) (assets/)"
+	@echo "chapters : $$(python -c \"import json; d=json.load(open('docs/manifest.json',encoding='utf-8')); print(sum(len(p['chapters']) for p in d['parts']))\") chapters + $$(python -c \"import json; print(len(json.load(open('docs/manifest.json',encoding='utf-8'))['appendices']))\") appendices"
+	@echo "examples : $$(ls -d examples/*/ 2>/dev/null | wc -l) dirs"
+	@echo "cheatsheets: $$(ls cheatsheets/*.md 2>/dev/null | wc -l) files"
+	@echo "SVG      : $$(find assets -name '*.svg' 2>/dev/null | wc -l) files"
+	@echo "GIF      : $$(find assets/gif -name '*.gif' 2>/dev/null | wc -l) files"
+	@echo "video    : $$(find assets/video -name '*.mp4' 2>/dev/null | wc -l) mp4"
+	@echo "Renode   : $$(ls sim/renode/*.resc 2>/dev/null | wc -l) scripts"
+	@echo "size     : $$(du -sh assets 2>/dev/null | cut -f1) (assets/)"
+
+audit:
+	$(PY) tools/audit_book.py

@@ -18,12 +18,13 @@ import json
 import re
 from dataclasses import asdict, dataclass, replace
 from pathlib import Path
-from typing import Iterable
+from typing import Any, Iterable
 
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 EN_DOCS = DOCS / "en"
+MANIFEST = DOCS / "manifest.json"
 
 VIDEO_BLOCK_RE = re.compile(
     r"<!--\s*video:[^>]*-->.*?<!--\s*/video:[^>]*-->",
@@ -88,6 +89,39 @@ def _chapter_files(folder: Path) -> dict[str, Path]:
             raise ValueError(f"duplicate chapter id {chapter_id}: {path}")
         found[chapter_id] = path
     return found
+
+
+def _manifest_chapters() -> list[tuple[str, Path]]:
+    """Return (id, path) pairs from docs/manifest.json in book order."""
+    if not MANIFEST.exists():
+        return []
+    data = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    result: list[tuple[str, Path]] = []
+    for part in data.get("parts", []):
+        for entry in part.get("chapters", []):
+            chapter_id = str(entry.get("id", "")).strip()
+            file_name = str(entry.get("file", "")).strip()
+            if not chapter_id or not file_name:
+                continue
+            path = DOCS / file_name
+            if path.exists():
+                result.append((chapter_id, path))
+    for entry in data.get("appendices", []):
+        if isinstance(entry, dict):
+            appendix_id = str(entry.get("id", "")).strip()
+            file_name = str(entry.get("file", "")).strip()
+        else:
+            file_name = str(entry).strip()
+            appendix_id = ""
+        if not file_name:
+            continue
+        path = DOCS / file_name
+        if path.exists():
+            if not appendix_id:
+                stem = Path(file_name).stem
+                appendix_id = stem.split("-", 1)[0] if "-" in stem else stem
+            result.append((appendix_id, path))
+    return result
 
 
 def _inside(position: int, spans: Iterable[tuple[int, int]]) -> bool:
@@ -184,7 +218,10 @@ def _section_at(text: str, position: int, *, after: bool = False) -> str:
 def _max_visual_gap(text: str, anchors: tuple[VisualAnchor, ...]) -> tuple[int, str, str]:
     without_video = VIDEO_BLOCK_RE.sub("", text)
     boundaries = [(0, 0, "章首")]
-    boundaries.extend((anchor.position, anchor.end, _section_at(without_video, anchor.position)) for anchor in anchors)
+    boundaries.extend(
+        (anchor.position, anchor.end, _section_at(without_video, anchor.position))
+        for anchor in anchors
+    )
     boundaries.append((len(without_video), len(without_video), "章末"))
 
     largest = (-1, "章首", "章末")
@@ -198,11 +235,9 @@ def _max_visual_gap(text: str, anchors: tuple[VisualAnchor, ...]) -> tuple[int, 
 
 
 def _target_visuals(chars: int) -> int:
-    """Classic Converge Overlay §15.2 floor (Book 2.0 +1/+2/+3): short 4 / mid 6 / long 9.
+    """Visual floor by chapter scale.
 
-    B7 gap-close cut over the gate field after every chapter met the Overlay floor
-    (ch08 gained sample-08-bus-compare.svg). Book 2.0 raw floors are no longer the
-    visual_anchor_deficit denominator.
+    Short < 6000 chars: 4, mid 6000-10000: 6, long > 10000: 9.
     """
     if chars < 6000:
         return 4
@@ -212,17 +247,10 @@ def _target_visuals(chars: int) -> int:
 
 
 def _overlay_target_visuals(chars: int) -> int:
-    """Alias of target_visual_anchors after B7 cutover; kept for JSON field stability."""
     return _target_visuals(chars)
 
 
 def _overlay_gap_budget_chars(chars: int, chapter_id: str) -> int:
-    """Overlay max-gap soft budget; ch18/23/28 hard-capped at 3500.
-
-    Book 2.0 mid band cites 1,000–1,200 continuous chars; Overlay applies 90/85/80%
-    to the 1,200 reference and floors to 100. Anchor-floor cutover is done; gap soft
-    budgets remain advisory with the exception inventory in b7-converge-census.md.
-    """
     if chapter_id in {"18", "23", "28"}:
         return 3500
     old_upper = 1200
@@ -237,7 +265,9 @@ def audit_chapter(path: Path) -> ChapterAudit:
     text = path.read_text(encoding="utf-8")
     anchors = extract_visual_anchors(text)
     kinds = [kind for anchor in anchors for kind in anchor.kinds]
-    assets = [Path(source.split("#", 1)[0]).name for anchor in anchors for source in anchor.assets]
+    assets = [
+        Path(source.split("#", 1)[0]).name for anchor in anchors for source in anchor.assets
+    ]
     chars = _reading_chars(text, drop_code=False)
     target = _target_visuals(chars)
     gap_chars, gap_from, gap_to = _max_visual_gap(text, anchors)
@@ -280,96 +310,141 @@ def _parity(zh: ChapterAudit, en: ChapterAudit) -> dict[str, object]:
     }
 
 
-def build_audit() -> dict[str, object]:
+def _discover_chapters() -> tuple[list[tuple[str, Path]], bool]:
+    manifest_chapters = _manifest_chapters()
+    if manifest_chapters:
+        return manifest_chapters, False
     zh_files = _chapter_files(DOCS)
-    en_files = _chapter_files(EN_DOCS)
     expected = {f"{index:02d}" for index in range(29)}
-    if set(zh_files) != expected or set(en_files) != expected:
-        raise ValueError("Chinese and English docs must both contain chapter ids 00 through 28")
+    if set(zh_files) != expected:
+        raise ValueError(
+            "docs/manifest.json missing and docs/ does not contain chapters 00-28"
+        )
+    return [(chapter_id, zh_files[chapter_id]) for chapter_id in sorted(expected)], True
+
+
+def build_audit() -> dict[str, object]:
+    chapters_list, legacy_mode = _discover_chapters()
+    en_files = _chapter_files(EN_DOCS) if EN_DOCS.exists() else {}
+    has_en = bool(en_files)
 
     chapters = []
-    for chapter_id in sorted(expected):
-        zh = audit_chapter(zh_files[chapter_id])
-        en = audit_chapter(en_files[chapter_id])
-        en = replace(
-            en,
-            target_visual_anchors=zh.target_visual_anchors,
-            visual_anchor_deficit=max(0, zh.target_visual_anchors - en.pdf_visual_anchors),
-        )
+    for chapter_id, path in chapters_list:
+        zh = audit_chapter(path)
         zh_payload = asdict(zh)
-        en_payload = asdict(en)
         overlay_target = _overlay_target_visuals(zh.chars)
         overlay_gap = _overlay_gap_budget_chars(zh.chars, chapter_id)
-        for payload, anchors in ((zh_payload, zh.pdf_visual_anchors), (en_payload, en.pdf_visual_anchors)):
-            payload["overlay_target_visual_anchors"] = overlay_target
-            payload["overlay_visual_anchor_deficit"] = max(0, overlay_target - anchors)
-            payload["overlay_gap_budget_chars"] = overlay_gap
-        chapters.append(
-            {
-                "id": chapter_id,
-                "zh": zh_payload,
-                "en": en_payload,
-                "parity": _parity(zh, en),
-            }
-        )
+        zh_payload["overlay_target_visual_anchors"] = overlay_target
+        zh_payload["overlay_visual_anchor_deficit"] = max(0, overlay_target - zh.pdf_visual_anchors)
+        zh_payload["overlay_gap_budget_chars"] = overlay_gap
+
+        item: dict[str, object] = {
+            "id": chapter_id,
+            "zh": zh_payload,
+        }
+
+        if has_en and chapter_id in en_files:
+            en = audit_chapter(en_files[chapter_id])
+            en = replace(
+                en,
+                target_visual_anchors=zh.target_visual_anchors,
+                visual_anchor_deficit=max(0, zh.target_visual_anchors - en.pdf_visual_anchors),
+            )
+            en_payload = asdict(en)
+            en_payload["overlay_target_visual_anchors"] = overlay_target
+            en_payload["overlay_visual_anchor_deficit"] = max(
+                0, overlay_target - en.pdf_visual_anchors
+            )
+            en_payload["overlay_gap_budget_chars"] = overlay_gap
+            item["en"] = en_payload
+            item["parity"] = _parity(zh, en)
+
+        chapters.append(item)
+
+    languages = ["zh"] + (["en"] if has_en else [])
+    summary: dict[str, object] = {}
+    for language in languages:
+        lang_items = [item[language] for item in chapters if language in item]
+        summary[language] = {
+            "pdf_visual_anchors": sum(item["pdf_visual_anchors"] for item in lang_items),
+            "visual_anchor_deficit": sum(item["visual_anchor_deficit"] for item in lang_items),
+            "chapters_below_target": sum(item["visual_anchor_deficit"] > 0 for item in lang_items),
+            "chapters_with_photos": sum(item["photos"] > 0 for item in lang_items),
+        }
 
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "chapter_count": len(chapters),
+        "has_english": has_en,
         "definitions": {
             "pdf_visual_anchor": "one PDF-readable image or grouped figure; video is excluded",
             "max_visual_gap_chars": "running text between PDF anchors; fenced code is excluded",
-            "target_visual_anchors": "Classic Converge Overlay §15.2 floor (short 4 / mid 6 / long 9); both editions use the Chinese chapter scale",
-            "overlay_target_visual_anchors": "Same as target_visual_anchors after B7 cutover; retained for field stability",
-            "overlay_gap_budget_chars": "Overlay §15.2 max-gap soft budget (90/85/80% of 1200 ref; ch18/23/28 ≤3500)",
+            "target_visual_anchors": "visual floor by chapter scale (short 4 / mid 6 / long 9)",
+            "overlay_target_visual_anchors": "same as target_visual_anchors; retained for field stability",
+            "overlay_gap_budget_chars": "max-gap soft budget (90/85/80% of 1200 ref; ch18/23/28 <=3500)",
         },
-        "summary": {
-            language: {
-                "pdf_visual_anchors": sum(item[language]["pdf_visual_anchors"] for item in chapters),
-                "visual_anchor_deficit": sum(item[language]["visual_anchor_deficit"] for item in chapters),
-                "chapters_below_target": sum(item[language]["visual_anchor_deficit"] > 0 for item in chapters),
-                "chapters_with_photos": sum(item[language]["photos"] > 0 for item in chapters),
-            }
-            for language in ("zh", "en")
-        },
+        "summary": summary,
         "chapters": chapters,
     }
 
 
 def render_markdown(payload: dict[str, object]) -> str:
-    lines = [
-        "# STM32 Book audit",
-        "",
-        "`PDF 图` excludes chapter video. `缺图` is the Overlay §15.2 deficit (cut over at B7 gap-close); JSON also mirrors overlay_* fields.",
-        "",
-        "| 章 | 中文字符 | 中文 PDF 图 | 缺图 | 最大无图区 | 英文 PDF 图 | 图序一致 | 结构差异 |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | :---: | --- |",
-    ]
+    has_en = bool(payload.get("has_english"))
+    if has_en:
+        lines = [
+            "# STM32 Book audit",
+            "",
+            "`PDF 图` excludes chapter video. `缺图` is the visual floor deficit.",
+            "",
+            "| 章 | 中文字符 | 中文 PDF 图 | 缺图 | 最大无图区 | 英文 PDF 图 | 图序一致 | 结构差异 |",
+            "| --- | ---: | ---: | ---: | ---: | ---: | :---: | --- |",
+        ]
+    else:
+        lines = [
+            "# STM32 Book audit",
+            "",
+            "`PDF 图` excludes chapter video. `缺图` is the visual floor deficit.",
+            "",
+            "| 章 | 文件 | 字符 | PDF 图 | 缺图 | 最大无图区 | 区间 |",
+            "| --- | --- | ---: | ---: | ---: | ---: | --- |",
+        ]
     for item in payload["chapters"]:  # type: ignore[index]
         zh = item["zh"]
-        en = item["en"]
-        parity = item["parity"]
-        deltas = []
-        for label, key in (("H2", "h2_delta"), ("H3", "h3_delta"), ("表", "table_delta"), ("码", "code_block_delta"), ("式", "formula_delta")):
-            if parity[key]:
-                deltas.append(f"{label}{parity[key]:+d}")
-        lines.append(
-            f"| {item['id']} | {zh['chars']} | {zh['pdf_visual_anchors']} | "
-            f"{zh['visual_anchor_deficit']} | {zh['max_visual_gap_chars']} | "
-            f"{en['pdf_visual_anchors']} | {'是' if parity['asset_sequence_equal'] else '否'} | "
-            f"{', '.join(deltas) or '—'} |"
-        )
-    lines.extend(
-        [
-            "",
-            "## Summary",
-            "",
-            f"- 中文 PDF 视觉锚点：{payload['summary']['zh']['pdf_visual_anchors']}",  # type: ignore[index]
-            f"- 中文低于目标章节：{payload['summary']['zh']['chapters_below_target']}",  # type: ignore[index]
-            f"- 中文含实拍章节：{payload['summary']['zh']['chapters_with_photos']}",  # type: ignore[index]
-            f"- 英文 PDF 视觉锚点：{payload['summary']['en']['pdf_visual_anchors']}",  # type: ignore[index]
-        ]
-    )
+        if has_en and "en" in item:
+            en = item["en"]
+            parity = item["parity"]
+            deltas = []
+            for label, key in (
+                ("H2", "h2_delta"),
+                ("H3", "h3_delta"),
+                ("表", "table_delta"),
+                ("码", "code_block_delta"),
+                ("式", "formula_delta"),
+            ):
+                if parity[key]:
+                    deltas.append(f"{label}{parity[key]:+d}")
+            lines.append(
+                f"| {item['id']} | {zh['chars']} | {zh['pdf_visual_anchors']} | "
+                f"{zh['visual_anchor_deficit']} | {zh['max_visual_gap_chars']} | "
+                f"{en['pdf_visual_anchors']} | {'是' if parity['asset_sequence_equal'] else '否'} | "
+                f"{', '.join(deltas) or '—'} |"
+            )
+        else:
+            gap = f"{zh['max_visual_gap_from']} → {zh['max_visual_gap_to']}"
+            lines.append(
+                f"| {item['id']} | {zh['file']} | {zh['chars']} | "
+                f"{zh['pdf_visual_anchors']} | {zh['visual_anchor_deficit']} | "
+                f"{zh['max_visual_gap_chars']} | {gap} |"
+            )
+    lines.extend(["", "## Summary", ""])
+    summary: dict[str, Any] = payload["summary"]  # type: ignore[assignment]
+    zh_sum: dict[str, Any] = summary["zh"]  # type: ignore[assignment]
+    lines.append(f"- 章节数：{payload['chapter_count']}")
+    lines.append(f"- 中文 PDF 视觉锚点：{zh_sum['pdf_visual_anchors']}")
+    lines.append(f"- 中文低于目标章节：{zh_sum['chapters_below_target']}")
+    lines.append(f"- 中文含实拍章节：{zh_sum['chapters_with_photos']}")
+    if has_en and "en" in summary:
+        lines.append(f"- 英文 PDF 视觉锚点：{summary['en']['pdf_visual_anchors']}")
     return "\n".join(lines) + "\n"
 
 
