@@ -35,7 +35,7 @@ python fig_ch28.py                          # 写 SVG 到 assets/illustrations/h
 python render.py ../../assets/illustrations/handraw/ch28-*.svg
 ```
 
-合并卷（v0 / v1 / v2 / b3 / onramp / learning / reading）的 87 张图走另一条链：模块把 SVG
+合并卷（v0 / v1 / v2 / b3 / onramp / learning / reading）的 88 张图走另一条链：模块把 SVG
 写进 `assets/illustrations/staged/<组>/`（**在版本控制里**），PNG 发布到
 `docs/public/images/`。整条链一条命令，别手工复制：
 
@@ -45,7 +45,7 @@ python publish_staged.py            # 重建 + 渲染 + 同步
 python publish_staged.py --check    # 只比对，有漂移则退出码 1
 ```
 
-`--check` 会重渲 87 张并与已提交的 PNG 逐字节比对，用来防止"改了图忘了同步"。
+`--check` 会重渲 88 张并与已提交的 PNG 逐字节比对，用来防止"改了图忘了同步"。
 
 期望集合取自**生成器的输出**（`assets/illustrations/staged/` 下每个 SVG 都该有一张
 同名 PNG），不是取自 `docs/public/images/` 里现有的文件。所以删掉一张已发布图
@@ -58,15 +58,24 @@ PNG 已提交进 git，CI 与读者不需要这一步。
 ## 画质契约
 
 - 画布固定 `1152×864`；纸面 `#FDF8EA`，墨色 `#2F2E2B`。
-- 中文回退 `STKaiti` / `KaiTi`，拉丁仍用 `Segoe Print`；`text()` 的
-  尺寸与 `text_w()` 估算要同时看，改字体后必须重渲染并抽查换行。
-- `rect()` / `circle()` 的填充与抖动轮廓共用同一条 `<path>`；不要再加
+- 笔线只有**一次长弓 + 轻微颤抖**：`_wob()` 每段取一个弯向，按
+  `sin(πt)` 在中段起弓、两端归零；短段按 `dist/70` 缩幅，免得箭头
+  和小圆变成锯齿。旧的每 26 px 独立随机抖动会读成「手在抖」。
+- 手写层级：`HAND`（`Segoe Print` + `STKaiti/KaiTi`）用于 18 px 及
+  以上的标题、正文与标签；`hand_min=18` 的标签工厂把更小的注释切到
+  `SMALL`（无衬线），因为手写体在 13–15 px 会变宽、挤爆技术面板。
+  改字体后必须重渲染并抽查换行。
+- 方框圆角默认 `r=6`（`_box_pts()`），四角随边缘抖动，像笔尖换向；
+  `rect()` / `circle()` 的填充与轮廓仍共用同一条 `<path>`，不要再加
   一层 `<rect>`/`<circle>` 填充，否则会露出「齐边底色 + 歪边线」的
-  剪贴画感。
+  剪贴画感。圆用 `_d_smooth()` 过中点二次曲线，避免大多边形边。
+- 箭头是实心笔尖（略带弓背的三角），小尺寸时比开口 V 更清楚；
+  轴向仍走一条带弯的二次曲线。
 - 琥珀色描边用 `#8A6510`（米色纸上约 5:1）；`#A8801F` 只有 3.4:1，
   小字号标签不要再用。
 - 钢笔双描：`stroke()` 对 `sw>=1.8`、非虚线、非动画、非半透明的实心线
-  自动补第二次更松的细描（`amp*1.5+0.4`、`sw*0.7`、`opacity 0.30`）。
+  自动补第二次更松的细描（`amp*1.35+0.25`、`sw*0.52`、`opacity 0.22`）。
+  第二遍现在贴着主线走，不再平行外飘成「套印错位」。
   `rect(double=False)` 是唯一关掉它的开关，留给药丸、小图标和标签框。
 - 面板底色走两条路，别混：
   1. **暂存族（会发布，15 个模块）**：`fig_v0`、`fig_v1a`、`fig_v1b`、
@@ -75,7 +84,7 @@ PNG 已提交进 git，CI 与读者不需要这一步。
      直接把 `BLUE_FILL` / `GREEN_FILL` / `AMBER_PALE` / `RED_FILL` /
      `SHADOW` 传进 `card()` / `rect()`。它们写 SVG 到
      `assets/illustrations/staged/`，PNG 再落到 `docs/public/images/`——
-     **改 `hd.py` 里的常量就会重涂这 87 张已发布图**。
+     **改 `hd.py` 里的常量就会重涂这 88 张已发布图**。
      权威清单是 `publish_staged.py` 的 `MODULES`，别照这段文字抄：
      漏跑任一模块都会留下旧色的 SVG，`python publish_staged.py` 一次跑全，
      `--check` 会比对漂移。

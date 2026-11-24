@@ -56,6 +56,10 @@ SHADOW = "#E4DCC9"
 HAND = ("'Segoe Print','STKaiti','KaiTi','Microsoft YaHei',"
         "'PingFang SC',sans-serif")
 
+# Fine print stays typeset: below 18 px the brush face loses too much
+# legibility and its wider advance overflows tight technical panels.
+SMALL = "'Microsoft YaHei','PingFang SC',sans-serif"
+
 
 def esc(s: str) -> str:
     return (str(s).replace("&", "&amp;").replace("<", "&lt;")
@@ -97,23 +101,30 @@ class Fig:
 
     # -- low level ------------------------------------------------------
     def _wob(self, x0, y0, x1, y1, amp=1.6):
-        """Wobbly polyline points between two endpoints (deterministic)."""
+        """Wobbly polyline points between two endpoints (deterministic).
+
+        A confident pen line bows once across its length and trembles only
+        slightly; the old per-26px random zigzag read as a shaking hand.
+        The bow fades out at both ends and short strokes get a proportionally
+        smaller bow so arrows and small glyphs stay readable.
+        """
         r = self.rng
         dx, dy = x1 - x0, y1 - y0
         dist = math.hypot(dx, dy)
         n = max(2, int(dist / 26))
         ux, uy = (dx / dist, dy / dist) if dist else (0.0, 0.0)
         px, py = -uy, ux
+        # one bow per stroke, scaled down for short segments
+        a = amp * min(1.0, dist / 70.0)
+        bow = r.uniform(-1.0, 1.0) * a * 1.05
+        phase = r.uniform(0.0, math.tau)
+        tremor = a * 0.34
         pts = []
         for i in range(n + 1):
             t = i / n
-            # ease toward exact endpoints
-            a = amp * (1.0 - abs(2 * t - 1)) * 0.55 + 0.45
-            off = r.uniform(-a, a)
-            jx = r.uniform(-1.0, 1.0)
-            jy = r.uniform(-1.0, 1.0)
-            pts.append((x0 + dx * t + px * off + jx * 0.6,
-                        y0 + dy * t + py * off + jy * 0.6))
+            env = math.sin(math.pi * t)  # exact at both endpoints
+            off = bow * env + tremor * env * math.sin(math.tau * 1.4 * t + phase)
+            pts.append((x0 + dx * t + px * off, y0 + dy * t + py * off))
         return pts
 
     def _poly_pts(self, pts, close=False, amp=1.6):
@@ -136,6 +147,40 @@ class Fig:
             d += f" L{x:.1f} {y:.1f}"
         return d
 
+    def _d_smooth(self, pts):
+        """Closed Catmull-Rom-like path: quadratic through edge midpoints.
+
+        A 26-gon with per-point noise reads as a polygon at large radii; this
+        keeps a hand-drawn wobble while the outline itself stays round.
+        """
+        n = len(pts)
+        mid = lambda a, b: ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
+        start = mid(pts[-1], pts[0])
+        d = f"M{start[0]:.1f} {start[1]:.1f}"
+        for i in range(n):
+            p = pts[i]
+            q = pts[(i + 1) % n]
+            m = mid(p, q)
+            d += f" Q{p[0]:.1f} {p[1]:.1f} {m[0]:.1f} {m[1]:.1f}"
+        return d + " Z"
+
+    def _box_pts(self, x, y, w, h, r=6):
+        """Rounded box outline; the corners read as a pen change of direction."""
+        rr = max(0.0, min(r, w * 0.24, h * 0.24))
+        if rr < 1.0:
+            return [(x, y), (x + w, y), (x + w, y + h), (x, y + h)]
+        pts = []
+        for cx, cy, a0 in (
+            (x + rr, y + rr, math.pi),
+            (x + w - rr, y + rr, math.pi * 1.5),
+            (x + w - rr, y + h - rr, 0.0),
+            (x + rr, y + h - rr, math.pi * 0.5),
+        ):
+            for i in range(3):
+                a = a0 + (math.pi * 0.5) * i / 2
+                pts.append((cx + rr * math.cos(a), cy + rr * math.sin(a)))
+        return pts
+
     def stroke(self, pts, color=INK, sw=2.6, amp=1.6, opacity=1.0,
                close=False, dash=None, cls=None, fill=None, texture=None):
         flat = self._poly_pts(pts, close=close, amp=amp)
@@ -155,11 +200,11 @@ class Fig:
             texture = (fill is None and dash is None and cls is None
                        and opacity >= 0.6 and sw >= 1.8)
         if texture:
-            ghost = self._poly_pts(pts, close=close, amp=amp * 1.5 + 0.4)
+            ghost = self._poly_pts(pts, close=close, amp=amp * 1.35 + 0.25)
             self.body.append(
                 f'<path d="{self._d(ghost)}" fill="none" stroke="{color}" '
-                f'stroke-width="{sw * 0.7:.2f}" stroke-linecap="round" '
-                f'stroke-linejoin="round" opacity="0.30"/>'
+                f'stroke-width="{sw * 0.52:.2f}" stroke-linecap="round" '
+                f'stroke-linejoin="round" opacity="0.22"/>'
             )
 
     def line(self, x0, y0, x1, y1, **kw):
@@ -171,21 +216,38 @@ class Fig:
         # wobbly stroke leaves a visible ghost edge and reads as clip-art.
         # `double` now selects the shared pen-texture pass in stroke(), so a
         # box is never drawn twice by two different mechanisms.
-        pts = [(x, y), (x + w, y), (x + w, y + h), (x, y + h)]
+        pts = self._box_pts(x, y, w, h, r)
         self.stroke(pts, color=color, sw=sw, amp=amp, close=True,
                     dash=dash, opacity=opacity, fill=fill,
                     texture=(double and not dash))
 
     def circle(self, x, y, rr, color=INK, sw=2.6, fill=None, amp=1.6):
         r = self.rng
+        n = 32
+        a0 = r.uniform(0, math.tau)
+        p1 = r.uniform(0, math.tau)
+        p2 = r.uniform(0, math.tau)
+        k1 = r.uniform(0.010, 0.020)
+        k2 = r.uniform(0.004, 0.010)
         pts = []
-        n = 26
-        a0 = r.uniform(0, 6.28)
-        for i in range(n + 1):
+        for i in range(n):
             a = a0 + (i / n) * math.tau
-            wob = 1 + r.uniform(-0.012, 0.012)
+            wob = 1 + k1 * math.sin(3 * a + p1) + k2 * math.sin(5 * a + p2)
             pts.append((x + rr * wob * math.cos(a), y + rr * wob * math.sin(a)))
-        self.stroke(pts, color=color, sw=sw, amp=amp, close=True, fill=fill)
+        fillattr = f' fill="{fill}"' if fill else ' fill="none"'
+        self.body.append(
+            f'<path d="{self._d_smooth(pts)}"{fillattr} stroke="{color}" '
+            f'stroke-width="{sw}" stroke-linecap="round" '
+            'stroke-linejoin="round"/>'
+        )
+        if fill is None and sw >= 1.8 and rr >= 12:
+            ghost = [(x + (px - x) * 1.035, y + (py - y) * 1.035)
+                     for px, py in pts]
+            self.body.append(
+                f'<path d="{self._d_smooth(ghost)}" fill="none" stroke="{color}" '
+                f'stroke-width="{sw * 0.52:.2f}" stroke-linecap="round" '
+                'stroke-linejoin="round" opacity="0.22"/>'
+            )
 
     def marker(self, x, y, w, h, fill=AMBER_FILL, opacity=0.92):
         """Highlighter swipe: an uneven bar with slanted ends.
@@ -233,10 +295,7 @@ class Fig:
 
     def panel(self, x, y, w, h, fill, color=None, sw=0, amp=2.2, r=8):
         """Slightly wobbly rounded-rect fill (matches panel grammar)."""
-        # jitter each edge inward/outward a touch
-        j = [self.rng.uniform(-amp, amp) for _ in range(4)]
-        pts = [(x + j[0], y + j[1]), (x + w + j[2], y - j[1] * 0.4),
-               (x + w - j[0] * 0.4, y + h + j[3]), (x - j[2] * 0.3, y + h - j[1])]
+        pts = self._box_pts(x, y, w, h, r)
         d = self._d(self._poly_pts(pts, close=True, amp=amp * 0.6))
         extra = f' stroke="{color}" stroke-width="{sw}"' if color else ""
         self.body.append(f'<path d="{d}" fill="{fill}"{extra}/>')
@@ -272,8 +331,16 @@ class Fig:
         px, py = -uy, ux
         a = (x - ux * head + px * head * 0.55, y - uy * head + py * head * 0.55)
         b = (x - ux * head - px * head * 0.55, y - uy * head - py * head * 0.55)
-        self.stroke([(a[0], a[1]), (x, y), (b[0], b[1])], color=color, sw=3.0,
-                    amp=0.8)
+        # A solid nib reads at small sizes where an open V dissolves; the
+        # slightly bowed base keeps it from looking like a clip-art triangle.
+        mx = x - ux * head * 0.92
+        my = y - uy * head * 0.92
+        self.body.append(
+            f'<path d="M{a[0]:.1f} {a[1]:.1f} L{x:.1f} {y:.1f} '
+            f'L{b[0]:.1f} {b[1]:.1f} Q{mx:.1f} {my:.1f} {a[0]:.1f} {a[1]:.1f} Z" '
+            f'fill="{color}" stroke="{color}" stroke-width="0.9" '
+            'stroke-linejoin="round"/>'
+        )
 
     # -- cards, tags, metric blocks ------------------------------------
     def card(self, x, y, w, h, color, fill=WHITE, sw=2.4, shadow=True,
@@ -448,9 +515,11 @@ class Fig:
 
     # -- text -----------------------------------------------------------
     def text(self, x, y, s, size=26, color=INK, anchor="start", weight="normal",
-             font=HAND, ls=None, halo=True, opacity=1.0):
+             font=HAND, ls=None, halo=True, opacity=1.0, hand_min=0):
         if not str(s).strip():
             return  # empty spacer line: keep the row slot, emit no <text>
+        if font == HAND and hand_min and size < hand_min:
+            font = SMALL
         weightattr = f' font-weight="{weight}"' if weight != "normal" else ""
         anchorattr = f' text-anchor="{anchor}"' if anchor != "start" else ""
         halocl = ' class="t-halo"' if halo else ""
@@ -484,6 +553,15 @@ class Fig:
                       anchor=anchor, weight=weight)
 
     # -- chrome ---------------------------------------------------------
+    def _accent_color(self):
+        """Stable accent for the title swash: same seed, same ink.
+
+        The old draw came from the shared RNG, so changing any brush primitive
+        silently repainted every title. A dedicated seeded pick keeps the
+        accent stable across future brush work.
+        """
+        return random.Random(self.seed + ":accent").choice([GREEN, AMBER_STROKE])
+
     def chrome(self):
         """Paper, title, footer badge."""
         defs = ""
@@ -533,8 +611,8 @@ class Fig:
                 t = i / 6
                 pts.append((W / 2 - tw / 2 + tw * t,
                             y0 + self.rng.uniform(-3.5, 3.5)))
-            self.stroke(pts, color=self.rng.choice([GREEN, AMBER_STROKE]),
-                        sw=4.2, amp=2.0, opacity=0.85)
+            self.stroke(pts, color=self._accent_color(), sw=4.2, amp=2.0,
+                        opacity=0.85)
             rider = [(x, y + 9 + self.rng.uniform(-1.5, 1.5))
                      for x, y in pts[1:]]
             self.stroke([pts[0]] + rider, color=INK, sw=1.5, amp=1.4,

@@ -6,16 +6,16 @@ from functools import partial
 from pathlib import Path
 
 from hd import (AMBER_PALE, AMBER_STROKE, BLUE_D, BLUE_FILL, GRAY_FILL,
-                GREEN_D, GREEN_FILL, INK, MUTED, RED, RED_FILL, WHITE,
+                GREEN_D, GREEN_FILL, HAND, INK, MUTED, RED, RED_FILL, WHITE,
                 Fig, save)
 
 STAGE = Path(__file__).resolve().parents[2] / "assets/illustrations/staged/reading-pass/figures"
-LABEL_FONT = "'Microsoft YaHei',sans-serif"
+LABEL_FONT = HAND
 
 
 def plate(stem, title, subtitle):
     figure = Fig(stem, title)
-    label = partial(figure.text, font=LABEL_FONT, halo=False)
+    label = partial(figure.text, font=LABEL_FONT, halo=False, hand_min=18)
     label(64, 142, subtitle, size=23, color=MUTED)
     return figure, label
 
@@ -165,9 +165,11 @@ def ch10_preemption():
     figure, label = plate("ch10-preemption-timeline", "同级等候，高一级先执行", "F407 · PRIGROUP=4（3 抢占 + 1 子）；已使能，未屏蔽。")
     figure.arrow(300, 182, 1080, 182, color=INK, bend=0)
     label(1080, 214, "时间（非等比例）", size=23, anchor="end")
-    for position, title, color in [(445, "EXTI9_5 请求", AMBER_STROKE), (585, "EXTI1 请求", GREEN_D)]:
-        label(position, 244, title, size=24, color=color, anchor="middle")
-        figure.line(position, 250, position, 645, color=color, sw=1.4, dash="5 7")
+    for position, line_x, title, color in [
+            (432, 445, "EXTI9_5 请求", AMBER_STROKE),
+            (598, 585, "EXTI1 请求", GREEN_D)]:
+        label(position, 244, title, size=23, color=color, anchor="middle")
+        figure.line(line_x, 250, line_x, 645, color=color, sw=1.4, dash="5 7")
     for top, title, priority, color in [
         (260, "EXTI0", "抢占 2 / 子 0", BLUE_D),
         (410, "EXTI1", "抢占 1 / 子 0", GREEN_D),
@@ -520,6 +522,32 @@ def ch45_boundaries():
     return figure
 
 
+def ch13_dma_resync():
+    figure, label = plate("ch13-dma-stream-resync", "DMA 分几段交付，命令仍按行拼", "IDLE 是一次交付通知；真正执行边界由 CR / LF 决定。")
+    figure.rect(70, 190, 500, 190, color=BLUE_D, fill=BLUE_FILL)
+    figure.rect(582, 190, 500, 190, color=GREEN_D, fill=GREEN_FILL)
+    label(320, 228, "路径 A · 字节完整", size=27, color=BLUE_D, anchor="middle", weight="bold")
+    label(832, 228, "路径 B · 中途缺字节", size=27, color=GREEN_D, anchor="middle", weight="bold")
+    label(320, 278, "DMA 段 1：AT+LE", size=27, anchor="middle")
+    label(320, 322, "DMA 段 2：D=1\\r\\n", size=27, anchor="middle")
+    label(832, 278, "收到：AT+LE", size=27, anchor="middle")
+    label(832, 322, "缺字节 → GAP → RESET\\r\\n", size=26, anchor="middle")
+    figure.arrow(320, 390, 320, 438, color=BLUE_D, bend=0)
+    figure.arrow(832, 390, 832, 438, color=GREEN_D, bend=0)
+    figure.rect(102, 448, 436, 96, color=BLUE_D, fill=WHITE)
+    figure.rect(614, 448, 436, 96, color=GREEN_D, fill=WHITE)
+    label(320, 482, "解析器拼成 AT+LED=1", size=26, color=BLUE_D, anchor="middle", weight="bold")
+    label(320, 522, "遇到 CR 执行一次", size=24, anchor="middle")
+    label(832, 482, "GAP 清掉半行", size=26, color=GREEN_D, anchor="middle", weight="bold")
+    label(832, 522, "RESET 后缀丢到 LF", size=24, anchor="middle")
+    figure.rect(306, 582, 540, 76, color=AMBER_STROKE, fill=AMBER_PALE)
+    label(576, 613, "下一行 AT\\r\\n 才重新开始解析", size=26, color=AMBER_STROKE,
+          anchor="middle", weight="bold")
+    figure.arrow(832, 550, 760, 578, color=AMBER_STROKE, bend=0)
+    note(figure, label, "DMA 段边界可以切在任意字节；GAP 是软件标记，不是线路上传来的字符。")
+    return figure
+
+
 FIGS = {
     "ch00-swd-four-wires": ch00_swd,
     "ch00-uart-crossing": ch00_uart,
@@ -529,6 +557,7 @@ FIGS = {
     "ch07-header-dependency": ch07_dependencies,
     "ch10-preemption-timeline": ch10_preemption,
     "ch13-frame-validation": ch13_checks,
+    "ch13-dma-stream-resync": ch13_dma_resync,
     "ch14-two-completions": ch14_completion,
     "ch14-buffer-lifetime": ch14_lifetime,
     "ch15-sampling-settle": ch15_settling,

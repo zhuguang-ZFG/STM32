@@ -9,8 +9,8 @@ from functools import partial
 from pathlib import Path
 
 from hd import (AMBER_PALE, AMBER_STROKE, BLUE_D, BLUE_FILL, GRAY_FILL,
-                GREEN_D, GREEN_FILL, INK, MUTED, RED, RED_FILL, WHITE, Fig,
-                save)
+                GREEN_D, GREEN_FILL, HAND, INK, MUTED, RED, RED_FILL, WHITE,
+                Fig, save)
 
 STAGE = Path(__file__).resolve().parents[2] / "assets" / "illustrations" / "staged" / "l0-l5-pass" / "figures"
 MONO = "'Consolas','Courier New',monospace"
@@ -21,7 +21,7 @@ def ch01_memory_two_addresses():
     figure = Fig("ch01-memory-two-addresses",
                  ".data：Flash 存初值，RAM 存运行值",
                  title_color=BLUE_D, tag="CH 01 · 启动与内存")
-    label = partial(figure.text, font="'Microsoft YaHei',sans-serif", halo=False)
+    label = partial(figure.text, font=HAND, halo=False, hand_min=18)
     label(64, 132, "跟着 int g_init = 5，看复位后这 4 字节从哪里来。", size=23, color=INK)
 
     figure.card(64, 170, 414, 268, BLUE_D, fill=BLUE_FILL)

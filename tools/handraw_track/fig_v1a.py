@@ -18,8 +18,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from hd import (AMBER_FILL, AMBER_PALE, AMBER_STROKE, BLUE, BLUE_D,  # noqa: E402
-                BLUE_FILL, GRAY_FILL, GREEN_D, GREEN_FILL, INK, MUTED, RED,
-                RED_FILL, WHITE, Fig, save)
+                BLUE_FILL, GRAY_FILL, GREEN_D, GREEN_FILL, HAND, INK, MUTED,
+                RED, RED_FILL, WHITE, Fig, save)
 
 STAGE = Path(__file__).resolve().parents[2] / "assets" / "illustrations" / "staged" / "l0-l5-pass" / "figures"
 MONO = "'Consolas','Courier New',monospace"
@@ -144,7 +144,7 @@ def ch08_clock_tree_path():
 def ch10_exti_nvic_path():
     figure = Fig("ch10-exti-nvic-path", "PF6 到 ISR：沿请求找断点",
                  tag="CH 10 · 中断与 EXTI")
-    label = partial(figure.text, font="'Microsoft YaHei',sans-serif", halo=False)
+    label = partial(figure.text, font=HAND, halo=False, hand_min=18)
     label(64, 132, "先追一条边沿，再看 IRQn 如何找到向量表里的函数入口。",
           size=23, color=INK)
 

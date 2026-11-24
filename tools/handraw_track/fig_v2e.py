@@ -140,7 +140,7 @@ def ch09_gpio_breaker_tables():
 def ch12_counter_three_knobs():
     figure = Fig("ch12-counter-three-knobs", "一只计数器，三个旋钮",
                  title_color=GREEN_D, tag="CH 12 · 定时器与 PWM")
-    label = partial(figure.text, font="'Microsoft YaHei',sans-serif", halo=False)
+    label = partial(figure.text, font=HAND, halo=False, hand_min=18)
     label(64, 132, "本图：F407 TIM3 · TIMclk = 84 MHz · 向上计数 · PWM1 正极性",
           size=23, color=INK)
 
