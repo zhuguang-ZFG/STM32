@@ -624,7 +624,9 @@ class Fig:
             d = self._d(self._wob(x0, y, x1, y, amp=self.rng.uniform(0.6, 1.8)))
             fibers += (f'<path d="{d}" fill="none" stroke="#C9BEA6" '
                        f'stroke-width="0.8" opacity="{self.rng.uniform(0.025, 0.05):.3f}"/>')
-        bg = fibers + bg
+        # SVG paints children in document order: keep the fibers above the
+        # opaque paper and the optional grid so the texture remains visible.
+        bg += fibers
         self.body.insert(0, defs + bg)
         tsize = 50
         if self.title:
