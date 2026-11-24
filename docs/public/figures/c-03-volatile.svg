@@ -1,10 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" role="img" aria-label="编译器把 flag 缓存进寄存器，ISR 在内存里写 1；轮询循环因此看不到更新"><g transform="translate(0,-4.5)" fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
-<rect x="16" y="26" width="84" height="38" rx="5" stroke-width="1.4"/> <rect x="220" y="26" width="84" height="38" rx="5" stroke-width="1.4"/>
-<text x="58" y="44" font-size="8" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">CPU</text> <text x="58" y="56" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">r0 = 0</text>
-<text x="262" y="44" font-size="8" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">flag</text> <text x="262" y="56" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">0 → 1</text>
-<path d="M220 45 C 190 38, 150 38, 100 45" stroke-width="2.2"/>
-<path d="M100 45 l 8 -4 M100 45 l 8 4" stroke-width="1.8"/>
-<text x="100" y="18" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="start">编译器：只读一次</text>
-<path d="M262 64 C 262 70, 200 74, 150 74 C 120 74, 80 70, 58 64" stroke-width="1.4" stroke-dasharray="3 3"/>
-<text x="142" y="84" font-size="7" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">轮询循环</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 104" role="img" aria-label="编译器把 flag 缓存进寄存器，ISR 在内存里写 1；轮询循环因此看不到更新"><g fill="none" stroke="var(--cover-ink, #123b33)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4">
+  <rect x="20" y="28" width="92" height="44" rx="5"/>
+  <text x="66" y="46" font-size="9" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">CPU 寄存器</text>
+  <text x="66" y="62" font-size="8" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">r0 = 0</text>
+
+  <rect x="248" y="28" width="92" height="44" rx="5"/>
+  <text x="294" y="46" font-size="9" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">内存 flag</text>
+  <text x="294" y="62" font-size="8" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">0 → 1</text>
+
+  <path d="M248 50 C 214 42, 146 42, 112 50" stroke-width="2"/>
+  <path d="M112 50 l 9 -4 M112 50 l 9 4" stroke-width="1.8"/>
+  <text x="180" y="34" font-size="8" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">编译器优化：只读一次，之后不再访存</text>
+
+  <path d="M294 72 C 294 90, 210 94, 180 94 C 150 94, 66 90, 66 72" stroke-width="1.4" stroke-dasharray="4 3"/>
+  <text x="180" y="88" font-size="8" font-family="sans-serif" fill="var(--cover-ink, #123b33)" stroke="none" text-anchor="middle">ISR 写内存，但轮询循环仍看寄存器里的旧值</text>
 </g></svg>
