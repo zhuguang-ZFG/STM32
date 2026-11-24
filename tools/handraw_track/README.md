@@ -122,8 +122,11 @@ PNG 已提交进 git，CI 与读者不需要这一步。
   里写作 `/arch/cortex-m-4gb-map.png`。别名表是 `publish_staged.py` 的
   `ARCH_ALIASES`，加新别名改那里，别手抄文件。
 - `boot-relay`、`map-audit`、`pwr-domains`、`spl-anatomy` 四张是 2040 px 的历史图，
-  没有生成器源（`publish_staged.py` 的 orphan 提示会把它们排除在镜像集之外），
-  不要用 1152 px 的图冒充。
+  没有生成器源，保留原样，不要用 1152 px 的图冒充。注意 `publish_staged.py` 的
+  镜像集与 orphan 提示只枚举 `docs/public/images/`，不涉及 `docs/public/arch/`，
+  所以这四张不会被任何提示点到——查 arch 目录得自己比对。
+- 镜像检查只比对**已存在的**发布副本的字节；若某张 mirrors 目标被删掉，现在的
+  `--check` 不会报（`staged` 族有 `missing`，mirrors 没有）。
 - `assets/illustrations/staged/` 只存 SVG 源，PNG 一律是产物、不入库：曾有一张
   遗留 PNG 留在那里，被当成源覆盖了一次正常的发布。要发布就跑 `publish_staged.py`。
 
