@@ -322,9 +322,9 @@ class Fig:
 
         A crisp <rect> under a wobbly outline leaves the fill visibly short of
         the ink at every edge, which is the tell that gives a plate away. Large
-        blocks therefore fill with the same wobbly panel path; small chips and
-        thin bars keep the exact rect, where a sub-pixel wobble would only
-        blunt a 8-26 px shape.
+        blocks therefore fill with the same wobbly panel path; a block with any
+        side under 16 px keeps the exact rect, where a sub-pixel wobble would
+        only blunt a thin bar or a small chip.
         """
         if wob and w >= 16 and h >= 16:
             self.panel(x, y, w, h, fill, amp=1.1, r=r)
