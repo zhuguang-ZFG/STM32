@@ -108,6 +108,18 @@ PNG 已提交进 git，CI 与读者不需要这一步。
 - 标题：字号 50、压印偏移字 +3/+3（`INK` 0.16）双墨，下面一条重笔（4.2）
   加一条细骑线（1.5，`INK` 0.30）。
 
+## `docs/public/arch/` 的发布（手工步骤，别漏别名）
+
+`fig_arch_*.py` 只把 SVG/PNG 写在 `assets/illustrations/handraw/`；`docs/public/arch/`
+里的副本没有脚本代劳，改完 `hd.py` 或任一 `fig_arch_*.py` 后必须手工同步，
+否则章节页继续用旧渲染（实测漂移过一次，直到有人比对才发现）。
+
+- 文件名**基本**是 `arch-<名>.png → docs/public/arch/<名>.png`，但有一个别名：
+  `arch-cortex-m-4gb.png` 在 `docs/v1-drivers/08-architecture-memory-clock.md`
+  里写作 `/arch/cortex-m-4gb-map.png`。按前缀批量复制会漏掉它，要单独更新。
+- `boot-relay`、`map-audit`、`pwr-domains`、`spl-anatomy` 四张是 2040 px 的历史图，
+  没有生成器源，不要用 1152 px 的图冒充。
+
 ## 渲染与压缩
 
 `render.py` 截图为 1152×864 后做一次确定性调色板重写：自适应 256 色、
