@@ -67,20 +67,26 @@ def esc(s: str) -> str:
 
 
 def text_w(s: str, size: float) -> float:
-    """Rough advance width: CJK ≈ 1.0em, Latin ≈ 0.55em, space 0.30em."""
+    """Rough advance width: CJK ≈ 1.0em, Latin ≈ 0.63em, space 0.40em.
+
+    Calibrated against the real Segoe Print / KaiTi stack in Chromium
+    (see .temp/handdraw-quality/charwidths.json): the old 0.55/0.32/0.85
+    weights under-estimated by 10-25 % and made highlight bars and title
+    shrink too tight.
+    """
     w = 0.0
     for ch in s:
         o = ord(ch)
         if o > 0x2E80:            # CJK ranges
             w += 1.0
         elif ch == " ":
-            w += 0.32
+            w += 0.40
         elif ch in "iljtf.,:;'|!":
-            w += 0.30
+            w += 0.32
         elif ch in "mMW":
-            w += 0.85
+            w += 1.0
         else:
-            w += 0.55
+            w += 0.63
     return w * size
 
 
