@@ -317,7 +317,18 @@ class Fig:
         extra = f' stroke="{color}" stroke-width="{sw}"' if color else ""
         self.body.append(f'<path d="{d}" fill="{fill}"{extra}/>')
 
-    def fillrect(self, x, y, w, h, fill, r=6):
+    def fillrect(self, x, y, w, h, fill, r=6, wob=True):
+        """Solid colour block: marker fill, not a printed rectangle.
+
+        A crisp <rect> under a wobbly outline leaves the fill visibly short of
+        the ink at every edge, which is the tell that gives a plate away. Large
+        blocks therefore fill with the same wobbly panel path; small chips and
+        thin bars keep the exact rect, where a sub-pixel wobble would only
+        blunt a 8-26 px shape.
+        """
+        if wob and w >= 16 and h >= 16:
+            self.panel(x, y, w, h, fill, amp=1.1, r=r)
+            return
         self.body.append(
             f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{r}" '
             f'fill="{fill}"/>'
@@ -325,6 +336,14 @@ class Fig:
 
     def arrow(self, x0, y0, x1, y1, color=BLUE, sw=3.0, bend=0.18,
               head=11):
+        """Connector: a bowed shaft drawn by the same pen as everything else.
+
+        The shaft used to be one exact `Q` command, the only shape on the plate
+        that never went through the wobbler; next to the hand-drawn boxes it
+        read as clip-art. Sampling the same bow into pen segments keeps the
+        silhouette, adds the tremor and the ghost pass, and still lands exactly
+        on both endpoints (the wobble envelope is zero at the ends).
+        """
         mx, my = (x0 + x1) / 2, (y0 + y1) / 2
         dx, dy = x1 - x0, y1 - y0
         dist = math.hypot(dx, dy) or 1.0
@@ -333,11 +352,16 @@ class Fig:
         # shorten so the head sits on the target
         ux, uy = dx / dist, dy / dist
         ex, ey = x1 - ux * 5, y1 - uy * 5
-        d = f"M{x0:.1f} {y0:.1f} Q{cx:.1f} {cy:.1f} {ex:.1f} {ey:.1f}"
-        self.body.append(
-            f'<path d="{d}" fill="none" stroke="{color}" stroke-width="{sw}" '
-            f'stroke-linecap="round"/>'
-        )
+        # ~70 px pen segments: long enough for the bow to register, short
+        # enough that a bent shaft still reads as one curved stroke
+        n = max(2, int(dist / 70))
+        shaft = []
+        for i in range(n + 1):
+            t = i / n
+            b = 1.0 - t
+            shaft.append((b * b * x0 + 2 * b * t * cx + t * t * ex,
+                          b * b * y0 + 2 * b * t * cy + t * t * ey))
+        self.stroke(shaft, color=color, sw=sw, amp=1.5)
         # end tangent of the quadratic at t=1
         tx, ty = ex - cx, ey - cy
         self.arrowhead(ex, ey, tx, ty, color=color, head=head)
