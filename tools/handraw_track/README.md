@@ -108,17 +108,24 @@ PNG 已提交进 git，CI 与读者不需要这一步。
 - 标题：字号 50、压印偏移字 +3/+3（`INK` 0.16）双墨，下面一条重笔（4.2）
   加一条细骑线（1.5，`INK` 0.30）。
 
-## `docs/public/arch/` 的发布（手工步骤，别漏别名）
+## `docs/public/arch/` 与 `docs/public/images/` 的镜像发布
 
-`fig_arch_*.py` 只把 SVG/PNG 写在 `assets/illustrations/handraw/`；`docs/public/arch/`
-里的副本没有脚本代劳，改完 `hd.py` 或任一 `fig_arch_*.py` 后必须手工同步，
-否则章节页继续用旧渲染（实测漂移过一次，直到有人比对才发现）。
+`fig_arch_*.py` 只把 SVG/PNG 写在 `assets/illustrations/handraw/`；`docs/public/images/`
+与 `docs/public/arch/` 里的副本是**逐字节拷贝**，由 `publish_staged.py` 维护：
 
+- 普通运行：先重建 88 张暂存族，再把所有「有 handraw 源」的已发布副本重同步
+  （打印 `synced N handraw mirror(s)`）。
+- `--check`：暂存族漂移 + handraw 镜像漂移一起报，任一非零即退出码 1。
+  这条门是本轮补上的——此前镜像副本不在任何检查里，163 张停在旧渲染没人发现。
 - 文件名**基本**是 `arch-<名>.png → docs/public/arch/<名>.png`，但有一个别名：
   `arch-cortex-m-4gb.png` 在 `docs/v1-drivers/08-architecture-memory-clock.md`
-  里写作 `/arch/cortex-m-4gb-map.png`。按前缀批量复制会漏掉它，要单独更新。
+  里写作 `/arch/cortex-m-4gb-map.png`。别名表是 `publish_staged.py` 的
+  `ARCH_ALIASES`，加新别名改那里，别手抄文件。
 - `boot-relay`、`map-audit`、`pwr-domains`、`spl-anatomy` 四张是 2040 px 的历史图，
-  没有生成器源，不要用 1152 px 的图冒充。
+  没有生成器源（`publish_staged.py` 的 orphan 提示会把它们排除在镜像集之外），
+  不要用 1152 px 的图冒充。
+- `assets/illustrations/staged/` 只存 SVG 源，PNG 一律是产物、不入库：曾有一张
+  遗留 PNG 留在那里，被当成源覆盖了一次正常的发布。要发布就跑 `publish_staged.py`。
 
 ## 渲染与压缩
 
