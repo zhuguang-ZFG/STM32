@@ -272,6 +272,12 @@ class Fig:
                (x - j[3] * 0.5, y + h + j[0] * 0.4)]
         d = self._d(self._poly_pts(pts, close=True, amp=1.5))
         self.body.append(f'<path d="{d}" fill="{fill}" opacity="{opacity}"/>')
+        # second pass: a lighter, slightly larger swipe, like a second stroke
+        # of the felt tip that didn't quite land on the first.
+        pts2 = [(px + r.uniform(-1.2, 1.2), py + r.uniform(-1.0, 1.0))
+                for px, py in pts]
+        d2 = self._d(self._poly_pts(pts2, close=True, amp=1.8))
+        self.body.append(f'<path d="{d2}" fill="{fill}" opacity="0.18"/>')
         # felt tip doubles back: thinner overlap, slightly higher
         k = [r.uniform(-2.2, 2.2) for _ in range(4)]
         top = y + h * 0.16
@@ -298,6 +304,11 @@ class Fig:
         d = self._d(self._poly_pts(pts, close=True, amp=amp))
         extra = f' stroke="{color}" stroke-width="{sw}"' if color else ""
         self.body.append(f'<path d="{d}" fill="{fill}"{extra}/>')
+        # faint pen rim so the blob doesn't read as a vector ellipse
+        self.body.append(
+            f'<path d="{d}" fill="none" stroke="{color or MUTED}" '
+            f'stroke-width="1.0" opacity="0.22"/>'
+        )
 
     def panel(self, x, y, w, h, fill, color=None, sw=0, amp=2.2, r=8):
         """Slightly wobbly rounded-rect fill (matches panel grammar)."""
@@ -380,14 +391,12 @@ class Fig:
 
     def stamp(self, x, y, label, color=RED, size=20, angle=-11):
         """Rotated ink stamp, used sparingly for a hard verdict."""
-        self.body.append(
-            f'<g transform="rotate({angle} {x} {y})">'
-            f'<rect x="{x - 116}" y="{y - 30}" width="232" height="60" rx="8" '
-            f'fill="none" stroke="{color}" stroke-width="3" opacity="0.9"/>'
-            f'<text x="{x}" y="{y + 7}" font-family="{HAND}" font-size="{size}" '
-            f'font-weight="bold" text-anchor="middle" fill="{color}">'
-            f'{esc(label)}</text></g>'
-        )
+        self.body.append(f'<g transform="rotate({angle} {x} {y})">')
+        self.rect(x - 116, y - 30, 232, 60, color=color, sw=3, fill=None,
+                  double=False, r=8)
+        self.text(x, y + 7, label, size=size, color=color, anchor="middle",
+                  weight="bold", font=HAND, halo=False)
+        self.body.append('</g>')
 
     # -- pictograms -----------------------------------------------------
     def chip(self, x, y, w, h, color, label=None, size=20, pins=4):
@@ -581,6 +590,17 @@ class Fig:
         if self.grid:
             bg += (f'<rect width="{W}" height="{H}" fill="url(#dotgrid)" '
                    'opacity="0.36"/>')
+        # paper fibers: a few long, faint, wobbly lines so the sheet doesn't
+        # read as a flat vector rectangle.
+        fibers = ""
+        for _ in range(12):
+            y = self.rng.uniform(40, H - 40)
+            x0 = self.rng.uniform(-30, 30)
+            x1 = W + self.rng.uniform(-30, 30)
+            d = self._d(self._wob(x0, y, x1, y, amp=self.rng.uniform(0.6, 1.8)))
+            fibers += (f'<path d="{d}" fill="none" stroke="#C9BEA6" '
+                       f'stroke-width="0.8" opacity="{self.rng.uniform(0.025, 0.05):.3f}"/>')
+        bg = fibers + bg
         self.body.insert(0, defs + bg)
         tsize = 50
         if self.title:
