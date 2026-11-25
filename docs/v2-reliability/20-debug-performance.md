@@ -54,6 +54,10 @@ SWD 的最小集是三根线：SWDIO（双向数据）、SWCLK（时钟）、GND
 
 NRST 是可选项，接上才能做"connect under reset"：调试器先把复位按住，再在复位释放前抢进调试口，专门对付一上电就停止响应、把 SWD 引脚复用掉或看门狗立即复位的板子。
 
+![ST-Link/V2 与目标板 SWD 接线职责：SWDIO/SWCLK/GND 为最小集，VTref 是电压参考，NRST/SWO 可选（原理示意，非实拍）](/images/boards/stlink-v2-swd-wiring.svg)
+
+图按信号名重绘，不表示克隆仿真器的物理排针顺序。参考 [ST ST-LINK/V2](https://www.st.com/en/development-tools/st-link-v2.html) 与 Carmine Noviello《Mastering STM32》第二版 §3.3、§5.1（[官方页面](https://leanpub.com/mastering-stm32-2nd)）；未复制书中插图。
+
 JTAG 用 TCK 做时钟、TMS 推状态机、TDI/TDO 收发数据（TRST 可选），支持菊花链，但引脚更多；SWD 复用 JTAG 的 TMS/TCK 两根引脚（SWDIO 对 TMS、SWCLK 对 TCK），是 JTAG 引脚子集而不是协议子集，两根信号线换来的代价是不能菊花链。
 
 调试时钟 4 MHz、10 MHz 之类的数字是探头与线长的折中，属于厂商标称，不是"设得越高越好"：线越长、地回流越差，能稳定的时钟越低。先用低时钟连上，再逐步抬高；连不上时先降时钟、缩短地线，而不是先怀疑芯片坏了。

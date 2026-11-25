@@ -587,6 +587,14 @@ def check_photos():
             "7284c0fe3701a912973934b2b643c89091c6d292f9ad058aa9064af768c27843",
             (760, 419),
         ),
+        "bluepill-stm32f103c8t6-breadboard.jpg": (
+            "3359b919751227f6603c2feb26fc31f8cce783118fd2c52291aeec19893e7ad3",
+            (1200, 677),
+        ),
+        "stm32f4-discovery-9067300323.jpg": (
+            "53691efbf776d127442505d4d4e3a2aa4b7775b05a3f0d16123eff0ae9d5d204",
+            (504, 720),
+        ),
     }
     ok = True
     for name, (want_hash, want_size) in expected.items():
@@ -605,6 +613,14 @@ def check_photos():
             continue
         if got_hash != want_hash or got_size != want_size:
             print(f"[FAIL] {name}: SHA-256/尺寸不符 {got_hash} {got_size}")
+            ok = False
+    for name in ("bluepill-stm32f103c8t6-breadboard.jpg",
+                 "stm32f4-discovery-9067300323.jpg"):
+        source = os.path.join(ROOT, "assets", "photos", name)
+        mirror = os.path.join(ROOT, "docs", "public", "images", "boards", name)
+        if (not os.path.isfile(mirror)
+                or open(source, "rb").read() != open(mirror, "rb").read()):
+            print(f"[FAIL] {name}: docs/public 镜像与源照片不一致")
             ok = False
     if ok:
         print(f"实拍照片检查完成：{len(expected)}/{len(expected)} 哈希与尺寸匹配")
@@ -711,7 +727,8 @@ def check_merged_book(repo_root=None):
     for error in errors:
         print(f"[FAIL] {error}")
     assets_ok = check_public_assets(repo_root / "docs/public")
-    return not errors and assets_ok
+    photos_ok = check_photos()
+    return not errors and assets_ok and photos_ok
 
 
 def main():

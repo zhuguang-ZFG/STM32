@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="ST-Link/V2 与目标板：SWD 接线职责">
+
+
+<rect x="0" y="0" width="900" height="620" fill="#fbfaf7"/>
+<rect x="0" y="0" width="900" height="58" fill="#f1f5f7" opacity="1"/>
+<line x1="0" y1="58" x2="900" y2="58" stroke="#5e6872" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<rect x="0" y="0" width="4" height="58" fill="#075e84" opacity="1"/>
+<text x="22" y="32" font-size="20" fill="#17202a" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ST-Link/V2 与目标板：SWD 接线职责</text>
+<text x="22" y="50" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">必留 SWDIO/SWCLK/GND；VTref 是电压参考，NRST/SWO 可选</text>
+<rect x="837" y="15" width="41" height="28" fill="#e5f3f8" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<text x="857.5" y="33.32" font-size="12" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="600">接线图</text>
+<rect x="48" y="100" width="250" height="330" fill="#e5f3f8" opacity="1" rx="8" stroke="#075e84" stroke-width="1.5"/>
+<text x="173" y="136" font-size="18" fill="#075e84" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">ST-Link/V2</text>
+<text x="173" y="158" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">USB → SWD 调试器</text>
+<rect x="602" y="100" width="250" height="330" fill="#f1f5f7" opacity="1" rx="8" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="727" y="136" font-size="18" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">目标板</text>
+<text x="727" y="158" font-size="12" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">以 BluePill / F103C8 为例</text>
+<circle cx="298" cy="190" r="5" fill="#8f2d2d" opacity="1"/>
+<text x="284" y="194" font-size="11" fill="#8f2d2d" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">3V3</text>
+<circle cx="602" cy="190" r="5" fill="#8f2d2d" opacity="1"/>
+<text x="616" y="194" font-size="11" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">3V3</text>
+<line x1="303" y1="190" x2="597" y2="190" stroke="#8f2d2d" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="6 8"/>
+<text x="450" y="182" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">可选供电</text>
+<circle cx="298" cy="226" r="5" fill="#17202a" opacity="1"/>
+<text x="284" y="230" font-size="11" fill="#17202a" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">GND</text>
+<circle cx="602" cy="226" r="5" fill="#17202a" opacity="1"/>
+<text x="616" y="230" font-size="11" fill="#17202a" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">GND</text>
+<line x1="303" y1="226" x2="597" y2="226" stroke="#17202a" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="450" y="218" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">必需</text>
+<circle cx="298" cy="262" r="5" fill="#1b5c45" opacity="1"/>
+<text x="284" y="266" font-size="11" fill="#1b5c45" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">SWDIO</text>
+<circle cx="602" cy="262" r="5" fill="#1b5c45" opacity="1"/>
+<text x="616" y="266" font-size="11" fill="#1b5c45" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">PA13 · SWDIO</text>
+<line x1="303" y1="262" x2="597" y2="262" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="450" y="254" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">必需</text>
+<circle cx="298" cy="298" r="5" fill="#7a4e00" opacity="1"/>
+<text x="284" y="302" font-size="11" fill="#7a4e00" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">SWCLK</text>
+<circle cx="602" cy="298" r="5" fill="#7a4e00" opacity="1"/>
+<text x="616" y="302" font-size="11" fill="#7a4e00" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">PA14 · SWCLK</text>
+<line x1="303" y1="298" x2="597" y2="298" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<text x="450" y="290" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">必需</text>
+<circle cx="298" cy="334" r="5" fill="#5b3a8c" opacity="1"/>
+<text x="284" y="338" font-size="11" fill="#5b3a8c" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">VTref</text>
+<circle cx="602" cy="334" r="5" fill="#5b3a8c" opacity="1"/>
+<text x="616" y="338" font-size="11" fill="#5b3a8c" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">3V3 · VTref</text>
+<line x1="303" y1="334" x2="597" y2="334" stroke="#5b3a8c" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="6 8"/>
+<text x="450" y="326" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">电压参考</text>
+<circle cx="298" cy="370" r="5" fill="#9a3412" opacity="1"/>
+<text x="284" y="374" font-size="11" fill="#9a3412" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">NRST</text>
+<circle cx="602" cy="370" r="5" fill="#9a3412" opacity="1"/>
+<text x="616" y="374" font-size="11" fill="#9a3412" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">NRST</text>
+<line x1="303" y1="370" x2="597" y2="370" stroke="#9a3412" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="6 8"/>
+<text x="450" y="362" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">可选</text>
+<circle cx="298" cy="406" r="5" fill="#1e4d63" opacity="1"/>
+<text x="284" y="410" font-size="11" fill="#1e4d63" text-anchor="end" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">SWO</text>
+<circle cx="602" cy="406" r="5" fill="#1e4d63" opacity="1"/>
+<text x="616" y="410" font-size="11" fill="#1e4d63" text-anchor="start" opacity="1" font-family="ui-monospace,SFMono-Regular,'JetBrains Mono',Consolas,'Courier New',monospace" font-weight="700">PB3 · SWO</text>
+<line x1="303" y1="406" x2="597" y2="406" stroke="#1e4d63" stroke-width="2" stroke-linecap="round" opacity="1" stroke-dasharray="6 8"/>
+<text x="450" y="398" font-size="10" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">可选</text>
+<rect x="48" y="452" width="250" height="92" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="48" y="452" width="3" height="92" fill="#8f2d2d" opacity="1" rx="2"/>
+<text x="62" y="476" font-size="12" fill="#8f2d2d" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">3V3 与 VTref</text>
+<text x="62" y="500" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">3V3 可给目标供电；VTref 只告诉</text>
+<text x="62" y="518" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">调试器目标电平，不是第二路电源。</text>
+<rect x="332" y="452" width="250" height="92" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="332" y="452" width="3" height="92" fill="#9a3412" opacity="1" rx="2"/>
+<text x="346" y="476" font-size="12" fill="#9a3412" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">NRST</text>
+<text x="346" y="500" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">可选；connect-under-reset</text>
+<text x="346" y="518" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">才需要，悬空不等于坏。</text>
+<rect x="616" y="452" width="250" height="92" fill="#f1f5f7" opacity="1" rx="8" stroke="#5e6872" stroke-width="1.5"/>
+<rect x="616" y="452" width="3" height="92" fill="#1e4d63" opacity="1" rx="2"/>
+<text x="630" y="476" font-size="12" fill="#1e4d63" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">SWO</text>
+<text x="630" y="500" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">可选；接 PB3 后还要开</text>
+<text x="630" y="518" font-size="10.5" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">TRACECLK/TPIU，接线≠有输出。</text>
+<line x1="24" y1="578" x2="876" y2="578" stroke="#d7dce1" stroke-width="1" stroke-linecap="round" opacity="1"/>
+<text x="24" y="602" font-size="12" fill="#5e6872" text-anchor="start" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">原理示意，非实拍；克隆排针顺序不同，按丝印/原理图核对，5V 不接 IO。</text>
+<text x="876" y="602" font-size="11" fill="#5e6872" text-anchor="end" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘矢量图 · STM32 知识库</text>
+</svg>
