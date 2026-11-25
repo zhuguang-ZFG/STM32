@@ -219,7 +219,7 @@ platforms: [generic]
 
 ![ST-Link/V2 与 48-pin STM32F103C8T6 开发板的 SWD 四线接线实拍；不同板子的排针顺序不同，按丝印或原理图核对](/images/tools/stlink-v2-swd-connector.jpg)
 
-实物参照照，作者 Paul Gallagher，MIT；只证明这一套实物接线形态，不证明驱动枚举或烧录成功。
+实物参照照，作者 Paul Gallagher，[MIT](https://github.com/tardate/LittleArduinoProjects/blob/018885e631bf0a6f874c57d9165e5f0ee3575d02/LICENSE)；只证明这一套实物接线形态，不证明驱动枚举或烧录成功。
 
 ### 四、构建合同与命令组（索引）
 

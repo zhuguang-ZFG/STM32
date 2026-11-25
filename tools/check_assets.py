@@ -603,6 +603,18 @@ def check_photos():
             "5198bf9b21ae0a58dccc6553b35bdf6ea272acb5b0b1fc707b3b65cb62aa5e04",
             (960, 637),
         ),
+        "oscilloscope-ds1054z.jpg": (
+            "74c8bb67bc3b5d30c81f5072683c4a1d6be1ece1a54f43b169bc0bee42a7476f",
+            (960, 720),
+        ),
+        "multimeter-dt830d.jpg": (
+            "df36100df5a9a1c1ff883bfb737550658bc45eee28d433b1e03b903b0cfbff42",
+            (960, 1280),
+        ),
+        "eeprom-24c02.jpg": (
+            "6088fdd5a32375e9b6989703cda8b6946bdd00b3ce2e3c140074b870f8a435a6",
+            (726, 726),
+        ),
     }
     ok = True
     for name, (want_hash, want_size) in expected.items():
@@ -627,6 +639,9 @@ def check_photos():
         "stm32f4-discovery-9067300323.jpg": "boards",
         "stlink-v2-swd-connector.jpg": "tools",
         "logic-analyzer-8ch.jpg": "tools",
+        "oscilloscope-ds1054z.jpg": "tools",
+        "multimeter-dt830d.jpg": "tools",
+        "eeprom-24c02.jpg": "tools",
     }
     for name, folder in mirrors.items():
         source = os.path.join(ROOT, "assets", "photos", name)

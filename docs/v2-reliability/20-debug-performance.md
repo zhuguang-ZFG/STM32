@@ -326,11 +326,11 @@ tr ≈ 0.35 / BW
 
 ![Rigol DS1054Z 示波器：50 MHz 带宽、4 通道、单通道 1 GSa/s 标称](/images/tools/oscilloscope-ds1054z.jpg)
 
-图中这台 DS1054Z 的标称是 50 MHz 带宽、4 通道、单通道最大 1 GSa/s；通道开得越多，单通道采样率越低。它是"看信号质量"的入门工具，不是"看 100 MHz 时钟眼图"的工具。
+图中这台 DS1054Z 的标称是 50 MHz 带宽、4 通道、单通道最大 1 GSa/s；通道开得越多，单通道采样率越低。它是“看信号质量”的入门工具，不是“看 100 MHz 时钟眼图”的工具。照片：Draconichiaro，[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)，[Wikimedia Commons](https://commons.wikimedia.org/wiki/File:RIGOL_DS1054Z_Digital_Storage_Oscilloscope.jpg)。
 
 ![8 通道逻辑分析仪：协议解码与多路时序，不替代示波器](/images/tools/logic-analyzer-8ch.jpg)
 
-逻辑分析仪的通道数多、能解码协议，但它把模拟世界压成 0/1；图中这种 8 通道分析仪的 24 MHz 采样是标称值，测 10 MHz 信号时每 bit 只有 2.4 个采样点，边沿与毛刺都不可信。
+逻辑分析仪的通道数多、能解码协议，但它把模拟世界压成 0/1；图中这种 8 通道分析仪的 24 MHz 采样是标称值，测 10 MHz 信号时每 bit 只有 2.4 个采样点，边沿与毛刺都不可信。照片：Dilshan Jayakody，[CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0)，[Wikimedia Commons](https://commons.wikimedia.org/wiki/File:8_Channel_USB_logic_analyzer_(5172098012).jpg)。
 
 **万用表**读的是平均值。它适合确认电源轨的直流值、平均电流、通断与电阻；不适合读电机启动、无线发射、LED 脉冲调光这类 μs/ms 级峰值。
 

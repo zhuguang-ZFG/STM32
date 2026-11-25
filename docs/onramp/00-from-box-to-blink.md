@@ -54,7 +54,7 @@ STM32 是意法半导体（ST）基于 ARM Cortex-M 内核的 32 位微控制器
 
 ![BluePill 面包板实拍：USB-TTL 串口模块已接线；这不是 ST-Link/SWD 烧录接线](/images/boards/bluepill-stm32f103c8t6-breadboard.jpg)
 
-实物参照照，作者 Paul Gallagher，MIT；只用于识别面包板、BluePill 与 USB-TTL 模块，不证明串口已连通。
+实物参照照，作者 Paul Gallagher，[MIT](https://github.com/tardate/LittleArduinoProjects/blob/018885e631bf0a6f874c57d9165e5f0ee3575d02/LICENSE)；只用于识别面包板、BluePill 与 USB-TTL 模块，不证明串口已连通。
 
 ## 三、装环境
 

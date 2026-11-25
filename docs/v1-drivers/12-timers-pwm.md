@@ -251,7 +251,7 @@ TIM1 没有波形，先查 `BDTR` 的 MOE：偏移 0x44、复位值 0x0000，bit
 
 ![RIGOL DS1054Z 四通道数字示波器，屏幕显示一条正弦波](/images/tools/oscilloscope-ds1054z.jpg)
 
-仪器形态参考（资料参考图，不是上板验证证据）：RIGOL DS1054Z。图源 Wikimedia Commons，CC BY-SA 4.0，作者 Draconichiaro；探头档位要与示波器设置一致。
+仪器形态参考（资料参考图，不是上板验证证据）：RIGOL DS1054Z。图源 [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:RIGOL_DS1054Z_Digital_Storage_Oscilloscope.jpg)，[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)，作者 Draconichiaro；探头档位要与示波器设置一致。
 
 ### 读数来路表
 
@@ -269,7 +269,7 @@ TIM1 没有波形，先查 `BDTR` 的 MOE：偏移 0x44、复位值 0x0000，bit
 | 板上测频 | S6 | 明确写“板上测频仍待实测” | 待做实验 |
 | e03 读数 | E03 | `hardware_status: pending`，实测记录表为空 | 待做实验 |
 | HAL 行号 | S6 对 1f6451c 的记录 | L6776/L6800/L6803/L6817/L4219/L6828/L4245/L6893/L1454/L7626 | 来源记录，未复核 |
-| 示波器照片 | Wikimedia Commons | 资料参考图，不是上板证据 | 参考图 |
+| 示波器照片 | Wikimedia Commons / Draconichiaro / CC BY-SA 4.0 | 资料参考图，不是上板证据 | 参考图 |
 
 这些数能互相对上的只有公式与位定义：公式能证明 1kHz 该写 83/999，不能证明板上的 PA6 真的输出了 1kHz；读回能证明你写的位与你的宏一致，不能证明引脚上有波形。要补上后者，得按 e03 的记录表留下仪器读数。
 

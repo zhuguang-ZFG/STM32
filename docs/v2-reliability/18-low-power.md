@@ -243,7 +243,7 @@ DT830D 的最低直流电流档是 200 µA，分辨率 0.1 µA，但最后一位
 
 ![DT830D 数字万用表：200 µA 档是最低直流电流档](/images/tools/multimeter-dt830d.jpg)
 
-资料参考图，不是上板验证证据；DT830D 的 200 µA 档分辨率为 0.1 µA，但压降与底噪限制了它测动态电流的能力。
+资料参考图，不是上板验证证据；DT830D 的 200 µA 档分辨率为 0.1 µA，但压降与底噪限制了它测动态电流的能力。照片：Ranjithkumar Murugesan，[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)，[Wikimedia Commons](https://commons.wikimedia.org/wiki/File:DT830D_DIGITAL_MULTIMETER.jpg)。
 
 ![E06 测电流接法：万用表串在电源正极与 VIN 之间](/images/labs/e06-current-meter.svg)
 

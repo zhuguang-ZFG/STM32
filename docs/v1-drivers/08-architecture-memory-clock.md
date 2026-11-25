@@ -9,7 +9,7 @@ platforms: [f407, f103, gd32]
 
 ![STM32F4 Discovery 开发板实拍：用于识别板型，不替代 F407 的寄存器与时钟数据](/images/boards/stm32f4-discovery-9067300323.jpg)
 
-照片：Teardown Central，CC BY-SA 2.0；本地仅重压缩。
+照片：Teardown Central，[CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0)，[Wikimedia Commons 原图页](https://commons.wikimedia.org/wiki/File:STM32F4_Discovery_(9067300323).jpg)；本地仅重压缩。
 
 ## 本章罗盘
 

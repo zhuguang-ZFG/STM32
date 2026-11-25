@@ -2,7 +2,7 @@
 
 > **这一层是合并前的素材库，正文不读 `assets/`。** 合并版站点图在 `docs/public/{anim,arch,figures,images}`，由 `book/build_html.py` 打包进书；`assets/` 里的 SVG 与 GIF 供公众号（`tools/md2mp.py`）和讲解片（`tools/narration.py`、`tools/gen_narrated.py`）复用，另有一部分是合并前版本的留存。
 >
-> 本目录的 SVG / GIF 由本项目代码生成；`assets/photos/` 的九张第三方实拍保持原许可（CC0 ×2、CC BY-SA 4.0 ×2、CC BY-SA 2.0 ×2、MIT ×3），作者、原图页、处理方式与校验和见 `assets/photos/README.md`。
+> 本目录的 SVG / GIF 由本项目代码生成；`assets/photos/` 的十二张第三方实拍保持原许可（CC0 ×3、CC BY-SA 4.0 ×3、CC BY-SA 2.0 ×3、MIT ×3），作者、原图页、处理方式与校验和见 `assets/photos/README.md`。
 > 生成脚本在 `tools/`，修改后重新运行即可再生成：
 >
 > ```bash
@@ -94,6 +94,9 @@
 | `stm32f4-discovery-9067300323.jpg` | STM32F4 Discovery 开发板 | Teardown Central，CC BY-SA 2.0；板卡识别 |
 | `stlink-v2-swd-connector.jpg` | ST-Link/V2 与 48-pin F103 的 SWD 四线接线 | Paul Gallagher，MIT；接线形态参考，非烧录证据 |
 | `logic-analyzer-8ch.jpg` | 8 通道 USB 逻辑分析仪 | Dilshan Jayakody，CC BY-SA 2.0；仪器形态参考 |
+| `oscilloscope-ds1054z.jpg` | RIGOL DS1054Z 四通道示波器 | Draconichiaro，CC BY-SA 4.0；仪器形态参考 |
+| `multimeter-dt830d.jpg` | DT830D 数字万用表 | Ranjithkumar Murugesan，CC0；仪器形态参考 |
+| `eeprom-24c02.jpg` | 24C02 SOIC-8 EEPROM | Cole L，CC BY-SA 2.0；器件封装参考 |
 
 完整来源、原图页、处理尺寸和 SHA-256 见 [`photos/README.md`](photos/README.md)。NUCLEO-L476RG 的具体焊桥、跳线和硬件版本以 ST 官方产品页与 UM1724 为准。
 
