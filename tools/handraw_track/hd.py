@@ -614,16 +614,20 @@ class Fig:
         if self.grid:
             bg += (f'<rect width="{W}" height="{H}" fill="url(#dotgrid)" '
                    'opacity="0.36"/>')
-        # paper fibers: a few long, faint, wobbly lines so the sheet doesn't
-        # read as a flat vector rectangle.
+        # Paper fibers are short, slightly varied marks rather than full-width
+        # rules. Keep seven seeded draws per fiber so the title/footer jitter
+        # after this block remains stable as the texture is refined.
         fibers = ""
         for _ in range(12):
-            y = self.rng.uniform(40, H - 40)
-            x0 = self.rng.uniform(-30, 30)
-            x1 = W + self.rng.uniform(-30, 30)
-            d = self._d(self._wob(x0, y, x1, y, amp=self.rng.uniform(0.6, 1.8)))
+            cx = self.rng.uniform(90, W - 90)
+            cy = self.rng.uniform(70, H - 70)
+            length = self.rng.uniform(50, 180)
+            angle = math.radians(self.rng.uniform(-20, 20))
+            dx = math.cos(angle) * length / 2
+            dy = math.sin(angle) * length / 2
+            d = self._d(self._wob(cx - dx, cy - dy, cx + dx, cy + dy, amp=0.55))
             fibers += (f'<path d="{d}" fill="none" stroke="#C9BEA6" '
-                       f'stroke-width="0.8" opacity="{self.rng.uniform(0.025, 0.05):.3f}"/>')
+                       f'stroke-width="0.8" opacity="{self.rng.uniform(0.08, 0.15):.3f}"/>')
         # SVG paints children in document order: keep the fibers above the
         # opaque paper and the optional grid so the texture remains visible.
         bg += fibers
