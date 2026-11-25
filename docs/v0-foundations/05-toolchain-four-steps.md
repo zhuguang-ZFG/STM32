@@ -318,7 +318,7 @@ $ arm-none-eabi-nm -n blink.elf | grep -E ' (Reset_Handler|main)$'
 
 ![基于 STM32F407 的第三方开发板，LQFP100 封装](/images/boards/stm32f407-board.jpg)
 
-> F407 家族板卡形态参考：图为一块第三方 F407 板（LQFP100）；来源的基准板霸天虎为 F407ZGT6（LQFP144），外观不同、芯片同门（Wikimedia Commons，CC0，作者 Ordercrazy）。
+> F407 家族板卡形态参考：图为一块第三方 F407 板（LQFP100）；来源的基准板霸天虎为 F407ZGT6（LQFP144），外观不同、芯片同门（[Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Embedded_World_2016,_STM32_F407_VGT6.jpg)，[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)，作者 Ordercrazy）。
 
 **第一步：装 ARM 交叉编译器。** 打开 Arm 官网开发者页，搜 “Arm GNU Toolchain”，下载 Windows 版 `arm-gnu-toolchain-14.x.rel*-mingw-w64-x86_64-arm-none-eabi.exe`。安装到最后一步务必勾选 “Add path to environment variable”，然后开一个**新的**终端用 `arm-none-eabi-gcc --version` 验证。来源环境章以 14.x 安装包为例，看到 `gcc version 14.x.x` 即成功；这里的取证工程版本是 15.2.1。版本号会变，验收点不变：`--version` 要报出 `arm-none-eabi` 目标。
 

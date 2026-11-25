@@ -2,7 +2,7 @@
 
 > **这一层是合并前的素材库，正文不读 `assets/`。** 合并版站点图在 `docs/public/{anim,arch,figures,images}`，由 `book/build_html.py` 打包进书；`assets/` 里的 SVG 与 GIF 供公众号（`tools/md2mp.py`）和讲解片（`tools/narration.py`、`tools/gen_narrated.py`）复用，另有一部分是合并前版本的留存。
 >
-> 本目录的 SVG / GIF 由本项目代码生成；`assets/photos/` 的十二张第三方实拍保持原许可（CC0 ×3、CC BY-SA 4.0 ×3、CC BY-SA 2.0 ×3、MIT ×3），作者、原图页、处理方式与校验和见 `assets/photos/README.md`。
+> 本目录的 SVG / GIF 由本项目代码生成；`assets/photos/` 的十四张第三方实拍保持原许可（CC0 ×4、CC BY-SA 4.0 ×4、CC BY-SA 2.0 ×3、MIT ×3），作者、原图页、处理方式与校验和见 `assets/photos/README.md`。
 > 生成脚本在 `tools/`，修改后重新运行即可再生成：
 >
 > ```bash
@@ -97,6 +97,8 @@
 | `oscilloscope-ds1054z.jpg` | RIGOL DS1054Z 四通道示波器 | Draconichiaro，CC BY-SA 4.0；仪器形态参考 |
 | `multimeter-dt830d.jpg` | DT830D 数字万用表 | Ranjithkumar Murugesan，CC0；仪器形态参考 |
 | `eeprom-24c02.jpg` | 24C02 SOIC-8 EEPROM | Cole L，CC BY-SA 2.0；器件封装参考 |
+| `stm32f407-board.jpg` | 第三方 STM32F407 LQFP100 开发板 | Ordercrazy / Thomas Springer，CC0；板卡识别 |
+| `esp32s3-wroom1-module.jpg` | ESP32-S3-WROOM-1-N16R8 模组与开发板 | VectorVoyager，CC BY-SA 4.0；模组识别 |
 
 完整来源、原图页、处理尺寸和 SHA-256 见 [`photos/README.md`](photos/README.md)。NUCLEO-L476RG 的具体焊桥、跳线和硬件版本以 ST 官方产品页与 UM1724 为准。
 

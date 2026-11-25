@@ -615,6 +615,14 @@ def check_photos():
             "6088fdd5a32375e9b6989703cda8b6946bdd00b3ce2e3c140074b870f8a435a6",
             (726, 726),
         ),
+        "stm32f407-board.jpg": (
+            "e5a3752d77e8c320f01012841f2a1c344d79258d4bb1d44440c255011e82e8d6",
+            (1280, 761),
+        ),
+        "esp32s3-wroom1-module.jpg": (
+            "da8f90a233044633e75676f2e4f5bbd57ade10421ac97408ecd94388ea45e585",
+            (960, 960),
+        ),
     }
     ok = True
     for name, (want_hash, want_size) in expected.items():
@@ -642,6 +650,8 @@ def check_photos():
         "oscilloscope-ds1054z.jpg": "tools",
         "multimeter-dt830d.jpg": "tools",
         "eeprom-24c02.jpg": "tools",
+        "stm32f407-board.jpg": "boards",
+        "esp32s3-wroom1-module.jpg": "boards",
     }
     for name, folder in mirrors.items():
         source = os.path.join(ROOT, "assets", "photos", name)
