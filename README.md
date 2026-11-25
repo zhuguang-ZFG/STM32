@@ -4,7 +4,7 @@
 
 **像查手册一样查知识，像看动画一样学原理。**
 
-面向中文学习者的 STM32 系统化知识库：**47 章**（上手卷 ch00 + 卷 0–7 的 ch01–46）+ 6 附录 · 正文引用 319 张站点图 · 15 个示例目录 · 4 份速查表
+面向中文学习者的 STM32 系统化知识库：**47 章**（上手卷 ch00 + 卷 0–7 的 ch01–46）+ 6 附录 · 正文引用 319 张站点图 · 16 个示例目录 · 4 份速查表
 
 [![docs](https://img.shields.io/badge/文档-47_章-60a5fa?style=flat-square)](docs/README.md)
 [![book](https://github.com/zhuguang-ZFG/STM32/actions/workflows/book.yml/badge.svg)](https://github.com/zhuguang-ZFG/STM32/actions/workflows/book.yml)
@@ -13,7 +13,7 @@
 [![boards](https://img.shields.io/badge/板卡与引脚图-10_张-fbbf24?style=flat-square)](assets/boards/)
 [![photos](https://img.shields.io/badge/CC0_实拍-2_张-10b981?style=flat-square)](assets/photos/)
 [![gif](https://img.shields.io/badge/教学_GIF-24_个-f87171?style=flat-square)](assets/gif/)
-[![examples](https://img.shields.io/badge/示例目录-15_个-34d399?style=flat-square)](examples/)
+[![examples](https://img.shields.io/badge/示例目录-16_个-34d399?style=flat-square)](examples/)
 [![cheatsheets](https://img.shields.io/badge/速查表-4_份-a78bfa?style=flat-square)](cheatsheets/)
 [![tools](https://img.shields.io/badge/素材生成-纯_Python_零依赖-f472b6?style=flat-square)](tools/)
 [![license](https://img.shields.io/badge/license-MIT_+_CC_BY_4.0-lightgrey?style=flat-square)](LICENSE)
@@ -231,6 +231,7 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 | [exti-key](examples/exti-key/) | ★★ | EXTI + NVIC + 消抖 | 04 |
 | [timer-pwm](examples/timer-pwm/) | ★★ | TIM PWM 输出 | 05 |
 | [uart-dma-idle](examples/uart-dma-idle/) | ★★★ | UART + DMA + IDLE + 环形缓冲 | 06 / 10 |
+| [dma-memcopy](examples/dma-memcopy/) | ★★★☆ | DMA1 Channel1 内存到内存 + 4 KiB SRAM 缓冲 | 14 |
 | [i2c-oled](examples/i2c-oled/) | ★★★ | 硬件 I2C + SSD1306 | 07 |
 | [spi-flash](examples/spi-flash/) | ★★★ | SPI + W25Q64 | 08 |
 | [adc-dma](examples/adc-dma/) | ★★★ | ADC 多通道 + DMA + 滤波 | 09 / 10 |
@@ -261,7 +262,7 @@ STM32/
 ├── docs/                     ← 47 章书稿（onramp/ + v0–v7 卷目录 + appendix/）+ CONTENT_GUIDE.md
 │   └── .vitepress/           ← 站点配置、主题与共用场景元数据（data/scenes.json）
 ├── book/                     ← 整书构建包：checks / contracts / build_html / build_epub / build_print_edition
-├── examples/                 ← 15 个示例目录（HAL 源码 + Wokwi 配置；spl-f1-blink 与 motor-dc-speed 带构建文件）
+├── examples/                 ← 16 个示例目录（gpio-blink、uart-dma-idle、dma-memcopy、spl-f1-blink、motor-dc-speed 带完整构建入口）
 ├── labs/                     ← 真板证据协议（目前：ethernet-24h）
 ├── sim/renode/               ← Renode .resc
 ├── cheatsheets/              ← 4 份中文速查表 + README
@@ -328,7 +329,7 @@ sole development line = **`main`**。原合流规格 `stm32-book/BOOK_CLASSIC_CO
 - [x] 68 张 SVG 动画（清单见 [assets/README.md](assets/README.md)，含 G0 启动与 SWD 恢复）
 - [x] 7 张板卡结构图 + 3 张芯片引脚图 + 2 张带许可记录的 CC0 实拍
 - [x] 24 个零依赖生成的 GIF 动画（`led-blink` 等 24 张 ASCII 光栅图）+ 24 张 `*-zh.gif` 公众号动图 + 素材自检工具
-- [x] 15 个示例目录 + 4 份速查表（含 SPL/CMake、bxCAN 与 USB CDC/HID）
+- [x] 16 个示例目录 + 4 份速查表（含 SPL/CMake、UART DMA、4 KiB DMA 内存搬运、bxCAN 与 USB CDC/HID）
 - [x] 第 00–28 章讲解视频 + `chs0`/`chs1` 两集续集（`assets/video/`，约 2–4 分钟 MP4，中文配音 + SRT，脚本可复现，不是实拍）
 - [x] Wokwi 工程（核心示例的 diagram.json + wokwi.toml）与 Renode `.resc`，见第 40 章
 - [x] H7 / G0 / L4 引脚图（`assets/boards/`，脚序来自 DS12232 / DS10198 / DS12110）与芯片迁移方法（第 28 章）

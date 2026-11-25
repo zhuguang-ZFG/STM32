@@ -268,15 +268,15 @@ F407 有一块 DMA 够不着的地方：CCM 在 `0x1000_0000`，64KB，只挂 CP
 
 ### 台架：NDTR 轨迹与半区（来源实验设计，记录待做）
 
-装备照 S8 与根书第 10 章：F407 板一块、ST-Link、USB-TTL、杜邦线、串口助手；F103 一侧用 BluePill 与 ST-Link。F103 的完整构建入口是 `examples/uart-dma-idle`（DMA_NORMAL + IDLE 的 AT 命令演示，固件构建/向量检查与宿主回归通过），与本节 F407 循环回显工程不是同一实现。以下为后续取证方案，本轮不连接、烧录或注入故障；第4–5项并非已存在的完整可运行实验，须先单独设计：
+F103 的 UART 完整构建入口是 `examples/uart-dma-idle`（DMA_NORMAL + IDLE 的 AT 命令演示，固件构建/向量检查与宿主回归通过），与本节 F407 循环回显工程不是同一实现。4 KiB 内存搬运的完整入口是 `examples/dma-memcopy`：DMA1 Channel1、普通模式、1024 个字，固件构建、ELF/BIN 向量/内存检查与宿主回归通过，下载和板上观测仍待做。以下为后续取证方案，这里不连接、烧录或注入故障；第 5 项并非已存在的完整可运行实验，须先单独设计：
 
 1. 进入 `mcu/code/stm32/03-uart-dma`，`make` 后 `make flash`；USB-TTL 接 PA9/PA10，115200 8N1，两边共地。
 2. 串口助手连发一长串字符（例如 200 字节），观察 `g_rx_bytes` 与 `g_frames` 是否增长。`g_frames` 数的是 IDLE 通知次数，不是协议帧数，这个命名在工程里是历史遗留。
 3. 采集运行中的NDTR与HT/TC、消费位置快照，预期有递减与回装；0可能只瞬间出现，没读到0不算失败。断点暂停CPU时DMA未必暂停，必须登记调试冻结条件，不能把断点下积压冒充正常轨迹。
-4. F103的4KB内存搬运是来源实验设计；仓库现有examples与mcu/code未找到DMA_MemCopy函数/完整入口，不能照函数名当现成命令执行。后续需先设计源/目的两个4KB数组、栈及其它对象的总SRAM预算，再实现并逐字节比较、记录TC/TE；本轮不新增实现。
+4. F103 的 4 KiB 内存搬运已有完整工程：进入 `examples/dma-memcopy`，按 README 构建、检查并下载。源/目的各 1024 个 `uint32_t`，DMA1 Channel1 普通模式；预期 TC 后逐字节相等。板上检查读取 `DMA1->ISR`、`DMA1_Channel1->CCR/CNDTR/CPAR/CMAR`、完成/错误标志和首个不同字；当前只有构建、向量/内存与宿主回归证据，没有上板读数。
 5. CCM不可达故障只保留为设计：需要单独修改链接布局、核实map地址并制定错误/重启观测，不能只加section属性就宣称构成CCM实验。当前消费层会把部分错误/积压计入g_overruns并丢弃，但未实现本故障注入所需的完整恢复；调试暂停前标志也可能已被ISR处理，须先设计取证，再另行授权实施。
 
-预期现象（来源写的是预期，不是读数）：NDTR 递减到 0 后回装；`g_rx_bytes` 持续增长；`g_frames` 随 IDLE 增加；4KB 内存搬运转发后逐字节相等、TC 置位；缓冲区挪进 CCM 后预期是 `TEIF` 置位、`NDTR` 停在原地，只有程序不查 TE 时才表现为数据静默丢失。最后一条尤其要说清：“静默”只说明没人查 TE，不证明 DMA 写对了地方；反过来，NDTR 在动也只证明“有请求、流使能了”，不证明“字节写对了地方”。
+预期现象（来源写的是预期，不是读数）：NDTR 递减到 0 后回装；`g_rx_bytes` 持续增长；`g_frames` 随 IDLE 增加；`examples/dma-memcopy` 的 4 KiB 内存搬运在 TC 后源/目的逐字节相等，TE、超时和内容不一致分别进入不同失败分支。缓冲区挪进 CCM 后预期是 `TEIF` 置位、`NDTR` 停在原地，只有程序不查 TE 时才表现为数据静默丢失。最后一条尤其要说清：“静默”只说明没人查 TE，不证明 DMA 写对了地方；反过来，NDTR 在动也只证明“有请求、流使能了”，不证明“字节写对了地方”。
 
 记录表至少要有这些列；S8 与根书第 10 章都没有留下已填的记录：
 
@@ -311,6 +311,7 @@ F407 有一块 DMA 够不着的地方：CCM 在 `0x1000_0000`，64KB，只挂 CP
 | HAL 行号与行为 | S8 对 1f6451c 的行号记录；`DMA_SetConfig`/`Start_IT` 行为按 1f6451c 原文核对 | 行号见 S8 记录（L170/L208-227/L231-237/L250/L285/L1157/L1163-1175/L708）；`DMA_SetConfig` 先清 DBM，再写 NDTR/PAR/M0AR；`Start_IT` 开 TC/TE/DME，有半传输回调时加 HT | 行号来源记录，未逐条复核；行为已核原文 |
 | “清标志已在坑里验证过” | S8 正文与 `s08-dma` 题库 | 没有波形、日志或截图 | 来源说法，待复核 |
 | `dma_consume()` 的丢弃判据 | `mcu/code/common/behavior/circular.h` 静态阅读 | 错误、HT+TC 同时积压、位置不动却报 TC 时丢弃并计 `lost` | 源码静态，未复跑 |
+| `dma-memcopy` 4 KiB 搬运 | `examples/dma-memcopy`、锁定 HAL/CMSIS、真实 ELF/BIN | 构建、向量/内存检查与宿主回归通过；下载和板上结果待做 | 构建/宿主验证，非上板证据 |
 | 上板读数 | S8、根书第 10 章 | 两边都没有记录；实验待做 | 待做实验 |
 
 这些数能互相对上的只有公式、位定义与源码常量：公式能证明 64 字节环的半满预算是 2.78ms，不能证明某块板上的主循环真的在 2.78ms 内处理完；位定义能证明 `CHSEL=4` 选的是通道 4，不能证明 USART1_RX 的请求线真的接在 DMA2 Stream5 上。要补上后者，得按台架留下 NDTR 轨迹与缓冲区比对。
@@ -333,6 +334,8 @@ F407 有一块 DMA 够不着的地方：CCM 在 `0x1000_0000`，64KB，只挂 CP
 | F103 上照搬 F4 的 Stream 配置 | C8 没有 DMA2，也没有流 | 读 `RCC_AHBENR` bit1；写 `DMA2` 地址是否 HardFault | 改用 DMA1 的固定通道 |
 | USART1_RX 配到 DMA1 通道 4 | 通道 4 是 TX，RX 在通道 5 | 对照 RM0008 表 78；TX 能发、RX 不动 | 把 RX 改到通道 5 |
 | 数据静默丢失，查 TE 才见错 | 缓冲区放进了 CCM（F407），DMA 访问没有从机通路 | 地址在 `0x1000_xxxx`；`HISR` 的 `TEIF5` 是否置位；`NDTR` 是否停在原地 | 搬到 `0x2000_0000` 的通用 SRAM |
+| 4 KiB 内存搬运超时 | 时钟、DMA1 通道、NVIC 或启动参数异常 | 读 `DMA1->ISR`、`CCR.EN/CNDTR`、NVIC 使能与 HAL 返回 | 先修硬件/配置，再判断是否需要调整软件等待上限 |
+| TC 后 4 KiB 内容不一致 | 宽度、增量、地址/长度或缓冲覆盖错误 | 记录首个不同字与源/目的地址；核对 NDTR=1024 | 按字宽和地址增量排查，不把 TC 当作内容正确 |
 | 半区处理切错位置 | 把 HT 当成固定 4 字节，而不是“缓冲区一半的项数” | 读 NDTR；8 个半字的缓冲区在 HT 时应已写 4 个采样 = 8 字节 | 按项数×宽度换算 |
 | 循环模式下进度越算越大或跳回 0 | 用 `长度 − NDTR` 当累计进度 | 下一圈开始位置从 64 跳回 0 | 累计增量，或按半区服务 |
 | 双缓冲整块丢数据 | CPU 处理时间超过一块的填充时间 | `CT` 是否已切换；丢的是整块而不是零散字节 | 缩短处理，或加缓冲深度 |
@@ -350,7 +353,7 @@ F407 一侧：DMA1 与 DMA2 都挂在 AHB1，基址分别是 `0x4002_6000` 与 `
 
 F103 一侧：DMA1 在 `0x4002_0000`，7 条通道；C8 只有 DMA1，没有 DMA2。通道寄存器从 `0x08` 开始，每条隔 `0x14`，顺序是 `CCR/CNDTR/CPAR/CMAR`；公共寄存器是 `ISR 0x00`、`IFCR 0x04`。时钟门是 `RCC_AHBENR` bit0。
 
-通道与外设请求固定绑定：ADC1→CH1、USART1_TX→CH4、USART1_RX→CH5，其余查 RM0008 表 78。`CCR` 的 `MEM2MEM`（bit14）支持内存到内存，`PSIZE/MSIZE` 与 `PINC/MINC` 位号都和 F4 不同；没有 FIFO、没有 DBM，乒乓只能用 HT/TC 半区模拟。DMA1 是 AHB 主设备，外设寄存器在 APB 上，搬运要过桥。F103 没有 CCM，也没有 D-Cache；4KB 内存搬运实验能放进 20KB SRAM。
+通道与外设请求固定绑定：ADC1→CH1、USART1_TX→CH4、USART1_RX→CH5，其余查 RM0008 表 78。`CCR` 的 `MEM2MEM`（bit14）支持内存到内存，`PSIZE/MSIZE` 与 `PINC/MINC` 位号都和 F4 不同；没有 FIFO、没有 DBM，乒乓只能用 HT/TC 半区模拟。DMA1 是 AHB 主设备，外设寄存器在 APB 上，搬运要过桥。F103 没有 CCM，也没有 D-Cache；`examples/dma-memcopy` 用两个 4 KiB SRAM 数组验证普通模式内存搬运，构建时静态 RAM 8280 B，另预留 2048 B 栈，仍在 20 KiB SRAM 内。
 
 GD32 与 ESP32 不在平台列表。GD32 的 DMA 控制器命名、通道数与请求映射和 STM32 不是一套，完整对照见[第 29 章](../v4-platforms/29-gd32-arm-riscv.md)；ESP32-S3 的 DMA 由 ESP-IDF 的驱动与描述符管理，寄存器名字一个都不要带过去，外设与驱动框架见[第 31 章](../v4-platforms/31-esp32-drivers-audio.md)。多核与 Cache 一致性见[第 34 章](../v4-platforms/34-multicore-cache.md)；仪器与证据方法见[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。
 
@@ -362,6 +365,7 @@ GD32 与 ESP32 不在平台列表。GD32 的 DMA 控制器命名、通道数与�
 | --- | --- | --- |
 | [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c` | HAL 的流状态机：`HAL_DMA_Start` 先清 EN 再改 CR 的顺序、`HAL_DMA_PollForUpdate` 的标志等待；对照正文"EN=1 时不能改 CHSEL"的失败分支 |
 | [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Projects/STM32F4-Discovery/Examples/USART/USART_DMA/` | 官方 USART+DMA 收发样例：请求映射、NDTR 按项数计、TC 中断里等 USART TC；对照正文"最后一字节被截"那条 |
+| [STMicroelectronics/STM32CubeF1](https://github.com/STMicroelectronics/STM32CubeF1/blob/v1.8.6/Projects/STM3210E_EVAL/Examples/DMA/DMA_FLASHToRAM/Src/main.c) | `Projects/STM3210E_EVAL/Examples/DMA/DMA_FLASHToRAM/Src/main.c` | 官方 DMA1 Channel1 内存到内存普通模式：双增量、字宽、TC/TE 回调；本书 `examples/dma-memcopy` 改为 4 KiB SRAM→SRAM 并增加超时、比较与 LED 结果码 |
 | [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h` | DMA_Stream_TypeDef 结构体与各流基址宏；这里讲的 `0x18` 步进、`+0x88` 流 5 偏移可以直接在里面验证 |
 | [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c` + 各例程的缓冲区声明 | 带缓存系列（F7/H7）的传输包装如何用 `SCB_CleanDCache_by_Addr`/`InvalidateDCache_by_Addr` 包住每次搬运；ST [AN4839](https://www.st.com/resource/en/application_note/dm00272913.pdf) 的结论：缓冲区对齐到 32 字节 cache line、必要时显式维护缓存，否则就是这里说的"数据静默丢失" |
 
@@ -378,6 +382,7 @@ F407 本身没有 D-Cache；迁移到 F7/H7 时，缓存行对齐与维护另按
 7. 为什么 CHSEL/CIRC/MINC 必须在 EN=0 时改？HAL 的 Init 与 Start 各落什么？
 8. DMA 的 TC 与 USART 的 TC 差在哪？IDLE 为什么不是帧边界？ADC 的 NDTR 为什么按半字算？
 9. 函数内的自动数组启动 DMA 后能否立即随函数返回？改成静态数组后，完成前再次填充是否安全？循环模式的一次完成回调能否作为释放整个缓冲区的依据？
+10. 4 KiB、32 位宽的数组为什么给 DMA 的 NDTR 是 1024 而不是 4096？TC 之后为什么还要比较源和目的？
 
 <details>
 <summary>对照答案</summary>
@@ -391,6 +396,7 @@ F407 本身没有 D-Cache；迁移到 F7/H7 时，缓存行对齐与维护另按
 7. 这些流属性只在 `EN=0` 时可写；`EN=1` 时写入无效，硬件也不会自动停流，必须先清 EN 并等它读回 0。HAL 的 `HAL_DMA_Init` 落 `CR/FCR` 的流属性（含 CHSEL/CIRC/MINC/PSIZE/MSIZE），`HAL_DMA_Start` 先清 DBM，再落 `NDTR/PAR/M0AR` 并最后开 EN；中断版再开 TC/TE/DME，有半传输回调时再加 HT。
 8. DMA 的 TC 只说明最后一个字节已写进 USART 的 `DR`，移位寄存器可能还在发；USART 的 TC 才说明停止位已发完，RS-485 切向要等它。IDLE 只说明线空了一个帧时间，不说明对方协议的一包结束。ADC 结果是半字，NDTR 按采样个数计，`NDTR=3` 是还剩 3 个采样（6 字节），不是 3 字节。
 9. 不能让自动数组先失效；须在作用域内确认 DMA 已停止且软件后续访问结束，再返回。静态数组仍可能被提前改写，存储期长不代表传输期间能随意重用。循环模式的完成回调只通知一轮结束，下一轮仍会访问原缓冲区，释放前须停止传输并结束软件消费。
+10. NDTR 数的是数据项：1024 个字 × 4 B = 4096 B。TC 只说明硬件完成了 configured transfer，不能证明地址、宽度、增量或缓冲内容都正确；必须逐字节或逐字比较，并把 TE/超时/不一致分开报告。
 
 </details>
 

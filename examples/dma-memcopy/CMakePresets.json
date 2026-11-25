@@ -1,0 +1,26 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": { "major": 3, "minor": 21 },
+  "configurePresets": [
+    {
+      "name": "bluepill",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/bluepill",
+      "toolchainFile": "${sourceDir}/cmake/arm-none-eabi.cmake",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "host-tests",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/host-tests",
+      "cacheVariables": { "DMA_MEMCOPY_HOST_TESTS": "ON" }
+    }
+  ],
+  "buildPresets": [
+    { "name": "bluepill", "configurePreset": "bluepill" },
+    { "name": "host-tests", "configurePreset": "host-tests" }
+  ],
+  "testPresets": [
+    { "name": "host-tests", "configurePreset": "host-tests", "output": { "outputOnFailure": true } }
+  ]
+}

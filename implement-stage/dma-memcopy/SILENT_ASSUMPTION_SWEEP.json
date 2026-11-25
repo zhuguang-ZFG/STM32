@@ -1,0 +1,36 @@
+{
+  "status": "SWEEP_UNAVAILABLE",
+  "checkedAt": "2026-11-25",
+  "scope": [
+    "implement-stage/dma-memcopy/SPEC.md",
+    "implement-stage/dma-memcopy/ASSUMPTIONS.md",
+    "implement-stage/dma-memcopy/BUILD_NOTE.md",
+    "examples/dma-memcopy/",
+    "docs/v1-drivers/14-dma.md",
+    "examples/README.md",
+    "README.md"
+  ],
+  "reviewer": {
+    "provider": "nvidia",
+    "model": "moonshotai/kimi-k2-thinking",
+    "health": "unhealthy",
+    "healthyProviders": 0,
+    "totalProviders": 1
+  },
+  "reason": "No healthy independent reviewer is configured. The only provider failed the health check, so no external verdict or acquittal is claimed.",
+  "internalReview": [
+    {
+      "finding": "The first firmware checker used the external-vector offset for SysTick.",
+      "resolution": "Corrected the checker to core vector index 15; the production vector table was already correct."
+    },
+    {
+      "finding": "The host test double truncated 32-bit HAL addresses and cast them back to 64-bit pointers.",
+      "resolution": "The test double now models the known MCU buffers directly while retaining address/length assertions."
+    },
+    {
+      "finding": "Clock configuration failure could toggle PC13 before GPIOC clock enable.",
+      "resolution": "LED initialization now precedes SystemClock_Config; firmware and regressions were rerun."
+    }
+  ],
+  "externalVerdict": null
+}
