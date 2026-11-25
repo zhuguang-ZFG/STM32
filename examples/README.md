@@ -1,6 +1,6 @@
 # 示例代码总索引
 
-> 完整构建入口：`gpio-blink`（HAL + CMake）、`spl-f1-blink`（SPL V3.5.0 + CMake）、`motor-dc-speed`（HAL + CMake）。其余例程为待集成源码，按各 README 配置启动、链接、时基与外设；不能只复制 main.c 就视为工程完整。
+> 完整构建入口：`gpio-blink`（HAL + CMake）、`uart-dma-idle`（HAL + CMake + 宿主回归）、`spl-f1-blink`（SPL V3.5.0 + CMake）、`motor-dc-speed`（HAL + CMake）。其余例程为待集成源码，按各 README 配置启动、链接、时基与外设；不能只复制 main.c 就视为工程完整。
 > 每个说明给出功能、硬件接线、配置要点、关键代码、编译烧录、预期现象和常见问题。
 >
 > 目标平台以 **STM32F103C8T6（BluePill）** 为主，涉及 F4 的差异在正文中单独标注。
@@ -13,7 +13,7 @@
 | [gpio-blink](gpio-blink/) | ★ | GPIO 推挽输出 | [ch09 GPIO](../docs/v1-drivers/09-gpio.md) | BluePill（板载 LED + 可选外接 LED/270Ω） |
 | [exti-key](exti-key/) | ★★ | GPIO + EXTI + NVIC | [ch10 中断、NVIC 与 EXTI](../docs/v1-drivers/10-interrupts-nvic-exti.md) | BluePill + 按键（或杜邦线碰 GND） |
 | [timer-pwm](timer-pwm/) | ★★ | TIM（PWM 输出） | [ch12 定时器与 PWM](../docs/v1-drivers/12-timers-pwm.md) | BluePill + LED + 270Ω（可选示波器） |
-| [uart-dma-idle](uart-dma-idle/) | ★★★ | USART + DMA + 环形缓冲 | [ch13 UART 帧协议](../docs/v1-drivers/13-uart-framed-protocol.md) / [ch14 DMA](../docs/v1-drivers/14-dma.md) | BluePill + USB-TTL 模块 |
+| [uart-dma-idle](uart-dma-idle/) | ★★★ | USART + DMA + 环形缓冲（完整 CMake 工程，宿主回归通过，未上板） | [ch13 UART 帧协议](../docs/v1-drivers/13-uart-framed-protocol.md) / [ch14 DMA](../docs/v1-drivers/14-dma.md) | BluePill + USB-TTL 模块 |
 | [i2c-oled](i2c-oled/) | ★★★ | 硬件 I2C + SSD1306 | [ch16 I2C 与 SPI](../docs/v1-drivers/16-i2c-spi.md) | BluePill + 0.96" I2C OLED |
 | [spi-flash](spi-flash/) | ★★★ | 硬件 SPI + W25Q64 | [ch16 I2C 与 SPI](../docs/v1-drivers/16-i2c-spi.md) | BluePill + W25Q64 模块 |
 | [adc-dma](adc-dma/) | ★★★ | ADC 多通道 + DMA | [ch15 ADC 与 DAC 采样](../docs/v1-drivers/15-adc-dac-sampling.md) / [ch14 DMA](../docs/v1-drivers/14-dma.md) | BluePill + 电位器/传感器 |
@@ -54,6 +54,7 @@ examples/
 ├── README.md              ← 本文件（总索引）
 ├── spl-f1-blink/          ← SPL V3.5.0 + CMake + CLion/VS Code/OpenOCD
 ├── gpio-blink/            ← 固定 HAL/CMSIS + CMake + 启动/链接/时基 + 回归测试
+├── uart-dma-idle/         ← 固定 HAL/CMSIS + CMake + USART1/DMA1_CH5 + 宿主回归
 ├── exti-key/
 ├── timer-pwm/
 ├── uart-dma-idle/
@@ -71,7 +72,7 @@ examples/
 
 ## 四、如何把示例跑起来
 
-第一次点灯先用 [gpio-blink](gpio-blink/README.md) 的固定 HAL 工程，从获取依赖到生成 ELF/BIN，再核对接线下载。`spl-f1-blink` 按其 README 设置冻结 SPL 源码的 `SPL_ROOT`；`motor-dc-speed` 按其 README 配置固定 CubeF1 和预设。这三个目录直接走各自的 CMake 入口，构建通过均不等于硬件已实测。
+第一次点灯先用 [gpio-blink](gpio-blink/README.md) 的固定 HAL 工程，从获取依赖到生成 ELF/BIN，再核对接线下载。`uart-dma-idle` 使用同一 CubeF1 依赖锁，提供 USART1 + DMA1 Channel5 的完整固件与宿主回归；`spl-f1-blink` 按其 README 设置冻结 SPL 源码的 `SPL_ROOT`；`motor-dc-speed` 按其 README 配置固定 CubeF1 和预设。这四个目录直接走各自的 CMake 入口，构建通过均不等于硬件已实测。
 
 其余待集成例程：
 
