@@ -3,7 +3,10 @@ import sys
 import unittest
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from playwright.sync_api import sync_playwright
+try:
+    from playwright.sync_api import sync_playwright
+except ImportError:
+    sync_playwright = None
 
 ROOT = Path(__file__).resolve().parents[2]
 TRACK = ROOT / "tools" / "handraw_track"
@@ -23,21 +26,6 @@ TUNING_STEPS = [
 
 
 class HandrawLayoutTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls._playwright = sync_playwright().start()
-        cls.browser = cls._playwright.chromium.launch()
-        cls.page = cls.browser.new_page(viewport={"width": 1180, "height": 900})
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.browser.close()
-        cls._playwright.stop()
-
-    def _load_figure(self, figure):
-        self.page.set_content(figure.svg())
-        self.page.evaluate("document.fonts.ready")
-
     def test_ch32_pi_step_text_fits_canvas_width(self):
         root = ET.fromstring(fig_ch32.pi_step().svg())
         anchor_offsets = {"start": 0, "middle": 0.5, "end": 1}
@@ -50,6 +38,24 @@ class HandrawLayoutTests(unittest.TestCase):
                 self.assertGreaterEqual(left, 0)
                 self.assertLessEqual(left + width, W)
 
+
+@unittest.skipIf(sync_playwright is None, "Playwright not installed")
+class HandrawChromiumLayoutTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        assert sync_playwright is not None
+        cls._playwright = sync_playwright().start()
+        cls.browser = cls._playwright.chromium.launch()
+        cls.page = cls.browser.new_page(viewport={"width": 1180, "height": 900})
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.browser.close()
+        cls._playwright.stop()
+
+    def _load_figure(self, figure):
+        self.page.set_content(figure.svg())
+        self.page.evaluate("document.fonts.ready")
 
     def test_ch32_tuning_ladder_text_stays_inside_cards(self):
         self._load_figure(fig_ch32.tuning_ladder())
