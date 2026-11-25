@@ -217,6 +217,10 @@ platforms: [generic]
 
 价格全部是区间加自注。不是事实数。仪器选型两表（硬件 7 行：调试器/逻辑分析仪/示波器/串口/万用表/功耗计/焊接；软件 11 行：CubeMX/CubeIDE/Keil/IAR/PlatformIO/CLion/VS Code/OpenOCD/KiCad/CubeMonitor/PulseView）预算区间同口径，软件定位与 [v1 第 5 章](../v0-foundations/05-toolchain-four-steps.md)、[卷 0 第 7 章](../v0-foundations/07-build-systems-legacy.md)、[v1 第 20 章](../v2-reliability/20-debug-performance.md) 一致。
 
+![ST-Link/V2 与 48-pin STM32F103C8T6 开发板的 SWD 四线接线实拍；不同板子的排针顺序不同，按丝印或原理图核对](/images/tools/stlink-v2-swd-connector.jpg)
+
+实物参照照，作者 Paul Gallagher，MIT；只证明这一套实物接线形态，不证明驱动枚举或烧录成功。
+
 ### 四、构建合同与命令组（索引）
 
 四个 IDE 入口汇入同一 CMake preset 的构建合同、OpenOCD 烧录/GDB 六步、PlatformIO 配置、CubeProgrammer 的 RDP 警告（**RDP=0xAA 解保护会整片擦除**）。技术正文归 [v1 第 5 章](../v0-foundations/05-toolchain-four-steps.md)、[卷 0 第 7 章](../v0-foundations/07-build-systems-legacy.md)、[v1 第 20 章](../v2-reliability/20-debug-performance.md)，这里不重复命令块。

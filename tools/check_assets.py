@@ -595,6 +595,14 @@ def check_photos():
             "53691efbf776d127442505d4d4e3a2aa4b7775b05a3f0d16123eff0ae9d5d204",
             (504, 720),
         ),
+        "stlink-v2-swd-connector.jpg": (
+            "d48310869ae81ec7fc3e9ed48a23d2efbbdaa3557e92cab0ded65f58c19a7c3a",
+            (1200, 819),
+        ),
+        "logic-analyzer-8ch.jpg": (
+            "5198bf9b21ae0a58dccc6553b35bdf6ea272acb5b0b1fc707b3b65cb62aa5e04",
+            (960, 637),
+        ),
     }
     ok = True
     for name, (want_hash, want_size) in expected.items():
@@ -614,10 +622,15 @@ def check_photos():
         if got_hash != want_hash or got_size != want_size:
             print(f"[FAIL] {name}: SHA-256/尺寸不符 {got_hash} {got_size}")
             ok = False
-    for name in ("bluepill-stm32f103c8t6-breadboard.jpg",
-                 "stm32f4-discovery-9067300323.jpg"):
+    mirrors = {
+        "bluepill-stm32f103c8t6-breadboard.jpg": "boards",
+        "stm32f4-discovery-9067300323.jpg": "boards",
+        "stlink-v2-swd-connector.jpg": "tools",
+        "logic-analyzer-8ch.jpg": "tools",
+    }
+    for name, folder in mirrors.items():
         source = os.path.join(ROOT, "assets", "photos", name)
-        mirror = os.path.join(ROOT, "docs", "public", "images", "boards", name)
+        mirror = os.path.join(ROOT, "docs", "public", "images", folder, name)
         if (not os.path.isfile(mirror)
                 or open(source, "rb").read() != open(mirror, "rb").read()):
             print(f"[FAIL] {name}: docs/public 镜像与源照片不一致")
