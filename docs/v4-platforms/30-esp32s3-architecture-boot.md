@@ -13,6 +13,10 @@ ESP32-S3 上电之后经过三次交接：ROM 交给 bootloader，bootloader 交
 
 > 版本口径：ESP-IDF **v5.5.2**（`esp_idf_version.h:14-18` tag 5/5/2）；板卡立创实战派 S3（ESP32-S3-WROOM-1-N16R8：16 MB Flash + 8 MB PSRAM，LX7 双核 240 MHz）。引用行号只写 v5.5.2 实取命中的；换版本按 E4 的提醒重核。
 
+![ESP32-S3-WROOM-1-N16R8 模组与开发板实拍：屏蔽罩丝印、排针和双 Type-C 接口；这是器件/板卡参考，不是上板证据](/images/boards/esp32s3-wroom1-module.jpg)
+
+照片：VectorVoyager，[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)，[Wikimedia Commons 原图页](https://commons.wikimedia.org/wiki/File:ESP32-S3_on_paper.jpg)。图中模组标注 N16R8；本章实测仍以手上板卡与证据记录为准。
+
 ## 本章罗盘
 
 - **问题**：三次交接各做什么，卡在哪一步看哪段日志。`app_main` 不是 main：main task 的优先级、栈、亲和，以及 `TASK_EXTRA_STACK_SIZE` 这层加项为何不能漏。XIP 与 Cache 映射如何改变「代码在哪」，IRAM 纪律从哪来。分区与组件：分区表四列、Offset 为何留空；组件化的三件事与依赖图，main 为何是「自动收集的项目组件」；manifest 管来源与版本，`REQUIRES` 管构建可见性，两层如何接进同一张图。配置与构建：Kconfig 三段论的三个产物，`CONFIG_IDF_TARGET_ESP32S3` 闭环，`idf.py` 各子命令各查哪一层，错目标的 sdkconfig 为何会静默编错芯片。

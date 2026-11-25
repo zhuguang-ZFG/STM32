@@ -190,7 +190,7 @@ def exit_kit():
 
     # ---- ④ 重建对比 ----
     card(588, 462, 480, 296, RED, "4", "干净重建：ELF / map 对比")
-    f.text(604, 512, "清空可重建的 build → 固定依赖重建", size=14,
+    f.text(604, 530, "清空可重建的 build → 固定依赖重建", size=14,
            color=MUTED)
     for bx, label in ((622, "旧 ELF / map"), (850, "新 ELF / map")):
         f.rect(bx, 542, 168, 64, color=RED, fill=GRAY_FILL, sw=1.8,

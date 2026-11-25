@@ -21,7 +21,7 @@ def ch01_memory_two_addresses():
     figure = Fig("ch01-memory-two-addresses",
                  ".data：Flash 存初值，RAM 存运行值",
                  title_color=BLUE_D, tag="CH 01 · 启动与内存")
-    label = partial(figure.text, font=HAND, halo=False, hand_min=18)
+    label = partial(figure.text, font=HAND, halo=False)
     label(64, 132, "跟着 int g_init = 5，看复位后这 4 字节从哪里来。", size=23, color=INK)
 
     figure.card(64, 170, 414, 268, BLUE_D, fill=BLUE_FILL)

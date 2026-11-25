@@ -58,7 +58,10 @@ HAND = ("'Segoe Print','STKaiti','KaiTi','Microsoft YaHei',"
 
 # Fine print stays typeset: below 18 px the brush face loses too much
 # legibility and its wider advance overflows tight technical panels.
+# Fig.text enforces the boundary by default (hand_min=18); a caller that
+# really wants brush at small size must pass hand_min=0 explicitly.
 SMALL = "'Microsoft YaHei','PingFang SC',sans-serif"
+HAND_MIN = 18
 
 
 def esc(s: str) -> str:
@@ -414,12 +417,17 @@ class Fig:
         self.text(x + 38, y, label, size=size, color=color, weight="bold")
 
     def stamp(self, x, y, label, color=RED, size=20, angle=-11):
-        """Rotated ink stamp, used sparingly for a hard verdict."""
+        """Rotated ink stamp, used sparingly for a hard verdict.
+
+        Stamps are deliberately brush even inside tight panels, so they opt out
+        of the hand_min downshift and instead hold the 18 px brush floor.
+        """
+        size = max(size, HAND_MIN)
         self.body.append(f'<g transform="rotate({angle} {x} {y})">')
         self.rect(x - 116, y - 30, 232, 60, color=color, sw=3, fill=None,
                   double=False, r=8)
         self.text(x, y + 7, label, size=size, color=color, anchor="middle",
-                  weight="bold", font=HAND, halo=False)
+                  weight="bold", font=HAND, halo=False, hand_min=0)
         self.body.append('</g>')
 
     # -- pictograms -----------------------------------------------------
@@ -554,7 +562,7 @@ class Fig:
 
     # -- text -----------------------------------------------------------
     def text(self, x, y, s, size=26, color=INK, anchor="start", weight="normal",
-             font=HAND, ls=None, halo=True, opacity=1.0, hand_min=0):
+             font=HAND, ls=None, halo=True, opacity=1.0, hand_min=HAND_MIN):
         if not str(s).strip():
             return  # empty spacer line: keep the row slot, emit no <text>
         if font == HAND and hand_min and size < hand_min:

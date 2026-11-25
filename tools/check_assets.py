@@ -587,6 +587,42 @@ def check_photos():
             "7284c0fe3701a912973934b2b643c89091c6d292f9ad058aa9064af768c27843",
             (760, 419),
         ),
+        "bluepill-stm32f103c8t6-breadboard.jpg": (
+            "3359b919751227f6603c2feb26fc31f8cce783118fd2c52291aeec19893e7ad3",
+            (1200, 677),
+        ),
+        "stm32f4-discovery-9067300323.jpg": (
+            "53691efbf776d127442505d4d4e3a2aa4b7775b05a3f0d16123eff0ae9d5d204",
+            (504, 720),
+        ),
+        "stlink-v2-swd-connector.jpg": (
+            "d48310869ae81ec7fc3e9ed48a23d2efbbdaa3557e92cab0ded65f58c19a7c3a",
+            (1200, 819),
+        ),
+        "logic-analyzer-8ch.jpg": (
+            "5198bf9b21ae0a58dccc6553b35bdf6ea272acb5b0b1fc707b3b65cb62aa5e04",
+            (960, 637),
+        ),
+        "oscilloscope-ds1054z.jpg": (
+            "74c8bb67bc3b5d30c81f5072683c4a1d6be1ece1a54f43b169bc0bee42a7476f",
+            (960, 720),
+        ),
+        "multimeter-dt830d.jpg": (
+            "df36100df5a9a1c1ff883bfb737550658bc45eee28d433b1e03b903b0cfbff42",
+            (960, 1280),
+        ),
+        "eeprom-24c02.jpg": (
+            "6088fdd5a32375e9b6989703cda8b6946bdd00b3ce2e3c140074b870f8a435a6",
+            (726, 726),
+        ),
+        "stm32f407-board.jpg": (
+            "e5a3752d77e8c320f01012841f2a1c344d79258d4bb1d44440c255011e82e8d6",
+            (1280, 761),
+        ),
+        "esp32s3-wroom1-module.jpg": (
+            "da8f90a233044633e75676f2e4f5bbd57ade10421ac97408ecd94388ea45e585",
+            (960, 960),
+        ),
     }
     ok = True
     for name, (want_hash, want_size) in expected.items():
@@ -605,6 +641,24 @@ def check_photos():
             continue
         if got_hash != want_hash or got_size != want_size:
             print(f"[FAIL] {name}: SHA-256/尺寸不符 {got_hash} {got_size}")
+            ok = False
+    mirrors = {
+        "bluepill-stm32f103c8t6-breadboard.jpg": "boards",
+        "stm32f4-discovery-9067300323.jpg": "boards",
+        "stlink-v2-swd-connector.jpg": "tools",
+        "logic-analyzer-8ch.jpg": "tools",
+        "oscilloscope-ds1054z.jpg": "tools",
+        "multimeter-dt830d.jpg": "tools",
+        "eeprom-24c02.jpg": "tools",
+        "stm32f407-board.jpg": "boards",
+        "esp32s3-wroom1-module.jpg": "boards",
+    }
+    for name, folder in mirrors.items():
+        source = os.path.join(ROOT, "assets", "photos", name)
+        mirror = os.path.join(ROOT, "docs", "public", "images", folder, name)
+        if (not os.path.isfile(mirror)
+                or open(source, "rb").read() != open(mirror, "rb").read()):
+            print(f"[FAIL] {name}: docs/public 镜像与源照片不一致")
             ok = False
     if ok:
         print(f"实拍照片检查完成：{len(expected)}/{len(expected)} 哈希与尺寸匹配")
@@ -711,7 +765,8 @@ def check_merged_book(repo_root=None):
     for error in errors:
         print(f"[FAIL] {error}")
     assets_ok = check_public_assets(repo_root / "docs/public")
-    return not errors and assets_ok
+    photos_ok = check_photos()
+    return not errors and assets_ok and photos_ok
 
 
 def main():

@@ -234,7 +234,7 @@ loop:
 
 ![24C02 EEPROM 的 SOIC-8 封装参考图，圆点为 1 脚；这是资料参考图，不是上板证据](/images/tools/eeprom-24c02.jpg)
 
-这张图是 E05 引用的 Wikimedia Commons 资料图（CC BY-SA 2.0，作者 cole8888），不是上板证据。
+这张图是 E05 引用的 [Wikimedia Commons 资料图](https://commons.wikimedia.org/wiki/File:24C02_Package_(52871670499).jpg)（[CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0)，作者 Cole L），不是上板证据。
 
 读回要先写字地址再读数据，中间用重复起始：
 

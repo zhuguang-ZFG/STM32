@@ -144,7 +144,7 @@ def ch08_clock_tree_path():
 def ch10_exti_nvic_path():
     figure = Fig("ch10-exti-nvic-path", "PF6 到 ISR：沿请求找断点",
                  tag="CH 10 · 中断与 EXTI")
-    label = partial(figure.text, font=HAND, halo=False, hand_min=18)
+    label = partial(figure.text, font=HAND, halo=False)
     label(64, 132, "先追一条边沿，再看 IRQn 如何找到向量表里的函数入口。",
           size=23, color=INK)
 

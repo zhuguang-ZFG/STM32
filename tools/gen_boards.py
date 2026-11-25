@@ -718,8 +718,64 @@ def peripheral_wiring() -> Svg:
     return s
 
 
+def stlink_v2_swd_wiring() -> Svg:
+    s = Svg(W, H, "ST-Link/V2 与目标板：SWD 接线职责",
+            "必留 SWDIO/SWCLK/GND；VTref 是电压参考，NRST/SWO 可选")
+    s.header(tag="接线图", tag_color=T.CYAN)
+
+    s.panel(48, 100, 250, 330, fill=T.PANEL2, stroke=T.CYAN)
+    s.text(173, 136, "ST-Link/V2", size=18, anchor="middle", weight="700",
+           fill=T.CYAN)
+    s.text(173, 158, "USB → SWD 调试器", size=12, anchor="middle", fill=T.MUTED)
+
+    s.panel(602, 100, 250, 330, fill=T.PANEL, stroke=T.GREEN)
+    s.text(727, 136, "目标板", size=18, anchor="middle", weight="700",
+           fill=T.GREEN)
+    s.text(727, 158, "以 BluePill / F103C8 为例", size=12, anchor="middle",
+           fill=T.MUTED)
+
+    rows = [
+        ("3V3", T.RED, "3V3", T.RED, "6 8", "可选供电"),
+        ("GND", T.TEXT, "GND", T.TEXT, None, "必需"),
+        ("SWDIO", T.GREEN, "PA13 · SWDIO", T.GREEN, None, "必需"),
+        ("SWCLK", T.AMBER, "PA14 · SWCLK", T.AMBER, None, "必需"),
+        ("VTref", T.VIOLET, "3V3 · VTref", T.VIOLET, "6 8", "电压参考"),
+        ("NRST", T.ORANGE, "NRST", T.ORANGE, "6 8", "可选"),
+        ("SWO", T.BLUE, "PB3 · SWO", T.BLUE, "6 8", "可选"),
+    ]
+    for (left, lc, right, rc, dash, tag), y in zip(rows, range(190, 442, 36)):
+        s.circle(298, y, 5, fill=lc)
+        s.text(284, y + 4, left, size=11, anchor="end", fill=lc,
+               weight="700", mono=True)
+        s.circle(602, y, 5, fill=rc)
+        s.text(616, y + 4, right, size=11, anchor="start", fill=rc,
+               weight="700", mono=True)
+        s.line(303, y, 597, y, stroke=lc, sw=2, dash=dash)
+        s.text(450, y - 8, tag, size=10, anchor="middle", fill=T.MUTED)
+
+    cards = [
+        ("3V3 与 VTref", ["3V3 可给目标供电；VTref 只告诉",
+                          "调试器目标电平，不是第二路电源。"], T.RED),
+        ("NRST", ["可选；connect-under-reset",
+                  "才需要，悬空不等于坏。"], T.ORANGE),
+        ("SWO", ["可选；接 PB3 后还要开",
+                 "TRACECLK/TPIU，接线≠有输出。"], T.BLUE),
+    ]
+    for i, (title, lines, color) in enumerate(cards):
+        x = 48 + i * 284
+        s.rect(x, 452, 250, 92, fill=T.BG2, stroke=T.STROKE, rx=8)
+        s.rect(x, 452, 3, 92, fill=color, rx=2)
+        s.text(x + 14, 476, title, size=12, fill=color, weight="700")
+        s.text(x + 14, 500, lines[0], size=10.5, fill=T.MUTED)
+        s.text(x + 14, 518, lines[1], size=10.5, fill=T.MUTED)
+
+    s.footer("原理示意，非实拍；克隆排针顺序不同，按丝印/原理图核对，5V 不接 IO。",
+             label="自绘矢量图 · STM32 知识库")
+    return s
+
+
 ALL = [bluepill, blackpill, nucleo_f411re, f4_discovery, f103zet6_dev,
-       pinout_bluepill, peripheral_wiring]
+       pinout_bluepill, peripheral_wiring, stlink_v2_swd_wiring]
 
 NAMES = {
     "bluepill": "bluepill-stm32f103c8t6",
@@ -729,6 +785,7 @@ NAMES = {
     "f103zet6_dev": "f103zet6-dev",
     "pinout_bluepill": "pinout-bluepill",
     "peripheral_wiring": "peripheral-wiring",
+    "stlink_v2_swd_wiring": "stlink-v2-swd-wiring",
 }
 
 

@@ -350,7 +350,7 @@ CRC 的边界要说清：它能检出随机损坏，比如单比特错与突发�
 
 ![自制 8 通道 USB 逻辑分析仪：开盖外壳、彩色排线与测试钩](/images/tools/logic-analyzer-8ch.jpg)
 
-仪器形态参考（资料参考图，不是上板验证证据）：图为自制 8 通道款，¥30 的 24MHz saleae 兼容款是火柴盒大小的铝壳，接法相同。图源 Wikimedia Commons，CC BY-SA 2.0，作者 Dilshan Jayakody。
+仪器形态参考（资料参考图，不是上板验证证据）：图为自制 8 通道款，¥30 的 24MHz saleae 兼容款是火柴盒大小的铝壳，接法相同。图源 [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:8_Channel_USB_logic_analyzer_(5172098012).jpg)，[CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0)，作者 Dilshan Jayakody。
 
 ### 读数来路表
 

@@ -54,6 +54,10 @@ SWD 的最小集是三根线：SWDIO（双向数据）、SWCLK（时钟）、GND
 
 NRST 是可选项，接上才能做"connect under reset"：调试器先把复位按住，再在复位释放前抢进调试口，专门对付一上电就停止响应、把 SWD 引脚复用掉或看门狗立即复位的板子。
 
+![ST-Link/V2 与目标板 SWD 接线职责：SWDIO/SWCLK/GND 为最小集，VTref 是电压参考，NRST/SWO 可选（原理示意，非实拍）](/images/boards/stlink-v2-swd-wiring.svg)
+
+图按信号名重绘，不表示克隆仿真器的物理排针顺序。参考 [ST ST-LINK/V2](https://www.st.com/en/development-tools/st-link-v2.html) 与 Carmine Noviello《Mastering STM32》第二版 §3.3、§5.1（[官方页面](https://leanpub.com/mastering-stm32-2nd)）；未复制书中插图。
+
 JTAG 用 TCK 做时钟、TMS 推状态机、TDI/TDO 收发数据（TRST 可选），支持菊花链，但引脚更多；SWD 复用 JTAG 的 TMS/TCK 两根引脚（SWDIO 对 TMS、SWCLK 对 TCK），是 JTAG 引脚子集而不是协议子集，两根信号线换来的代价是不能菊花链。
 
 调试时钟 4 MHz、10 MHz 之类的数字是探头与线长的折中，属于厂商标称，不是"设得越高越好"：线越长、地回流越差，能稳定的时钟越低。先用低时钟连上，再逐步抬高；连不上时先降时钟、缩短地线，而不是先怀疑芯片坏了。
@@ -322,11 +326,11 @@ tr ≈ 0.35 / BW
 
 ![Rigol DS1054Z 示波器：50 MHz 带宽、4 通道、单通道 1 GSa/s 标称](/images/tools/oscilloscope-ds1054z.jpg)
 
-图中这台 DS1054Z 的标称是 50 MHz 带宽、4 通道、单通道最大 1 GSa/s；通道开得越多，单通道采样率越低。它是"看信号质量"的入门工具，不是"看 100 MHz 时钟眼图"的工具。
+图中这台 DS1054Z 的标称是 50 MHz 带宽、4 通道、单通道最大 1 GSa/s；通道开得越多，单通道采样率越低。它是“看信号质量”的入门工具，不是“看 100 MHz 时钟眼图”的工具。照片：Draconichiaro，[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)，[Wikimedia Commons](https://commons.wikimedia.org/wiki/File:RIGOL_DS1054Z_Digital_Storage_Oscilloscope.jpg)。
 
 ![8 通道逻辑分析仪：协议解码与多路时序，不替代示波器](/images/tools/logic-analyzer-8ch.jpg)
 
-逻辑分析仪的通道数多、能解码协议，但它把模拟世界压成 0/1；图中这种 8 通道分析仪的 24 MHz 采样是标称值，测 10 MHz 信号时每 bit 只有 2.4 个采样点，边沿与毛刺都不可信。
+逻辑分析仪的通道数多、能解码协议，但它把模拟世界压成 0/1；图中这种 8 通道分析仪的 24 MHz 采样是标称值，测 10 MHz 信号时每 bit 只有 2.4 个采样点，边沿与毛刺都不可信。照片：Dilshan Jayakody，[CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0)，[Wikimedia Commons](https://commons.wikimedia.org/wiki/File:8_Channel_USB_logic_analyzer_(5172098012).jpg)。
 
 **万用表**读的是平均值。它适合确认电源轨的直流值、平均电流、通断与电阻；不适合读电机启动、无线发射、LED 脉冲调光这类 μs/ms 级峰值。
 

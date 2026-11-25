@@ -52,6 +52,10 @@ STM32 是意法半导体（ST）基于 ARM Cortex-M 内核的 32 位微控制器
 
 三条采购纪律：ST-Link 克隆先确认能被主机识别再扩展；USB-TTL 必须 3.3 V 电平档（5 V 直连 IO 会伤芯片）；共地永远先于信号（[第 45 章](../v7-delivery/45-troubleshooting-handbook.md) 的规则之二）。第二阶段再考虑 F407/ESP32-S3 的实战线装备，不提前囤。
 
+![BluePill 面包板实拍：USB-TTL 串口模块已接线；这不是 ST-Link/SWD 烧录接线](/images/boards/bluepill-stm32f103c8t6-breadboard.jpg)
+
+实物参照照，作者 Paul Gallagher，[MIT](https://github.com/tardate/LittleArduinoProjects/blob/018885e631bf0a6f874c57d9165e5f0ee3575d02/LICENSE)；只用于识别面包板、BluePill 与 USB-TTL 模块，不证明串口已连通。
+
 ## 三、装环境
 
 第一次点灯使用 `examples/gpio-blink` 的完整工程。准备 Git、GNU Arm 工具链（含 newlib）、CMake ≥3.21 和 Ninja；下载另装 OpenOCD。先检查下面四条命令都有版本输出，找不到命令就先修 PATH：

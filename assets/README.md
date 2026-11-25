@@ -2,7 +2,7 @@
 
 > **这一层是合并前的素材库，正文不读 `assets/`。** 合并版站点图在 `docs/public/{anim,arch,figures,images}`，由 `book/build_html.py` 打包进书；`assets/` 里的 SVG 与 GIF 供公众号（`tools/md2mp.py`）和讲解片（`tools/narration.py`、`tools/gen_narrated.py`）复用，另有一部分是合并前版本的留存。
 >
-> 本目录的 SVG / GIF 由本项目代码生成；`assets/photos/` 的五张第三方实拍保持原许可（CC0 ×2、CC BY-SA 4.0 ×2、MIT ×1），作者、原图页、处理方式与校验和见 `assets/photos/README.md`。
+> 本目录的 SVG / GIF 由本项目代码生成；`assets/photos/` 的十四张第三方实拍保持原许可（CC0 ×4、CC BY-SA 4.0 ×4、CC BY-SA 2.0 ×3、MIT ×3），作者、原图页、处理方式与校验和见 `assets/photos/README.md`。
 > 生成脚本在 `tools/`，修改后重新运行即可再生成：
 >
 > ```bash
@@ -76,6 +76,7 @@
 | `f103zet6-dev.svg` | 战舰/正点原子风格大板 | STM32F103ZET6 |
 | `pinout-bluepill.svg` | BluePill 双排针引脚全标注图（静态） | STM32F103C8T6 |
 | `peripheral-wiring.svg` | 辅图：接线总览。文件不重画。一张 APP 和放不下的第二张在静态主图上 | — |
+| `stlink-v2-swd-wiring.svg` | ST-Link/V2 与目标板的 SWD 接线职责 | 自绘矢量接线图；标出最小集、VTref、NRST 与 SWO，非实拍 |
 | `pinout-stm32g071rb-lqfp64.svg` | G071RB LQFP64 引脚（DS12232 Rev 5 Table 12） | STM32G071RB |
 | `pinout-stm32l476rg-lqfp64.svg` | L476Rx LQFP64 引脚（DS10198 Rev 11 Figure 16） | STM32L476RG |
 | `pinout-stm32h743zi-lqfp144.svg` | H743xI LQFP144 引脚（DS12110 Rev 11 Figure 7） | STM32H743ZI |
@@ -86,6 +87,18 @@
 | --- | --- | --- |
 | `nucleo-f411re-embedded-world.jpg` | Nucleo-F411RE | Ordercrazy / Thomas Springer，CC0；用于识别 Nucleo-64 布局，不得标成 L476RG |
 | `nucleo-f401re-embedded-world.jpg` | Nucleo-F401RE | Ordercrazy / Thomas Springer，CC0；用于识别 Nucleo-64 布局，不得标成 L476RG |
+| `bluepill-stm32f103c8t6.jpg` | Blue Pill 开发板（STM32F103C8T6） | Avandalen，CC BY-SA 4.0；板卡识别 |
+| `bluepill-stm32f103c8t6-popolon.jpg` | Blue Pill / Core Learning Board（STM32F103C8T6） | Popolon，CC BY-SA 4.0；板卡识别 |
+| `bluepill-stm32f103c8t6-tardate-usb.jpg` | Blue Pill USB 供电、板载灯点亮 | Paul Gallagher，MIT；不判定灯位 |
+| `bluepill-stm32f103c8t6-breadboard.jpg` | BluePill 面包板 + USB-TTL 串口接线 | Paul Gallagher，MIT；不是 SWD 接线 |
+| `stm32f4-discovery-9067300323.jpg` | STM32F4 Discovery 开发板 | Teardown Central，CC BY-SA 2.0；板卡识别 |
+| `stlink-v2-swd-connector.jpg` | ST-Link/V2 与 48-pin F103 的 SWD 四线接线 | Paul Gallagher，MIT；接线形态参考，非烧录证据 |
+| `logic-analyzer-8ch.jpg` | 8 通道 USB 逻辑分析仪 | Dilshan Jayakody，CC BY-SA 2.0；仪器形态参考 |
+| `oscilloscope-ds1054z.jpg` | RIGOL DS1054Z 四通道示波器 | Draconichiaro，CC BY-SA 4.0；仪器形态参考 |
+| `multimeter-dt830d.jpg` | DT830D 数字万用表 | Ranjithkumar Murugesan，CC0；仪器形态参考 |
+| `eeprom-24c02.jpg` | 24C02 SOIC-8 EEPROM | Cole L，CC BY-SA 2.0；器件封装参考 |
+| `stm32f407-board.jpg` | 第三方 STM32F407 LQFP100 开发板 | Ordercrazy / Thomas Springer，CC0；板卡识别 |
+| `esp32s3-wroom1-module.jpg` | ESP32-S3-WROOM-1-N16R8 模组与开发板 | VectorVoyager，CC BY-SA 4.0；模组识别 |
 
 完整来源、原图页、处理尺寸和 SHA-256 见 [`photos/README.md`](photos/README.md)。NUCLEO-L476RG 的具体焊桥、跳线和硬件版本以 ST 官方产品页与 UM1724 为准。
 
