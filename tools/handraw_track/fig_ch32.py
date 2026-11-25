@@ -46,12 +46,12 @@ def state_machine():
     f.arrow(300, 215, 360, 215, color=BLUE_D)      # DISABLED->ARMED
     f.arrow(560, 215, 640, 215, color=GREEN_D)     # ARMED->RUN
     f.arrow(740, 260, 740, 400, color=AMBER_STROKE)  # RUN->REVERSING
-    f.arrow(640, 445, 300, 445, color=RED)         # REVERSING->FAULT
+    f.arrow(640, 445, 300, 445, color=RED, bend=0.08)  # REVERSING->FAULT
     f.arrow(200, 400, 200, 260, color=MUTED)       # FAULT->DISABLED
     f.text(310, 198, "ARM", size=21, color=MUTED)
     f.text(570, 198, "SET_*", size=21, color=MUTED)
     f.text(754, 330, "换向", size=21, color=MUTED)
-    f.text(440, 432, "3s 超时 / 故障位", size=21, color=MUTED)
+    f.text(440, 410, "3s 超时 / 故障位", size=21, color=MUTED)
     f.text(216, 330, "CLEAR", size=21, color=MUTED)
     f.rect(80, 560, 992, 110, color=RED, fill=WHITE, r=8)
     f.htext(W / 2, 606, "优先级：故障（F01~F06）> STOP > 换向；故障锁存，不人工 CLEAR 不自恢复",
@@ -75,12 +75,13 @@ def tuning_ladder():
     ]
     y = 140
     for name, ok, back in steps:
-        f.rect(80, y, 560, 84, color=GREEN_D, fill=WHITE, r=8)
+        f.rect(80, y, 520, 84, color=GREEN_D, fill=WHITE, r=8)
         f.htext(110, y + 52, name, size=24, color=GREEN_D, weight="bold")
-        f.rect(668, y, 180, 84, color=INK, fill=WHITE, r=8)
-        f.multi(684, y + 36, [ok], size=20, color=INK, lh=26)
-        f.rect(872, y, 200, 84, color=RED, fill=WHITE, r=8)
-        f.multi(888, y + 36, ["回退: " + back], size=20, color=RED, lh=26)
+        f.rect(616, y, 210, 84, color=INK, fill=WHITE, r=8)
+        f.multi(632, y + 47, [ok], size=19, color=INK, lh=26)
+        f.rect(842, y, 230, 84, color=RED, fill=WHITE, r=8)
+        f.text(858, y + 27, "回退：", size=14, color=RED, font=SMALL)
+        f.multi(858, y + 57, [back], size=18, color=RED, lh=22)
         y += 100
     f.multi(90, 760, ["参数只适用于记录的装置 —— 换电机/电源/减速比/采样周期，从第 1 步重做"],
             size=23, color=MUTED, lh=34)
