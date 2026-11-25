@@ -91,7 +91,7 @@ EEPROM 双槽与 NVS 单 blob 的取舍：双槽能在断电时回退到上一�
 
 ### 五、配置三态与双槽提交
 
-配置有三个状态，两板都要分清：**configure** 只改 RAM（立刻生效但不持久）；**save** 才持久化；**重启加载**的是最近一次 save 的版本；改了没 save，重启就回到旧配置（两份来源的「断电押注」段）。EEPROM 双槽的实现：2×128 B 槽，按 8 字节页边界写前 127 字节，最后写提交标记；启动时挑「最新且有效 generation」的槽：标记没写完（断电）就选旧槽。NVS 单 blob 一次 commit 原子生效；「单 blob 最大 1984 字节」是 IDF 版本相关常量，标待核。
+配置有三个状态，两板都要分清：**configure** 只改 RAM（立刻生效但不持久）；**save** 才持久化；**重启加载**的是最近一次 save 的版本；改了没 save，重启就回到旧配置（两份来源的「断电押注」段）。EEPROM 双槽的实现：2×128 B 槽，按 8 字节页边界写前 127 字节，最后写提交标记；启动时挑「最新且有效 generation」的槽：标记没写完（断电）就选旧槽。NVS 单 blob 一次 commit 原子生效；不要把「1984 B」当作通用上限。ESP-IDF v5.5.2 的 [`BLOB_IDX` 校验](https://github.com/espressif/esp-idf/blob/v5.5.2/components/nvs_flash/src/nvs_types.cpp#L90)给出结构上限 `(UINT8_MAX/2) × (126−1) × 32 = 508,000 B`；[`writeMultiPageBlob()`](https://github.com/espressif/esp-idf/blob/v5.5.2/components/nvs_flash/src/nvs_storage.cpp#L288)还按分区页数与 `CHUNK_ANY` 限制实际可写页数。真实上限因此受分区大小、剩余空间、键与索引开销共同影响。默认 `nvs` 分区为 `0x6000`（24 KiB，见[第 30 章](../v4-platforms/30-esp32s3-architecture-boot.md)），本例 128 B 配置本身远小于分区容量；实际能否写入仍看当时剩余空间。要写大 blob 时先锁定分区表再算，不套固定字节数。
 
 ### 六、故障注入：四命令
 
@@ -122,7 +122,7 @@ EEPROM 双槽与 NVS 单 blob 的取舍：双槽能在断电时回退到上一�
 | 期限判据（2500/1500/50 ms） | 代码核对 | `health.c` 比较 `now-last_ms >= deadline`；2500/100=25 个周期，不是 20 次计数 |
 | F407 中断配置（IRQ56、优先级 6≥5） | 手册级 | [v3-rtos 24 章](../v3-rtos/24-queue-semaphore-notification.md) 已核规则 + 向量表 |
 | EEPROM 双槽/页 8 B/提交标记 | 手册级 | AT24C02 datasheet（写周期 5 ms） |
-| NVS blob 1984 B 上限 | 来源说法待核 | IDF 版本相关常量 |
+| NVS blob 上限 | 源码静态事实 | IDF v5.5.2：`nvs_types.cpp:90` 结构上限 508,000 B；`nvs_storage.cpp:288` 受分区页数限制；常量见 `nvs_constants.h:21-28` |
 | 姿态换算 ±4g→8192、±512dps→64 | 来源说法待核 | 两源一致；手册灵敏度表未逐项复核 |
 | 「S3 有 512 KB SRAM」 | 来源说法待核 | S3 为 512 KB SRAM + PSRAM，说法可核未核 |
 | fault 四命令 | 未实测（预期逻辑结果） | 原文自带限定 |

@@ -1,0 +1,12 @@
+{
+  "status": "SWEEP_UNAVAILABLE",
+  "provider": "nvidia",
+  "model": "moonshotai/kimi-k2-thinking",
+  "attemptedOn": "2026-11-25",
+  "error": "HTTP 410 with no response body",
+  "undeclared": [],
+  "stale_rows": [],
+  "semantic_undeclared": null,
+  "verdict": null,
+  "note": "No independent review was obtained. Do not claim external acquittal or a clean sweep."
+}
