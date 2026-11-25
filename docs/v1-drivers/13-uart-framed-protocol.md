@@ -309,7 +309,7 @@ CRC 的边界要说清：它能检出随机损坏，比如单比特错与突发�
 
 ![C8 帧协议：字节流逐字节进入 EMPTY/COLLECT/DISCARD 状态机，坏帧与重新同步一图看完](/anim/c08-frame-parse.svg)
 
-当前F103对照 `examples/uart-dma-idle/main.c` 使用DMA_NORMAL：HT只通知进度，不停止接收，因此回调忽略HT，不复制前缀也不重装；在IDLE/TC终止后复制Size字节一次，再检查ReceiveToIdle重装返回。重装失败沿用error_handler明确停机，不宣称自动恢复或连续无损。生产回调的宿主替身测试覆盖HT32→IDLE40不重复、TC及失败返回；这不是F407循环DMA的增量消费实现，也不是F103全工程/上板验证。集成HAL须真实具备ReceiveToIdle及GetRxEventType接口。
+当前F103对照 `examples/uart-dma-idle` 已是固定 BluePill/STM32F103C8T6 的完整 CMake 工程：使用DMA_NORMAL，HT只通知进度、不停止接收，回调忽略HT，不复制前缀也不重装；在IDLE/TC终止后复制Size字节一次，再检查ReceiveToIdle重装返回。重装失败沿用error_handler明确停机，不宣称自动恢复或连续无损。宿主替身测试覆盖HT32→IDLE40不重复、TC及失败返回；ARM固件构建、向量/内存检查也已通过。这不是F407循环DMA的增量消费实现，也不是上板验证；真实串口、DMA时序与吞吐仍待实测。
 
 ### 与第 14 章 DMA 的分工
 
