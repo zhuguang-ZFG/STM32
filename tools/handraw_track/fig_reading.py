@@ -15,7 +15,7 @@ LABEL_FONT = HAND
 
 def plate(stem, title, subtitle):
     figure = Fig(stem, title)
-    label = partial(figure.text, font=LABEL_FONT, halo=False, hand_min=18)
+    label = partial(figure.text, font=LABEL_FONT, halo=False)
     label(64, 142, subtitle, size=23, color=MUTED)
     return figure, label
 
