@@ -68,7 +68,7 @@ def linker_sections():
             weight="bold")
     f.htext(cx, cy + 24, "Handler", size=22, color=INK, anchor="middle",
             weight="bold")
-    f.text(cx, cy + 92, "main 之前跑完", size=19, color=MUTED,
+    f.text(cx, cy + 86, "main 之前跑完", size=19, color=MUTED,
            anchor="middle")
 
     # copy .data: Flash bottom block to SRAM top block
@@ -81,7 +81,7 @@ def linker_sections():
 
     # zero .bss: from handler down-right
     f.arrow(cx + 66, cy + 18, sx - 8, 362, color=BLUE, sw=2.5, bend=0.12)
-    f.text(576, 500, "清 .bss", size=20, color=BLUE, anchor="middle")
+    f.text(576, 516, "清 .bss", size=20, color=BLUE, anchor="middle")
 
     # bottom truths
     f.htext(576, 700, ".data 有两个住址：LMA 在 Flash，VMA 在 RAM",
