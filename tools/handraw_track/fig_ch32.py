@@ -21,7 +21,8 @@ def pi_step():
         "u_try = 2×(−10) − 0.05 = −20.05‰ → 负输出 = 要求反向驱动",
     ], size=25, color=INK, lh=40)
     f.multi(90, 610, [
-        "Kp=2.0 ‰/rpm · Ki=0.5 ‰/(rpm·s) · i_limit=500‰ · duty_limit=900‰ · 斜坡 600 rpm/s",
+        "Kp=2.0 ‰/rpm · Ki=0.5 ‰/(rpm·s)",
+        "i_limit=500‰ · duty_limit=900‰ · 斜坡 600 rpm/s",
         "负目标必须能产生负输出 —— 旧实现 fabsf 会彻底失效的地方：负反馈环要有方向概念",
     ], size=24, color=INK, lh=38)
     return f
