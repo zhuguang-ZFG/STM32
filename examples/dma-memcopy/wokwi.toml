@@ -1,0 +1,6 @@
+# Wokwi 工程配置。先按 README 构建 BluePill ELF。
+# Wokwi/主机测试都不代替真板 DMA、向量或仪器证据。
+[wokwi]
+version = 1
+firmware = 'build/bluepill/dma-memcopy.elf'
+elf = 'build/bluepill/dma-memcopy.elf'
