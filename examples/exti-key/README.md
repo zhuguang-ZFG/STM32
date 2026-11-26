@@ -75,13 +75,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)   /* 运行在中断上下文 */
 
 ```c
 if (g_key_event) {
-    __disable_irq(); g_key_event = 0; __enable_irq();   /* 临界区保护标志 */
     HAL_Delay(KEY_DEBOUNCE_MS);                          /* 等抖动过去 */
+    __disable_irq(); g_key_event = 0; __enable_irq();    /* 再清标志 */
     if (HAL_GPIO_ReadPin(KEY_PORT, KEY_PIN) == GPIO_PIN_RESET) {
         HAL_GPIO_TogglePin(LED_PORT, LED_PIN);           /* 确认按下才翻转 */
     }
 }
 ```
+
+清标志必须在延时之后。若先清再延时，窗口内的抖动边沿会再次把标志置 1，同一次按压就在下一轮被当成第二次事件再翻转一次；放在延时之后，窗口内的边沿被一并吸收。代价是 20 ms 内开始的第二次真实按下会被丢掉。
 
 `volatile` 让编译器每次都从内存读 `g_key_event`，不会被优化成寄存器缓存。
 
@@ -106,8 +108,8 @@ python tests/check_firmware.py build/bluepill/exti-key.elf build/bluepill/exti-k
 
 | 产物 | 结果 |
 | --- | --- |
-| BIN | 4836 B；SHA-256 `52f1bf059742ddad88e8c4b7a97e393d6b85fc3cc8b9895936090d563d0b67b8` |
-| ELF | SHA-256 `d12bf95cd159e24d53e6c5844d76b810bd862219da35a60ff57f240ca31f0da1` |
+| BIN | 4836 B；SHA-256 `b5f9b6138f5c5f96d7472f5150087a552ec3849358348e919b76a0d3264ab681` |
+| ELF | SHA-256 `5c2b0a4633752d4cdbfe9fd83e89db1d4e268b31c795a199557b3028b885daef` |
 | Flash | 4836 B / 64 KiB |
 | 静态 RAM | 24 B / 20 KiB |
 | 栈预留 | 2048 B；总计 2072 B / 20 KiB |
@@ -122,7 +124,7 @@ cmake --build --preset host-tests
 ctest --preset host-tests
 ```
 
-测试把生产 `main.c` 连同 `EXTI0_IRQHandler`、`HAL_GPIO_EXTI_Callback`、`key_process` 一起编译，用受控 HAL 替身覆盖：上电初始化顺序与引脚配置、NVIC 优先级与使能、AFIO 时钟、中断到回调的链路、按下接受/释放拒绝、无事件不延时、连续 IRQ 只翻转一次、四次有效事件的交替。它只证明生产控制流，不证明真实 HAL 时序、抖动波形或板上行为。
+测试把生产 `main.c` 连同 `EXTI0_IRQHandler`、`HAL_GPIO_EXTI_Callback`、`key_process` 一起编译，用受控 HAL 替身覆盖：上电初始化顺序与引脚配置、NVIC 优先级与使能、AFIO 时钟、中断到回调的链路、按下接受/释放拒绝、无事件不延时、连续 IRQ 只翻转一次、消抖窗口内的抖动边沿被吸收、四次有效事件的交替。它只证明生产控制流，不证明真实 HAL 时序、抖动波形或板上行为。
 
 编译成功后，核对 BOOT0=0、PA13/PA14 保留 SWD、PA0 与 GND 的接线，再执行下载：
 
@@ -137,7 +139,7 @@ openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program build/bluepil
 ## 六、预期现象（理论与设计目标，未实测）
 
 - 上电后 LED 熄灭；每按一次 PA0 按键，LED 亮/灭翻转一次；
-- 20 ms 后复核为低才翻转；ISR 只置一个标志位，处理期间再次到来的中断不会排队成第二次翻转；
+- 20 ms 后复核为低才翻转；标志在延时之后才清，同一次按压的抖动边沿不会排成第二次翻转；20 ms 内开始的第二次真实按下会被丢弃；
 - 没有完整的按下/释放状态机，快速连按与机械抖动是否重复翻转仍待测，不能承诺一次物理按压只产生一个事件；
 - `error_handler()` 是终止点：时钟配置失败时关中断原地停留，LED 不再变化。它不是可恢复路径；
 - 后续取证记录原始 IRQ 计数与有效翻转次数；断点会改变时序，不以一次快照宣称消抖通过。

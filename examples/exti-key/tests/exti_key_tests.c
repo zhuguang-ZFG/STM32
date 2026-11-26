@@ -38,6 +38,7 @@ static uint32_t nvic_enabled_irq;
 static uint32_t delay_calls;
 static uint32_t total_delay_ms;
 static uint32_t delay_limit;
+static uint32_t bounce_during_delay;
 static uint32_t irq_disable_calls;
 static uint32_t irq_enable_calls;
 static GPIO_PinState key_level;
@@ -57,6 +58,11 @@ void HAL_Delay(uint32_t delay_ms)
 {
     delay_calls++;
     total_delay_ms += delay_ms;
+    if (bounce_during_delay > 0U)
+    {
+        bounce_during_delay--;
+        HAL_GPIO_EXTI_Callback(KEY_PIN);   /* a bounce edge inside the window */
+    }
     if (delay_calls >= delay_limit) { longjmp(test_exit, 1); }
 }
 
@@ -155,6 +161,7 @@ static void reset_state(void)
     delay_calls = 0;
     total_delay_ms = 0;
     delay_limit = 1000U;
+    bounce_during_delay = 0;
     irq_disable_calls = 0;
     irq_enable_calls = 0;
     key_level = GPIO_PIN_RESET;
@@ -213,9 +220,9 @@ static void test_boot_sequence(void)
     assert(exti_handler_calls == 0U);        /* no interrupt while booting */
     assert(delay_calls == 1U);               /* first loop pass reaches debounce */
     assert(total_delay_ms == KEY_DEBOUNCE_MS);
-    assert(irq_disable_calls == 1U);
-    assert(irq_enable_calls == 1U);
-    assert(g_key_event == 0U);               /* flag cleared before the delay */
+    assert(irq_disable_calls == 0U);         /* stopped inside the delay */
+    assert(irq_enable_calls == 0U);
+    assert(g_key_event == 1U);               /* flag is cleared only after the delay */
 }
 
 static void test_vector_reaches_callback(void)
@@ -290,6 +297,29 @@ static void test_irq_burst_coalesces_to_one_toggle(void)
     assert(g_key_event == 0U);
 }
 
+/* The debounce window must absorb edges of the same press. Clearing the flag
+ * before HAL_Delay() lets a bounce re-arm it and toggle twice for one press. */
+static void test_bounce_inside_debounce_window_is_absorbed(void)
+{
+    reset_state();
+    key_level = GPIO_PIN_RESET;
+    EXTI0_IRQHandler();                      /* real vector → callback: event set */
+    assert(g_key_count == 1U);
+
+    bounce_during_delay = 1;                 /* second edge lands inside the 20 ms window */
+    key_process();
+
+    assert(toggle_count == 1U);              /* one press, one toggle */
+    assert(g_key_count == 2U);               /* raw IRQ count still visible */
+    assert(g_key_event == 0U);               /* the bounce edge was consumed, not queued */
+    assert(delay_calls == 1U);
+    assert(total_delay_ms == KEY_DEBOUNCE_MS);
+
+    key_process();                           /* no new edge, key still held low */
+    assert(toggle_count == 1U);
+    assert(delay_calls == 1U);
+}
+
 static void test_toggles_alternate(void)
 {
     reset_state();
@@ -312,6 +342,7 @@ int main(void)
     test_released_key_is_rejected();
     test_no_event_does_nothing();
     test_irq_burst_coalesces_to_one_toggle();
+    test_bounce_inside_debounce_window_is_absorbed();
     test_toggles_alternate();
 
     puts("PASS exti-key: production EXTI0/key code with HAL boundary doubles; "
