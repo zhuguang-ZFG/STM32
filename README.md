@@ -224,23 +224,24 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 示例以**完整可编译**的 HAL 代码为主；`spl-f1-blink` 是冻结 SPL V3.5.0 的 CMake 工程。
 每个 README 给出硬件接线、配置边界、关键代码、构建/烧录、预期现象与排错方法。
 
-| 示例 | 难度 | 涉及外设 | 对应章节 |
+| 示例 | 难度 | 涉及外设 | 对应章节（合并书章号） |
 | --- | --- | --- | --- |
-| [spl-f1-blink](examples/spl-f1-blink/) | ★★ | SPL GPIO + SysTick + CMake/OpenOCD | 01 / 26 |
-| [gpio-blink](examples/gpio-blink/) | ★ | GPIO 推挽输出 | 03 |
-| [exti-key](examples/exti-key/) | ★★ | EXTI + NVIC + 消抖 | 04 |
-| [timer-pwm](examples/timer-pwm/) | ★★ | TIM PWM 输出 | 05 |
-| [uart-dma-idle](examples/uart-dma-idle/) | ★★★ | UART + DMA + IDLE + 环形缓冲 | 06 / 10 |
-| [dma-memcopy](examples/dma-memcopy/) | ★★★☆ | DMA1 Channel1 内存到内存 + 4 KiB SRAM 缓冲 | 14 |
-| [i2c-oled](examples/i2c-oled/) | ★★★ | 硬件 I2C + SSD1306 | 07 |
-| [spi-flash](examples/spi-flash/) | ★★★ | SPI + W25Q64 | 08 |
-| [adc-dma](examples/adc-dma/) | ★★★ | ADC 多通道 + DMA + 滤波 | 09 / 10 |
-| [rtc-alarm](examples/rtc-alarm/) | ★★ | RTC + 闹钟 + 备份域 | 11 |
-| [freertos-task](examples/freertos-task/) | ★★★★ | FreeRTOS 多任务 + 队列 | 15 |
-| [iap-bootloader](examples/iap-bootloader/) | ★★★★ | Flash 编程 + 跳转 APP | 12 |
-| [can-bxcan](examples/can-bxcan/) | ★★★★ | bxCAN 环回 / 过滤器 / Bus-Off | 13 |
-| [usb-cdc](examples/usb-cdc/) | ★★★★ | USB CDC 虚拟串口 | 14 |
-| [usb-hid](examples/usb-hid/) | ★★★★ | USB HID 键盘 | 14 |
+| [spl-f1-blink](examples/spl-f1-blink/) | ★★ | SPL GPIO + SysTick + CMake/OpenOCD | ch05 / ch07 |
+| [gpio-blink](examples/gpio-blink/) | ★ | GPIO 推挽输出 | ch09 |
+| [exti-key](examples/exti-key/) | ★★ | EXTI + NVIC + 消抖 | ch10 |
+| [timer-pwm](examples/timer-pwm/) | ★★ | TIM PWM 输出 | ch12 |
+| [uart-dma-idle](examples/uart-dma-idle/) | ★★★ | UART + DMA + IDLE + 环形缓冲 | ch13 / ch14 |
+| [dma-memcopy](examples/dma-memcopy/) | ★★★☆ | DMA1 Channel1 内存到内存 + 4 KiB SRAM 缓冲 | ch14 |
+| [i2c-oled](examples/i2c-oled/) | ★★★ | 硬件 I2C + SSD1306 | ch16 |
+| [spi-flash](examples/spi-flash/) | ★★★ | SPI + W25Q64 | ch16 |
+| [adc-dma](examples/adc-dma/) | ★★★ | ADC 多通道 + DMA + 滤波 | ch15 / ch14 |
+| [rtc-alarm](examples/rtc-alarm/) | ★★ | RTC + 闹钟 + 备份域 | ch11 |
+| [freertos-task](examples/freertos-task/) | ★★★★ | FreeRTOS 多任务 + 队列 | ch22 |
+| [iap-bootloader](examples/iap-bootloader/) | ★★★★ | Flash 编程 + 跳转 APP | ch17 |
+| [can-bxcan](examples/can-bxcan/) | ★★★★ | bxCAN 环回 / 过滤器 / Bus-Off | ch35 |
+| [usb-cdc](examples/usb-cdc/) | ★★★★ | USB CDC 虚拟串口 | ch35 |
+| [usb-hid](examples/usb-hid/) | ★★★★ | USB HID 键盘 | ch35 |
+| [motor-dc-speed](examples/motor-dc-speed/) | ★★★ | TIM PWM + 编码器测速 + 闭环 PI（dc-openloop / dc-encoder / dc-speed 三个预设） | ch37–ch39 |
 
 速查表（打印出来贴显示器旁边那种）：
 

@@ -1,6 +1,6 @@
 # usb-hid —— 全速 USB 键盘
 
-> 难度：★★★★　｜　涉及外设：USB Device FS + GPIO　｜　对应章节：[14 USB](../../docs/14-USB.md)
+> 难度：★★★★　｜　涉及外设：USB Device FS + GPIO　｜　对应章节：[第 35 章 现场总线与 USB](../../docs/v4-platforms/35-can-usb-fieldbus.md)
 
 ## 一、功能说明
 

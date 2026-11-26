@@ -1,6 +1,6 @@
 # spi-flash —— 硬件 SPI 驱动 W25Q64
 
-> 难度：★★★☆　｜　涉及外设：SPI + W25Q64　｜　对应章节：[08 SPI 总线](../../docs/08-SPI总线.md)
+> 难度：★★★☆　｜　涉及外设：SPI + W25Q64　｜　对应章节：[第 16 章 I2C 与 SPI](../../docs/v1-drivers/16-i2c-spi.md)
 
 <p align="center">
   <img src="../../assets/animations/spi-transfer.svg" width="760" alt="SPI 全双工移位与四种模式时序">

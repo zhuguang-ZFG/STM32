@@ -1,6 +1,6 @@
 # iap-bootloader —— IAP 串口升级 Bootloader
 
-> 难度：★★★★　｜　涉及外设：USART + Flash　｜　对应章节：[12 Flash 与 IAP 升级](../../docs/12-Flash与IAP升级.md)
+> 难度：★★★★　｜　涉及外设：USART + Flash　｜　对应章节：[第 17 章 Flash、IAP 与 OTA](../../docs/v1-drivers/17-flash-iap-ota.md)
 
 <p align="center">
   <img src="../../assets/animations/flash-iap.svg" width="760" alt="IAP 在线升级 Bootloader + APP 双区跳转">

@@ -1,6 +1,6 @@
 # rtc-alarm —— RTC 闹钟 + 唤醒中断 + 时间戳记录
 
-> 难度：★★★☆　｜　涉及外设：RTC + PWR（STOP）+ 备份域　｜　对应章节：[11 RTC 与看门狗](../../docs/11-RTC与看门狗.md)
+> 难度：★★★☆　｜　涉及外设：RTC + PWR（STOP）+ 备份域　｜　对应章节：[第 11 章 SysTick 与时基（含 RTC）](../../docs/v1-drivers/11-systick-timebase-rtc.md)
 
 <p align="center">
   <img src="../../assets/animations/lowpower-wakeup.svg" width="760" alt="低功耗模式与唤醒源">

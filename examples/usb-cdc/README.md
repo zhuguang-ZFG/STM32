@@ -1,6 +1,6 @@
 # usb-cdc —— 全速 USB 虚拟串口
 
-> 难度：★★★★　｜　涉及外设：USB Device FS　｜　对应章节：[14 USB](../../docs/14-USB.md)
+> 难度：★★★★　｜　涉及外设：USB Device FS　｜　对应章节：[第 35 章 现场总线与 USB](../../docs/v4-platforms/35-can-usb-fieldbus.md)
 
 ## 一、功能说明
 

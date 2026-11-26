@@ -1,6 +1,6 @@
 # freertos-task —— FreeRTOS 三任务 + 队列 + 信号量 + FromISR
 
-> 难度：★★★★　｜　涉及外设：GPIO/EXTI/USART + FreeRTOS　｜　对应章节：[15 FreeRTOS 入门](../../docs/15-FreeRTOS入门.md)
+> 难度：★★★★　｜　涉及外设：GPIO/EXTI/USART + FreeRTOS　｜　对应章节：[第 22 章 任务、TCB 与调度](../../docs/v3-rtos/22-tasks-tcb-scheduler.md)
 
 <p align="center">
   <img src="../../assets/animations/freertos-scheduler.svg" width="760" alt="FreeRTOS 任务状态迁移与抢占式调度">
