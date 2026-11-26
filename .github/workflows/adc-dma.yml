@@ -1,0 +1,48 @@
+name: ADC DMA
+
+on:
+  push:
+    branches: [main]
+    paths: ['examples/adc-dma/**', '.github/workflows/adc-dma.yml']
+  pull_request:
+    paths: ['examples/adc-dma/**', '.github/workflows/adc-dma.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install toolchain
+        run: |
+          sudo apt-get update -o Acquire::Retries=5
+          sudo apt-get install -y --no-install-recommends gcc-arm-none-eabi libnewlib-arm-none-eabi ninja-build
+          arm-none-eabi-gcc --version
+      - name: Fetch locked STM32CubeF1
+        shell: bash
+        run: |
+          git clone --depth 1 --branch v1.8.6 https://github.com/STMicroelectronics/STM32CubeF1.git "$RUNNER_TEMP/STM32CubeF1"
+          git -C "$RUNNER_TEMP/STM32CubeF1" submodule update --init Drivers/STM32F1xx_HAL_Driver Drivers/CMSIS/Device/ST/STM32F1xx
+      - name: Host regression tests
+        working-directory: examples/adc-dma
+        run: |
+          cmake --preset host-tests
+          cmake --build --preset host-tests
+          ctest --preset host-tests
+      - name: Build BluePill firmware and check the sampling chain
+        working-directory: examples/adc-dma
+        run: |
+          cmake --preset bluepill -DCUBEF1_PATH="$RUNNER_TEMP/STM32CubeF1"
+          cmake --build --preset bluepill
+          python tests/check_firmware.py build/bluepill/adc-dma.elf build/bluepill/adc-dma.bin
+      - uses: actions/upload-artifact@v5
+        with:
+          name: adc-dma-f103c8
+          path: |
+            examples/adc-dma/build/bluepill/adc-dma.*
+            examples/adc-dma/build/bluepill/licenses/
+          retention-days: 14

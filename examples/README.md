@@ -1,6 +1,6 @@
 # 示例代码总索引
 
-> 完整构建入口：`gpio-blink`（HAL + CMake）、`uart-dma-idle`（HAL + CMake + 宿主回归）、`dma-memcopy`（HAL + CMake + 宿主回归 + ELF/BIN 检查）、`spl-f1-blink`（SPL V3.5.0 + CMake）、`motor-dc-speed`（HAL + CMake）。其余例程为待集成源码，按各 README 配置启动、链接、时基与外设；不能只复制 main.c 就视为工程完整。
+> 完整构建入口：`gpio-blink`（HAL + CMake）、`uart-dma-idle`（HAL + CMake + 宿主回归）、`dma-memcopy`（HAL + CMake + 宿主回归 + ELF/BIN 检查）、`adc-dma`（HAL + CMake + 宿主回归 + ELF/BIN 检查）、`spl-f1-blink`（SPL V3.5.0 + CMake）、`motor-dc-speed`（HAL + CMake）。其余例程为待集成源码，按各 README 配置启动、链接、时基与外设；不能只复制 main.c 就视为工程完整。
 > 每个说明给出功能、硬件接线、配置要点、关键代码、编译烧录、预期现象和常见问题。
 >
 > 目标平台以 **STM32F103C8T6（BluePill）** 为主，涉及 F4 的差异在正文中单独标注。
@@ -17,7 +17,7 @@
 | [dma-memcopy](dma-memcopy/) | ★★★☆ | DMA1 Channel1 内存到内存 + 4 KiB SRAM 缓冲（完整 CMake 工程，宿主回归/ELF/BIN 检查通过，未上板） | [ch14 DMA](../docs/v1-drivers/14-dma.md) | BluePill；PC13 LED，无外部接线 |
 | [i2c-oled](i2c-oled/) | ★★★ | 硬件 I2C + SSD1306 | [ch16 I2C 与 SPI](../docs/v1-drivers/16-i2c-spi.md) | BluePill + 0.96" I2C OLED |
 | [spi-flash](spi-flash/) | ★★★ | 硬件 SPI + W25Q64 | [ch16 I2C 与 SPI](../docs/v1-drivers/16-i2c-spi.md) | BluePill + W25Q64 模块 |
-| [adc-dma](adc-dma/) | ★★★ | ADC 多通道 + DMA | [ch15 ADC 与 DAC 采样](../docs/v1-drivers/15-adc-dac-sampling.md) / [ch14 DMA](../docs/v1-drivers/14-dma.md) | BluePill + 电位器/传感器 |
+| [adc-dma](adc-dma/) | ★★★ | ADC 多通道 + DMA（完整 CMake 工程，宿主回归/ELF/BIN 检查通过，未上板） | [ch15 ADC 与 DAC 采样](../docs/v1-drivers/15-adc-dac-sampling.md) / [ch14 DMA](../docs/v1-drivers/14-dma.md) | BluePill + 电位器/传感器 |
 | [rtc-alarm](rtc-alarm/) | ★★ | RTC + PWR(STOP) + 备份域 | [ch11 时基与 RTC](../docs/v1-drivers/11-systick-timebase-rtc.md) | BluePill + 32.768kHz 晶振 + 纽扣电池 |
 | [freertos-task](freertos-task/) | ★★★★ | GPIO/EXTI/USART + FreeRTOS | [ch22 任务、TCB 与调度](../docs/v3-rtos/22-tasks-tcb-scheduler.md) | BluePill + 按键 + USB-TTL |
 | [iap-bootloader](iap-bootloader/) | ★★★★ | USART + Flash | [ch17 Flash、IAP 与 OTA](../docs/v1-drivers/17-flash-iap-ota.md) | BluePill + USB-TTL |
@@ -61,7 +61,7 @@ examples/
 ├── timer-pwm/
 ├── i2c-oled/
 ├── spi-flash/
-├── adc-dma/
+├── adc-dma/               ← 固定 HAL/CMSIS + CMake + ADC1 扫描 + DMA1_CH1 循环 + 宿主回归
 ├── rtc-alarm/
 ├── freertos-task/
 ├── iap-bootloader/
@@ -73,7 +73,7 @@ examples/
 
 ## 四、如何把示例跑起来
 
-第一次点灯先用 [gpio-blink](gpio-blink/README.md) 的固定 HAL 工程，从获取依赖到生成 ELF/BIN，再核对接线下载。`uart-dma-idle` 使用同一 CubeF1 依赖锁，提供 USART1 + DMA1 Channel5 的完整固件与宿主回归；`dma-memcopy` 提供 DMA1 Channel1 的 4 KiB 内存搬运、ELF/BIN 向量/内存检查与宿主回归；`spl-f1-blink` 按其 README 设置冻结 SPL 源码的 `SPL_ROOT`；`motor-dc-speed` 按其 README 配置固定 CubeF1 和预设。这五个目录直接走各自的 CMake 入口，构建通过均不等于硬件已实测。
+第一次点灯先用 [gpio-blink](gpio-blink/README.md) 的固定 HAL 工程，从获取依赖到生成 ELF/BIN，再核对接线下载。`uart-dma-idle` 使用同一 CubeF1 依赖锁，提供 USART1 + DMA1 Channel5 的完整固件与宿主回归；`dma-memcopy` 提供 DMA1 Channel1 的 4 KiB 内存搬运、ELF/BIN 向量/内存检查与宿主回归；`adc-dma` 提供 ADC1 三通道扫描 + DMA1 Channel1 循环采集、去交错平均与滑动平均的完整固件、ELF/BIN 检查与宿主回归；`spl-f1-blink` 按其 README 设置冻结 SPL 源码的 `SPL_ROOT`；`motor-dc-speed` 按其 README 配置固定 CubeF1 和预设。上述目录直接走各自的 CMake 入口，构建通过均不等于硬件已实测。
 
 其余待集成例程：
 
