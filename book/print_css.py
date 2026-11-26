@@ -265,6 +265,28 @@ pre .o, .ow { color: var(--ink); }
 /* 插图高度上限：A4 版心 257mm，一张超过 150mm 的图会把正文全推到下一页
    留下空白纸。150mm 是大多数图仍然清晰可读、同时留在当前页的上限。 */
 figure img, figure svg { max-height: 150mm; max-width: 100%; width: auto; }
+figure.book-figure.fig-s img,
+figure.book-figure.fig-s svg {
+  max-height: 72mm;
+  max-width: 100%;
+  width: auto;
+}
+figure.book-figure.fig-m img,
+figure.book-figure.fig-m svg {
+  max-height: 150mm;
+  max-width: 100%;
+  width: auto;
+}
+figure.book-figure.fig-l.landscape {
+  max-height: 170mm;
+  overflow: hidden;
+}
+figure.book-figure.fig-l.landscape img,
+figure.book-figure.fig-l.landscape svg {
+  max-height: 150mm;
+  max-width: 100%;
+  width: auto;
+}
 /* 宽幅图：命名的横向页面让宽图独占一页，正文回竖版 */
 @page plate-landscape { size: A4 landscape; margin: 21mm 17mm 19mm; }
 figure.landscape { page: plate-landscape; break-before: page;

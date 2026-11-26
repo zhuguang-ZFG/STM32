@@ -548,12 +548,44 @@ def ch13_dma_resync():
     return figure
 
 
+def ch06_size_audit_flow():
+    figure, label = plate(
+        "ch06-size-audit-flow",
+        "三份证据对一笔账",
+        "size 看总量，nm 看大符号，map 看段与地址；三者一致才下结论。",
+    )
+    inputs = [
+        (64, "arm-none-eabi-size", "text/data/bss\n总量与余量", BLUE_D, BLUE_FILL),
+        (404, "nm --size-sort -r", "谁最大\n符号级证据", GREEN_D, GREEN_FILL),
+        (744, "map / ld", "落在哪一段\n地址与归属", AMBER_STROKE, AMBER_PALE),
+    ]
+    for x, title, body, stroke, fill in inputs:
+        figure.rect(x, 214, 304, 168, color=stroke, fill=fill)
+        label(x + 20, 252, title, size=24, color=stroke, weight="bold")
+        for i, line in enumerate(body.split("\n")):
+            label(x + 20, 296 + i * 34, line, size=22, color=INK)
+        figure.arrow(x + 152, 388, x + 152, 444, color=stroke, bend=0)
+    figure.rect(248, 450, 656, 104, color=RED, fill=RED_FILL)
+    label(576, 492, "对账：总量、最大对象、段归属能否互相解释？", size=27, color=RED, anchor="middle", weight="bold")
+    label(576, 528, "不能解释 = 先补证据，不先下结论", size=22, color=INK, anchor="middle")
+    figure.arrow(416, 560, 276, 612, color=BLUE_D, bend=0)
+    figure.arrow(736, 560, 876, 612, color=GREEN_D, bend=0)
+    figure.rect(96, 618, 360, 92, color=BLUE_D, fill=BLUE_FILL)
+    figure.rect(696, 618, 360, 92, color=GREEN_D, fill=GREEN_FILL)
+    label(276, 656, "Flash 余量 / .text .rodata", size=24, color=BLUE_D, anchor="middle", weight="bold")
+    label(276, 690, "看常量、代码、库函数", size=21, color=INK, anchor="middle")
+    label(876, 656, "RAM 余量 / .data .bss .stack", size=24, color=GREEN_D, anchor="middle", weight="bold")
+    label(876, 690, "看大数组、堆栈、保留区", size=21, color=INK, anchor="middle")
+    note(figure, label, "原理示意/非实拍；字段名与阈值以实际工具输出、链接脚本和芯片手册为准。")
+    return figure
+
 FIGS = {
     "ch00-swd-four-wires": ch00_swd,
     "ch00-uart-crossing": ch00_uart,
     "ch00-hal-timebase": ch00_timebase,
     "ch05-printf-hook": ch05_printf,
     "ch06-size-two-budgets": ch06_size,
+    "ch06-size-audit-flow": ch06_size_audit_flow,
     "ch07-header-dependency": ch07_dependencies,
     "ch10-preemption-timeline": ch10_preemption,
     "ch13-frame-validation": ch13_checks,

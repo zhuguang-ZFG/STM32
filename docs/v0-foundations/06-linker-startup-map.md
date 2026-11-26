@@ -307,6 +307,10 @@ Memory region         Used Size  Region Size  %age Used
 
 *本章算例得到 Flash 292 B、RAM 44 B；两条使用各自比例尺，栈与堆的预留仍查链接脚本。*
 
+<figure class="book-figure fig-m">
+  <img src="/images/ch06-size-audit-flow.png" alt="size、nm、map 三份证据对账流程：总量、最大符号、段归属三层交叉确认；原理示意，非实拍" loading="lazy" decoding="async" />
+  <figcaption>图：size、nm、map 三份证据对账流程。看哪里：左侧三份工具输出，中间对账判定，右侧 Flash/RAM 结论。证明什么：单一数字不足以下结论，三份证据一致时才能定位超限层。不能证明什么：不代表具体工程的真实余量，也不替代链接脚本和 map 文件。出处：本章正文审计流程；工具行为以 arm-none-eabi-binutils 输出为准。原理示意/非实拍。</figcaption>
+</figure>
 ### map 文件：三块内容怎么读
 
 map 文件由 `ld` 的 `-Map=build/blink.map` 生成（Makefile 里的旗标，[第 7 章](./07-build-systems-legacy.md)接线）。三块内容各查一件事：
