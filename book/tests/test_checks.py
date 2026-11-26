@@ -67,6 +67,11 @@ class ChecksTest(unittest.TestCase):
         self.write_quiz("q1")
         self.assertEqual(checks.check_book(docs_root=self.docs, quiz_dir=self.quiz_dir), [])
 
+    def test_duplicate_heading_anchor_uses_underscore(self):
+        """Both chapter renderers rename a repeated slug with `_1`."""
+        self.write_chapter("ch01", "## 重复\n\n## 重复\n\n[到](#重复_1)\n")
+        self.assertEqual(checks.check_book(docs_root=self.docs, quiz_dir=self.quiz_dir), [])
+
     def test_missing_anchor_detected(self):
         self.write_chapter("ch01", "## 小节\n\n[跳到](#不存在)\n")
         errors = checks.check_book(docs_root=self.docs, quiz_dir=self.quiz_dir)

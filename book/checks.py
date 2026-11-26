@@ -29,8 +29,21 @@ def cjk_slugify(value: str, separator: str = "-") -> str:
     return re.sub(r"[\s-]+", separator, value) or "section"
 
 
-def heading_anchors(text: str) -> set[str]:
+def heading_anchors(text: str, duplicate_suffix: str | None = None) -> set[str]:
+    """Heading ids a Markdown renderer derives from a body.
+
+    Repeated headings are renamed by both renderers this repo builds with —
+    VitePress and the merged book (Python-Markdown ``toc``) — by appending
+    ``_1``, ``_2``, ... to the slug. Verified against the ids in a real
+    ``npm run docs:build`` page and ``build_html.render_markdown`` output.
+    GitHub instead appends ``-1``; entry docs go through
+    ``md_links.github_anchors`` for that.
+
+    ``duplicate_suffix`` opts into the renaming; leave it unset for
+    GitHub-rendered entry docs, where only the base slug is known.
+    """
     anchors: set[str] = set()
+    seen: dict[str, int] = {}
     in_fence = False
     for line in text.splitlines():
         if FENCE_RE.match(line):
@@ -43,11 +56,43 @@ def heading_anchors(text: str) -> set[str]:
             continue
         title = match.group(2)
         custom = CUSTOM_ID_RE.search(title)
-        if custom:
-            anchors.add(custom.group(1))
+        anchor = custom.group(1) if custom else cjk_slugify(title)
+        if duplicate_suffix is None:
+            anchors.add(anchor)
             continue
-        anchors.add(cjk_slugify(title))
+        count = seen.get(anchor, 0)
+        seen[anchor] = count + 1
+        anchors.add(anchor if count == 0 else f"{anchor}{duplicate_suffix}{count}")
     return anchors
+
+
+SITE_EXCLUDED = ("docs/README.md", "docs/CONTENT_GUIDE.md")
+
+
+def is_site_page(path: Path, root: Path) -> bool:
+    """True when VitePress builds the page, false when github.com does.
+
+    ``srcExclude`` in docs/.vitepress/config.mts keeps two docs pages off the
+    site, so they are read as repository files. Targets outside the repo are
+    not site pages either.
+    """
+    try:
+        rel = path.resolve().relative_to(root.resolve()).as_posix()
+    except ValueError:
+        return False
+    return rel.startswith("docs/") and rel not in SITE_EXCLUDED
+
+
+def _rendered_anchors(path: Path, text: str, root: Path) -> set[str]:
+    """Anchors the target file's own renderer emits, duplicate renaming included.
+
+    VitePress (``docs/``) and the merged book rename a repeated slug ``_1``,
+    ``_2``; github.com renames it ``-1``, ``-2``. Only the renaming is modelled
+    here — the exact GitHub slug is ``md_links.github_anchors``, while entry
+    docs keep this older approximation for the base slug.
+    """
+    suffix = "_" if is_site_page(path, root) else "-"
+    return heading_anchors(text, duplicate_suffix=suffix)
 
 
 def blockquote_anchors(text: str) -> set[str]:
@@ -132,7 +177,7 @@ def check_file(path: Path, docs_root: Path, quiz_dir: Path) -> tuple[list[str], 
     errors: list[str] = []
     text = path.read_text(encoding="utf-8")
     scan = strip_code(text)
-    anchored = heading_anchors(text)
+    anchored = heading_anchors(text, duplicate_suffix="_")
     quiz_ids: list[str] = []
     for match in IMAGE_RE.finditer(scan):
         alt, target = match.group(1), match.group(2)
@@ -173,7 +218,9 @@ def check_file(path: Path, docs_root: Path, quiz_dir: Path) -> tuple[list[str], 
         if not candidate.exists():
             errors.append(f"{path}:{line}: missing chapter file: {target_path}")
             continue
-        if fragment and fragment not in heading_anchors(candidate.read_text(encoding="utf-8")):
+        if fragment and fragment not in heading_anchors(
+            candidate.read_text(encoding="utf-8"), duplicate_suffix="_"
+        ):
             errors.append(f"{path}:{line}: missing anchor in {target_path}: #{fragment}")
     for match in QUIZ_RE.finditer(scan):
         quiz_id = match.group(1)
@@ -213,7 +260,7 @@ def check_entry_doc(path: Path, repo_root: Path) -> list[str]:
         line = _line_of(scan, match.start())
         target_path, _, fragment = target.partition("#")
         if not target_path:
-            if fragment and fragment not in heading_anchors(text) \
+            if fragment and fragment not in _rendered_anchors(path, text, repo_root) \
                     and fragment not in blockquote_anchors(text):
                 errors.append(f"{label}:{line}: missing anchor: #{fragment}")
             continue
@@ -225,7 +272,7 @@ def check_entry_doc(path: Path, repo_root: Path) -> list[str]:
             continue
         if fragment and candidate.is_file() and candidate.suffix == ".md":
             target_text = candidate.read_text(encoding="utf-8")
-            if fragment not in heading_anchors(target_text) \
+            if fragment not in _rendered_anchors(candidate, target_text, repo_root) \
                     and fragment not in blockquote_anchors(target_text):
                 errors.append(
                     f"{label}:{line}: missing anchor in {target_path}: #{fragment}")

@@ -50,8 +50,9 @@ python3 tools/gen_gifs.py
 # 2) 自检：SVG 是否为合法 XML、GIF 解码回验是否逐像素一致
 python3 tools/check_assets.py
 
-# 3) 改了任何 Markdown：查文风（纯标准库，很快）
+# 3) 改了任何 Markdown：查文风与相对链接（纯标准库，很快）
 python3 tools/slop_lint.py
+python -m book.md_links
 
 # 4) 改了章节正文时，再跑整书契约（只改导航文档可以跳过）
 python -m unittest discover book/tests -v
@@ -60,7 +61,7 @@ python -m book.build_html --check
 make book-check
 ```
 
-相对链接由 `tools/check_assets.py` 检查。它还会检查讲解正片，因此需要本机有 Pillow、ffmpeg、ffprobe。只改了 Markdown 导航时，至少确认新链接指向的文件存在。
+相对链接与锚点由 `python -m book.md_links` 检查：范围是 `git ls-files` 里的全部 Markdown（`mcu/`、`plans/`、`docs/superpowers/` 等子树除外），校验相对路径、落在 `docs/public/` 的 `/…` 资源，以及 `#片段`——`docs/` 按站点渲染器的锚点算，其余文件按 github.com 渲染出的 id 算。`tools/check_assets.py` 在合并版走 `docs/manifest.json` 分支：章节目录、`book.checks` 契约、`docs/public/` 素材与实拍许可/讲解正片（需要本机有 Pillow、ffmpeg、ffprobe），不覆盖根 README、速查表与 examples 的链接。
 
 > 站点侧另有 `npm run site:build`（构建 + 页面对账 + 存根 + 组装 + 图片/尺寸门），以及 `make site-check`（含 `/STM32/` 冒烟）。章节正文现行放在根 `docs/`（分卷 `v0-foundations/`、`v1-drivers/`、`v2-reliability/`、`onramp/`、`appendix/`），旧的 `stm32-book/`、`docs/NN-*.md` 与 `mcu/docs/` 树已在 B5 合并中退役。
 

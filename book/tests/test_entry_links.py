@@ -29,7 +29,7 @@ class EntryDocLinkTests(unittest.TestCase):
         (self.repo / "docs" / "public" / "images").mkdir(parents=True)
         (self.repo / "docs" / "public" / "images" / "plate.png").write_bytes(b"png")
         (self.repo / "docs" / "other.md").write_text(
-            "# 另一篇\n\n## 小节甲\n\n正文。\n", encoding="utf-8")
+            "# 另一篇\n\n## 小节甲\n\n## 重复\n\n## 重复\n\n正文。\n", encoding="utf-8")
 
     def tearDown(self):
         self.tmp.cleanup()
@@ -56,6 +56,10 @@ class EntryDocLinkTests(unittest.TestCase):
 
     def test_existing_anchor_passes(self):
         path = self._write("[跳](docs/other.md#小节甲)\n")
+        self.assertEqual(check_entry_doc(path, self.repo), [])
+        # docs/ is rendered by VitePress: a repeated slug becomes `_1`, so the
+        # cross-file check must use the target's rule, not the entry doc's.
+        path = self._write("[跳](docs/other.md#重复_1)\n")
         self.assertEqual(check_entry_doc(path, self.repo), [])
 
     def test_same_page_blockquote_heading_is_exempt_not_asserted(self):
