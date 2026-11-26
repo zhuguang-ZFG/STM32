@@ -86,6 +86,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 /**
  * @brief  按键事件处理（主循环上下文，可安全使用 HAL_Delay）
  * @note   两级结构：中断置标志 → 主循环消抖 + 业务处理。
+ *         标志在延时之后才清：消抖窗口内的抖动边沿会再次置位，
+ *         一并清掉，否则同一次按压会被排成第二次翻转。
  */
 static void key_process(void)
 {
@@ -94,17 +96,18 @@ static void key_process(void)
         return;
     }
 
-    /* 读到标志后先做临界区保护，避免处理期间标志被 ISR 改写 */
+    /* 软件消抖：等抖动过去；这期间的边沿会再次置位 g_key_event */
+    HAL_Delay(KEY_DEBOUNCE_MS);
+
+    /* 清标志放在延时之后：窗口内的抖动边沿被吸收，不再排队 */
     __disable_irq();
     g_key_event = 0;
     __enable_irq();
 
-    /* 软件消抖：等抖动过去再确认电平仍为低（按键按下） */
-    HAL_Delay(KEY_DEBOUNCE_MS);
+    /* 延时后电平仍为低才算有效按下 */
     if (HAL_GPIO_ReadPin(KEY_PORT, KEY_PIN) == GPIO_PIN_RESET)
     {
         HAL_GPIO_TogglePin(LED_PORT, LED_PIN);   /* 有效按键 → 翻转 LED */
-
     }
 }
 
