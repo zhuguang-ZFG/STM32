@@ -147,16 +147,16 @@ B5 已将两书正文合为《通往单片机之路》：根 `docs/` 是现行�
 
 ## 手绘概念图（33 章首 + 33 章中 + 8 分部 + 6 附录）
 
-已覆盖 ch00–ch32 的章首图与章中图、8 张分部概念图与 6 张附录图，均为 900×560，清单在 [`assets/illustrations/manifest.json`](assets/illustrations/manifest.json)。这些 SVG 目前只作为素材保留：**合并版正文尚未挂接**，网页与 PDF 都不渲染它们。它们只负责建立直觉，不替代技术图；引脚、时序和电气参数仍以各章技术图和手册为准。
+已覆盖 ch00–ch32 的章首图与章中图、8 张分部概念图与 6 张附录图，均为 900×560，清单在 [`assets/illustrations/manifest.json`](assets/illustrations/manifest.json)。**这组图的章号沿用合并前的 33 章方案，和合并版 47 章 TOC 不是同一套**：图里的 `ch01` 是工具链（合并书 [ch05](docs/v0-foundations/05-toolchain-four-steps.md)）、`ch05` 是定时器/PWM（[ch12](docs/v1-drivers/12-timers-pwm.md)）、`ch16` 是低功耗（[ch18](docs/v2-reliability/18-low-power.md)）。这些 SVG 目前只作为素材保留：**合并版正文尚未挂接**，网页与 PDF 都不渲染它们。它们只负责建立直觉，不替代技术图；引脚、时序和电气参数仍以各章技术图和手册为准。
 
 <table>
 <tr>
-<td width="50%"><img src="assets/illustrations/ch00-handdraw.svg" alt="第 0 章手绘概念图：从第一盏灯走到能验收的系统"><br><sub>▲ 第 0 章：从第一盏灯走到能验收的系统</sub></td>
-<td width="50%"><img src="assets/illustrations/ch05-handdraw.svg" alt="第 5 章手绘概念图：齿轮咬合出可测量的波形"><br><sub>▲ 第 5 章：齿轮咬合出可测量的波形</sub></td>
+<td width="50%"><img src="assets/illustrations/ch00-handdraw.svg" alt="ch00 手绘概念图：从第一盏灯走到能验收的系统"><br><sub>▲ ch00：从第一盏灯走到能验收的系统（学习路线，合并书 ch46）</sub></td>
+<td width="50%"><img src="assets/illustrations/ch05-handdraw.svg" alt="ch05 手绘概念图：齿轮咬合出可测量的波形"><br><sub>▲ ch05：齿轮咬合出可测量的波形（定时器/PWM，合并书 ch12）</sub></td>
 </tr>
 <tr>
-<td><img src="assets/illustrations/ch16-handdraw.svg" alt="第 16 章手绘概念图：睡着的芯片在电池月亮下短暂醒来"><br><sub>▲ 第 16 章：睡着的芯片在电池月亮下短暂醒来</sub></td>
-<td><img src="assets/illustrations/ch28-handdraw.svg" alt="第 28 章手绘概念图：中断、任务、驱动、网络与应用组成一套系统"><br><sub>▲ 第 28 章：中断、任务、驱动、网络与应用组成一套系统</sub></td>
+<td><img src="assets/illustrations/ch16-handdraw.svg" alt="ch16 手绘概念图：睡着的芯片在电池月亮下短暂醒来"><br><sub>▲ ch16：睡着的芯片在电池月亮下短暂醒来（低功耗，合并书 ch18）</sub></td>
+<td><img src="assets/illustrations/ch28-handdraw.svg" alt="ch28 手绘概念图：中断、任务、驱动、网络与应用组成一套系统"><br><sub>▲ ch28：中断、任务、驱动、网络与应用组成一套系统（系统组成，合并书无单章对应）</sub></td>
 </tr>
 </table>
 
