@@ -7,7 +7,7 @@
   <br><sub>▲ 动画：轮询 vs 外部中断 vs EXTI 触发方式对比（作者自绘矢量图）</sub>
 </p>
 
-> hardware_status: pending。已移除偶数IRQ计数强制点灯，生产key_process/回调的宿主测试验证有效事件的连续翻转；不是上板验证。这里只提供HAL示例main.c，没有完整HAL依赖、启动/链接与独立构建入口，本轮未全固件编译。
+`hardware_status: pending`。本目录是 **BluePill / STM32F103C8T6 的完整 CMake 工程**：固定 STM32CubeF1 `v1.8.6`、HAL/CMSIS 子模块提交、启动文件、64 KiB Flash / 20 KiB RAM 链接脚本、SysTick 时基、EXTI0 向量入口和许可复制。固件构建、实际 ELF/BIN 向量与内存检查、宿主回归均通过；下载、真实按键波形、抖动表现与一次按压只产生一个事件的承诺仍未实测。
 
 ## 一、功能说明
 
@@ -85,17 +85,62 @@ if (g_key_event) {
 
 `volatile` 让编译器每次都从内存读 `g_key_event`，不会被优化成寄存器缓存。
 
-## 五、编译烧录步骤
+## 五、编译、检查与烧录
 
-1. 用 CubeMX 生成 F103C8 工程，把本 `main.c` 覆盖 `Core/Src/main.c`（保留生成的 `stm32f1xx_it.c` 中 `SysTick_Handler`；若其中已有 `EXTI0_IRQHandler` 请删除以免重复定义）。
-2. 编译（Keil 按 `F7`；CubeIDE 点工具栏的编译按钮）→ 下载（Keil 按 `F8`；CubeIDE 点运行按钮）。
-3. 仓库未提供PlatformIO配置，不把upload命令当成已有入口；先在完整工程中核启动向量、HAL版本与链接配置，再单独编译和申请硬件操作。
+需 Git、CMake ≥3.21、Ninja、GNU Arm 工具链（含 newlib）；下载另需 OpenOCD。本机验证版本为 GCC 10.3.1、CMake 3.30.2、Ninja 1.12.1。
 
-## 六、预期现象
+以下从**仓库根目录**执行。已有相同提交的 CubeF1 可直接传路径：
+
+```console
+git clone --depth 1 --branch v1.8.6 https://github.com/STMicroelectronics/STM32CubeF1.git .temp/STM32CubeF1
+git -C .temp/STM32CubeF1 submodule update --init Drivers/STM32F1xx_HAL_Driver Drivers/CMSIS/Device/ST/STM32F1xx
+cd examples/exti-key
+cmake --preset bluepill "-DCUBEF1_PATH=../../.temp/STM32CubeF1"
+cmake --build --preset bluepill
+python tests/check_firmware.py build/bluepill/exti-key.elf build/bluepill/exti-key.bin
+```
+
+`build/bluepill/` 中应有 `exti-key.elf/.hex/.bin/.map`。检查器读取真实二进制，核对栈顶、复位入口、SysTick 与 EXTI0 向量、`g_key_event`/`g_key_count` 的 .bss 位置和至少 2 KiB 栈预留。提交不符或子模块未初始化时 CMake 直接失败。
+
+2026-11-26 本机快照：
+
+| 产物 | 结果 |
+| --- | --- |
+| BIN | 4836 B；SHA-256 `52f1bf059742ddad88e8c4b7a97e393d6b85fc3cc8b9895936090d563d0b67b8` |
+| ELF | SHA-256 `d12bf95cd159e24d53e6c5844d76b810bd862219da35a60ff57f240ca31f0da1` |
+| Flash | 4836 B / 64 KiB |
+| 静态 RAM | 24 B / 20 KiB |
+| 栈预留 | 2048 B；总计 2072 B / 20 KiB |
+
+换工具链后以新日志和哈希为准。
+
+宿主回归：
+
+```console
+cmake --preset host-tests
+cmake --build --preset host-tests
+ctest --preset host-tests
+```
+
+测试把生产 `main.c` 连同 `EXTI0_IRQHandler`、`HAL_GPIO_EXTI_Callback`、`key_process` 一起编译，用受控 HAL 替身覆盖：上电初始化顺序与引脚配置、NVIC 优先级与使能、AFIO 时钟、中断到回调的链路、按下接受/释放拒绝、无事件不延时、连续 IRQ 只翻转一次、四次有效事件的交替。它只证明生产控制流，不证明真实 HAL 时序、抖动波形或板上行为。
+
+编译成功后，核对 BOOT0=0、PA13/PA14 保留 SWD、PA0 与 GND 的接线，再执行下载：
+
+```console
+openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program build/bluepill/exti-key.elf verify reset exit"
+```
+
+保存含 `verify` 成功的完整日志，再记录 PC13 的实际表现。本轮未执行下载或上板观测。Wokwi 配置指向 `build/bluepill/exti-key.elf`；Wokwi 是否模拟 EXTI/NVIC 行为不作为本示例的验收依据。
+
+仍要用 CubeMX/Keil/CubeIDE 时：把本 `main.c` 覆盖 `Core/Src/main.c`，保留生成的 `stm32f1xx_it.c` 中 `SysTick_Handler`，删除其中已有的 `EXTI0_IRQHandler` 以免重复定义。
+
+## 六、预期现象（理论与设计目标，未实测）
 
 - 上电后 LED 熄灭；每按一次 PA0 按键，LED 亮/灭翻转一次；
-- 20ms后复核为低才翻转，但没有完整释放重装状态；快速连按/抖动是否重复仍待测，不能保证一次物理按压只一次事件；
-- 后续取证记录原始IRQ计数与有效翻转次数；断点会改变时序，不以一次快照宣称消抖通过。
+- 20 ms 后复核为低才翻转；ISR 只置一个标志位，处理期间再次到来的中断不会排队成第二次翻转；
+- 没有完整的按下/释放状态机，快速连按与机械抖动是否重复翻转仍待测，不能承诺一次物理按压只产生一个事件；
+- `error_handler()` 是终止点：时钟配置失败时关中断原地停留，LED 不再变化。它不是可恢复路径；
+- 后续取证记录原始 IRQ 计数与有效翻转次数；断点会改变时序，不以一次快照宣称消抖通过。
 
 ## 七、常见问题
 
