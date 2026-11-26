@@ -10,12 +10,12 @@ platforms: [generic]
 - **问题**：全书配套工程在哪两个登记簿里，各多少条、什么类型、怎么跑？例程的「最小可见结果/验收工具/不能由此推出」三列怎么用？跑表前要核对哪几行数据？工程证据的两档（宿主验证/目标板验证）怎么区分？
 - **交付**：能在双登记簿里找到任何一章的配套工程并按入口跑起来；能按推荐跑法安排实验顺序；能填出每例程的交付记录七字段。
 - **边界**：本附录是索引层，不代填证据状态（以各工程 README 为准）；数据表本体在附录 D（本附录落位时 D 尚未链接，数据已并入附录 D 文末）；许可边界见附录 E（落位后链接）。
-- **依据锚点**：根书例程区 `examples/`（15 条，MIT）与姊妹书工程区 `mcu/code/`（47 项，projects.json 登记，Apache-2.0）；`motor-dc-speed` 为 B3 批次补登。
+- **依据锚点**：根书例程区 `examples/`（16 条，MIT）与姊妹书工程区 `mcu/code/`（47 项，projects.json 登记，Apache-2.0）；`motor-dc-speed` 为 B3 批次补登。
 
 
-本附录是全书配套工程的**双登记簿**：根书例程区（`examples/`，F103 线，15 条）与姊妹书工程区（`mcu/code/`，47 个可编译验证工程，F407/ESP32/GD32/宿主四类）。例程不是「复制后能编译」就结束。每个工程都要留下可观察结果，并写清不能由该结果推出什么。
+本附录是全书配套工程的**双登记簿**：根书例程区（`examples/`，F103 线，16 条）与姊妹书工程区（`mcu/code/`，47 个可编译验证工程，F407/ESP32/GD32/宿主四类）。例程不是「复制后能编译」就结束。每个工程都要留下可观察结果，并写清不能由该结果推出什么。
 
-- 根书区：`examples/` 下 14 例程 + 补登的 `motor-dc-speed`（B3 批次新增，源表漏登），MIT 许可。
+- 根书区：`examples/` 下 15 例程 + 补登的 `motor-dc-speed`（B3 批次新增，源表漏登），MIT 许可。
 - 姊妹书区：`mcu/code/` 下 47 工程，`mcu/code/projects.json` 登记（kind 四档：host-probe 22、arm-make 14、esp-idf 10、host-make 1），Apache-2.0。这批工程按各目录的 README/脚本本地验证。根书区的 `motor-control.yml` 检查电机工程宿主测试与三套 ARM 预设，`gpio-blink.yml` 检查点灯工程的宿主测试、ARM 构建与向量表。
 
 完整许可边界见 附录 E。
@@ -30,7 +30,7 @@ platforms: [generic]
 | [ch12 PWM / E03](../v1-drivers/12-timers-pwm.md) | `labs/timer-pwm/README.md` | `mcu/code/stm32/02-tim-pwm` | 未实测；PA6→PA0，动态CCR不是静态50%证据 |
 | [ch13 UART / E02](../v1-drivers/13-uart-framed-protocol.md) | `labs/uart-dma/README.md` | `mcu/code/stm32/03-uart-dma` | 未实测；IDLE不等于应用帧，宿主测试不等于线上通过 |
 
-三个主样板启动目标均为 STM32F407ZGT6，实际板型、芯片、容量与供电需现场核实。F103 的 `examples/gpio-blink` 已有固定 CubeF1 v1.8.6 的完整 CMake 工程、宿主回归测试和 ARM 向量检查，硬件仍待测；`examples/timer-pwm` 仍是待集成 HAL 源码。不能把 F103 的 PC13 / 72 MHz / PSC71 套给 F407 的 PF6 或回读时钟。固定 CCR、积压试验按各协议另行实施。
+三个主样板启动目标均为 STM32F407ZGT6，实际板型、芯片、容量与供电需现场核实。F103 侧哪些例程已有完整 CMake 入口，以 `examples/README.md` 的清单为准：`gpio-blink`、`uart-dma-idle`、`dma-memcopy`、`spl-f1-blink`、`motor-dc-speed` 属这一类（前四者固定 CubeF1 v1.8.6，其中 `gpio-blink`/`uart-dma-idle`/`dma-memcopy` 另带宿主回归与 ELF/BIN 检查；`spl-f1-blink` 走冻结 SPL V3.5.0），其余例程仍是待集成源码；两类都不代表硬件已验证。不能把 F103 的 PC13 / 72 MHz / PSC71 套给 F407 的 PF6 或回读时钟。固定 CCR、积压试验按各协议另行实施。
 
 ## 第一区 · 根书例程（F103 线，BluePill）
 
@@ -42,17 +42,18 @@ platforms: [generic]
 | 2 | `exti-key` | v1 第 10 章 | PA0 每次有效按下只翻转一次 PC13 | 逻辑分析仪 + 中断计数 | 消抖参数适合所有按键 |
 | 3 | `timer-pwm` | v1 第 12 章 | PA6 为 1 kHz，CCR 改变时占空比连续变化 | 示波器/逻辑分析仪 | LED 亮度与占空比线性 |
 | 4 | `uart-dma-idle` | 上手卷第 0 章；v1 第 13、14 章 | 多种长度命令完整入队，ORE 后可恢复 | USB-TTL + 字节对比/计数器 | IDLE 等同业务帧界；持续流永不溢出 |
-| 5 | `i2c-oled` | v1 第 16 章 | OLED 显示并持续刷新，地址扫描只命中目标 | 逻辑分析仪 I2C 解码 | 任意 OLED 都用同一地址/初始化表 |
-| 6 | `spi-flash` | v1 第 16 章 | JEDEC ID 为 `0xEF4017`，跨页写入后逐字节一致 | 逻辑分析仪 + `memcmp` | 擦写寿命、掉电原子性已满足产品要求 |
-| 7 | `adc-dma` | v1 第 15 章 | 3 通道连续采样，输入变化与对应通道一致 | 万用表 + DMA 缓冲观察 | 名义 3.3 V 可当精密参考 |
-| 8 | `rtc-alarm` | v1 第 11 章 | STOP 后按计划唤醒，VBAT 条件下时间连续 | 电流表 + 串口时间戳 | 整板达到数据手册芯片典型电流 |
-| 9 | `iap-bootloader` | v1 第 17 章 | 镜像校验通过后跳转；损坏镜像不跳转 | 串口 + 复位/掉电注入 | 已具备签名、反回滚和安全启动 |
-| 10 | `can-bxcan` | v1 第 13 章（[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) 口径） | 环回自收；双节点时有 ACK 且过滤器生效 | CAN 分析仪/错误计数 | FDCAN 可直接复用同一寄存器配置 |
-| 11 | `usb-cdc` | v1 第 13 章（[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) USB 半场） | 主机枚举出 CDC，`wTotalLength`=67、VID/PID `0x1209/0x0001`，双向字节传输 | USB 抓包/系统设备信息 | 所有主机、线缆和挂起恢复均兼容；VID 也不是 ST 例程的 `0x0483` |
-| 12 | `usb-hid` | v1 第 13 章（[第 35 章](../v4-platforms/35-can-usb-fieldbus.md)） | PA0 边沿产生一次按下和一次全零释放报告 | 文本框 + USB 抓包 | 可作为安全输入设备或通过 USB-IF 认证 |
-| 13 | `freertos-task` | [第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md) | 三任务运行，队列空时阻塞，按键事件唤醒任务 | trace/运行时统计 + 串口 | 最坏响应时间和栈裕量已被证明 |
-| 14 | `spl-f1-blink` | v1 第 7 章 | ELF/HEX/BIN/MAP 构建闭合；真板 PC13 约 1 Hz | GNU Arm size/nm + ST-Link + 逻辑分析仪 | 编译链接通过等于真板已验证 |
-| 15（补登） | `motor-dc-speed` | [第 37 章](../v5-motion/37-dc-motor-openloop.md) | 开环 PWM 驱动直流电机，斜坡受控起停 | 电流表 + 示波器 | 端点语义与限幅计算已被板上验证（[第 37 章](../v5-motion/37-dc-motor-openloop.md) 数值断言核对的是文案） |
+| 5 | `dma-memcopy` | v1 第 14 章 | TC 后源/目的 4096 B 逐字节相等；TE、超时、内容不一致各走一条失败码闪灯 | 宿主回归 + GNU Arm size/nm + ST-Link/逻辑分析仪 | NDTR 在动只证明有请求，不证明字节写对；构建与宿主通过不是上板证据 |
+| 6 | `i2c-oled` | v1 第 16 章 | OLED 显示并持续刷新，地址扫描只命中目标 | 逻辑分析仪 I2C 解码 | 任意 OLED 都用同一地址/初始化表 |
+| 7 | `spi-flash` | v1 第 16 章 | JEDEC ID 为 `0xEF4017`，跨页写入后逐字节一致 | 逻辑分析仪 + `memcmp` | 擦写寿命、掉电原子性已满足产品要求 |
+| 8 | `adc-dma` | v1 第 15 章 | 3 通道连续采样，输入变化与对应通道一致 | 万用表 + DMA 缓冲观察 | 名义 3.3 V 可当精密参考 |
+| 9 | `rtc-alarm` | v1 第 11 章 | STOP 后按计划唤醒，VBAT 条件下时间连续 | 电流表 + 串口时间戳 | 整板达到数据手册芯片典型电流 |
+| 10 | `iap-bootloader` | v1 第 17 章 | 镜像校验通过后跳转；损坏镜像不跳转 | 串口 + 复位/掉电注入 | 已具备签名、反回滚和安全启动 |
+| 11 | `can-bxcan` | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md) 的 CAN 半场 | 环回自收；双节点时有 ACK 且过滤器生效 | CAN 分析仪/错误计数 | FDCAN 可直接复用同一寄存器配置 |
+| 12 | `usb-cdc` | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md) 的 USB 半场 | 主机枚举出 CDC，`wTotalLength`=67、VID/PID `0x1209/0x0001`，双向字节传输 | USB 抓包/系统设备信息 | 所有主机、线缆和挂起恢复均兼容；VID 也不是 ST 例程的 `0x0483` |
+| 13 | `usb-hid` | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md) | PA0 边沿产生一次按下和一次全零释放报告 | 文本框 + USB 抓包 | 可作为安全输入设备或通过 USB-IF 认证 |
+| 14 | `freertos-task` | [第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md) | 三任务运行，队列空时阻塞，按键事件唤醒任务 | trace/运行时统计 + 串口 | 最坏响应时间和栈裕量已被证明 |
+| 15 | `spl-f1-blink` | [第 7 章](../v0-foundations/07-build-systems-legacy.md) | ELF/HEX/BIN/MAP 构建闭合；真板 PC13 约 1 Hz | GNU Arm size/nm + ST-Link + 逻辑分析仪 | 编译链接通过等于真板已验证 |
+| 16（补登） | `motor-dc-speed` | [第 37](../v5-motion/37-dc-motor-openloop.md)–[39](../v5-motion/39-speed-closed-loop-pi.md) 章 | 三个预设：开环 PWM 斜坡起停、编码器测速、闭环 PI 跟速 | 电流表 + 示波器 + 编码器读数 | 端点语义与限幅计算已被板上验证（[第 37 章](../v5-motion/37-dc-motor-openloop.md) 数值断言核对的是文案） |
 
 ### 先核对一致的四行（时钟与位时间）
 
@@ -78,7 +79,7 @@ platforms: [generic]
 ### 推荐跑法
 
 1. **先闭环**：`gpio-blink → exti-key → timer-pwm`：证明下载、引脚、时基。
-2. **再连外设**：`uart-dma-idle → i2c-oled → spi-flash → adc-dma`：一次一种总线。
+2. **再连外设**：`uart-dma-idle → i2c-oled → spi-flash → adc-dma`：一次一种总线；不想先接线时，用 `dma-memcopy` 验 DMA 通道（失败码把 TE、超时与内容不一致分开）。
 3. **再处理状态**：`rtc-alarm → iap-bootloader → can-bxcan → usb-*`：每步保留可回退镜像。
 4. **最后并发**：`freertos-task`：裸机行为可解释后，调度问题才不与驱动混淆。
 5. **最后对照旧库**：`spl-f1-blink` 单独 SPL V3.5.0 + CMake，不与 HAL 示例双重初始化。

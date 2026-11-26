@@ -1,6 +1,6 @@
 # spl-f1-blink — SPL V3.5.0 + CMake + CLion / VS Code
 
-> 目标：STM32F103C8T6 BluePill，PC13 低有效 LED 约 1 Hz 闪烁。对应[第 26 章](../../docs/26-STM32F10x标准外设库SPL.md)。
+> 目标：STM32F103C8T6 BluePill，PC13 低有效 LED 约 1 Hz 闪烁。对应[第 7 章 构建系统与遗留栈](../../docs/v0-foundations/07-build-systems-legacy.md)。
 
 这个目录只保存本项目原创代码和构建定义，不再分发 ST 的 SPL 源码。构建时通过 `SPL_ROOT` 指向冻结的 STM32F10x Standard Peripheral Library V3.5.0：
 
