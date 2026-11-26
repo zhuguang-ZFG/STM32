@@ -6,7 +6,7 @@
 
 文件名是 `ch{章号}-{slug}`，由 [tools/narration.py](../../tools/narration.py) 决定，例如 `ch00-learn`、`ch28-rtos-system`。
 
-标题和阅读顺序在 [docs/README.md](../../docs/README.md)（English: [docs/en/contents.md](../../docs/en/contents.md)）。每一章正文里已经嵌了对应的播放器。
+标题和阅读顺序在 [docs/README.md](../../docs/README.md)。每一章正文里已经嵌了对应的播放器。
 
 ## 续集 `chs01`–`chs12`
 

@@ -203,6 +203,18 @@
   border-radius: 4px;
 }
 
+.vp-doc figure.book-figure.fig-s img {
+  max-width: min(100%, 28rem);
+}
+
+.vp-doc figure.book-figure.fig-m img {
+  max-width: min(100%, 42rem);
+}
+
+.vp-doc figure.book-figure.fig-l img {
+  max-width: 100%;
+}
+
 .vp-doc a.figure-zoom {
   display: block;
   cursor: zoom-in;

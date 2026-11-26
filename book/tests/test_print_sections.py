@@ -41,6 +41,30 @@ class PrintCssTests(unittest.TestCase):
         self.assertIn("code, a { overflow-wrap: anywhere; }", css)
         self.assertIn("width: 176mm", css)
 
+    def test_figure_size_tiers_default_m_and_bounded_l(self):
+        css = build_css()
+        # Default/M remains the existing 150mm cap.
+        self.assertRegex(
+            css,
+            r"figure img,\s*figure svg \{\s*max-height: 150mm;\s*max-width: 100%;\s*width: auto;\s*\}",
+        )
+        # S tier.
+        self.assertIn("figure.book-figure.fig-s img,", css)
+        self.assertIn("max-height: 72mm;", css)
+        # M tier explicit (same cap as default; class makes intent visible).
+        self.assertIn("figure.book-figure.fig-m img,", css)
+        # L tier: landscape only, block budget 170mm, image cap 150mm, never 190mm.
+        self.assertIn("figure.book-figure.fig-l.landscape {", css)
+        self.assertIn("max-height: 170mm;", css)
+        self.assertRegex(
+            css,
+            r"figure\.book-figure\.fig-l\.landscape img,\s*figure\.book-figure\.fig-l\.landscape svg \{(?s:.*?)max-height: 150mm;",
+        )
+        self.assertNotIn("max-height: 190mm", css)
+        # Existing landscape semantics preserved.
+        self.assertIn("@page plate-landscape { size: A4 landscape; margin: 21mm 17mm 19mm; }", css)
+        self.assertIn("figure.landscape { page: plate-landscape; break-before: page;", css)
+
 
 class ChapterSectionTests(unittest.TestCase):
     def test_chapter_number_from_anchor(self):
@@ -79,6 +103,19 @@ class ChapterSectionTests(unittest.TestCase):
                 {},
             )
         self.assertIn("<strong>问题：</strong>正文。", html)
+
+
+class SiteStyleTests(unittest.TestCase):
+    def test_figure_size_tiers_present(self):
+        css = (ROOT / "docs" / ".vitepress" / "theme" / "style.css").read_text(encoding="utf-8")
+        self.assertIn(".vp-doc figure.book-figure.fig-s img", css)
+        self.assertIn("max-width: min(100%, 28rem);", css)
+        self.assertIn(".vp-doc figure.book-figure.fig-m img", css)
+        self.assertIn("max-width: min(100%, 42rem);", css)
+        self.assertIn(".vp-doc figure.book-figure.fig-l img", css)
+        # Default figure remains responsive.
+        self.assertIn(".vp-doc figure.book-figure img {", css)
+        self.assertIn("max-width: 100%;", css)
 
 
 if __name__ == "__main__":
