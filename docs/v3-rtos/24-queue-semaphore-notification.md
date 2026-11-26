@@ -244,7 +244,7 @@ configASSERT( !( ( xCopyPosition == queueOVERWRITE ) && ( pxQueue->uxLength != 1
 
 为什么必须是 1？覆盖写走的不是 `pcWriteTo`，而是 `pcReadFrom`。长度为 1 时读写指针重合，覆盖的就是唯一槽位，语义干净。长度大于 1 时，覆盖写会改掉队头位置并把读指针前移，队列里其它项的先进先出顺序和 `uxMessagesWaiting` 的计数就对不上了。上游干脆把「长度必须为 1」写成断言。
 
-这里有一个 lab 相关的细节：`mcu/code/rtos/01-freertos-lab/FreeRTOSConfig.h` 没有定义 `configASSERT`，FreeRTOS 默认把它展开成空语句。也就是说，这条断言在本 lab 的编译里不产生运行时检查。违反约束不会保证当场停机，可能只是静默写坏队列。到了打开断言的工程，它才会 halt。API 契约仍然是硬约束，只是 lab 没装护栏。
+这里有一个 lab 相关的细节：`mcu/code/rtos/01-freertos-lab/FreeRTOSConfig.h` 没有定义 `configASSERT`，FreeRTOS 默认把它展开成空语句。这条断言在本 lab 的编译里不产生运行时检查。违反约束不会保证当场停机，可能只是静默写坏队列。到了打开断言的工程，它才会 halt。API 契约仍然是硬约束，只是 lab 没装护栏。
 
 第三条分支是「满且非覆盖」：`timeout=0` 立即返回 `errQUEUE_FULL`；`timeout>0` 则挂进 `xTasksWaitingToSend`。挂起前要先 `vTaskSuspendAll()` 并锁队列，防止在「判断满」和「挂名单」之间被 ISR 插入；挂好后解锁并恢复调度器。空位出现时，接收侧会把发送名单上的第一个移到就绪表；超时则由 tick 把任务从延迟名单唤醒，返回 `errQUEUE_FULL`。
 
