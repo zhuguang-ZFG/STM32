@@ -37,7 +37,7 @@ FreeRTOS 把内核之外的一切留给你；RT-Thread 在内核之上叠了三�
 
 ### rt_device 的对象模型
 
-`struct rt_device` 继承 `rt_object`：名字、类型、链表节点都在对象头里。关键分歧在 ops 表怎么挂：v5.3.0 有**两套接口形态**，由 `RT_USING_DEVICE_OPS` 决定（`rtdef.h:1408-1424`）：
+`struct rt_device` 继承 `rt_object`：名字、类型、链表节点都在对象头里。关键分歧在 ops 表怎么挂：v5.3.0 有**两套接口形态**，由 `RT_USING_DEVICE_OPS` 决定（`rtdef.h:1402-1412`）：
 
 ```c
 #ifdef RT_USING_DEVICE_OPS
@@ -325,9 +325,9 @@ bsp/stm32/stm32f407-atk-explorer/
 
 | 仓库 | 文件 | 看什么 |
 | --- | --- | --- |
-| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/object.c` | `rt_object_init`（`object.c:371`）/`rt_object_allocate`（`:492`）/`rt_object_find`（`:730`）：统一对象层的名字、类型与链表节点——「设备框架」的地基就是这一个文件 |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `src/object.c` | `rt_object_init`（`object.c:355`）/`rt_object_allocate`（`:476`）/`rt_object_find`（`:713`）：统一对象层的名字、类型与链表节点——「设备框架」的地基就是这一个文件 |
 | [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `components/drivers/core/device.c` | `rt_device_register`（`device.c:67`）注册前先查重（`:74`）、`rt_device_find`（`:122`）、`rt_device_open`（`:222`）：注册/查找/打开的一手实现；这个文件已从旧版 `src/device.c` 搬到 `components/drivers/core/`——引用路径先探再写，别照抄旧博客 |
-| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `components/finsh/finsh.h` + `msh.c` | `MSH_CMD_EXPORT`（`finsh.h:142`）与 `FINSH_FUNCTION_EXPORT`（`:122`）：自定义命令一节的宏把函数挂进 FSymTab 段，`msh.c` 在运行时遍历这张表 |
+| [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `components/finsh/finsh.h` + `msh.c` | `MSH_CMD_EXPORT`（`finsh.h:153`）与 `FINSH_FUNCTION_EXPORT`（`:122`）：自定义命令一节的宏把函数挂进 FSymTab 段，`msh.c` 在运行时遍历这张表 |
 | [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `components/finsh/Kconfig` | FINSH 相关选项的 depend 链：「depend：Kconfig 与 scons 的接合点」一节的一手配置树——`RT_USING_FINSH` 不开，msh 一侧全部裁掉 |
 
 共性归纳：设备框架的全部机制约等于 `object.c`（统一对象，832 行）+ `device.c`（ops 表与注册表，483 行）+ finsh 的导出宏与命令表（`finsh.h` 265 行、`msh.c` 1058 行，master 分支现值）——合计不到三千行，这正是「自己造一个设备框架」的工作量基准，而不是「软件包省几个月」式的修辞。`MSH_CMD_EXPORT` 用段属性把命令收进链接段，与第 6 章的链接脚本、自定义段是一件事在应用层的回响。文件会搬家（`device.c` 从 `src/` 到 `components/drivers/core/`），机制不会——引用 RT-Thread 源码时按符号搜，不按博客路径抄。
@@ -335,7 +335,7 @@ bsp/stm32/stm32f407-atk-explorer/
 ## 短自测
 
 1. ops 表是无条件成员吗？开与关 `RT_USING_DEVICE_OPS` 各是什么形态？
-<details><summary>参考答案</summary>不是。开：`const struct rt_device_ops *ops` 一张共享表，省 RAM、多一次解引用；关：函数指针内联进 `struct rt_device`（`rtdef.h:1408-1424`），每实例一份、少一次间接。默认 F407 BSP 没开，`dev->ops->xxx` 在默认配置下编译不过。</details>
+<details><summary>参考答案</summary>不是。开：`const struct rt_device_ops *ops` 一张共享表，省 RAM、多一次解引用；关：函数指针内联进 `struct rt_device`（`rtdef.h:1402-1412`），每实例一份、少一次间接。默认 F407 BSP 没开，`dev->ops->xxx` 在默认配置下编译不过。</details>
 
 2. `rt_device_read` 返回什么类型？为什么不能用无符号？
 <details><summary>参考答案</summary>`rt_ssize_t`（`rtdef.h:1332-1344`）。负值表达错误码：「读取失败」需要一条与「读了 0 字节」「读了 n 字节」并列的返回通道，无符号类型给不了。</details>
