@@ -139,6 +139,20 @@ EEPROM 双槽与 NVS 单 blob 的取舍：双槽能在断电时回退到上一�
 | 监督点名但任务「活着」 | `last_ms` 长期不更新（活锁） | 期限监督 vs 心跳的分工：看最近进展不看心跳 |
 | 两板行为不一致 | port 层语义漂移（同函数不同义） | 对照表逐行审 port |
 
+## 社区开源实现
+
+本章的四层架构、满则丢新、期限监督与控制台命令，在生产日志与监控代码里都有同题实装：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [zephyrproject-rtos/zephyr](https://github.com/zephyrproject-rtos/zephyr) | `subsys/logging/log_core.c` | 满则丢新的生产版：缓冲区满时记进 `dropped_cnt`（`:111`），`dropped_notify()`（`:650`）把丢弃数经 `log_backend_dropped` 报给后端——丢帧要可数可上报，与 STATUS 帧里的丢弃计数同题 |
+| [zephyrproject-rtos/zephyr](https://github.com/zephyrproject-rtos/zephyr) | `include/zephyr/logging/log_backend.h` | port 边界的 vtable 版：`struct log_backend_api`（`:85`）把输出、格式、panic 模式做成后端操作表，核心层换后端不换——「公共只讲一遍，差异压进 port」的内核形态 |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/esp_system/task_wdt/task_wdt.c`（钉 `v5.5.2`） | 期限监督的 S3 真身：`esp_task_wdt_init`（`:514`）配超时与空闲任务订阅，任务按 entry 订阅、`esp_task_wdt_reset` 上报进展（entry 结构在 `:65`）——TWDT 点名的是「进展没来」，与本章 `progress()` 语义对照 |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/console/esp_console.h`（钉 `v5.5.2`） | fault 四命令的成熟外壳：`esp_console_run(cmdline, &cmd_ret)`（`:260`）按行解析执行，linenoise 提供补全与行编辑——控制台外壳与业务命令解耦 |
+| [armink/EasyLogger](https://github.com/armink/EasyLogger) | `easylogger/src/elog_buf.c` | 「出口由平台补」的第三方样本：`elog_port_output`（`:36`）声明为核心对平台的全部要求，缓冲输出模式只是它上面的一层——换平台的成本又被压进一层 port |
+
+共性归纳：日志与监控系统的公共骨架在三个仓库里同形——核心层管「要不要、存哪里、满了怎么办」，port/backend 管「怎么写出去」；过载保护的共同点是丢弃必须计数并上报，而不是悄悄吞掉。期限监督与心跳的分工在 TWDT 里看得最清楚：订阅的是任务的进展，不是它的存在。PRJ 的四层把同样的骨架压进 74 B 协议，规模小两个量级，边界保持同形。
+
 ## 离开检查
 
 - 四层架构与 port 边界能画；「公共只讲一遍」的正文结构能落地。
