@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720" height="650" viewBox="0 0 720 650" role="img" aria-label="读源码时，每次只改一个能验证的量">
+
+
+<rect x="0" y="0" width="720" height="650" fill="#fbfaf7"/>
+<text x="360" y="57" font-size="34" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">把一份例程读成自己的实验</text>
+<rect x="100" y="90" width="530" height="92" fill="#f1f5f7" opacity="1" rx="12" stroke="#1e4d63" stroke-width="1.5"/>
+<text x="365" y="126" font-size="30" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">01  锁定来源</text>
+<text x="365" y="164" font-size="26" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">提交、许可、板型与工具链</text>
+<line x1="365" y1="182" x2="365" y2="197" stroke="#1e4d63" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="365.00,206.00 360.50,197.00 369.50,197.00" fill="#1e4d63" opacity="1"/>
+<rect x="100" y="210" width="530" height="92" fill="#f1f5f7" opacity="1" rx="12" stroke="#1e4d63" stroke-width="1.5"/>
+<text x="365" y="246" font-size="30" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">02  建立基线</text>
+<text x="365" y="284" font-size="26" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">先运行，记录未改动时的结果</text>
+<line x1="365" y1="302" x2="365" y2="317" stroke="#1e4d63" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="365.00,326.00 360.50,317.00 369.50,317.00" fill="#1e4d63" opacity="1"/>
+<rect x="100" y="330" width="530" height="92" fill="#f1f5f7" opacity="1" rx="12" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="365" y="366" font-size="30" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">03  只改一个量</text>
+<text x="365" y="404" font-size="26" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">例如：改变定时周期</text>
+<line x1="365" y1="422" x2="365" y2="437" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="365.00,446.00 360.50,437.00 369.50,437.00" fill="#1b5c45" opacity="1"/>
+<rect x="100" y="450" width="530" height="92" fill="#f1f5f7" opacity="1" rx="12" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="365" y="486" font-size="30" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">04  对照结果</text>
+<text x="365" y="524" font-size="26" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">预测值 ↔ 波形 / 寄存器 / 日志</text>
+<path d="M 100 496 L 56 496 L 56 256 L 96 256" fill="none" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke="#7a4e00" stroke-width="3"/>
+<line x1="72" y1="256" x2="88" y2="256" stroke="#7a4e00" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="97.00,256.00 88.00,260.50 88.00,251.50" fill="#7a4e00" opacity="1"/>
+<text x="360" y="590" font-size="28" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">不符：回查配置与测法，再做同一实验</text>
+<text x="360" y="632" font-size="24" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">自绘流程示意 · 结果需在所选硬件或模型中验证</text>
+</svg>

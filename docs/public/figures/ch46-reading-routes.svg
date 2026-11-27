@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="720" height="800" viewBox="0 0 720 800" role="img" aria-label="学完共同基础，再按项目选分支">
+
+
+<rect x="0" y="0" width="720" height="800" fill="#fbfaf7"/>
+<text x="360" y="56" font-size="34" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">从一次点灯，走到一次交付</text>
+<rect x="110" y="88" width="500" height="104" fill="#e5f3f8" opacity="1" rx="12" stroke="#1e4d63" stroke-width="1.5"/>
+<text x="360" y="129" font-size="28" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">起步：构建 → 烧录 → 复位</text>
+<text x="360" y="168" font-size="26" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">第 0 章 · 留下首次运行记录</text>
+<line x1="360" y1="192" x2="360" y2="218" stroke="#1e4d63" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="360.00,228.00 355.00,218.00 365.00,218.00" fill="#1e4d63" opacity="1"/>
+<rect x="74" y="232" width="572" height="112" fill="#f1f5f7" opacity="1" rx="12" stroke="#1e4d63" stroke-width="1.5"/>
+<text x="360" y="274" font-size="28" fill="#1e4d63" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">共同基础：驱动与数据路径</text>
+<text x="360" y="316" font-size="26" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">边做实验，边补语言、构建与排错</text>
+<line x1="360" y1="344" x2="360" y2="350" stroke="#1b5c45" stroke-width="3" stroke-linecap="round" opacity="1"/>
+<line x1="360" y1="383" x2="360" y2="389" stroke="#1b5c45" stroke-width="3" stroke-linecap="round" opacity="1"/>
+<line x1="180" y1="389" x2="540" y2="389" stroke="#1b5c45" stroke-width="3" stroke-linecap="round" opacity="1"/>
+<text x="360" y="375" font-size="26" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">按需选，可组合</text>
+<line x1="180" y1="389" x2="180" y2="410" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="180.00,420.00 175.00,410.00 185.00,410.00" fill="#1b5c45" opacity="1"/>
+<line x1="540" y1="389" x2="540" y2="410" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="540.00,420.00 535.00,410.00 545.00,410.00" fill="#1b5c45" opacity="1"/>
+<rect x="32" y="424" width="308" height="154" fill="#eef5ee" opacity="1" rx="12" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="186" y="465" font-size="28" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">组织与连接</text>
+<text x="186" y="510" font-size="26" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">并发：第 21–25 章</text>
+<text x="186" y="550" font-size="26" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">联网：第 33 章</text>
+<rect x="380" y="424" width="308" height="154" fill="#eef5ee" opacity="1" rx="12" stroke="#1b5c45" stroke-width="1.5"/>
+<text x="534" y="465" font-size="28" fill="#1b5c45" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif" font-weight="700">控制与迁移</text>
+<text x="534" y="510" font-size="26" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">运动：第 36–39 章</text>
+<text x="534" y="550" font-size="26" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">换芯片：第 28–34 章</text>
+<line x1="180" y1="578" x2="180" y2="610" stroke="#1b5c45" stroke-width="3" stroke-linecap="round" opacity="1"/>
+<line x1="540" y1="578" x2="540" y2="610" stroke="#1b5c45" stroke-width="3" stroke-linecap="round" opacity="1"/>
+<line x1="180" y1="610" x2="540" y2="610" stroke="#1b5c45" stroke-width="3" stroke-linecap="round" opacity="1"/>
+<line x1="360" y1="610" x2="360" y2="635" stroke="#1b5c45" stroke-width="2" stroke-linecap="round" opacity="1"/>
+<polygon points="360.00,645.00 355.00,635.00 365.00,635.00" fill="#1b5c45" opacity="1"/>
+<rect x="74" y="650" width="572" height="88" fill="#fbf0d7" opacity="1" rx="12" stroke="#7a4e00" stroke-width="1.5"/>
+<text x="360" y="687" font-size="28" fill="#7a4e00" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">交付：重建 + 验收 + 失败恢复</text>
+<text x="360" y="722" font-size="24" fill="#17202a" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">第 42 章 · 连同所选功能的证据交给别人</text>
+<text x="360" y="779" font-size="24" fill="#5e6872" text-anchor="middle" opacity="1" font-family="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,-apple-system,'Segoe UI',sans-serif">阅读路线示意；逐章先修条件见正文索引</text>
+</svg>

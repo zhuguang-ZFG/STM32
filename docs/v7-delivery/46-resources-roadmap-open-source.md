@@ -5,27 +5,32 @@ platforms: [generic]
 
 # 资料、学习路线与开源地图
 
-全书最后一章回答三个「往后怎么办」：路线怎么走（三阶段计划与 L0–L5 证据级别）、资料怎么读（手册六类与查手册三步法）、开源怎么用（源码仓库、开源书/课程、配套代码与社区文章）。它同时是两本姊妹书学习路线的合并口径：两源在「先学 HAL 还是先学寄存器」上建议相反，统一口径写在这里并声明取舍。
+板子已经能点灯，下一步该学什么？先按手里的结果选择入口，再用本章的路线表安排下一次实验。
 
-这里没有板级实测。三阶段周数表是**计划表**（文档推导，逐周自测题的答案在 [附录 C](../appendix/C-exercises-answers.md)）；采购价格是估算区间，来源自注「以当日价格为准」；开源库定位与工具选型按来源卡口径；开源仓库星标数全部带抓取日期 2026-10-26（附录 F 双源同日核对）。社区书/课/配套代码的星标取 2026-11-15，许可取仓库根文件；这一组数字和附录 F 的 2026-10-26 快照不同日，只用来看量级。BOOT 与首次点灯的技术正文归 [v1 第 8 章](../v1-drivers/08-architecture-memory-clock.md) 与 [v1 第 9 章](../v1-drivers/09-gpio.md)，这里只留路线索引。
+| 现在的起点 | 下一步 | 做完留下什么 |
+| --- | --- | --- |
+| 刚拿到板子，还不能独立下载 | 从[第 0 章](../onramp/00-from-box-to-blink.md)完成开箱闭环 | 板型、构建与烧录日志、复位后的点灯记录 |
+| 能点灯，外设出错时无从查起 | 从[第 9 章](../v1-drivers/09-gpio.md)对照寄存器与现象，再做[串口实验](../v1-drivers/13-uart-framed-protocol.md) | 电平或波形与代码相互印证的记录 |
+| 能驱动外设，准备做完整项目 | 用[第 42 章](../v6-labs-projects/42-project-delivery-acceptance.md)先写验收条件，再选并发、联网或运动分支 | 可重建工程、验收结果和一次失败恢复记录 |
 
-> 版本口径：D00《如何学习 STM32》（`docs/00-如何学习STM32.md`）、D20《学习资源与工具链》（`docs/20-学习资源与工具链.md`）、mbF 起步区并入；手册命名六类（RM/DS/PM/AN/UM/ES）按 D20 正文表统一（源章「学习目标五种」的内部不一致在此修正为六类）。手册文档号（DS5319/RM0008/PM0056/CubeF1）与根书注册表一致（附录 E）。
+今天只选一行，写下要做的动作、预期结果与失败时的第一项检查。周数是可调整的计划；L0–L5 按已有证据自评。下面的图和表均为学习安排，不代表仓库已经完成对应的板级实测。
+
+> 资料版本：源码仓库快照见[附录 F](../appendix/F-open-source-community-map.md)，手册版本见[附录 E](../appendix/E-sources-version-license.md)。本章书目与新增源码阅读入口核对于 2026-11-27；旧星标保留各表原采样日期。
 
 ## 本章罗盘
 
-- **问题**：三阶段路线（4/6/8 周）的过关判据与前置知识五块的「够用」标准；L0–L5 六级证据怎么判定、对应哪些卷章；三种开发方式（寄存器/SPL/HAL+LL）的六维对比，两书相反的入门建议如何统一。手册六类各查什么、三步法怎么走；工具选型两表的预算口径；开源仓库、开源书/课程、配套代码与社区文章怎么选、怎么读、怎么问；生态数字为什么必须带抓取日期。
-- **交付**：能按三阶段表给自己排计划并写出过关判据；能指出自己停在 L0–L5 哪一级，并写出下一级缺的证据；能用前置知识表自评「够用即可」；能按统一口径选择入门路线并说出取舍理由；能按六类命名表挑对手册并用三步法查到 TIM1 占空比/PA11 USB/F4 DMA FIFO 三个示例；能从四类社区资源里选一本开源书或课程，说明它的许可边界；能给出两板（BluePill 起步线/霸天虎+实战派线）的采购清单；能按提问五件事提一个可回答的问题。
-- **级别**：L5 交付。证据位置：「测量与证据」与「离开检查」；读完留下自己的三阶段计划与过关判据、L0–L5 自评与下一级缺口证据，以及一本开源书的许可边界说明。
-- **旅程导航**：承接[第 45 章](./45-troubleshooting-handbook.md)的分诊路径。本章给出三阶段计划、L0–L5 自评与下一级缺口（周数/报价/星标都带来源限定）；L5 从「失败可查」进到「路线自己能排」，终点接回[第 0 章](../onramp/00-from-box-to-blink.md)的开箱闭环。
-- **开源读法**：从四类社区资源里挑一本（如 `rust-embedded/discovery`），按「编译一条命令 → 目录结构 → 最小例程」的读法走一遍，许可读仓库根文件原文；地址、时钟与位段仍回对应 RM/DS。
-- **边界**：这里属于路线与资料层；BOOT、首次点灯、构建命令的技术正文归 v1 各章（这里只留索引）；L0–L5 的定义与卷章映射在这里；全量源码仓库表与知识点在 附录 F；手册来源注册表在 附录 E；生态数量口径沿 [第 27 章](../v3-rtos/27-rtos-comparison-selection.md)。视频块、公众号手机阅读版、英文版链接不保留。
-- **依据锚点**：D00、D20（`docs/`）、mbF 起步区（`mcu/mcu-book/book/F-常见问题.md` 并入部分）。上游对账：SPL 停更与 [卷 0 第 7 章](../v0-foundations/07-build-systems-legacy.md) 口径一致；F1 DMA 无 FIFO/F4 有与 [v1 第 14 章](../v1-drivers/14-dma.md)、[第 33 章](../v4-platforms/33-network-protocol-stack.md) 一致。
+- **问题**：下一次实验选什么；缺哪项先备知识；参考书、手册与开源例程各能解决什么问题。
+- **交付**：一份有过关判据的学习计划，一项 L0–L5 证据缺口，以及一份写明版本、许可和验证方法的源码阅读记录。
+- **级别**：L5 的路线与资料整理；入门时也可用本章选择第一项任务。
+- **旅程导航**：[第 45 章](./45-troubleshooting-handbook.md)帮助定位失败，本章帮助选择接下来的实验；第一次下载从[第 0 章](../onramp/00-from-box-to-blink.md)开始。
+- **边界**：周数是排期建议，价格是历史估算；完整工程与源码片段的可运行边界见[附录 B](../appendix/B-project-index.md)。板型、库版本和许可证须分别核对。
+- **依据锚点**：D00、D20 与 mbF 起步区的历史内容；现行章节依赖见本章索引，手册和开源来源分别见附录 E、F；新增书目与源码链接见“选一本书，配一个实验”。
 
 ## 先做出来
 
 ### 1. 三阶段路线与过关判据
 
-这张表是"从入门到精通"的日历：4 周入门、6 周进阶、8 周实战，每阶段只给一条过关判据。它排的是时间，不是评级。往后翻还有两张表和它配套——1.1 按能力帮你找章，第 3 节按证据帮你定位：这里回答"这周做什么"，那两张分别回答"读哪章"和"算哪级"。三张表叠起来看，才是完整的地图。
+先给下一阶段安排一个可展示的结果。4/6/8 周可按已有经验调整；每次只在上一项结果能够复查后推进。想找具体章节，用后面的五阶段索引；想判断能力缺口，用 L0–L5 表。
 
 | 阶段 | 周数 | 主题 | 过关判据 |
 | --- | --- | --- | --- |
@@ -75,7 +80,11 @@ platforms: [generic]
 
 ### 1.1 五阶段能力目标与 47 章依赖索引
 
-三阶段 4/6/8 周还是那张排期表；下面这五档——**入门、基础、进阶、项目、深入**——是同一段旅程的另一种切法，用来按能力找章。它不是新评级，也不替换 L0–L5。别把五档当成五道必须顺序通过的关卡，这只是书的章节分类，可以跳着用：第 40 章的安全与取证该在第一次测量前读，第 19 章的恢复纪律该在项目前读，第 46 章现在就能拿来排计划。
+![共同基础之后按项目选择并发、联网、运动或迁移分支，最后按第 42 章交付；这是阅读路线示意，完整先修条件见下方索引](/figures/ch46-reading-routes.svg)
+
+分支可以组合：联网记录器可能同时需要 RTOS 和网络；简单采集器也可以用裸机状态机。先选交付物，再补所需的章节。语言、构建、测量与排错贯穿每条路线。
+
+五阶段索引按入门、基础、进阶、项目、深入分组，帮助按能力找章。它与 L0–L5 证据级别各有用途；第 40 章的测量安全应在第一次测量前读，第 19 章的恢复方法应在项目前读。选中某个分支后，再展开核对它的直接先修条件。
 
 本表按 `docs/manifest.json` 的 ch00–ch46 与各章罗盘、测量/离开检查逐项对应，共 **47/47 章**，不含六附录。首次主归属数量：入门 **1**、基础 **18**、进阶 **15**、项目 **6**、深入 **7**。数量不表示学习时长或已验证程度。
 
@@ -85,9 +94,21 @@ platforms: [generic]
 - **推荐回看**：帮助解释、测量或排错的阅读顺序，**不构成依赖边**。原罗盘的「上一章」是叙事衔接，不一律当作硬先修。
 - 表中产物是读者要完成的任务，**不是本仓库已经实测通过的声明**。没有仪器或板卡时只能完成计算/方案，硬件验收保留待测。
 
+<details class="reference-index" markdown="1">
+<summary>展开 47 章依赖索引（五阶段，含先修与验收产物）</summary>
+
+窄屏可在表内横向滑动；键盘聚焦表格后用左右方向键。打印时会展开全部记录。
+
+#### 入门 · 1 章
+
 | 章（现行路径） | 主要阶段 / 阅读 | 必须先会（直接依赖） | 推荐回看（非依赖） | 本章留下的验收产物 / 分支条件 |
 | --- | --- | --- | --- | --- |
 | [ch00 从开箱到点灯：买板、装环境与第一次下载](../onramp/00-from-box-to-blink.md) | 入门 / 必修 | 无章级硬依赖；基础语法/电气安全不足时先补课 | [ch05 工具链与四步构建](../v0-foundations/05-toolchain-four-steps.md)、[ch09 GPIO](../v1-drivers/09-gpio.md)、[ch13 UART 与可恢复帧协议](../v1-drivers/13-uart-framed-protocol.md) | 芯片/供电身份、构建与烧录日志、点灯及首次串口记录 |
+
+#### 基础 · 18 章
+
+| 章（现行路径） | 主要阶段 / 阅读 | 必须先会（直接依赖） | 推荐回看（非依赖） | 本章留下的验收产物 / 分支条件 |
+| --- | --- | --- | --- | --- |
 | [ch01 嵌入式 C 的内存模型与指针](../v0-foundations/01-c-memory-model.md) | 基础 / 必修 | 无章级硬依赖；基础语法/电气安全不足时先补课 | [ch05 工具链与四步构建](../v0-foundations/05-toolchain-four-steps.md) | 变量段归属、VMA/LMA 与初值来源对照 |
 | [ch02 volatile、const 与未定义行为](../v0-foundations/02-c-volatile-ub.md) | 基础 / 必修 | [ch01 嵌入式 C 的内存模型与指针](../v0-foundations/01-c-memory-model.md) | [ch05 工具链与四步构建](../v0-foundations/05-toolchain-four-steps.md) | 同一访存代码的 O0/O2 汇编差异 |
 | [ch03 结构体、ABI 与寄存器映射](../v0-foundations/03-struct-abi-registers.md) | 基础 / 必修 | [ch01 嵌入式 C 的内存模型与指针](../v0-foundations/01-c-memory-model.md)、[ch02 volatile、const 与未定义行为](../v0-foundations/02-c-volatile-ub.md) | [ch08 架构、存储器地图与时钟树](../v1-drivers/08-architecture-memory-clock.md) | offsetof/sizeof 与寄存器偏移逐项对账 |
@@ -105,9 +126,12 @@ platforms: [generic]
 | [ch15 ADC/DAC 与采样](../v1-drivers/15-adc-dac-sampling.md) | 基础 / 必修 | [ch08 架构、存储器地图与时钟树](../v1-drivers/08-architecture-memory-clock.md)、[ch09 GPIO](../v1-drivers/09-gpio.md) | [ch14 DMA](../v1-drivers/14-dma.md)、[ch40 实物实验方法与仪器证据](../v6-labs-projects/40-lab-method-instruments.md) | VREF/码值/输入电压表；仅扫描 DMA 段另需 ch14 |
 | [ch16 I2C 与 SPI](../v1-drivers/16-i2c-spi.md) | 基础 / 必修 | [ch08 架构、存储器地图与时钟树](../v1-drivers/08-architecture-memory-clock.md)、[ch09 GPIO](../v1-drivers/09-gpio.md) | [ch13 UART 与可恢复帧协议](../v1-drivers/13-uart-framed-protocol.md)、[ch40 实物实验方法与仪器证据](../v6-labs-projects/40-lab-method-instruments.md) | I2C 地址/ACK 与 SPI 模式/事务时序各一次对账 |
 | [ch17 Flash、IAP 与 OTA](../v1-drivers/17-flash-iap-ota.md) | 基础 / 参考/分支 | [ch06 链接脚本、启动与 map 体积审计](../v0-foundations/06-linker-startup-map.md)、[ch08 架构、存储器地图与时钟树](../v1-drivers/08-architecture-memory-clock.md) | [ch19 看门狗、复位与 HardFault](../v2-reliability/19-watchdog-reset-hardfault.md) | 页/扇区与镜像边界表；升级路线再做恢复设计 |
-| [ch18 低功耗设计](../v2-reliability/18-low-power.md) | 深入 / 参考/分支 | [ch08 架构、存储器地图与时钟树](../v1-drivers/08-architecture-memory-clock.md)、[ch11 SysTick 与时基（含 RTC）](../v1-drivers/11-systick-timebase-rtc.md) | [ch13 UART 与可恢复帧协议](../v1-drivers/13-uart-framed-protocol.md)、[ch19 看门狗、复位与 HardFault](../v2-reliability/19-watchdog-reset-hardfault.md) | 唤醒前后时钟、时基、BRR 恢复检查表 |
-| [ch19 看门狗、复位与 HardFault](../v2-reliability/19-watchdog-reset-hardfault.md) | 深入 / 必修 | [ch06 链接脚本、启动与 map 体积审计](../v0-foundations/06-linker-startup-map.md)、[ch10 中断、NVIC/EXTI、CLIC 与双核](../v1-drivers/10-interrupts-nvic-exti.md)、[ch11 SysTick 与时基（含 RTC）](../v1-drivers/11-systick-timebase-rtc.md) | [ch20 调试、性能与测量](../v2-reliability/20-debug-performance.md) | 看门狗最坏超时预算与复位/HardFault 现场记录方案 |
-| [ch20 调试、性能与测量](../v2-reliability/20-debug-performance.md) | 深入 / 必修 | [ch05 工具链与四步构建](../v0-foundations/05-toolchain-four-steps.md)、[ch06 链接脚本、启动与 map 体积审计](../v0-foundations/06-linker-startup-map.md)、[ch08 架构、存储器地图与时钟树](../v1-drivers/08-architecture-memory-clock.md) | [ch10 中断、NVIC/EXTI、CLIC 与双核](../v1-drivers/10-interrupts-nvic-exti.md)、[ch19 看门狗、复位与 HardFault](../v2-reliability/19-watchdog-reset-hardfault.md) | 调试链分层、断点失败分诊及性能测量开销说明 |
+| [ch40 实物实验方法与仪器证据](../v6-labs-projects/40-lab-method-instruments.md) | 基础 / 必修 | 无章级硬依赖；基础语法/电气安全不足时先补课 | [ch00 从开箱到点灯：买板、装环境与第一次下载](../onramp/00-from-box-to-blink.md)、[ch09 GPIO](../v1-drivers/09-gpio.md)、[ch12 定时器与 PWM](../v1-drivers/12-timers-pwm.md)、[ch13 UART 与可恢复帧协议](../v1-drivers/13-uart-framed-protocol.md) | 押注→测量→对账→登记；仪器安全先读，不等到第40章才量 |
+
+#### 进阶 · 15 章
+
+| 章（现行路径） | 主要阶段 / 阅读 | 必须先会（直接依赖） | 推荐回看（非依赖） | 本章留下的验收产物 / 分支条件 |
+| --- | --- | --- | --- | --- |
 | [ch21 为什么需要 RTOS](../v3-rtos/21-why-rtos.md) | 进阶 / 必修 | [ch04 函数指针、状态机与调用约定](../v0-foundations/04-function-pointer-state-machine.md)、[ch10 中断、NVIC/EXTI、CLIC 与双核](../v1-drivers/10-interrupts-nvic-exti.md)、[ch11 SysTick 与时基（含 RTC）](../v1-drivers/11-systick-timebase-rtc.md) | [ch20 调试、性能与测量](../v2-reliability/20-debug-performance.md) | 裸机响应上界与任务/中断优先级、RAM 预算表 |
 | [ch22 任务、TCB 与调度](../v3-rtos/22-tasks-tcb-scheduler.md) | 进阶 / 必修 | [ch21 为什么需要 RTOS](../v3-rtos/21-why-rtos.md) | [ch04 函数指针、状态机与调用约定](../v0-foundations/04-function-pointer-state-machine.md) | 任务状态转换、优先级与调度轨迹 |
 | [ch23 上下文切换与移植](../v3-rtos/23-context-switch-porting.md) | 进阶 / 参考/分支 | [ch06 链接脚本、启动与 map 体积审计](../v0-foundations/06-linker-startup-map.md)、[ch10 中断、NVIC/EXTI、CLIC 与双核](../v1-drivers/10-interrupts-nvic-exti.md)、[ch22 任务、TCB 与调度](../v3-rtos/22-tasks-tcb-scheduler.md) | [ch04 函数指针、状态机与调用约定](../v0-foundations/04-function-pointer-state-machine.md) | 栈现场、三个异常与向量名逐项对照 |
@@ -123,17 +147,31 @@ platforms: [generic]
 | [ch33 网络与协议栈](../v4-platforms/33-network-protocol-stack.md) | 进阶 / 参考/分支 | [ch13 UART 与可恢复帧协议](../v1-drivers/13-uart-framed-protocol.md)、[ch14 DMA](../v1-drivers/14-dma.md) | [ch24 队列、信号量与通知](../v3-rtos/24-queue-semaphore-notification.md)、[ch32 Wi-Fi、蓝牙与 ESP-NOW](../v4-platforms/32-esp32-wifi-ble-espnow.md)、[ch34 多核、Cache 与内存一致性](../v4-platforms/34-multicore-cache.md) | 选定一条网络路径，画 DMA 内存/线程归属及恢复链；缓存段另读 ch34 |
 | [ch34 多核、Cache 与内存一致性](../v4-platforms/34-multicore-cache.md) | 进阶 / 参考/分支 | [ch02 volatile、const 与未定义行为](../v0-foundations/02-c-volatile-ub.md)、[ch14 DMA](../v1-drivers/14-dma.md) | [ch10 中断、NVIC/EXTI、CLIC 与双核](../v1-drivers/10-interrupts-nvic-exti.md)、[ch30 ESP32-S3 架构、启动与工程](../v4-platforms/30-esp32s3-architecture-boot.md) | Cache/DMA clean/invalidate 方向与对齐表；S3 分支需 ch30 |
 | [ch35 现场总线与 USB](../v4-platforms/35-can-usb-fieldbus.md) | 进阶 / 参考/分支 | [ch08 架构、存储器地图与时钟树](../v1-drivers/08-architecture-memory-clock.md)、[ch09 GPIO](../v1-drivers/09-gpio.md)、[ch10 中断、NVIC/EXTI、CLIC 与双核](../v1-drivers/10-interrupts-nvic-exti.md) | [ch13 UART 与可恢复帧协议](../v1-drivers/13-uart-framed-protocol.md)、[ch14 DMA](../v1-drivers/14-dma.md) | CAN 位时序整除/采样点或 USB 端点/缓冲归属，按所选分支验收 |
+
+#### 项目 · 6 章
+
+| 章（现行路径） | 主要阶段 / 阅读 | 必须先会（直接依赖） | 推荐回看（非依赖） | 本章留下的验收产物 / 分支条件 |
+| --- | --- | --- | --- | --- |
 | [ch36 电机驱动与供电](../v5-motion/36-motor-driver-power.md) | 项目 / 参考/分支 | [ch09 GPIO](../v1-drivers/09-gpio.md)、[ch12 定时器与 PWM](../v1-drivers/12-timers-pwm.md) | [ch19 看门狗、复位与 HardFault](../v2-reliability/19-watchdog-reset-hardfault.md) | 控制/动力电流分层与上电/复位/故障关闭检查表 |
 | [ch37 直流电机开环调速](../v5-motion/37-dc-motor-openloop.md) | 项目 / 参考/分支 | [ch12 定时器与 PWM](../v1-drivers/12-timers-pwm.md)、[ch36 电机驱动与供电](../v5-motion/36-motor-driver-power.md) | [ch11 SysTick 与时基（含 RTC）](../v1-drivers/11-systick-timebase-rtc.md)、[ch19 看门狗、复位与 HardFault](../v2-reliability/19-watchdog-reset-hardfault.md) | 开环斜坡、双限幅、租约与换向时序方案 |
 | [ch38 编码器与转速测量](../v5-motion/38-encoder-speed-measurement.md) | 项目 / 参考/分支 | [ch10 中断、NVIC/EXTI、CLIC 与双核](../v1-drivers/10-interrupts-nvic-exti.md)、[ch12 定时器与 PWM](../v1-drivers/12-timers-pwm.md) | [ch37 直流电机开环调速](../v5-motion/37-dc-motor-openloop.md) | P×Q×G 口径、计数差与 rpm/量化下限复算 |
 | [ch39 速度闭环与 PI](../v5-motion/39-speed-closed-loop-pi.md) | 项目 / 参考/分支 | [ch04 函数指针、状态机与调用约定](../v0-foundations/04-function-pointer-state-machine.md)、[ch13 UART 与可恢复帧协议](../v1-drivers/13-uart-framed-protocol.md)、[ch19 看门狗、复位与 HardFault](../v2-reliability/19-watchdog-reset-hardfault.md)、[ch37 直流电机开环调速](../v5-motion/37-dc-motor-openloop.md)、[ch38 编码器与转速测量](../v5-motion/38-encoder-speed-measurement.md) | [ch24 队列、信号量与通知](../v3-rtos/24-queue-semaphore-notification.md) | PI 单步手算、五态恢复链与阶跃四指标验收方案 |
-| [ch40 实物实验方法与仪器证据](../v6-labs-projects/40-lab-method-instruments.md) | 基础 / 必修 | 无章级硬依赖；基础语法/电气安全不足时先补课 | [ch00 从开箱到点灯：买板、装环境与第一次下载](../onramp/00-from-box-to-blink.md)、[ch09 GPIO](../v1-drivers/09-gpio.md)、[ch12 定时器与 PWM](../v1-drivers/12-timers-pwm.md)、[ch13 UART 与可恢复帧协议](../v1-drivers/13-uart-framed-protocol.md) | 押注→测量→对账→登记；仪器安全先读，不等到第40章才量 |
 | [ch41 双板综合项目](../v6-labs-projects/41-dual-board-logger-project.md) | 项目 / 参考/分支 | [ch04 函数指针、状态机与调用约定](../v0-foundations/04-function-pointer-state-machine.md)、[ch13 UART 与可恢复帧协议](../v1-drivers/13-uart-framed-protocol.md)、[ch17 Flash、IAP 与 OTA](../v1-drivers/17-flash-iap-ota.md)、[ch19 看门狗、复位与 HardFault](../v2-reliability/19-watchdog-reset-hardfault.md) | [ch14 DMA](../v1-drivers/14-dma.md)、[ch15 ADC/DAC 与采样](../v1-drivers/15-adc-dac-sampling.md)、[ch24 队列、信号量与通知](../v3-rtos/24-queue-semaphore-notification.md)、[ch40 实物实验方法与仪器证据](../v6-labs-projects/40-lab-method-instruments.md) | 双板 port 边界、载荷/队列/期限预算与故障注入计划 |
 | [ch42 项目实战与交付验收](../v6-labs-projects/42-project-delivery-acceptance.md) | 项目 / 必修 | [ch40 实物实验方法与仪器证据](../v6-labs-projects/40-lab-method-instruments.md) | [ch19 看门狗、复位与 HardFault](../v2-reliability/19-watchdog-reset-hardfault.md)、[ch41 双板综合项目](../v6-labs-projects/41-dual-board-logger-project.md) | 所选项目四问、六预算及五件套；实现先修取决于项目，不强制 ch41 |
+
+#### 深入 · 7 章
+
+| 章（现行路径） | 主要阶段 / 阅读 | 必须先会（直接依赖） | 推荐回看（非依赖） | 本章留下的验收产物 / 分支条件 |
+| --- | --- | --- | --- | --- |
+| [ch18 低功耗设计](../v2-reliability/18-low-power.md) | 深入 / 参考/分支 | [ch08 架构、存储器地图与时钟树](../v1-drivers/08-architecture-memory-clock.md)、[ch11 SysTick 与时基（含 RTC）](../v1-drivers/11-systick-timebase-rtc.md) | [ch13 UART 与可恢复帧协议](../v1-drivers/13-uart-framed-protocol.md)、[ch19 看门狗、复位与 HardFault](../v2-reliability/19-watchdog-reset-hardfault.md) | 唤醒前后时钟、时基、BRR 恢复检查表 |
+| [ch19 看门狗、复位与 HardFault](../v2-reliability/19-watchdog-reset-hardfault.md) | 深入 / 必修 | [ch06 链接脚本、启动与 map 体积审计](../v0-foundations/06-linker-startup-map.md)、[ch10 中断、NVIC/EXTI、CLIC 与双核](../v1-drivers/10-interrupts-nvic-exti.md)、[ch11 SysTick 与时基（含 RTC）](../v1-drivers/11-systick-timebase-rtc.md) | [ch20 调试、性能与测量](../v2-reliability/20-debug-performance.md) | 看门狗最坏超时预算与复位/HardFault 现场记录方案 |
+| [ch20 调试、性能与测量](../v2-reliability/20-debug-performance.md) | 深入 / 必修 | [ch05 工具链与四步构建](../v0-foundations/05-toolchain-four-steps.md)、[ch06 链接脚本、启动与 map 体积审计](../v0-foundations/06-linker-startup-map.md)、[ch08 架构、存储器地图与时钟树](../v1-drivers/08-architecture-memory-clock.md) | [ch10 中断、NVIC/EXTI、CLIC 与双核](../v1-drivers/10-interrupts-nvic-exti.md)、[ch19 看门狗、复位与 HardFault](../v2-reliability/19-watchdog-reset-hardfault.md) | 调试链分层、断点失败分诊及性能测量开销说明 |
 | [ch43 AI 结对开发与提示词工作流](../v7-delivery/43-ai-pair-programming.md) | 深入 / 参考/分支 | 无章级硬依赖；基础语法/电气安全不足时先补课 | [ch05 工具链与四步构建](../v0-foundations/05-toolchain-four-steps.md)、[ch42 项目实战与交付验收](../v6-labs-projects/42-project-delivery-acceptance.md)、[ch44 手册对账与幻觉防御](../v7-delivery/44-manual-reconciliation-hallucination.md) | 三段式工单、模型权限四问与人工签字边界 |
 | [ch44 手册对账与幻觉防御](../v7-delivery/44-manual-reconciliation-hallucination.md) | 深入 / 必修 | 无章级硬依赖；基础语法/电气安全不足时先补课 | [ch03 结构体、ABI 与寄存器映射](../v0-foundations/03-struct-abi-registers.md)、[ch08 架构、存储器地图与时钟树](../v1-drivers/08-architecture-memory-clock.md)、[ch40 实物实验方法与仪器证据](../v6-labs-projects/40-lab-method-instruments.md)、[ch43 AI 结对开发与提示词工作流](../v7-delivery/43-ai-pair-programming.md) | 一条主张的手册/源码/板卡/测量核对卡；读回和波形分析回相应基础章 |
 | [ch45 常见故障排查手册](../v7-delivery/45-troubleshooting-handbook.md) | 深入 / 必修 | 无章级硬依赖；基础语法/电气安全不足时先补课 | [ch09 GPIO](../v1-drivers/09-gpio.md)、[ch13 UART 与可恢复帧协议](../v1-drivers/13-uart-framed-protocol.md)、[ch19 看门狗、复位与 HardFault](../v2-reliability/19-watchdog-reset-hardfault.md)、[ch20 调试、性能与测量](../v2-reliability/20-debug-performance.md) | 从一条症状走到区分证据与下一动作，不必先通读44章 |
 | [ch46 资料、学习路线与开源地图](../v7-delivery/46-resources-roadmap-open-source.md) | 深入 / 必修 | 无章级硬依赖；基础语法/电气安全不足时先补课 | [ch00 从开箱到点灯：买板、装环境与第一次下载](../onramp/00-from-box-to-blink.md)、[ch42 项目实战与交付验收](../v6-labs-projects/42-project-delivery-acceptance.md)、[ch44 手册对账与幻觉防御](../v7-delivery/44-manual-reconciliation-hallucination.md) | 个人计划、L0–L5 自评及下一份缺口证据 |
+
+</details>
 
 #### 阶段验收：按证据放行，不按读完多少章放行
 
@@ -156,7 +194,7 @@ platforms: [generic]
 | C 语言 | 指针/位运算/struct | 函数指针/链接过程 | 看到 `*p++` 发怵 |
 | 数字电路 | 电平/上拉下拉 | 时序图 | 分不清推挽开漏 |
 | 模拟电路 | 欧姆定律/分压 | 运放常识 | 不敢分压采样 |
-| 计组 | 内存映射概念 | 流水线/缓存 | 不知道寄存器是内存 |
+| 计组 | 内存映射概念 | 流水线/缓存 | 分不清外设寄存器与普通 RAM |
 | 英语 | 查词典读手册 | 通读 | 手册一页没读过 |
 
 「够用即可」是主流。嵌入式入门最大的坑是把 C 语言学完才敢点灯。
@@ -187,11 +225,11 @@ platforms: [generic]
 
 ### 一、三种开发方式与统一口径
 
-六维对比（寄存器/SPL/HAL+LL+CubeMX）：效率、可移植性、学习曲线、社区资料、维护状态、适用阶段。
+刚开始用 HAL 完成一个小实验，再到[第 9 章](../v1-drivers/09-gpio.md)对照时钟、模式和电平寄存器。需要缩短关键路径时再读 LL 或直接寄存器实现。
 
-**SPL 已停止维护**（[卷 0 第 7 章](../v0-foundations/07-build-systems-legacy.md) 同口径）。两书建议相反：D00 建议「HAL 入门→寄存器对照→LL 优化」，mbF 建议「顺序是寄存器→库」。
+**SPL 已停止维护**。维护旧工程时按[第 7 章](../v0-foundations/07-build-systems-legacy.md)锁定系列与版本；新项目优先查看对应系列当前的 HAL/LL 支持。
 
-**全书的统一口径：寄存器打底（最小验证矩阵那几行）+ HAL 做产品**。寄存器打底的理由是排错时不黑盒（[v1 第 9 章](../v1-drivers/09-gpio.md) 的寄存器版与 HAL 版对照实验已经教了这一课），HAL 做产品的理由是生态与移植；取舍声明写在这里，后文不再摇摆。
+本书采用“寄存器打底 + HAL 做产品”的顺序：先获得可验证结果，再用寄存器解释它。使用 HAL 也要核对时钟、引脚与中断配置；换芯片时，生成工具不能代替数据手册。
 
 ### 二、手册六类与三步法
 
@@ -204,7 +242,7 @@ platforms: [generic]
 | UM | User Manual | 工具/固件库用法 |
 | ES | Errata Sheet | 已知勘误 |
 
-查手册三步法：①定手册（RM 寄存器/DS 电气/AN 做法）→ ②Ctrl+F 搜寄存器名或位名 → ③读功能描述章的时序与公式。三个检索示例：TIM1 占空比（RM0008 的 CCR1 段）、PA11 的 USB 复用（DS5319 表 5）、F4 DMA 的 FIFO（AN4031 + RM0090，F1 DMAF1 DMA 无 FIFO/突发，F4 有，[v1 第 14 章](../v1-drivers/14-dma.md) 口径）。记忆口诀：**R 看寄存器、D 看数据、A 看应用、U 看工具、E 看坑**。
+查手册三步法：①定手册（RM 寄存器/DS 电气/AN 做法）→ ②Ctrl+F 搜寄存器名或位名 → ③读功能描述章的时序与公式。三个检索示例：TIM1 占空比（RM0008 的 CCR1 段）、PA11 的 USB 复用（DS5319 表 5）、F4 DMA 的 FIFO（AN4031 + RM0090，F1 DMA 无 FIFO/突发，F4 有，[v1 第 14 章](../v1-drivers/14-dma.md) 口径）。记忆口诀：**R 看寄存器、D 看数据、A 看应用、U 看工具、E 看坑**。
 
 ![手绘板：三条学习路径与 API 三 lanes 对照（原理示意，非实拍）](/images/ch00-three-api-lanes.png)
 
@@ -215,22 +253,32 @@ platforms: [generic]
 | F103 BluePill 起步线 | BluePill 15~30 + ST-Link 克隆 15~40 + 面包板 8~20 + 杜邦线 8~15 | 极简约 60 元；全套约 200~300 元 |
 | F407/ESP32-S3 实战线 | 野火 F407 霸天虎 + 立创实战派 S3（板载 QMI8658/音频/屏） | 按 mbF 装备清单口径（[第 31 章](../v4-platforms/31-esp32-drivers-audio.md) 板级事实） |
 
-价格全部是区间加自注。不是事实数。仪器选型两表（硬件 7 行：调试器/逻辑分析仪/示波器/串口/万用表/功耗计/焊接；软件 11 行：CubeMX/CubeIDE/Keil/IAR/PlatformIO/CLion/VS Code/OpenOCD/KiCad/CubeMonitor/PulseView）预算区间同口径，软件定位与 [v1 第 5 章](../v0-foundations/05-toolchain-four-steps.md)、[卷 0 第 7 章](../v0-foundations/07-build-systems-legacy.md)、[v1 第 20 章](../v2-reliability/20-debug-performance.md) 一致。
+这些价格是历史估算，购买时重查。调试器与接线看[第 0 章](../onramp/00-from-box-to-blink.md)，万用表、逻辑分析仪和示波器的分工看[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)；构建工具选择看[第 5 章](../v0-foundations/05-toolchain-four-steps.md)与[第 7 章](../v0-foundations/07-build-systems-legacy.md)。
 
 ![ST-Link/V2 与 48-pin STM32F103C8T6 开发板的 SWD 四线接线实拍；不同板子的排针顺序不同，按丝印或原理图核对](/images/tools/stlink-v2-swd-connector.jpg)
 
-实物参照照，作者 Paul Gallagher，[MIT](https://github.com/tardate/LittleArduinoProjects/blob/018885e631bf0a6f874c57d9165e5f0ee3575d02/LICENSE)；只证明这一套实物接线形态，不证明驱动枚举或烧录成功。
+实物参照，作者 Paul Gallagher，[MIT](https://github.com/tardate/LittleArduinoProjects/blob/018885e631bf0a6f874c57d9165e5f0ee3575d02/LICENSE)；只证明这一套实物接线形态，不证明驱动枚举或烧录成功。
 
 ### 四、构建合同与命令组（索引）
 
-四个 IDE 入口汇入同一 CMake preset 的构建合同、OpenOCD 烧录/GDB 六步、PlatformIO 配置、CubeProgrammer 的 RDP 警告（**RDP=0xAA 解保护会整片擦除**）。技术正文归 [v1 第 5 章](../v0-foundations/05-toolchain-four-steps.md)、[卷 0 第 7 章](../v0-foundations/07-build-systems-legacy.md)、[v1 第 20 章](../v2-reliability/20-debug-performance.md)，这里不重复命令块。
+四步构建、ELF 检查和环境搭建见[第 5 章](../v0-foundations/05-toolchain-four-steps.md)，构建系统与遗留工程见[第 7 章](../v0-foundations/07-build-systems-legacy.md)，断点、故障现场与性能取证见[第 20 章](../v2-reliability/20-debug-performance.md)。运行配套工程时，先按[附录 B](../appendix/B-project-index.md)找到对应 README，在指定目录执行命令。
 
 ### 五、开源：怎么选、怎么读、怎么问
 
 - **怎么选**：维护活跃度（最近 commit）、license（五族口径见 附录 F）、社区（issue 响应）、与你的芯片匹配（port 层存在性）。
 - **怎么读**：先读 README 的「编译一条命令」、再读目录结构、再读一个最小例程。**归档 vs 镜像**要分清（mirror 不含 issue 讨论）。
 - **怎么问**：提问五件事：版本三元组（SDK/内核 commit/工具链）、最小复现、预期 vs 实际、完整日志、你已经试过什么。
-- **入口仓库一行表**：FreeRTOS-Kernel、RT-Thread、libopencm3、STM32CubeF4、esp-idf、lwIP、OpenOCD 七个的全量表在[附录 F](../appendix/F-open-source-community-map.md)（2026-10-26 快照，附九个知识点）；Mbed TLS 与 KiCad 不在 F 的仓库地图——前者在本书只以 CubeH7 子模块出现（[第 33 章](../v4-platforms/33-network-protocol-stack.md)），后者是工具，都不是有对应章的仓库地图对象，星标见本章上表（2026-11-15）。
+- **入口仓库一行表**：FreeRTOS-Kernel、RT-Thread、libopencm3、STM32CubeF4、esp-idf、lwIP、OpenOCD 七个的全量表在[附录 F](../appendix/F-open-source-community-map.md)（2026-10-26 快照，附九个知识点）；Mbed TLS 与 KiCad 不在 F 的仓库地图——前者在本书只以 CubeH7 子模块出现（[第 33 章](../v4-platforms/33-network-protocol-stack.md)），后者是工具，都不是有对应章的仓库地图对象。
+
+#### 选一本书，配一个实验
+
+**补启动与寄存器：**读 [A bare metal programming guide 的点灯一节](https://github.com/cpq/bare-metal-programming-guide/blob/4f6b45ba25eec45bb50cb027365fa381465bb9e8/README.md#blinky-led)，再打开同版的 [step-1-blinky 工程](https://github.com/cpq/bare-metal-programming-guide/tree/4f6b45ba25eec45bb50cb027365fa381465bb9e8/steps/step-1-blinky)。它从最小固件逐步加入点灯、SysTick 和 UART，每步都有完整工程。对照本书第 5、6、9 章，找出编译入口、向量表、时钟使能与 GPIO 配置。教程使用 Nucleo-F429ZI，PB7 和 F4 寄存器不能直接搬到 F103 PC13。指南本身采用 [MIT 许可](https://github.com/cpq/bare-metal-programming-guide/blob/4f6b45ba25eec45bb50cb027365fa381465bb9e8/LICENSE)；后面的联网示例使用 Mongoose，其 GPLv2/商业许可须单独核对。
+
+**对照早期 F1 工程：**Geoffrey Brown 的 *Discovering the STM32 Microcontroller*（2013，Indiana University）面向 STM32VL Discovery。需要读旧工具链时，可看作者 [STM32-Template 的固定版本说明](https://github.com/geoffreymbrown/STM32-Template/blob/ae8bfe8e951a6c12192a05fd031ef0647d721fe6/README.md)，对照第 7 章记录 SPL、启动文件与链接脚本如何配套。它依赖旧的 CodeSourcery 工具链，仓库根未提供统一许可证；适合作为阅读线索，不能据此认定源码可自由复制。
+
+**准备做完整系统：**Elecia White 的 *Making Embedded Systems: Design Patterns for Great Software*，第二版（2024，O'Reilly，电子版 ISBN `9781098151546`），可作为架构与调试方向的延伸书目。已经能驱动外设后，选自己的记录器或控制器，按第 42 章列出资源预算与一个失败恢复用例，再带着这些问题阅读。
+
+Brown 与 White 两书在此按书目和简介介绍；上面的配套任务由本书设计。公开指南与例程按固定提交阅读，书正文与配套代码的许可分别判断。
 
 #### 社区开源书、课程与配套代码
 
@@ -238,13 +286,13 @@ platforms: [generic]
 
 | 类型 | 仓库（星标） | 许可（仓库根） | 怎么用 | 边界 |
 | --- | --- | --- | --- | --- |
-| 开源书/指南 | `cpq/bare-metal-programming-guide`（5010） | MIT | 从零写裸机：启动、寄存器、链接脚本一条线 | 不是 STM32 手册；地址、时钟、位段回 RM/DS |
-| 开源书（Rust 路线） | `rust-embedded/book`（1358）、`rust-embedded/discovery`（1606） | 代码 MIT/Apache-2.0；正文 CC BY-SA 4.0（book）/ CC BY 4.0（discovery） | 用另一门语言对照内存映射、所有权与外设抽象 | 当前 Discovery 主版本用 micro:bit v2；F3 discovery 版已标为 deprecated，换板要重查外设 |
-| 开源课程 | `microsoft/IoT-For-Beginners`（17191） | MIT | 12 周 24 课的 IoT 全链路，补云、设备与数据视角 | 课程作业不是产品验收；硬件与云服务按当前版本重核 |
-| 开源课程/实验 | `jserv/mini-arm-os`（1264） | BSD-2-Clause（`LICENSE` 原文；GitHub 识别为 NOASSERTION） | 从上下文切换写到多任务，补 RTOS 的从零那一层 | 教学内核不是产品 RTOS；仿真实验不等于板级验收 |
-| 书的配套代码 | `cnoviello/mastering-stm32`（496） | GPL-3.0 | 对照《Mastering STM32》的例程读 HAL | 仓库只放例程，书正文不在仓库；GPL-3.0 代码不要直接链进闭源固件 |
-| 社区文集 | `memfault/interrupt`（560） | CC BY-SA 4.0（`license.md` 原文；GitHub 识别为 NOASSERTION） | 读排错、固件更新、可观测性等工程文章 | 文章不是手册；引用要带版本与日期 |
-| 代码片段 | `nkolban/esp32-snippets`（2521） | Apache-2.0 | 查 ESP32 外设与协议片段 | 片段不是完整工程；最后更新 2024，先对当前 IDF 版本 |
+| 开源书/指南 | [cpq/bare-metal-programming-guide](https://github.com/cpq/bare-metal-programming-guide)（5010） | MIT | 从零写裸机：启动、寄存器、链接脚本一条线 | 不是 STM32 手册；地址、时钟、位段回 RM/DS |
+| 开源书（Rust 路线） | [rust-embedded/book](https://github.com/rust-embedded/book)（1358）、[rust-embedded/discovery](https://github.com/rust-embedded/discovery)（1606） | 代码 MIT/Apache-2.0；正文 CC BY-SA 4.0（book）/ CC BY 4.0（discovery） | 用另一门语言对照内存映射、所有权与外设抽象 | 旧仓库的 STM32F3 和 micro:bit v1 版均已停止维护；新 [discovery-mb2](https://github.com/rust-embedded/discovery-mb2) 面向 micro:bit v2，不能直接用于 STM32 |
+| 开源课程 | [microsoft/IoT-For-Beginners](https://github.com/microsoft/IoT-For-Beginners)（17191） | MIT | 12 周 24 课的 IoT 全链路，补云、设备与数据视角 | 课程作业不是产品验收；硬件与云服务按当前版本重核 |
+| 开源课程/实验 | [jserv/mini-arm-os](https://github.com/jserv/mini-arm-os)（1264） | BSD-2-Clause（`LICENSE` 原文；GitHub 识别为 NOASSERTION） | 从上下文切换写到多任务，补 RTOS 的从零那一层 | 教学内核不是产品 RTOS；仿真实验不等于板级验收 |
+| 书的配套代码 | [cnoviello/mastering-stm32](https://github.com/cnoviello/mastering-stm32)（496） | GPL-3.0 | 对照《Mastering STM32》的例程读 HAL | 仓库只放例程，书正文不在仓库；GPL-3.0 代码不要直接链进闭源固件 |
+| 社区文集 | [memfault/interrupt](https://github.com/memfault/interrupt)（560） | CC BY-SA 4.0（`license.md` 原文；GitHub 识别为 NOASSERTION） | 读排错、固件更新、可观测性等工程文章 | 文章不是手册；引用要带版本与日期 |
+| 代码片段 | [nkolban/esp32-snippets](https://github.com/nkolban/esp32-snippets)（2521） | Apache-2.0 | 查 ESP32 外设与协议片段 | 片段不是完整工程；最后更新 2024，先对当前 IDF 版本 |
 
 星标取 2026-11-15 的 GitHub API 返回值，和[附录 F](../appendix/F-open-source-community-map.md) 的 2026-10-26 仓库快照不同日；只用来看量级，不作排名。许可以仓库根文件原文为准；GitHub 的 `NOASSERTION` 只表示它没有识别出标准族，不代表没有许可。
 
@@ -254,9 +302,17 @@ platforms: [generic]
 2. **书里的地址、时钟、位段回对应 RM/DS 复核。** 书可以帮你找路径，判据仍在手册和测量。
 3. **许可按仓库根文件读。** MIT/Apache-2.0 可以进闭源固件（保留版权与许可声明，Apache-2.0 若有 `NOTICE` 也一并保留）；GPL-3.0 不要直接链进闭源固件；CC BY-SA 4.0 的文章转载要署名并以相同方式共享。配套代码的许可和书的许可分开看。
 
-![手绘板：社区开源书、课程、配套代码与社区文章四类资源的读法与许可边界（原理示意，非实拍）](/images/ch46-oss-four-lanes.png)
+#### 把一个点灯例程读成实验
 
-开源库七行对比（HAL/LL、SPL V3.5.0、libopencm3、ChibiOS、Zephyr、RT-Thread、FreeRTOS）的定位描述沿用 D20 表；版本细节带 附录 F 的证据口径。
+打开 [libopencm3 的 miniblink.c](https://github.com/libopencm3/libopencm3-examples/blob/15637e291b8ca228e35d5f657ed15f3b8958fa0c/examples/stm32/f1/stm32vl-discovery/miniblink/miniblink.c)，先找 `rcc_periph_clock_enable`、`gpio_set_mode`、`gpio_toggle` 三处调用，分别对应开时钟、设输出模式与翻转引脚。再与[第 9 章](../v1-drivers/09-gpio.md)的 HAL 实现对照，看两种 API 最终改变的是哪些硬件状态。
+
+这个例程针对 **STM32VL Discovery 的 PC8**，使用循环等待。保持板卡、时钟和编译选项不变，将等待次数从 `800000` 改成 `400000`，先预测边沿间隔会怎样变化，再记录修改前后的测量值。间隔应接近减半；如果偏差明显，检查编译优化、时钟和测量位置。循环延时不能提供精密时基，换成定时器后再用[第 12 章](../v1-drivers/12-timers-pwm.md)的方法验证周期。
+
+BluePill 的 PC13 与这块板的 PC8 不同，接线和有效电平须另查。该源码文件头的许可为 **LGPL-3.0-or-later**；复用时按文件许可处理。这里给出阅读与实验方法，尚未提供这项实验的板级测量结果。
+
+![锁定来源后建立基线，每次只改一个量，再对照波形、寄存器或日志；结果不符时回查配置与测法，箭头表示实验顺序（自绘示意）](/figures/ch46-source-reading.svg)
+
+库与 RTOS 的选择见[附录 F](../appendix/F-open-source-community-map.md)和[第 27 章](../v3-rtos/27-rtos-comparison-selection.md)。先检查芯片支持、资源预算与许可，再比较 API。
 
 ### 六、生态计数口径（重申）
 
@@ -275,7 +331,6 @@ platforms: [generic]
 | SPL 停更 | 手册级 | 与 [卷 0 第 7 章](../v0-foundations/07-build-systems-legacy.md) 一致 |
 | 手册六类命名 | 手册级 | ST 文档体系（修正源章「五种」内部不一致） |
 | 查手册三步法三示例 | 手册级 | 检索路径可复现 |
-| 开源库七行对比 | 手册级（定位） | 版本细节归 附录 F |
 | 工具选型价格 | 来源说法待核 | 区间估算 |
 | 星标/生态计数 | 来源说法（带日期 2026-10-26） | 附录 F 双源同日核对 |
 
@@ -291,7 +346,7 @@ platforms: [generic]
 | 开源库选型纠结 | 没先写需求四问（[第 42 章](../v6-labs-projects/42-project-delivery-acceptance.md)） | 四问先行；license 五族过一遍 |
 | 提问没人回 | 缺版本三元组或最小复现 | 提问五件事重填 |
 | 引用生态数字被质疑 | 没带抓取日期 | 补日期与来源，或删除 |
-| 两书建议冲突无所适从 | 没看到这里的统一口径声明 | 寄存器打底 + HAL 产品；理由在这里 |
+| 在 HAL 与寄存器之间反复换路线 | 没有选定可验证的小任务 | 先用 HAL 完成点灯，再按第 9 章对照寄存器读回 |
 
 ## 离开检查
 
