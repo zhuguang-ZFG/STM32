@@ -36,8 +36,8 @@ STM32 是意法半导体（ST）基于 ARM Cortex-M 内核的 32 位微控制器
 
 两个入门概念现在只需要记名字，机制各自有整章展开：
 
-- **寄存器**：外设的「控制面板」，每个控制位对应一个内存地址。往那个地址写数，就是在按面板上的开关（[第 3 章](../v0-foundations/03-struct-abi-registers.md)、[第 9 章](../v1-drivers/09-gpio.md)）。
-- **固件**：编译链接后烧进芯片 Flash 的程序。断电不丢，上电从复位向量第一行开始跑（[第 6 章](../v0-foundations/06-linker-startup-map.md)）。
+- **寄存器**：外设的「控制面板」。一个寄存器对应一个地址，其中的位或位字段负责不同功能；读写时要按手册规定操作（[第 3 章](../v0-foundations/03-struct-abi-registers.md)、[第 9 章](../v1-drivers/09-gpio.md)）。
+- **固件**：编译链接后烧进芯片 Flash 的程序，断电不丢。Cortex-M 复位时先从向量表读取初始栈指针和复位入口，再执行入口处的启动代码（[第 6 章](../v0-foundations/06-linker-startup-map.md)）。
 
 ## 二、买什么
 
@@ -46,7 +46,7 @@ STM32 是意法半导体（ST）基于 ARM Cortex-M 内核的 32 位微控制器
 | 装备 | 起步线（必买） | 用途 |
 | --- | --- | --- |
 | BluePill（STM32F103C8T6） | 一块 | 全书入门线的目标板；板载 PC13 LED |
-| ST-Link V2 克隆 | 一个 | 烧录与调试（SWD 两线 + 电源） |
+| ST-Link V2 克隆 | 一个 | 烧录与调试；供电输出与参考电压脚按具体型号核对 |
 | USB-TTL 模块（3.3 V 档，CH340/CP2102） | 一个 | 串口对话（[第 13 章](../v1-drivers/13-uart-framed-protocol.md) 起） |
 | 面包板 + 杜邦线 + 270 Ω 电阻 + LED | 若干 | 外接灯与后续外设实验 |
 
@@ -104,7 +104,7 @@ openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program build/bluepil
 
 | 症状 | 第一条假设 | 动作 |
 | --- | --- | --- |
-| 烧录工具找不到目标 | SWD 线序/驱动 | 查 ST-Link 枚举与四根线（SWDIO/SWCLK/3V3/GND） |
+| 烧录工具找不到目标 | SWD 线序/驱动 | 查 ST-Link 枚举、SWDIO/SWCLK/GND 与目标供电；有 VTref 输入的探头还须接目标电压参考 |
 | 烧录成功但灯不闪 | 目标板没从 Flash 启动 | 查 BOOT0 跳线是否接 GND；复位一次 |
 | 翻转一次后停住 | SysTick 时基未推进 | 调试器多次继续/暂停读 uwTick；核对 SysTick_Handler 和中断屏蔽状态 |
 | 闪烁但外接灯反相 | 极性记反 | PC13 低电平点亮；PA0 高电平点亮 |
@@ -113,7 +113,7 @@ openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program build/bluepil
 
 ![手绘：ST-Link 的 SWDIO、SWCLK、GND 与 3.3 V 连接到 F103C8，电源或参考电压职能按下载器型号确认（原理示意，非实拍）](/images/ch00-swd-four-wires.png)
 
-*先按接口丝印确认线序；这张图不表示不同下载器的 3V3 引脚都能给目标供电。*
+*先按型号说明和接口丝印确认线序：VTref 是目标板送给探头的电压参考输入；克隆下载器的 3V3 可能是供电输出。目标板已独立供电时，不再并接下载器的供电输出；VTref 按探头要求连接。*
 
 ## 五、跟芯片说第一句话
 

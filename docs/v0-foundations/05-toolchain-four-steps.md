@@ -328,16 +328,18 @@ $ arm-none-eabi-nm -n blink.elf | grep -E ' (Reset_Handler|main)$'
 
 **第四步：装 ST-Link 驱动。** 正版 ST-Link / ST-Link V2 装 ST 官方的 **STSW-LINK009** USB 驱动；DAPLink（CMSIS-DAP）在 Windows 10/11 上免驱。插上仿真器，设备管理器里应出现 “STM32 STLink” 或对应设备，没有黄色感叹号。固件太旧时报 DFU 相关错误，用 ST-Link Upgrade 升级后再连。
 
-**第五步：SWD 接线。** 霸天虎的 SWD 座按下表连接：
+**第五步：SWD 接线。** 先核对下载器型号与接口定义，再连接霸天虎的 SWD 座：
 
 | ST-Link | 开发板 SWD 座 | 说明 |
 | --- | --- | --- |
 | SWDIO | SWDIO | 数据 |
 | SWCLK | SWCLK | 时钟 |
 | GND | GND | 必须共地 |
-| 3.3V | 3.3V | 仅作检测，不给板子供电 |
+| VTref / VAPP（参考电压输入，如有） | 目标板 3.3 V | 目标板向探头提供电压参考，不是探头供电输出 |
 
-板子用自己的 USB 供电，仿真器的 3.3V 只接检测脚。两路电源对供是烧板的经典姿势。F103C8 的脚号是：SWDIO 在 PA13（LQFP48 第 34 脚），SWCLK 在 PA14（第 37 脚），NRST 在第 7 脚，BOOT0 在第 44 脚；第 35 脚是 VSS_2、第 36 脚是 VDD_2，数脚时别把第 35 脚当成 SWCLK。CubeMX 的 SYS Debug 必须选 Serial Wire，否则 PA13/PA14 会被配成普通 GPIO，烧一次后就再也连不上。
+本接法由板子自己的 USB 供电。克隆下载器标作 `3.3V` / `3V3` 的引脚可能是电源输出，不能当作 VTref；板子已独立供电时，不再并接这个输出。探头若要求 VTref，则仍须将其接到目标电压，具体职责见[第 20 章](../v2-reliability/20-debug-performance.md)。
+
+F103C8 的脚号是：SWDIO 在 PA13（LQFP48 第 34 脚），SWCLK 在 PA14（第 37 脚），NRST 在第 7 脚，BOOT0 在第 44 脚；第 35 脚是 VSS_2、第 36 脚是 VDD_2，数脚时别把第 35 脚当成 SWCLK。CubeMX 的 SYS Debug 必须选 Serial Wire，否则 PA13/PA14 会被配成普通 GPIO，烧一次后就再也连不上。
 
 五步完成后，用构建做一次总验收：
 
@@ -385,7 +387,7 @@ make
 | `make: *** missing separator` | 命令行首用了空格 | 编辑器是否把 Tab 换成空格 | 行首改成 Tab |
 | OpenOCD 报 `Error: open failed` 或找不到 ST-Link | 驱动未装，或杜邦线虚接 | 设备管理器有无 “STM32 STLink” | 先查第四步驱动，再重插 SWD 线 |
 | 烧录成功但灯不亮 | 引脚号照搬了别的板子 | 霸天虎是 PF6，网上教程常是 PA8/PF9 | 查自己板子的原理图 |
-| 仿真器与板子都接 3.3V 后发热或连不上 | 两路电源对供 | 3.3V 是否接到板子的电源脚 | 板子单独 USB 供电，3.3V 只作检测 |
+| 接上下载器的 3.3V 后发热或连不上 | 下载器供电输出与板子电源并接 | 查下载器说明，确认此脚是输出还是 VTref 输入 | 先断电；板子用 USB 供电时移除下载器供电输出，VTref 按探头要求连接 |
 | `.elf` 几十 KB，以为 Flash 装不下 | 把调试信息算进了固件 | `size` 的 text+data 才是 Flash 占用 | 看 `size`，不要看 `.elf` 文件大小 |
 | `readelf` 入口与 `nm` 地址差 1 | Thumb 状态位：`readelf` 保留、`nm` 不显示 | 同一符号两工具对照：`readelf -s` 最低位为 1，`nm` 最低位为 0 | 断点用纯地址；填向量表或函数指针时用带 1 的形式 |
 
@@ -397,7 +399,7 @@ make
 4. `gcc -### -c` 为什么打印两行工具路径？链接时 `collect2` 与 `ld` 是什么关系？
 5. 四步各留下什么文件？`main.i` 为什么从 65 行涨到 1575 行？`.o` 的地址栏为什么是 0？`fatal error`、`error:`、`undefined reference` 分别死在哪一步？
 6. ELF 头五个字段各说什么？为什么程序头是 2 条而节表有 20 项？节表里的 `A` 标志、`PROGBITS`/`NOBITS`、`FileSiz`/`MemSiz` 各影响什么？
-7. 环境搭建五步各验收什么？SWD 四根线怎么接，为什么 3.3V 只作检测？板上点灯步骤为什么标为未跑？
+7. 环境搭建五步各验收什么？SWD 最小三线怎么接，VTref 与下载器的 3.3V 供电输出有何区别？板上点灯步骤为什么标为未跑？
 
 <details>
 <summary>对照答案</summary>
@@ -407,7 +409,7 @@ make
 4. `-c` 同时包含编译与汇编两道工序：`cc1` 先出汇编，`as` 再出 `.o`。链接由 `collect2` 代理，它收拾构造函数表后再调用实际的 `ld`，所以链接报错署名 `ld.exe`。
 5. 四步留下 `.i`（预处理后的 C）、`.s`（汇编）、`.o`（可重定位目标）、`.elf`（可执行）。`main.i` 变大是因为 `#include` 的头文件被整份贴入、宏被展开。`.o` 还没分配最终地址，所以地址栏是 0。`fatal error` 在预处理，`error:` 在编译，`undefined reference` 在链接。
 6. 头五字段：Magic（签名、ELF32/小端）、Class/Type（ELF32、EXEC）、Machine（ARM 与硬浮点 ABI）、Entry（入口地址，GDB 用）、两套目录的计数。程序头 2 条是装载器的装车批次，节表 20 项是链接器与调试器看的抽屉清单。`A` 表示 alloc，没 A 的节烧录时无关；`PROGBITS` 有文件内容，`NOBITS` 只登记不给货；`FileSiz` 是文件里带的字节，`MemSiz` 是运行时要占的字节，差值由 `.bss` 与启动代码补。
-7. 五步：交叉编译器（`arm-none-eabi-gcc --version`）、make（`make --version`）、OpenOCD（`openocd --version`）、ST-Link 驱动（设备管理器无黄色感叹号）、SWD 接线（SWDIO/SWCLK/GND/3.3V 检测）。3.3V 只作检测，板子单独 USB 供电，避免两路电源对供。板上烧录与点灯来源没有记录本机复跑，所以标为未跑。
+7. 五步：交叉编译器（`arm-none-eabi-gcc --version`）、make（`make --version`）、OpenOCD（`openocd --version`）、ST-Link 驱动（设备管理器无黄色感叹号）、SWD 接线（SWDIO/SWCLK/GND，并核对目标供电）。VTref 是目标板送给探头的电压参考输入，探头要求时须连接；克隆下载器的 3.3V 可能是供电输出。板子单独 USB 供电时，不再并接下载器的供电输出。板上烧录与点灯来源没有记录本机复跑，所以标为未跑。
 </details>
 
 动作验收：在自己的机器上装好五步，用 `arm-none-eabi-gcc --version`、`where arm-none-eabi-gcc`（Linux 用 `which`）、`-print-search-dirs` 三条命令写下“我用的是哪套工具链”；再拿一个现成工程跑一遍 `-E`、`-S`、`-c`、链接，把四份中间产物和一条 `readelf -h` 输出留在构建目录里。
