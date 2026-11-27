@@ -30,7 +30,7 @@ platforms: [generic]
 | [ch12 PWM / E03](../v1-drivers/12-timers-pwm.md) | `labs/timer-pwm/README.md` | `mcu/code/stm32/02-tim-pwm` | 未实测；PA6→PA0，动态CCR不是静态50%证据 |
 | [ch13 UART / E02](../v1-drivers/13-uart-framed-protocol.md) | `labs/uart-dma/README.md` | `mcu/code/stm32/03-uart-dma` | 未实测；IDLE不等于应用帧，宿主测试不等于线上通过 |
 
-三个主样板启动目标均为 STM32F407ZGT6，实际板型、芯片、容量与供电需现场核实。F103 的 `examples/gpio-blink` 已有固定 CubeF1 v1.8.6 的完整 CMake 工程、宿主回归测试和 ARM 向量检查，硬件仍待测；`examples/timer-pwm` 仍是待集成 HAL 源码。不能把 F103 的 PC13 / 72 MHz / PSC71 套给 F407 的 PF6 或回读时钟。固定 CCR、积压试验按各协议另行实施。
+三个主样板启动目标均为 STM32F407ZGT6，实际板型、芯片、容量与供电需现场核实。F103 的 `examples/gpio-blink`、`examples/exti-key` 与 `examples/timer-pwm` 已有固定 CubeF1 v1.8.6 的完整 CMake 工程、宿主回归测试和 ARM 向量检查，硬件仍待测。不能把 F103 的 PC13 / 72 MHz / PSC71 套给 F407 的 PF6 或回读时钟。固定 CCR、积压试验按各协议另行实施。
 
 ## 第一区 · 根书例程（F103 线，BluePill）
 

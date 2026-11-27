@@ -293,6 +293,8 @@ else
 
 ### 五、FromISR：只延迟让出
 
+沿一次按键事件读：任务在 `xQueueReceive` 上阻塞 → ISR 里 `xQueueSendFromISR` 把它挂回就绪表并置 `pxHigherPriorityTaskWoken` → 中断末尾 `portYIELD_FROM_ISR` 请求 PendSV → 更高优先级异常退场后才切入运行。这与[第 22 章](./22-tasks-tcb-scheduler.md) 的 `vTaskDelay` 路径共用「阻塞 → 就绪 → 运行」三步，差别只在谁把任务放回就绪表：tick 还是 FromISR。
+
 中断里不能调用普通发送/接收，跟函数长短无关：中断上下文没有任务可以挂起，中断中途也不能切换上下文。FromISR 版本把这两件事都改成「先记录，退出中断后再处理」。
 
 `xQueueGenericSendFromISR` 没有 timeout 参数。队列满时它不等待，直接返回 `errQUEUE_FULL`，丢不丢由调用者决定。队列空时 `xQueueReceiveFromISR` 返回 `pdFALSE`。两者都在 `taskENTER_CRITICAL_FROM_ISR` 里改计数和等待名单，不调用任何可能阻塞的函数。

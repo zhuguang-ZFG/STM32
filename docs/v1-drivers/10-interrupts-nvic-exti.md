@@ -295,7 +295,7 @@ F103 的 EXTI 同样按脚号分 16 条线：PA0、PB0、PC0 共用 EXTI0，不�
 
 `HAL_Delay()` 依赖 SysTick 中断。若在 ISR 里调用它，而该 ISR 的优先级又高于 SysTick，计数不前进，就会死等。ISR 里只置标志或塞缓冲区，慢活交回主循环。FreeRTOS 的 FromISR 优先级数值约束另有一套，见[第 24 章](../v3-rtos/24-queue-semaphore-notification.md)。
 
-根书给的按键实验是PA0下降沿进EXTI0、主循环复核后翻转PC13；连续10次有效事件的翻转与PR清除仍需真实记录。当前F407的04-nvic-exti-board改为读ODR状态、只写一次BSRR，保持PA0释放上升沿；F103 examples/exti-key已移除偶数计数强制点亮，原始IRQ计数只供观察。实际ISR/处理函数的宿主回归已通过，但这不证明每次物理按压只有一个事件：F407仍无消抖，F103两点复核也不等于完整按下/释放状态机。硬件状态仍为pending。
+根书给的按键实验是PA0下降沿进EXTI0、主循环复核后翻转PC13；连续10次有效事件的翻转与PR清除仍需真实记录。当前F407的04-nvic-exti-board改为读ODR状态、只写一次BSRR，保持PA0释放上升沿；F103 examples/exti-key已移除偶数计数强制点亮，原始IRQ计数只供观察。该目录现为固定CubeF1 v1.8.6的完整CMake工程：固件构建、ELF/BIN向量与.bss检查、实际ISR/处理函数的宿主回归均已通过，但这不证明每次物理按压只有一个事件：F407仍无消抖，F103两点复核也不等于完整按下/释放状态机。硬件状态仍为pending。
 
 ### ESP32-S3：分配器、IRAM 纪律与双核
 

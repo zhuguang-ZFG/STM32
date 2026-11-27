@@ -1,0 +1,48 @@
+name: EXTI Key
+
+on:
+  push:
+    branches: [main]
+    paths: ['examples/exti-key/**', '.github/workflows/exti-key.yml']
+  pull_request:
+    paths: ['examples/exti-key/**', '.github/workflows/exti-key.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install toolchain
+        run: |
+          sudo apt-get update -o Acquire::Retries=5
+          sudo apt-get install -y --no-install-recommends gcc-arm-none-eabi libnewlib-arm-none-eabi ninja-build
+          arm-none-eabi-gcc --version
+      - name: Fetch locked STM32CubeF1
+        shell: bash
+        run: |
+          git clone --depth 1 --branch v1.8.6 https://github.com/STMicroelectronics/STM32CubeF1.git "$RUNNER_TEMP/STM32CubeF1"
+          git -C "$RUNNER_TEMP/STM32CubeF1" submodule update --init Drivers/STM32F1xx_HAL_Driver Drivers/CMSIS/Device/ST/STM32F1xx
+      - name: Host regression tests
+        working-directory: examples/exti-key
+        run: |
+          cmake --preset host-tests
+          cmake --build --preset host-tests
+          ctest --preset host-tests
+      - name: Build BluePill firmware and check vector table
+        working-directory: examples/exti-key
+        run: |
+          cmake --preset bluepill -DCUBEF1_PATH="$RUNNER_TEMP/STM32CubeF1"
+          cmake --build --preset bluepill
+          python tests/check_firmware.py build/bluepill/exti-key.elf build/bluepill/exti-key.bin
+      - uses: actions/upload-artifact@v5
+        with:
+          name: exti-key-f103c8
+          path: |
+            examples/exti-key/build/bluepill/exti-key.*
+            examples/exti-key/build/bluepill/licenses/
+          retention-days: 14

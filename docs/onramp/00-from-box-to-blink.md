@@ -24,7 +24,7 @@ platforms: [generic]
 - **交付**：完成一次从源码到闪烁的完整闭环，并留下 L0 要求的三样证据；遇到「灯不闪」时能按四条失败分支分诊；能用串口跟芯片完成第一次对话。
 - **级别**：L0 起步。证据位置：「你应该看到」各清单与[第 40 章](../v6-labs-projects/40-lab-method-instruments.md) 的记录表；读完留下构建日志、烧录记录与一张填写过的记录表。
 - **旅程导航**：从新板子走到构建、下载、点灯，再试串口。保存三样证据后进入 L0 后续学习。本章无板级实测，现象均为供你核对的预期。
-- **开源读法**：`examples/gpio-blink` 提供固定版本的完整 CMake 工程；`examples/uart-dma-idle` 仍需集成到 HAL 工程（[附录 B](../appendix/B-project-index.md) 登记）。先走通点灯，再做串口；工具链事实见[第 5 章](../v0-foundations/05-toolchain-four-steps.md)。
+- **开源读法**：`examples/gpio-blink` 与 `examples/uart-dma-idle` 都提供固定 CubeF1 v1.8.6 的完整 CMake 工程（[附录 B](../appendix/B-project-index.md) 登记）；后者含宿主回归，硬件仍待测。先走通点灯，再做串口；工具链事实见[第 5 章](../v0-foundations/05-toolchain-four-steps.md)。
 - **边界**：本章只做「跑起来」，不解释机制——GPIO 的寄存器语义在[第 9 章](../v1-drivers/09-gpio.md)，时钟树在[第 8 章](../v1-drivers/08-architecture-memory-clock.md)，串口在[第 13 章](../v1-drivers/13-uart-framed-protocol.md)；本章出现的数字（115200、BRR `0x271`、1 Hz）全部转引已冻结口径，不新造。
 - **依据锚点**：点灯的 1 Hz、串口的 115200 与 BRR `0x271` 转引[第 7 章](../v0-foundations/07-build-systems-legacy.md)、[第 9 章](../v1-drivers/09-gpio.md)、[第 13 章](../v1-drivers/13-uart-framed-protocol.md)已冻结口径；PC13 低电平与灌电流上限引 DS5319 注 5；接线与命令以 `examples/gpio-blink`、`examples/uart-dma-idle` 的 README 为准（[附录 B](../appendix/B-project-index.md) 登记）。L0 三样证据与十八周排期见[第 46 章](../v7-delivery/46-resources-roadmap-open-source.md)，记录表格式见[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)，失败分诊见[第 45 章](../v7-delivery/45-troubleshooting-handbook.md)。
 
@@ -121,7 +121,7 @@ openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program build/bluepil
 
 ## 五、跟芯片说第一句话
 
-点灯是「你 → 芯片」；串口是「芯片 → 你」。把 USB-TTL 模块接上：PA9（TX）接模块 RX，PA10（RX）接模块 TX（交叉），GND 共地，模块拨到 3.3 V 档。`examples/uart-dma-idle` 仍是待集成源码，按其 README 在已有 HAL 工程中配置 USART1、DMA 与中断，再构建下载；不能套用上面的 GPIO 构建命令。这个例程用 DMA + IDLE 收不定长，机制留给[第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 14 章](../v1-drivers/14-dma.md)。
+点灯是「你 → 芯片」；串口是「芯片 → 你」。把 USB-TTL 模块接上：PA9（TX）接模块 RX，PA10（RX）接模块 TX（交叉），GND 共地，模块拨到 3.3 V 档。`examples/uart-dma-idle` 是同一依赖锁下的完整 CMake 工程：按该目录 README 的 preset 构建、检查并下载，不要套用上面的 GPIO 构建命令或产物名。这个例程用 DMA + IDLE 收不定长，机制留给[第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 14 章](../v1-drivers/14-dma.md)；构建通过不等于板上已测。
 
 打开串口终端（115200 8N1——这个数的来历与 BRR `0x271` 的算法在[第 13 章](../v1-drivers/13-uart-framed-protocol.md) 逐位拆过），发一条 `AT`：
 

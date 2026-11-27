@@ -254,7 +254,7 @@ if( xAlreadyYielded == pdFALSE )
 
 ![手绘：1 kHz 下早调用与晚调用 vTaskDelay(1) 都在下一 tick 成为就绪，等待区间不同（原理示意，非实拍）](/images/ch22-delay-tick-phase.png)
 
-*等待为 (0,1] ms；到期成为就绪与真正获得 CPU 是两件事，运行时刻还受调度影响。*
+*等待为 (0,1] ms。沿一次事件读：运行中的任务调用 `vTaskDelay` → 离开就绪表进入延时表（阻塞）→ tick 到期挂回就绪表 → 调度器选中后才再次运行。到期成为就绪与真正获得 CPU 是两件事；按键从 ISR 唤醒任务的另一条路径见[第 24 章](./24-queue-semaphore-notification.md) 的 FromISR。*
 
 ### 七、RT-Thread 的 rt_thread：对象头、内嵌定时器、两步启动
 

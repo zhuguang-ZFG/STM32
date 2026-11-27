@@ -213,6 +213,8 @@ HAL_TIM_PWM_ConfigChannel(&htim3, &oc, TIM_CHANNEL_1);
 HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
 ```
 
+对应的 F103 可构建工程见仓库路径 `examples/timer-pwm`（README 在同目录）：TIM3_CH1/PA6、PSC=71、ARR=999；宿主回归与 ELF/BIN 检查已通过，硬件仍未上板测量。
+
 几个容易对不上的点：`TIM_Base_SetConfig()` 先写 ARR 再写 PSC，收尾统一 `EGR = UG`，和手写的顺序不同但效果一样；清 `CCER.CC1E` 的不是 `ConfigChannel` 本身，而是它调用的 `TIM_OC1_SetConfig()`：开场先清这一位，再改模式和预装载；`Start` 里 `TIM_CCxChannelCmd()` 置 CCxE，TIM1/TIM8 还要额外开 `BDTR.MOE`。SPL 的 `TIM_TimeBaseInit()`/`TIM_OC1Init()` 做同一组落位，但 SPL 没随 ST 官方 GitHub 分发，一手源码仍缺，位定义以 RM0090 为准。
 
 TIM1 没有波形，先查 `BDTR` 的 MOE：偏移 0x44、复位值 0x0000，bit15 为 0 时主输出关闭；HAL 的 `HAL_TIM_PWM_Start` 会替你置上，自己写寄存器容易漏。TIM3 没有这一位。
