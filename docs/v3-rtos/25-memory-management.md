@@ -59,7 +59,7 @@ FreeRTOS 提供五个 heap 版本，能力逐级增加，代价也逐级变化�
 
 逐条说清来源，免得「我记得 heap_2 也挺好」：
 
-- **heap_1**：`vPortFree` 还在文件里，函数体第一行就是 `configASSERT( pv == NULL )`（V11.1.0 `heap_1.c:130-136`），释放任何非空指针都会断言。它换来的确定性是每次分配都从递增指针切下来，没有搜索、没有碎片，代价是拿不回来。
+- **heap_1**：`vPortFree` 还在文件里，整个函数体只有一行有效语句 `configASSERT( pv == NULL )`（V11.1.0 `heap_1.c:137`，函数在 `:130-138`），释放任何非空指针都会断言。它换来的确定性是每次分配都从递增指针切下来，没有搜索、没有碎片，代价是拿不回来。
 - **heap_2**：空闲链表**按大小排序**，分配取第一个够大的块（best fit，`heap_2.c:130-155`）。可释放，但释放的块只按大小插回去，从不看邻居。交替分配释放几轮，池子就碎成满地小洞。它也没有 `xPortGetMinimumEverFreeHeapSize`，换用它，引用水位 API 的代码直接链接失败。
 - **heap_3**：`pvPortMalloc` 包 `malloc`、`vPortFree` 包 `free`（`heap_3.c:65`、`:89`）。线程安全交给 libc 的锁，尺寸交给 libc 的堆。它**没有任何 `xPortGet` 统计**，总量、水位、统计都没有，用它就别想监控堆。
 - **heap_4**：空闲链表按**地址**排序，释放时相邻就合并。首次适配，代价可控，指标齐全，是大多数产品的落点。
@@ -290,7 +290,7 @@ FreeRTOS 让你「编译期选一个 heap_x」；RT-Thread 的 `src/` 里同时�
 
 - **TLSF 的选档方向**。两级位图找块：`fls`/CLZ 只负责「请求尺寸 → 第一级档位」的粗定位；选定可用块要用 `ffs`/CTZ 在位图里找**最低**有效位，方向是从「刚好够用的最小档」往下取。写成「CLZ 找最小够用档」把两级分工搞反了。
 - **slab 的「碎片免疫」说法过强**。同一尺寸类内部确实不产生外部碎片：归还的块和请求的块必然同尺寸。但固定尺寸类本身带来**内部碎片**（大对象放入大一号的类，尾部浪费），zone 扩张还可能失败。正确说法是「类内无外部碎片」，不是「免疫」。
-- **finsh 的堆监控命令名**。真实导出的命令是 `memheapcheck`/`memheaptrace`（`memheap.c:959`/`:1039`）与 `memcheck`/`memtrace`（`mem.c:640`/`:711`）；`list_memheap` 只是 `msh.c` 内部函数，不是可敲的命令。旧章的 `list_memp` 在内核源码里没有对应导出。
+- **finsh 的堆监控命令名**。真实导出的命令是 `memheapcheck`/`memheaptrace`（v5.3.0 `memheap.c:928`/`:996`）与 `memcheck`/`memtrace`（`mem.c:605`/`:666`）；`list_memheap` 只是 `msh.c` 内部函数，不是可敲的命令。旧章的 `list_memp` 在内核源码里没有对应导出。
 
 两边的结构对照：
 
@@ -325,7 +325,7 @@ FreeRTOS 让你「编译期选一个 heap_x」；RT-Thread 的 `src/` 里同时�
 ## 短自测
 
 1. heap_1 的 `vPortFree` 为什么还在文件里？
-<details><summary>参考答案</summary>接口完整性：五个 heap 导出同一组符号，工程换版本不用改调用方。`heap_1.c:130-136` 的实现体只有 `configASSERT( pv == NULL )`，释放任何非空指针都断言失败。「函数在」不等于「功能在」。</details>
+<details><summary>参考答案</summary>接口完整性：五个 heap 导出同一组符号，工程换版本不用改调用方。`heap_1.c:137` 的实现体只有 `configASSERT( pv == NULL )`，释放任何非空指针都断言失败。「函数在」不等于「功能在」。</details>
 
 2. 「边界标记法」为什么套不到 heap_4 上？
 <details><summary>参考答案</summary>边界标记法要求每块带 footer，用「前块地址 + 前块大小」从当前块反推前邻块，前后两个方向 O(1) 探邻居。heap_4 只有 8 B 块头（`pxNextFreeBlock` + `xBlockSize`），没有 footer；前邻块靠地址序空闲表遍历找（`pxIterator` 停在插入位置），释放是 O(n)。术语错了，机制也对不上。</details>
@@ -370,7 +370,7 @@ FreeRTOS 让你「编译期选一个 heap_x」；RT-Thread 的 `src/` 里同时�
 <details><summary>参考答案</summary>`*_create` 系列编译不进来，`*_init` 系列照常：对象全静态、栈全静态，零堆形态，适合安全关键场景。FreeRTOS 等价开关是 `configSUPPORT_DYNAMIC_ALLOCATION=0`；两条路共同点是把「分配失败」这个类别整个移出运行期。</details>
 
 16. finsh 的堆监控命令真实叫什么？
-<details><summary>参考答案</summary>`memheapcheck`/`memheaptrace`（`memheap.c:959`/`:1039`）与 `memcheck`/`memtrace`（`mem.c:640`/`：711`）。`list_memheap` 只是 `msh.c` 内部函数，不是可敲的命令。</details>
+<details><summary>参考答案</summary>`memheapcheck`/`memheaptrace`（v5.3.0 `memheap.c:928`/`:996`）与 `memcheck`/`memtrace`（`mem.c:605`/`:666`）。`list_memheap` 只是 `msh.c` 内部函数，不是可敲的命令。</details>
 
 17. 哪些数是来源说法、哪些未实测？
 <details><summary>参考答案</summary>来源说法（未复核）：probe 的 TCB 88 B 与固定开销 1312 B、每定时器 56 B、269 上界。未实测：场景 5 的 `big ok?=0/1` 板级读数（代码在 `main.c:249-264`，仓库无落盘日志）、爆栈触发 OverflowHook 的实验、RT-Thread 的分配耗时对比。文档推导：五版能力表、合并三步、8 B 头、指标 API 落点、heap_5 三规矩、RT-Thread 文件清单与命令名。</details>

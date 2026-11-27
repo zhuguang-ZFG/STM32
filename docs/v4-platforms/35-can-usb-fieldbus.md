@@ -176,7 +176,7 @@ F407 上 OTG_FS 与 bxCAN 是独立外设，冲突消失。[第 28 章](./28-chi
 
 | 仓库 | 文件 | 看什么 |
 | --- | --- | --- |
-| [hathach/tinyusb](https://github.com/hathach/tinyusb) | `src/device/usbd.c` | `usbd_edpt_open`（`usbd.c:1693`）端点打开的状态机与 `usbd_app_driver_get_cb`（`:455`）自定义驱动注册口：枚举七步的软件侧骨架——描述符装配、SETUP 分发、端点开关全在这里 |
+| [hathach/tinyusb](https://github.com/hathach/tinyusb) | `src/device/usbd.c` | `usbd_edpt_open`（master `usbd.c:1725`）端点打开的状态机与 `usbd_app_driver_get_cb`（`:464`）自定义驱动注册口：枚举七步的软件侧骨架——描述符装配、SETUP 分发、端点开关全在这里 |
 | [hathach/tinyusb](https://github.com/hathach/tinyusb) | `src/portable/st/stm32_fsdev/dcd_stm32_fsdev.c` | PMA/BTABLE 的分配与登记（`:54/:121/:169`）：F103 USB 设备「48 MHz、PMA 缓冲要自己排」的芯片事实被压进 portable 一层——跨芯片移植 USB 的真实工作量就在这一层 |
 | [STMicroelectronics/stm32f1xx-hal-driver](https://github.com/STMicroelectronics/stm32f1xx-hal-driver) | `Src/stm32f1xx_hal_can.c` | `HAL_CAN_ConfigFilter`（`stm32f1xx_hal_can.c:840`）与 `HAL_CAN_Start`（`:1006`）：14/28 组过滤器先配、退出睡眠后启动的次序——正文「过滤器组数与左移 5 位」的落位处 |
 
