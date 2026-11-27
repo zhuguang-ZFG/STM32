@@ -1,6 +1,11 @@
 {
   "entries": [
     {
+      "match": "^https://github\\.com/[^/]+/[^/]+/blob/",
+      "allowStatuses": [503],
+      "reason": "GitHub blob 页对数据中心 IP 偶发 503（CI 实测：同秒 ~30 条同挂、退避后仍剩单条连吃 4 次；PR #193 links job 2026-11-27）。页面真实存在，内容正确性由 raw.githubusercontent 行号实证兜底；404/410 仍失败，死链检测不受影响"
+    },
+    {
       "match": "^https://controllerstech\\.com/stm32-gpio-output-config-using-registers/?$",
       "allowStatuses": [403],
       "reason": "该页面对非浏览器 UA 返回 403（Cloudflare 类拦截），404 仍会失败；地址经搜索结果核对存在（2026-11-19）"
