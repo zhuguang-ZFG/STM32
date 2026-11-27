@@ -43,8 +43,13 @@ jobs:
         run: python -m pip install -r book/requirements-print.txt
       # 必须先装浏览器：pip 装了 playwright 后，印刷集成测试不再是 skipped，
       # 缺 Chromium 会在 unittest 门里直接失败。
+      # runner 镜像（Ubuntu 26.04）自带的 packages.microsoft.com 源已 403/不再签名，
+      # apt-get update 全量失败会把 --with-deps 一起拖死（PR #194 实测）；
+      # 该源只服务 MS 产品，印刷依赖用不到，摘掉再装。
       - name: Install Chromium (print capture)
-        run: python -m playwright install --with-deps chromium
+        run: |
+          sudo rm -f /etc/apt/sources.list.d/microsoft*
+          python -m playwright install --with-deps chromium
       - name: Run book checks
         run: |
           python -m book.manifest --check
