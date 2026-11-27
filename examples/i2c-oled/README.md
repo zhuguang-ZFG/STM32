@@ -1,6 +1,6 @@
 # i2c-oled —— 硬件 I2C 驱动 SSD1306 OLED
 
-> 难度：★★★☆　｜　涉及外设：I2C + SSD1306　｜　对应章节：[07 I2C 总线](../../docs/07-I2C总线.md)
+> 难度：★★★☆　｜　涉及外设：I2C + SSD1306　｜　对应章节：[第 16 章 I2C 与 SPI](../../docs/v1-drivers/16-i2c-spi.md)
 
 <p align="center">
   <img src="../../assets/animations/i2c-transaction.svg" width="760" alt="I2C 完整事务时序">
