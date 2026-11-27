@@ -14,7 +14,7 @@
  *   Duty    = CCR / (ARR + 1) × 100%
  *
  * 本例：APB1 定时器时钟 72MHz，PSC=71 → fCK_CNT=1MHz；
- *       ARR=999 → f_PWM=1kHz；CCR 从 0 到 999 往返 → 占空比 0~100%。
+ *       ARR=999 → f_PWM=1kHz；CCR 从 0 到 999 往返 → 占空比 0~99.9%。
  *
  * 目标芯片：STM32F103C8T6，系统时钟 72MHz（TIM3 挂 APB1，定时器时钟 72MHz）。
  */
@@ -58,12 +58,16 @@ int main(void)
     while (1)
     {
         duty += step;
-        if (duty >= (int16_t)PWM_ARR || duty <= 0)
+        if (duty > (int16_t)PWM_ARR)
         {
-            step = -step;                   /* 0 → 100% → 0 往返，形成呼吸 */
+            duty = (int16_t)PWM_ARR;        /* 不把 ARR+1 写进 CCR */
+            step = -step;
         }
-
-        /* 动态修改比较值 CCR（预装载寄存器，更新事件时生效，不抖动） */
+        else if (duty < 0)
+        {
+            duty = 0;
+            step = -step;
+        }
         __HAL_TIM_SET_COMPARE(&htim3, PWM_CH, (uint32_t)duty);
 
         HAL_Delay(BREATH_DELAY_MS);
@@ -101,10 +105,10 @@ static void pwm_init(void)
         error_handler();
     }
 
-    /* 通道配置：PWM 模式 1，初始 50% 占空比 */
+    /* 通道配置：PWM 模式 1，初始 CCR=499，即 49.9% */
     TIM_OC_InitTypeDef oc = {0};
     oc.OCMode       = TIM_OCMODE_PWM1;      /* CNT < CCR 输出有效电平 */
-    oc.Pulse        = PWM_ARR / 2U;         /* 初始 CCR = ARR/2 → 50% */
+    oc.Pulse        = PWM_ARR / 2U;         /* 初始 CCR = 499，即 49.9% */
     oc.OCPolarity   = TIM_OCPOLARITY_HIGH;  /* 有效电平为高 */
     oc.OCFastMode   = TIM_OCFAST_DISABLE;
     oc.OCIdleState  = TIM_OCIDLESTATE_RESET;
@@ -113,7 +117,7 @@ static void pwm_init(void)
         error_handler();
     }
 
-    /* 启动 PWM 输出（内部会打开 CCR 预装载 OCxPE 并使能 CCxE） */
+    /* 启动 PWM 输出；CCR 预装载 OC1PE 已在 ConfigChannel 中启用 */
     if (HAL_TIM_PWM_Start(&htim3, PWM_CH) != HAL_OK)
     {
         error_handler();
