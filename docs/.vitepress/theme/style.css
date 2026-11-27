@@ -163,6 +163,53 @@
   display: table;
 }
 
+/* The roadmap's full dependency index is a reference plate, so keep its
+   columns readable and give touch and keyboard readers a horizontal viewport.
+   Other chapter tables retain the compact, responsive default above. */
+.vp-doc details.reference-index {
+  margin: 1.4em 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--book-rule);
+  border-radius: 4px;
+}
+
+.vp-doc .reference-index > summary {
+  cursor: pointer;
+  font-family: var(--book-sans);
+  font-weight: 600;
+  text-align: left;
+}
+
+.vp-doc .reference-index > summary::marker {
+  color: var(--book-accent);
+}
+
+.vp-doc .reference-index .table-scroll {
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.vp-doc .reference-index .table-scroll:focus-visible {
+  outline: 2px solid var(--book-accent);
+  outline-offset: 3px;
+}
+
+.vp-doc .reference-index .table-scroll table {
+  min-width: 760px;
+  table-layout: fixed;
+}
+
+.vp-doc .reference-index .table-scroll th:first-child,
+.vp-doc .reference-index .table-scroll td:first-child {
+  width: 150px;
+}
+
+.vp-doc .reference-index .table-scroll th:nth-child(2),
+.vp-doc .reference-index .table-scroll td:nth-child(2) {
+  width: 96px;
+}
+
 .vp-doc th,
 .vp-doc td {
   border: 1px solid var(--book-rule);
@@ -356,5 +403,168 @@
   .vp-doc th,
   .vp-doc td {
     padding: 0.35rem 0.45rem;
+  }
+}
+
+/* A reader who prints a single chapter from the site should get the book
+   column, rather than the navigation shell and a clipped overflow viewport. */
+@media print {
+  @page {
+    margin: 18mm 16mm;
+  }
+
+  :root,
+  html.dark {
+    color-scheme: light;
+    background: #fff !important;
+    --book-ink: #26221b;
+    --book-muted: #6e6b60;
+    --book-rule: #d8d2c0;
+    --book-accent: #1f4680;
+    --book-code: #f4eee0;
+    --book-paper: #fff;
+    --book-quote: #faf4e4;
+    --vp-c-bg: #fff;
+    --vp-c-text-1: #26221b;
+    --vp-c-text-2: #6e6b60;
+    --vp-c-brand-1: #1f4680;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .VPNav,
+  .VPLocalNav,
+  .VPSidebar,
+  .VPDocAside,
+  .VPDoc .aside,
+  .VPDocFooter,
+  .VPFooter,
+  .VPContent .back-to-top {
+    display: none !important;
+  }
+
+  .VPContent,
+  .VPDoc,
+  .VPDoc .container,
+  .VPDoc .content,
+  .VPDoc .content-container {
+    max-width: none !important;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .vp-doc {
+    color: #26221b;
+    background: #fff;
+    text-align: justify;
+  }
+
+  .vp-doc h1,
+  .vp-doc h2,
+  .vp-doc h3,
+  .vp-doc h4,
+  .vp-doc summary {
+    break-after: avoid;
+  }
+
+  .vp-doc p {
+    orphans: 2;
+    widows: 2;
+  }
+
+  .vp-doc .table-scroll,
+  .vp-doc .reference-index .table-scroll {
+    overflow: visible;
+    max-width: none;
+    scrollbar-gutter: auto;
+  }
+
+  .vp-doc .table-scroll table,
+  .vp-doc .reference-index .table-scroll table {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+  }
+
+  .vp-doc .reference-index .table-scroll th:first-child,
+  .vp-doc .reference-index .table-scroll td:first-child,
+  .vp-doc .reference-index .table-scroll th:nth-child(2),
+  .vp-doc .reference-index .table-scroll td:nth-child(2) {
+    width: auto;
+  }
+
+  .vp-doc th,
+  .vp-doc td {
+    overflow-wrap: anywhere;
+    font-size: 9pt;
+  }
+
+  .vp-doc thead {
+    display: table-header-group;
+  }
+
+  .vp-doc tr {
+    break-inside: avoid;
+  }
+
+  .vp-doc pre,
+  .vp-doc pre code {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    overflow: visible;
+  }
+
+  .vp-doc div[class*='language-'],
+  .vp-doc div[class*='language-'] pre,
+  .vp-doc div[class*='language-'] code {
+    background: #f4eee0 !important;
+    color: #26221b !important;
+  }
+
+  .vp-doc div[class*='language-'] span {
+    color: #26221b !important;
+  }
+
+  .vp-doc button.copy {
+    display: none;
+  }
+
+  .dark .vp-doc blockquote {
+    color: #4a4234;
+  }
+
+  .dark .vp-doc thead th {
+    background: #f3ecdc;
+  }
+
+  .dark .vp-doc tbody tr:nth-child(even) {
+    background: #fbf7ec;
+  }
+
+  .vp-doc figure.book-figure {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .vp-doc figure.book-figure img {
+    max-height: 180mm;
+    width: auto;
+    object-fit: contain;
+  }
+
+  .vp-doc details {
+    break-inside: auto;
+  }
+
+  .vp-doc details.reference-index {
+    padding: 0;
+    border: 0;
+  }
+
+  .vp-doc details > summary {
+    list-style: none;
   }
 }

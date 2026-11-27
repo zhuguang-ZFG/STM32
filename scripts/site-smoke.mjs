@@ -61,6 +61,80 @@ export function serve(root, mount) {
   return new Promise((resolve) => server.listen(0, '127.0.0.1', () => resolve(server)))
 }
 
+export async function checkReadingLayout(page, base, check) {
+  // Exercise the real theme listeners, including repeated beforeprint events.
+  await page.goto(`${base}/v0-foundations/02-c-volatile-ub.html`, { waitUntil: 'networkidle' })
+  const printState = await page.evaluate(() => {
+    const details = [...document.querySelectorAll('details.quiz-answer')]
+    details.forEach((item, index) => { item.open = index === 0 })
+    const before = details.map((item) => item.open)
+    window.dispatchEvent(new Event('beforeprint'))
+    window.dispatchEvent(new Event('beforeprint'))
+    const expanded = details.every((item) => item.open)
+    window.dispatchEvent(new Event('afterprint'))
+    return { before, expanded, after: details.map((item) => item.open) }
+  })
+  check('打印展开并恢复答案状态',
+    printState.before.length > 1 && printState.expanded &&
+      JSON.stringify(printState.before) === JSON.stringify(printState.after),
+    JSON.stringify(printState))
+
+  await page.goto(`${base}/v7-delivery/46-resources-roadmap-open-source.html`, { waitUntil: 'networkidle' })
+  const reference = page.locator('details.reference-index')
+  check('参考索引默认折叠', await reference.count() === 1 && !(await reference.evaluate((el) => el.open)))
+  if (await reference.count()) {
+    await reference.locator('summary').click()
+    for (const width of [390, 768, 1440]) {
+      await page.setViewportSize({ width, height: 900 })
+      const layout = await page.evaluate(() => ({
+        width: innerWidth,
+        pageWidth: document.documentElement.scrollWidth,
+        tables: [...document.querySelectorAll('.reference-index .table-scroll')].map((el) => ({
+          width: el.clientWidth,
+          scroll: el.scrollWidth,
+          firstCell: el.querySelector('th')?.getBoundingClientRect().width ?? 0,
+          focusable: el.tabIndex === 0,
+          label: el.getAttribute('aria-label'),
+        })),
+      }))
+      check(`参考索引 ${width}px 无整页横向溢出`, layout.pageWidth <= layout.width,
+        `page=${layout.pageWidth} viewport=${layout.width}`)
+      check(`参考索引 ${width}px 保持可读列宽`, layout.tables.length > 1 && layout.tables.every(
+        (table) => table.firstCell >= 130 && table.focusable && table.label),
+        `tables=${layout.tables.length} first-column=${layout.tables.map((table) => table.firstCell).join('/')}`)
+    }
+    await page.setViewportSize({ width: 390, height: 844 })
+    const scroller = reference.locator('.table-scroll').first()
+    await scroller.focus()
+    await page.keyboard.press('ArrowRight')
+    const moved = await page.waitForFunction(() => (
+      document.querySelector('.reference-index .table-scroll')?.scrollLeft > 0
+    ), null, { timeout: 2000 }).then(() => true).catch(() => false)
+    check('参考表支持键盘横向滚动', moved)
+  }
+
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.evaluate(() => document.documentElement.classList.add('dark'))
+  await page.emulateMedia({ media: 'print' })
+  await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')))
+  const printLayout = await page.evaluate(() => ({
+    navHidden: [...document.querySelectorAll('.VPNav,.VPLocalNav,.VPSidebar,.VPDocAside,.VPDocFooter')]
+      .every((el) => getComputedStyle(el).display === 'none'),
+    detailsOpen: [...document.querySelectorAll('details')].every((el) => el.open),
+    tablesFit: [...document.querySelectorAll('.table-scroll')].every((el) => (
+      getComputedStyle(el).overflowX === 'visible' && el.scrollWidth <= el.clientWidth + 1
+    )),
+    figureTogether: [...document.querySelectorAll('figure.book-figure')]
+      .every((el) => getComputedStyle(el).breakInside === 'avoid'),
+    lightPaper: getComputedStyle(document.documentElement).colorScheme === 'light' &&
+      getComputedStyle(document.documentElement).backgroundColor === 'rgb(255, 255, 255)',
+  }))
+  check('单章打印隐藏导航且完整排表', printLayout.navHidden && printLayout.detailsOpen &&
+    printLayout.tablesFit && printLayout.figureTogether && printLayout.lightPaper, JSON.stringify(printLayout))
+  await page.evaluate(() => window.dispatchEvent(new Event('afterprint')))
+  await page.emulateMedia({ media: 'screen' })
+}
+
 export async function smoke({ root, mount, downloads: expectDownloads = false }) {
   const server = await serve(root, mount)
   const base = `http://127.0.0.1:${server.address().port}${mount}`
@@ -239,7 +313,10 @@ export async function smoke({ root, mount, downloads: expectDownloads = false })
       `linked=${linked.length}/${downloads.length}`,
     )
 
-    // 13. 资源失败清单
+    // 13. 手机参考表与浏览器单章打印。
+    await checkReadingLayout(page, base, check)
+
+    // 14. 资源失败清单
     check('同源资源无失败', failed.length === 0, failed.slice(0, 5).join(' | '))
   } finally {
     await browser.close()

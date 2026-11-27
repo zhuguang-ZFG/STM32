@@ -13,6 +13,7 @@ python3 tools/gen_pinouts.py        # G0 / L4 / H7 引脚图
 python3 tools/gen_diagrams.py       # 6 张静态框图
 python3 tools/gen_stack_diagrams.py --render  # stack-diagram HTML + 明暗 PNG（需已审技能与 Chromium）
 python3 tools/gen_gpio_classic.py   # 11 张 GPIO 机制/失败/实验证据 SVG（纯 Python）
+python3 tools/gen_reading_path.py   # 第 46 章阅读分支与源码实验流程 → docs/public/figures/
 python3 tools/gen_handdraw_illustrations.py   # 33 章首 + 33 章中 + 8 分部 + 6 附录手绘概念图 + manifest
 python3 tools/gen_gifs.py           # 24 个教学 GIF（ASCII）
 python3 tools/gen_narrated.py --posters   # 每章讲解海报（需 Pillow）
@@ -65,6 +66,11 @@ python3 tools/gen_gifs.py led-blink
 `wechat-mp/` 和 `final-videos/` 在根目录 `.gitignore` 里。克隆下来的仓库没有这两个目录；要跑公众号脚本，先在本机准备它们的输入（封面在 `final-videos/`）。目录怎么分，见 [STRUCTURE.md](../STRUCTURE.md)。
 
 ## 设计约定
+
+第 46 章的 `ch46-reading-routes.svg` 与 `ch46-source-reading.svg` 由
+`gen_reading_path.py` 通过 `svgkit.py` 生成，直接用于现行书稿。
+两图使用 FA-029 几何关系图、IG-008 流程布局，沿用书内蓝/绿/赭/灰语义色；
+画布宽 720px，最小字级 24px，长说明留在正文。它们是原创阅读示意，不是测量证据。
 
 1. **自包含 SVG**：样式写在 `<style>` 里，动画只用 CSS `@keyframes` 或 SMIL，
    不含 `<script>`、外链资源、外部字体 —— 这样用 `<img>` 引用也能播放动画。
