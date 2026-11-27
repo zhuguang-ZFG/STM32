@@ -165,7 +165,7 @@
 
 ## 五、章首手绘概念图 `assets/illustrations/`
 
-33 张章首图（`ch00`–`ch32`），900×560，文件由 `tools/gen_handdraw_illustrations.py` 生成，清单见 [`illustrations/manifest.json`](illustrations/manifest.json)。**合并版正文尚未挂接这一层**：`book/build_html.py` 不读该清单，旧 `stm32-book` 构建器已随 B5 下线。`ch29`–`ch32` 四张按电机卷预合并编号生成，与合并版 TOC 的 ch29–ch32（GD32、ESP32）不是同一批章节，下表只列到 `ch28`。
+33 张章首图（`ch00`–`ch32`），900×560，文件由 `tools/gen_handdraw_illustrations.py` 生成，清单见 [`illustrations/manifest.json`](illustrations/manifest.json)。**合并版正文尚未挂接这一层**：`book/build_html.py` 不读该清单，旧 `stm32-book` 构建器已随 B5 下线。整组按合并前的 33 章方案编号，与合并版 47 章 TOC 不是同一套：`ch01` 是工具链（合并版 ch05）、`ch05` 是定时器/PWM（ch12）、`ch16` 是低功耗（ch18）、`ch28` 是系统组成（合并版无单章对应）；`ch29`–`ch32` 四张按电机卷预合并编号生成，与合并版 TOC 的 ch29–ch32（GD32、ESP32）不是同一批章节。下表只列到 `ch28`。
 
 | 文件 | 章节 | 画面 |
 | --- | --- | --- |
