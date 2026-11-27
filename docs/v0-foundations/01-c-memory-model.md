@@ -363,6 +363,18 @@ next8:                          next16:                         next32:
 
 野指针的三种下场已经在机制一节拆过：触发异常、静默改写、碰巧能用。它们不是段归属问题，但排查时同样先找地址证据：先确认指针值落在哪个区间，再看那次访问的宽度，最后才怀疑业务逻辑。
 
+## 社区开源实现
+
+`.data` 搬运与 `.bss` 清零是每份裸机固件都要做的家务活，三个开源位置把它摆在不同的尺子上：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [cpq/bare-metal-programming-guide](https://github.com/cpq/bare-metal-programming-guide) | `steps/step-0-minimal/main.c` + `link.ld` | 本章三段旅程的 40 行完整版：`reset_handler` 先把 `_sbss.._ebss` 清零、再从 `_sidata` 拷 `.data`（`main.c:11-13`）；`link.ld` 的 `> sram AT > flash` 与 `_sidata = LOADADDR(.data)`（`:19`）就是 VMA/LMA 双地址的最短写法 |
+| [STMicroelectronics/cmsis-device-f4](https://github.com/STMicroelectronics/cmsis-device-f4) | `Source/Templates/gcc/startup_stm32f407xx.s` | 生产启动文件里的同一件事：`ldr r2, =_sidata` 起头的拷贝循环（`:69-81`）、`.bss` 清零循环（`:87-95`）、最后 `bl __libc_init_array`（`:98`）——比最小版多出来的正是 FPU 使能与 C 库初始化两块边界 |
+| [ifduyue/musl](https://github.com/ifduyue/musl) | `ldso/dynlink.c` | 本章「没有装载器」的反面参照：PC 上那座大厦的最小实现——符号解析、重定位、共享库搬移全在这一个文件里；MCU 启动代码替你省掉的，就是它的全部工作量 |
+
+共性归纳：所有裸机启动代码的形状都是「清零、拷贝、调库初始化、进 main」——cpq 的 40 行与 CMSIS 生产启动文件只差两块边界，`AT>`、`LOADADDR`、`_sidata` 这些符号名是 GNU ld 与 ST 模板的通用词汇，换芯片不变。musl 的 dynlink 反着读：它具体化了本章开篇那句「没有装载器」，读几行就知道单片机世界省掉了什么。
+
 ## 离开检查
 
 读完之前，先回答这七个问题；答不上来的，回到对应小节找证据。

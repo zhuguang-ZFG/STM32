@@ -409,6 +409,19 @@ void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef *init)
 | 时钟、引脚、DMA 通道 | 不展开 | 见第 8、10、14 章；系列差异与迁移检查表见[第 28 章](../v4-platforms/28-chip-migration-differences.md)与[第 29 章](../v4-platforms/29-gd32-arm-riscv.md) |
 | 板级行为 | 来源要求真板复核，本机未接板 | 两平台都只到构建闭合，烧录与波形待上板 |
 
+## 社区开源实现
+
+四套构建系统在「依赖图 + 配置层」上同构，各看一层：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [libopencm3/libopencm3](https://github.com/libopencm3/libopencm3) | `mk/gcc-rules.mk` | 嵌入式 Makefile 的规则层样本：`%.o: %.c` 只有一行命令、`$(CFLAGS) $(CPPFLAGS) $(ARCH_FLAGS)`（`:46-48`）——`ARCH_FLAGS` 从 `ld/devices.data` 经 genlink 生成，芯片参数不手写 |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/log/CMakeLists.txt`（钉 `v5.5.2`） | 本章 `idf_component_register` 的真实样本：`INCLUDE_DIRS`/`LDFRAGMENTS`/`PRIV_REQUIRES`（`:53-57`）——接口与实现的构建层分工照此读 |
+| [torvalds/linux](https://github.com/torvalds/linux) | `Documentation/kbuild/kconfig.rst` + `scripts/kconfig/` | Kconfig 的源头在内核：menuconfig/nconf 的用法、`.config` 的合并与 `diffconfig` 比对——IDF 的 `sdkconfig` 与 RT-Thread 的 `.config` 都是这一套的下游 |
+| [platformio/platformio-core](https://github.com/platformio/platformio-core) | `platformio/builder/main.py` | 罗盘点名的 SCons 环境：`env = DefaultEnvironment(**DEFAULT_ENV_OPTIONS)`（`:100`）——PlatformIO 的「构建脚本」其实是 SCons，`-mcpu` 从板卡 JSON 经工具脚本注入，与 Make 的变量注入殊途同归 |
+
+共性归纳：Make 的 `-MMD` 补边、SCons 的环境对象、IDF 的组件注册、Kconfig 的宏开关各管一层，差异只在脚本语言与生成时机——「怎么编」与「编什么」两个维度照旧分开。读任何一套构建系统，顺序都一样：先找规则（谁拼谁的命令行），再追变量从哪来（板卡 JSON、`devices.data`、组件描述），最后才是目录结构。
+
 ## 离开检查
 
 1. Make 的三要素是什么？`$@`、`$<`、`$^` 各指什么？`make -n` 为什么能看到依赖图？
