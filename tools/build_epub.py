@@ -77,6 +77,21 @@ th, td { border: 1px solid #d7dce1; padding: 0.35em 0.45em;
          vertical-align: top; overflow-wrap: anywhere;
          font-variant-numeric: tabular-nums; }
 thead th { background: #edf3f6; }
+/* 「仓库/文件/看什么」式三列表：_to_xhtml_document 按「首格链接 +
+   恰三列」挂 repo-table（阅读器引擎不可靠支持 :has()）。auto 布局
+   在窄窗口里会把路径列压成竖条，固定列宽让路径在列内折行，
+   末列最宽留给正文——与站点 theme 的同款修法保持一致。 */
+table.repo-table { table-layout: fixed; }
+table.repo-table th:nth-child(1), table.repo-table td:nth-child(1),
+table.repo-table th:nth-child(2), table.repo-table td:nth-child(2) { width: 27%; }
+table.repo-table th:nth-child(3), table.repo-table td:nth-child(3) { width: 46%; }
+/* 窄窗口阅读器（手机 EPUB 阅读器常见 320–480px 内容列）：关掉两端
+   对齐，行内代码芯片不会把上一行 CJK 拉出「： 展 开 后 …」式空隙行
+   ——与站点 700px 断点同款判例。不支持 @media 的阅读器保持原
+   justify，行为只增不减。 */
+@media (max-width: 700px) {
+  body, .epub-body { text-align: left; }
+}
 blockquote { border-left: 3px solid #075e84; margin: 0.8em 0;
              padding: 0.1em 0.9em; color: #2c3540; }
 .source-card { border: 1px solid #d7dce1; border-top: 3px solid #075e84;
@@ -185,6 +200,20 @@ def _to_xhtml_document(body_html: str, title: str, css_href: str) -> tuple[bytes
             classes = paragraph.get("class", "").split()
             classes.append(f"epub-align-{alignment}")
             paragraph.set("class", " ".join(dict.fromkeys(classes)))
+    # 「仓库/文件/看什么」式三列表（首格 body 单元格是仓库链接）在窄
+    # 窗口阅读器里会被 auto 布局压成 1–2 字符的路径竖条（站点 390px
+    # 同款缺陷）。阅读器引擎不可靠支持 :has()，只能在管线里按结构
+    # 分类，给它们挂上 NAV_CSS 里固定列宽的 repo-table 类。
+    for table in doc.xpath("//table"):
+        header_cells = table.xpath("./thead/tr[1]/th | ./tr[1]/th")
+        if len(header_cells) != 3:
+            continue
+        first_body_cell = table.xpath("./tbody/tr[1]/td[1] | ./tr[1]/td[1]")
+        if not first_body_cell or not first_body_cell[0].xpath(".//a"):
+            continue
+        classes = [c for c in (table.get("class") or "").split() if c]
+        classes.append("repo-table")
+        table.set("class", " ".join(dict.fromkeys(classes)))
     # strip interactive helpers that have no meaning in EPUB
     for bad in doc.xpath("//a[contains(@class,'toc-jump') or contains(@class,'back-to-toc') or contains(@class,'skip-link')]"):
         bad.getparent().remove(bad)

@@ -44,6 +44,34 @@ class EpubCompatibilityTests(unittest.TestCase):
         self.assertEqual(document.findall(".//html:ccr", XHTML), [])
         self.assertIn("CNT < CCR", "".join(document.itertext()))
 
+    def test_repo_table_gets_fixed_layout_class(self):
+        """「仓库/文件/看什么」三列表（首格链接）挂 repo-table；四列与
+        无链接首格的表不挂——窄窗口阅读器的固定列宽只该给这一形状。"""
+        repo = ('<table><thead><tr><th>仓库</th><th>文件</th><th>看什么</th></tr></thead>'
+                '<tbody><tr><td><a href="https://github.com/a/b">a/b</a></td>'
+                '<td><code>x.c</code></td><td>看 <code>y</code> 的写法</td></tr></tbody></table>')
+        payload, _ = self.epub._to_xhtml_document(repo, "Repo", "epub.css")
+        table = ElementTree.fromstring(payload).find(".//html:table", XHTML)
+        if table is None:
+            self.fail("XHTML 里没有 <table>，合成器没按预期输出")
+        self.assertIn("repo-table", table.attrib["class"].split())
+        self.assertIn("table.repo-table { table-layout: fixed; }", self.epub.NAV_CSS)
+
+        four = repo.replace("<th>看什么</th>", "<th>看什么</th><th>备注</th>").replace(
+            "<td>看 <code>y</code> 的写法</td>", "<td>看 <code>y</code> 的写法</td><td>n</td>")
+        payload4, _ = self.epub._to_xhtml_document(four, "Repo4", "epub.css")
+        table4 = ElementTree.fromstring(payload4).find(".//html:table", XHTML)
+        if table4 is None:
+            self.fail("四列变体里没有 <table>")
+        self.assertNotIn("repo-table", (table4.attrib.get("class") or "").split())
+
+        nolink = repo.replace('<td><a href="https://github.com/a/b">a/b</a></td>', "<td>a/b</td>")
+        payload3, _ = self.epub._to_xhtml_document(nolink, "Repo3", "epub.css")
+        table3 = ElementTree.fromstring(payload3).find(".//html:table", XHTML)
+        if table3 is None:
+            self.fail("无链接变体里没有 <table>")
+        self.assertNotIn("repo-table", (table3.attrib.get("class") or "").split())
+
 
 if __name__ == "__main__":
     unittest.main()
