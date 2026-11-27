@@ -34,6 +34,7 @@ notes. The build prints its own label, so do not also write `注意：` in the t
 | --- | --- | --- |
 | `赋能` `助力` `一站式` `全方位` `轻松搞定` `完美支持` | What it actually does | These carry no information |
 | `让我们` `综上所述` `值得注意的是` `众所周知` | Delete it and say the next sentence | Stage directions, not content |
+| `你手里有…；本章结束多了…——L 的『A』升到『B』` | Two short sentences: what you carry in, what this chapter delivers | Cross-chapter template; ARIS one-unit-one-function |
 | `说实话` `老实说` `划重点` `干货` | Delete it | Announcing honesty is not honesty |
 | `delve` `leverage` `robust` `comprehensive` `seamless` `pivotal` `dive in` | A specific word | Same rule, English side |
 | `Hope this helps` `Let me know if` `feel free to` | Nothing; end on the fact | A reference book does not sign off |
