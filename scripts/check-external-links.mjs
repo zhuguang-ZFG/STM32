@@ -137,10 +137,14 @@ async function probeOnce(url, timeout) {
 
 // status 只在“根本没拿到 HTTP 响应”（DNS/TLS/超时）时才是 0；
 // 拿到了 4xx/5xx 就必须如实返回那个状态，否则允许清单会把 404 当成传输失败吞掉。
-async function probe(url, { timeout, retries }) {
+async function probe(url, { timeout, retries, backoffMs = 500 }) {
   let lastError = ''
   let lastStatus = 0
   for (let attempt = 0; attempt <= retries; attempt += 1) {
+    if (attempt > 0) {
+      // 同秒重试对 GitHub blob 页偶发的 503 突发没用：等一等，再试。
+      await new Promise((resolve) => setTimeout(resolve, backoffMs * attempt))
+    }
     try {
       const status = await probeOnce(url, timeout)
       if (status < 400) return { status, error: '' }
@@ -156,7 +160,7 @@ async function probe(url, { timeout, retries }) {
   return { status: lastStatus, error: lastError }
 }
 
-export async function checkExternalLinks({ root, allowlist, concurrency = 8, timeout = 20000, retries = 1, log = console.log }) {
+export async function checkExternalLinks({ root, allowlist, concurrency = 8, timeout = 20000, retries = 1, backoffMs = 500, log = console.log }) {
   const files = walkHtml(root)
   if (files.length === 0) throw new Error(`${root}: no HTML files found`)
   const byUrl = new Map()
@@ -176,7 +180,7 @@ export async function checkExternalLinks({ root, allowlist, concurrency = 8, tim
     while (next < urls.length) {
       const url = urls[next]
       next += 1
-      const { status, error } = await probe(url, { timeout, retries })
+      const { status, error } = await probe(url, { timeout, retries, backoffMs })
       if (status !== 0 && status < 400) continue
       const dead = status === 404 || status === 410
       const entry = dead ? null : allowlistHit(url, allowlist)
