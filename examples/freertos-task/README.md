@@ -1,6 +1,18 @@
 # freertos-task —— FreeRTOS 三任务 + 队列 + 信号量 + FromISR
 
-> 难度：★★★★　｜　涉及外设：GPIO/EXTI/USART + FreeRTOS　｜　对应章节：[15 FreeRTOS 入门](../../docs/15-FreeRTOS入门.md)
+> 难度：★★★★　｜　涉及外设：GPIO/EXTI/USART + FreeRTOS　｜　对应章节：[第 22 章](../../docs/v3-rtos/22-tasks-tcb-scheduler.md) / [第 23–24 章](../../docs/v3-rtos/23-context-switch-porting.md)
+
+`hardware_status: pending`。
+
+**板型口径**：第 22–24 章机制以 **F407 / `ARM_CM4F`** 为准。本目录 `main.c` 仍是 **BluePill F103** 教学草稿（PC13 / PA0 / 72 MHz），用来演示三任务与 FromISR，**不能**把 F103 数字套进 F407。本冲刺 CI 只跑**宿主断言**（栈深按字、队列深度、优先级序）；CubeF4 固件构建与上板记录为后续项。
+
+### 宿主测试
+
+```bash
+cmake --preset host-tests
+cmake --build --preset host-tests
+ctest --preset host-tests
+```
 
 <p align="center">
   <img src="../../assets/animations/freertos-scheduler.svg" width="760" alt="FreeRTOS 任务状态迁移与抢占式调度">
