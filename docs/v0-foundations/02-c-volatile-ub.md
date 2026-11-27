@@ -397,7 +397,7 @@ volatile 的合同与 UB 的代价，生产代码里都有官方立场和实验�
 
 | 仓库 | 文件 | 看什么 |
 | --- | --- | --- |
-| [torvalds/linux](https://github.com/torvalds/linux) | `Documentation/process/volatile-considered-harmful.rst` | 内核对本章「现场 4」的官方判决：volatile 被人当「a sort of easy atomic variable, which they are not」（文档开头第 2–3 段），它的用途只是压优化，并发正确性靠锁与屏障——本章「管什么不管什么」表的每一行都能在这里找到对应论证 |
+| [torvalds/linux](https://github.com/torvalds/linux) | `Documentation/process/volatile-considered-harmful.rst` | 内核对本章「现场 4」的官方判决：volatile 被人当「a sort of easy atomic variable, which they are not」（文档开头第一段），它的用途只是压优化，并发正确性靠锁与屏障——本章「管什么不管什么」表的每一行都能在这里找到对应论证 |
 | [ARM-software/CMSIS_6](https://github.com/ARM-software/CMSIS_6) | `CMSIS/Core/Include/core_cm4.h` | `__I`/`__O`/`__IO` 的真身（`:230-235`）：展开后全是 `volatile`，只读的是 `volatile const`——所谓读写权限就是本章的访存合同，没有第二条隐藏语义 |
 | [regehr/ub-canaries](https://github.com/regehr/ub-canaries) | `signed-integer-overflow/p1.c` | 本章 `is_bigger_after_inc` 的实验集版：`INT_MAX + 1`、`INT_MIN * INT_MIN` 一组 UB 燃料各配一份编译器输出（`p1.output`），隔壁还有 `strict-aliasing/`、`array-oob/`、`uninitialized-variable/` 等同类目录 |
 | [torvalds/linux](https://github.com/torvalds/linux) | `Documentation/memory-barriers.txt` | 「volatile 不够时该用什么」的长文答案：本章表里的 `DMB/DSB/ISB` 在这里展开成完整屏障模型——编译器重排与 CPU 重排是两个战场，各要各的闸门 |
