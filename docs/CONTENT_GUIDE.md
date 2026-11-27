@@ -29,6 +29,7 @@
 - 句子与段落长短要跟着内容变，不要整章同一拍长。
 - 禁止连续多章旁白/回忆卡共用同一套 8–10 拍填词模板；短片与长课也不要同构拉伸。允许的节拍池与硬禁见 Overlay §5.4。
 - 改写整段或整章时：**先**用 Sepia `review` 列出缺陷，**再** `refactor` 逐项改；禁止边读边改导致越改越长。技能树在 [`.claude/skills/sepia/`](../.claude/skills/sepia/SKILL.md)，操作入口见 `sepia-review` / `sepia-refactor`。日常短句与禁词见 [`.claude/skills/plain-voice/SKILL.md`](../.claude/skills/plain-voice/SKILL.md)。
+- **旅程导航**（可选，非 `contracts.py` 必填）：最多两句。先写承接什么，再写本章落到什么；级别升降用短词点一下即可。禁止跨章套用「你手里有…；本章结束多了…——L 的『A』升到『B』：…」长模板（参考 ARIS `writing-principles`：一句一事、主语与动词靠近、删掉无信息开场）。
 
 ### 分层
 
