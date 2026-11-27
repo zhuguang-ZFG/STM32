@@ -394,7 +394,7 @@ map 文件由 `ld` 的 `-Map=build/blink.map` 生成（Makefile 里的旗标，[
 | [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/esp_system/ld/esp32s3/sections.ld.in`（钉 `v5.5.2`） | 大系统的同题答案：`KEEP(*(.WindowVectors.text))`（`:168`）起头一组向量段逐个 KEEP——理由与本章一致：读这些段的只有硅片，`--gc-sections` 看不见 |
 | [zephyrproject-rtos/zephyr](https://github.com/zephyrproject-rtos/zephyr) | `include/zephyr/arch/arm/cortex_m/scripts/linker.ld` | Zephyr 把链接脚本拆成 include 碎片再拼装（`SECTION_PROLOGUE(rom_start,,)` 在 `:135`）：规模变大后的第四种组织方式，`KEEP` 与 `LOADADDR` 词汇依旧 |
 
-共性归纳：从 25 行手写到模板拼装，量级差了三个台阶，但 `KEEP`（防 GC 误删硬件读的段）、`AT>`（VMA/LMA 分离）、`LOADADDR`（把 LMA 交给启动代码）三个契约词原样出现——它们是 GNU ld 的词汇，不是任何一家的私有约定。读任何一份生产链接脚本，先找这三个词，再认符号名。
+共性归纳：从 29 行手写到模板拼装，量级差了几个台阶，但 `KEEP`（防 GC 误删硬件读的段）、`AT>`（VMA/LMA 分离）、`LOADADDR`（把 LMA 交给启动代码）三个契约词原样出现——它们是 GNU ld 的词汇，不是任何一家的私有约定。读任何一份生产链接脚本，先找这三个词，再认符号名。
 
 ## 离开检查
 
