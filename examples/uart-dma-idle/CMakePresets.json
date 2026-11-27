@@ -13,7 +13,7 @@
       "name": "host-tests",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/host-tests",
-      "cacheVariables": { "UART_DMA_HOST_TESTS": "ON" }
+      "cacheVariables": { "UART_HOST_TESTS": "ON" }
     }
   ],
   "buildPresets": [

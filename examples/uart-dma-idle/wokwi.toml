@@ -1,6 +1,6 @@
 # Wokwi 工程配置。firmware / elf 相对本文件。
 # STM32 接受 .elf / .hex / .bin（见 https://docs.wokwi.com/vscode/project-config ）。
-# 先按 README 构建 BluePill ELF；Wokwi 运行不代替真板验证。
+# 先在本目录执行 CMake bluepill 预设构建，再启动仿真。
 [wokwi]
 version = 1
 firmware = 'build/bluepill/uart-dma-idle.elf'

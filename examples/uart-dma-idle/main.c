@@ -4,7 +4,7 @@
  *          （STM32F103C8T6 / BluePill）
  *
  * 功能：
- *   1) 用 HAL_UARTEx_ReceiveToIdle_DMA 实现「DMA 收 + 空闲中断判帧尾」的不定长接收；
+ *   1) 用 HAL_UARTEx_ReceiveToIdle_DMA 交付接收片段，CR/LF 才结束命令行；
  *   2) 收到的数据写入软件环形缓冲区（ring buffer），主循环异步取用；
  *   3) 命令行解析：支持 AT 指令风格的命令（AT / AT+LED / AT+ECHO / AT+RESET / AT+INFO）；
  *   4) 演示 HAL_UARTEx_RxEventCallback、HAL_UART_ErrorCallback 回调与错误重启。
@@ -23,6 +23,7 @@
 #include "stm32f1xx_hal.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdatomic.h>
 
 /* ------------------------------------------------------------------ 宏定义 */
 
@@ -36,9 +37,13 @@
 #define LED_PORT            GPIOC
 #define LED_PIN             GPIO_PIN_13     /* 板载 LED，低电平点亮 */
 
-#define DMA_RX_BUF_SIZE     64U             /* DMA 单次接收缓冲（应 ≥ 单帧最大长度） */
+#define DMA_RX_BUF_SIZE     64U
 #define RING_BUF_SIZE       512U            /* 软件环形缓冲区大小（2 的幂便于取模） */
 #define CMD_LINE_MAX        96U             /* 命令行最大长度 */
+#define RX_GAP             256U
+
+_Static_assert((RING_BUF_SIZE & (RING_BUF_SIZE - 1U)) == 0U, "ring capacity must be a power of two");
+_Static_assert(ATOMIC_SHORT_LOCK_FREE == 2, "ISR ring requires lock-free short atomics");
 
 /* ---------------------------------------------------------------- 全局句柄 */
 
@@ -49,16 +54,31 @@ DMA_HandleTypeDef  hdma_usart1_rx;
 
 typedef struct
 {
-    uint8_t  buf[RING_BUF_SIZE];
-    volatile uint16_t head;     /* 写指针（ISR 写） */
-    volatile uint16_t tail;     /* 读指针（主循环读） */
+    uint16_t buf[RING_BUF_SIZE];
+    atomic_ushort head;
+    atomic_ushort tail;
+    uint8_t gap_pending;
 } ring_buf_t;
+
+typedef struct
+{
+    uint32_t rx_bytes;
+    uint32_t dropped_bytes;
+    uint32_t stream_gaps;
+    uint32_t uart_errors;
+    uint32_t rearm_failures;
+    uint32_t tx_failures;
+    uint32_t last_uart_error;
+} uart_stats_t;
+
+static volatile uart_stats_t g_stats;
 
 static ring_buf_t g_rb;
 
 static uint8_t g_dma_rx_buf[DMA_RX_BUF_SIZE];   /* DMA 直接写入的目标缓冲区 */
 static char    g_line[CMD_LINE_MAX];            /* 命令行组帧缓冲 */
 static uint16_t g_line_len = 0U;
+static uint8_t g_line_discard = 0U;
 static uint8_t g_echo_on   = 1U;
 static uint8_t g_led_state = 0U;                /* 0=点亮(低电平)，1=熄灭 */
 
@@ -69,8 +89,12 @@ static void uart_dma_init(void);
 static void error_handler(void);
 
 static void   rb_init(ring_buf_t *rb);
+static int    rb_put(ring_buf_t *rb, uint16_t value);
 static void   rb_push(ring_buf_t *rb, const uint8_t *data, uint16_t len);
-static int    rb_pop(ring_buf_t *rb, uint8_t *out);
+static int    rb_pop(ring_buf_t *rb, uint16_t *out);
+static void   rb_mark_gap(ring_buf_t *rb);
+static void   receive_rearm(UART_HandleTypeDef *huart);
+static void   stream_process(uint16_t value);
 
 static void   cmd_process_char(char c);
 static void   cmd_execute(char *line);
@@ -88,18 +112,15 @@ int main(void)
     uart_send("\r\n[BOOT] uart-dma-idle ready. type 'AT' for help\r\n");
 
     /* 启动第一次「DMA + 空闲」接收，之后在回调里自动重启 */
-    if (HAL_UARTEx_ReceiveToIdle_DMA(&huart1, g_dma_rx_buf, DMA_RX_BUF_SIZE) != HAL_OK)
-    {
-        error_handler();
-    }
+    receive_rearm(&huart1);
 
-    uint8_t byte;
+    uint16_t value;
     while (1)
     {
         /* 从环形缓冲区取字节，逐字节喂给命令行解析器 */
-        if (rb_pop(&g_rb, &byte) == 0)
+        if (rb_pop(&g_rb, &value) == 0)
         {
-            cmd_process_char((char)byte);
+            stream_process(value);
         }
         /* 这里可插入其它任务（如 LED 心跳），不会被接收阻塞 */
     }
@@ -109,33 +130,74 @@ int main(void)
 
 static void rb_init(ring_buf_t *rb)
 {
-    rb->head = 0U;
-    rb->tail = 0U;
+    atomic_init(&rb->head, 0U);
+    atomic_init(&rb->tail, 0U);
+    rb->gap_pending = 0U;
+}
+
+static int rb_put(ring_buf_t *rb, uint16_t value)
+{
+    uint16_t head = atomic_load_explicit(&rb->head, memory_order_relaxed);
+    uint16_t next = (uint16_t)((head + 1U) & (RING_BUF_SIZE - 1U));
+    if (next == atomic_load_explicit(&rb->tail, memory_order_acquire))
+    {
+        return -1;
+    }
+    rb->buf[head] = value;
+    atomic_store_explicit(&rb->head, next, memory_order_release);
+    return 0;
+}
+
+static void rb_mark_gap(ring_buf_t *rb)
+{
+    rb->gap_pending = 1U;
+    g_stats.stream_gaps++;
 }
 
 static void rb_push(ring_buf_t *rb, const uint8_t *data, uint16_t len)
 {
-    for (uint16_t i = 0; i < len; i++)
+    for (uint16_t index = 0; index < len; index++)
     {
-        uint16_t next = (uint16_t)((rb->head + 1U) & (RING_BUF_SIZE - 1U));
-        if (next == rb->tail)
+        if (rb->gap_pending != 0U)
         {
-            break;      /* 缓冲满，丢弃多余数据（或在此增加溢出计数） */
+            if (rb_put(rb, RX_GAP) != 0)
+            {
+                g_stats.dropped_bytes += len - index;
+                return;
+            }
+            rb->gap_pending = 0U;
         }
-        rb->buf[rb->head] = data[i];
-        rb->head = next;
+        if (rb_put(rb, data[index]) != 0)
+        {
+            rb_mark_gap(rb);
+            g_stats.dropped_bytes += len - index;
+            return;
+        }
     }
 }
 
-static int rb_pop(ring_buf_t *rb, uint8_t *out)
+static int rb_pop(ring_buf_t *rb, uint16_t *out)
 {
-    if (rb->head == rb->tail)
+    uint16_t tail = atomic_load_explicit(&rb->tail, memory_order_relaxed);
+    if (atomic_load_explicit(&rb->head, memory_order_acquire) == tail)
     {
         return -1;      /* 空 */
     }
-    *out = rb->buf[rb->tail];
-    rb->tail = (uint16_t)((rb->tail + 1U) & (RING_BUF_SIZE - 1U));
+    *out = rb->buf[tail];
+    atomic_store_explicit(&rb->tail, (uint16_t)((tail + 1U) & (RING_BUF_SIZE - 1U)), memory_order_release);
     return 0;
+}
+
+static void stream_process(uint16_t value)
+{
+    if (value == RX_GAP)
+    {
+        g_line_len = 0U;
+        g_line_discard = 1U;
+        uart_send("ERROR: rx gap, discard until newline\r\n");
+        return;
+    }
+    cmd_process_char((char)value);
 }
 
 /* --------------------------------------------------------- 命令行解析 */
@@ -144,12 +206,26 @@ static void cmd_process_char(char c)
 {
     if (c == '\r' || c == '\n')
     {
-        if (g_line_len > 0U)
+        if (g_line_discard == 0U && g_line_len > 0U)
         {
             g_line[g_line_len] = '\0';
             cmd_execute(g_line);
-            g_line_len = 0U;
         }
+        g_line_len = 0U;
+        g_line_discard = 0U;
+        return;
+    }
+
+    if (g_line_discard != 0U)
+    {
+        return;
+    }
+
+    if ((uint8_t)c < 0x20U || (uint8_t)c > 0x7eU)
+    {
+        g_line_len = 0U;
+        g_line_discard = 1U;
+        uart_send("ERROR: invalid character\r\n");
         return;
     }
 
@@ -159,7 +235,8 @@ static void cmd_process_char(char c)
     }
     else
     {
-        g_line_len = 0U;    /* 超长，丢弃整行 */
+        g_line_len = 0U;
+        g_line_discard = 1U;
         uart_send("ERROR: line too long\r\n");
     }
 }
@@ -183,21 +260,32 @@ static void cmd_execute(char *line)
         (void)snprintf(rsp, sizeof(rsp), "+LED:%u\r\nOK\r\n", g_led_state);
         uart_send(rsp);
     }
-    else if (strncmp(line, "AT+LED=", 7) == 0)
+    else if (strcmp(line, "AT+LED=0") == 0 || strcmp(line, "AT+LED=1") == 0)
     {
         g_led_state = (line[7] == '1') ? 1U : 0U;
         HAL_GPIO_WritePin(LED_PORT, LED_PIN,
                           g_led_state ? GPIO_PIN_SET : GPIO_PIN_RESET);
         uart_send("OK\r\n");
     }
-    else if (strncmp(line, "AT+ECHO=", 8) == 0)
+    else if (strcmp(line, "AT+ECHO=0") == 0 || strcmp(line, "AT+ECHO=1") == 0)
     {
         g_echo_on = (line[8] == '1') ? 1U : 0U;
         uart_send("OK\r\n");
     }
+    else if (strcmp(line, "AT+STATS") == 0)
+    {
+        char response[240];
+        (void)snprintf(response, sizeof(response),
+                       "+STATS:rx=%lu,drop=%lu,gaps=%lu,errors=%lu,rearm_fail=%lu,tx_fail=%lu,last_error=%lu\r\nOK\r\n",
+                       (unsigned long)g_stats.rx_bytes, (unsigned long)g_stats.dropped_bytes,
+                       (unsigned long)g_stats.stream_gaps, (unsigned long)g_stats.uart_errors,
+                       (unsigned long)g_stats.rearm_failures, (unsigned long)g_stats.tx_failures,
+                       (unsigned long)g_stats.last_uart_error);
+        uart_send(response);
+    }
     else if (strcmp(line, "AT+INFO") == 0)
     {
-        uart_send("STM32F103C8T6 uart-dma-idle demo v1.0\r\nOK\r\n");
+        uart_send("STM32F103C8T6 uart-dma-idle demo v1.1\r\nOK\r\n");
     }
     else if (strcmp(line, "AT+RESET") == 0)
     {
@@ -214,14 +302,26 @@ static void cmd_execute(char *line)
 static void uart_send(const char *s)
 {
     /* 阻塞发送仅用于演示；实际产品建议用 DMA 发送避免占用 CPU */
-    (void)HAL_UART_Transmit(&huart1, (uint8_t *)s, (uint16_t)strlen(s), 100U);
+    if (HAL_UART_Transmit(&huart1, (uint8_t *)s, (uint16_t)strlen(s), 100U) != HAL_OK)
+    {
+        g_stats.tx_failures++;
+    }
+}
+
+static void receive_rearm(UART_HandleTypeDef *huart)
+{
+    if (HAL_UARTEx_ReceiveToIdle_DMA(huart, g_dma_rx_buf, DMA_RX_BUF_SIZE) != HAL_OK)
+    {
+        g_stats.rearm_failures++;
+        error_handler();
+    }
 }
 
 
 /* --------------------------------------------------------- UART 回调实现 */
 
 /**
- * @brief  DMA 接收事件回调：空闲中断(帧尾)或半满/满传输时被调用
+ * @brief  DMA 接收事件回调：IDLE/TC 交付片段，HT 仅报告进度
  * @param  huart UART 句柄
  * @param  Size  本次实际接收到的字节数
  * @note   在回调里把数据搬进环形缓冲，并重新启动接收以支持不定长连续接收。
@@ -236,12 +336,14 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
         {
             return;
         }
+        if (Size > DMA_RX_BUF_SIZE)
+        {
+            error_handler();
+        }
+        g_stats.rx_bytes += Size;
         rb_push(&g_rb, g_dma_rx_buf, Size);
         /* 重新武装：下一次不定长接收 */
-        if (HAL_UARTEx_ReceiveToIdle_DMA(huart, g_dma_rx_buf, DMA_RX_BUF_SIZE) != HAL_OK)
-        {
-            error_handler(); /* 明确停机；不把重装失败当作已恢复接收。 */
-        }
+        receive_rearm(huart);
     }
 }
 
@@ -252,12 +354,16 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
     if (huart->Instance == UART_INSTANCE)
     {
-        __HAL_UART_CLEAR_OREFLAG(huart);    /* 清溢出标志 */
-        __HAL_UART_CLEAR_FEFLAG(huart);     /* 清帧错误标志 */
-        if (HAL_UARTEx_ReceiveToIdle_DMA(huart, g_dma_rx_buf, DMA_RX_BUF_SIZE) != HAL_OK)
+        g_stats.last_uart_error = huart->ErrorCode;
+        g_stats.uart_errors++;
+        rb_mark_gap(&g_rb);
+        if (HAL_UART_AbortReceive(huart) != HAL_OK)
         {
-            error_handler(); /* 明确停机；不把重装失败当作已恢复接收。 */
+            g_stats.rearm_failures++;
+            error_handler();
         }
+        __HAL_UART_CLEAR_OREFLAG(huart);
+        receive_rearm(huart);
     }
 }
 
@@ -276,12 +382,12 @@ static void uart_dma_init(void)
     __HAL_RCC_DMA1_CLK_ENABLE();
 
     /* LED 输出 */
+    HAL_GPIO_WritePin(LED_PORT, LED_PIN, GPIO_PIN_RESET);
     io.Pin   = LED_PIN;
     io.Mode  = GPIO_MODE_OUTPUT_PP;
     io.Pull  = GPIO_NOPULL;
     io.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(LED_PORT, &io);
-    HAL_GPIO_WritePin(LED_PORT, LED_PIN, GPIO_PIN_RESET);   /* 点亮表示就绪 */
 
     /* PA9 = USART1_TX（复用推挽），PA10 = USART1_RX（上拉输入） */
     io.Pin   = UART_TX_PIN;
@@ -326,7 +432,7 @@ static void uart_dma_init(void)
     /* 中断：USART1 全局中断（用于 IDLE） + DMA1_CH5 中断 */
     HAL_NVIC_SetPriority(USART1_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(USART1_IRQn);
-    HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 1, 1);
+    HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
 }
 
