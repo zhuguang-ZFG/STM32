@@ -52,6 +52,8 @@ class EpubCompatibilityTests(unittest.TestCase):
                 '<td><code>x.c</code></td><td>看 <code>y</code> 的写法</td></tr></tbody></table>')
         payload, _ = self.epub._to_xhtml_document(repo, "Repo", "epub.css")
         table = ElementTree.fromstring(payload).find(".//html:table", XHTML)
+        if table is None:
+            self.fail("XHTML 里没有 <table>，合成器没按预期输出")
         self.assertIn("repo-table", table.attrib["class"].split())
         self.assertIn("table.repo-table { table-layout: fixed; }", self.epub.NAV_CSS)
 
@@ -59,11 +61,15 @@ class EpubCompatibilityTests(unittest.TestCase):
             "<td>看 <code>y</code> 的写法</td>", "<td>看 <code>y</code> 的写法</td><td>n</td>")
         payload4, _ = self.epub._to_xhtml_document(four, "Repo4", "epub.css")
         table4 = ElementTree.fromstring(payload4).find(".//html:table", XHTML)
+        if table4 is None:
+            self.fail("四列变体里没有 <table>")
         self.assertNotIn("repo-table", (table4.attrib.get("class") or "").split())
 
         nolink = repo.replace('<td><a href="https://github.com/a/b">a/b</a></td>', "<td>a/b</td>")
         payload3, _ = self.epub._to_xhtml_document(nolink, "Repo3", "epub.css")
         table3 = ElementTree.fromstring(payload3).find(".//html:table", XHTML)
+        if table3 is None:
+            self.fail("无链接变体里没有 <table>")
         self.assertNotIn("repo-table", (table3.attrib.get("class") or "").split())
 
 
