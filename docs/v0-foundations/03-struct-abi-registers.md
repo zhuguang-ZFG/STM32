@@ -309,6 +309,19 @@ assert-fail.c:6:1: error: static assertion failed: "GPIO_TypeDef size must be 0x
 | pack 的对齐风险 | Cortex-M4 上可能触发 `UsageFault` | 具体异常行为按目标平台手册复核 |
 | 结构体传参/返回 | 这里未展开 | 第 4 章的调用约定 |
 
+## 社区开源实现
+
+布局契约在开源代码里有四层现成证据，本章的每一道断言都能对号：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [STMicroelectronics/cmsis-device-f4](https://github.com/STMicroelectronics/cmsis-device-f4) | `Include/stm32f407xx.h` | 本章逐成员算出的 `GPIO_TypeDef`（`:526-537`）与 `GPIOF` 基址宏（`:1105` 起）：偏移注释逐字对得上，两处证据同一来源 |
+| [ARM-software/abi-aa](https://github.com/ARM-software/abi-aa) | `aapcs32/aapcs32.rst` | 本章对齐三规则的原始条款：「Structures and unions are laid out according to the Fundamental Data Types…All members are laid out in declaration order」——成员顺序不可重排不是编译器口味，是 ABI 合同；尾部填充保证数组 stride 同文可查 |
+| [STMicroelectronics/stm32-mw-lwip](https://github.com/STMicroelectronics/stm32-mw-lwip) | `src/include/lwip/prot/ip4.h`（冻结 `@07680c81`） | 协议头是 packed 结构体的主场：`PACK_STRUCT_BEGIN` 包住 `struct ip_hdr`，`PACK_STRUCT_FIELD(u16_t _len)`（`:71-93`）逐字段压掉填充——线上格式的对齐由字段宽度自己保证，不靠编译器排布 |
+| [torvalds/linux](https://github.com/torvalds/linux) | `include/linux/build_bug.h` | 本章 `_Static_assert` 的内核版：`BUILD_BUG_ON(condition)`（`:50`）在编译期把「条件为真」变成错误——布局断言在内核里的日常用法 |
+
+共性归纳：偏移契约有三层证据——CMSIS 的结构体、AAPCS 的条款、`_Static_assert` 的编译期断言；本章用的是第三层，前两层是它的依据。packed 只该用在「格式由外部规定」的地方（协议头、芯片定的寄存器映射），自己排布的数据结构仍靠成员顺序省空间——lwIP 宁可逐字段 `PACK_STRUCT_FIELD` 也不改字段序，因为字段序是 IP 规范定的。
+
 ## 离开检查
 
 1. `GPIOF->BSRR = 1 << 6` 的完整展开是什么？`0x18` 由哪三件事共同决定？

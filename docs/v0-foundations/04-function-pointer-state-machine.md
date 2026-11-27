@@ -363,6 +363,19 @@ F103 侧只取根书第 04 章的 ISR 签名与“只置标志”写法，来源
 | NVIC/EXTI 细节 | 这里不展开 | [第 10 章][ch10] |
 | 寄存器、时钟、引脚 | 这里未展开 | [第 28 章](../v4-platforms/28-chip-migration-differences.md)、[第 29 章](../v4-platforms/29-gd32-arm-riscv.md) |
 
+## 社区开源实现
+
+函数指针的生产形态是「表」与「槽」，环形缓冲的 B 派公式进了内核，四个对照位置：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [grbl/grbl](https://github.com/grbl/grbl) | `grbl/stepper.c` | `ISR(TIMER1_COMPA_vect)`（`:281`）：本章「中断里只做查表 + 间接调用」的 CNC 版——步进中断里只取预置段数据搬端口，耗时计算留在主循环；与 `fsm_feed` 的预算纪律同源 |
+| [torvalds/linux](https://github.com/torvalds/linux) | `include/linux/fs.h` | `struct file_operations`（`:1923`）：几十个 `ssize_t (*read)(...)` 形态的槽位，VFS 用这一张表把每种文件系统接进同一组调用——本章 `key_table` 的内核级放大版 |
+| [torvalds/linux](https://github.com/torvalds/linux) | `lib/kfifo.c` + `include/linux/kfifo.h` | 本章 B 派环形缓冲的生产实现：`struct __kfifo` 的 `in`/`out` 永不取模（`kfifo.h:49`），`kfifo_unused = (mask + 1) - (in - out)`（`kfifo.c:20`）用无符号减法判满——与本章 `(uint8_t)(w - r) >= CAP` 逐字同构 |
+| [libopencm3/libopencm3](https://github.com/libopencm3/libopencm3) | `lib/cm3/vector.c` | `#pragma weak nmi_handler = null_handler`（`:112-116`）：弱符号槽位的另一种写法——本章启动文件 `.word` 列表的 libopencm3 版，谁给出同名强符号谁接管 |
+
+共性归纳：「表」把一类对象的全部行为编进一个只读结构（`file_operations`、本章的 FSM），「槽」留一个可覆盖的名字给后续装配（weak handler、`key_table`）；B 派公式能进内核，靠的是两个单调计数器加掩码寻址在单生产单消费下不需要额外同步结构——判断依据全在无符号减法里，这是本章把它当基准线的原因。中断预算的纪律在 grbl 里看得最清楚：步进 ISR 里只有取段与搬端口，其余都是主循环的事。
+
 ## 离开检查
 
 1. `void (*table[8])(void)` 用右左法则怎么读？`typedef` 改变了什么，没改变什么？

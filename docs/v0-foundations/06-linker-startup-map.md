@@ -383,6 +383,19 @@ map 文件由 `ld` 的 `-Map=build/blink.map` 生成（Makefile 里的旗标，[
 | `.bss` 突然变大，代码没改几行 | 新加了大数组或栈预算被撑大 | `nm -S --size-sort` 的队尾；map 的 Memory Map | 搬 CCM、改环形缓冲或缩预算 |
 | 烧录成功但固件“没被运行” | BOOT0 接错，芯片从系统存储器或 SRAM 启动 | BOOT0/BOOT1 电平；SWD 能否连上 | 把 BOOT0 拉回 GND，从用户 Flash 启动 |
 
+## 社区开源实现
+
+链接脚本有四个量级的组织方式，契约词一路不变：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [cpq/bare-metal-programming-guide](https://github.com/cpq/bare-metal-programming-guide) | `steps/step-0-minimal/link.ld` | 本章 136 行脚本的最小对照：`MEMORY` 圈两块地、`KEEP(*(.vectors))`（`:9`）、`.data … > sram AT > flash`、`_sidata = LOADADDR(.data)`（`:19`）——四条契约一行不少 |
+| [libopencm3/libopencm3](https://github.com/libopencm3/libopencm3) | `ld/linker.ld.S` | 模板化生产脚本：`.data … >ram AT >rom`、`_data_loadaddr = LOADADDR(.data)`（`:140`）、`.noinit (NOLOAD)` 自定义段、`KEEP` 的 init/fini 数组（`:93、:99-107`）——符号名各家不同（`_sidata` vs `_data_loadaddr`），契约词全部相同 |
+| [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/esp_system/ld/esp32s3/sections.ld.in`（钉 `v5.5.2`） | 大系统的同题答案：`KEEP(*(.WindowVectors.text))`（`:168`）起头一组向量段逐个 KEEP——理由与本章一致：读这些段的只有硅片，`--gc-sections` 看不见 |
+| [zephyrproject-rtos/zephyr](https://github.com/zephyrproject-rtos/zephyr) | `include/zephyr/arch/arm/cortex_m/scripts/linker.ld` | Zephyr 把链接脚本拆成 include 碎片再拼装（`SECTION_PROLOGUE(rom_start,,)` 在 `:135`）：规模变大后的第四种组织方式，`KEEP` 与 `LOADADDR` 词汇依旧 |
+
+共性归纳：从 29 行手写到模板拼装，量级差了几个台阶，但 `KEEP`（防 GC 误删硬件读的段）、`AT>`（VMA/LMA 分离）、`LOADADDR`（把 LMA 交给启动代码）三个契约词原样出现——它们是 GNU ld 的词汇，不是任何一家的私有约定。读任何一份生产链接脚本，先找这三个词，再认符号名。
+
 ## 离开检查
 
 1. 136 行链接脚本的三段各管什么？`ENTRY(Reset_Handler)` 谁看，芯片复位后看哪里？

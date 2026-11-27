@@ -11,7 +11,7 @@
     "site:stubs": "node scripts/legacy-redirects.mjs --mapping plans/2026-11-12-merged-book/mapping.json --manifest docs/manifest.json --out .temp/legacy-stubs",
     "site:assemble": "node scripts/site-assemble.mjs --dist docs/.vitepress/dist --stubs .temp/legacy-stubs --out .temp/pages-site",
     "site:smoke": "node scripts/site-smoke.mjs --root .temp/pages-site --mount /STM32",
-    "site:links": "node scripts/check-external-links.mjs --root docs/.vitepress/dist",
+    "site:links": "node scripts/check-external-links.mjs --root docs/.vitepress/dist --retries 3",
     "site:build": "npm run docs:build && npm run site:pages && npm run site:dims && npm run site:images && npm run site:prune && npm run site:stubs && npm run site:assemble",
     "site:pages": "node scripts/check-site-pages.mjs --dist docs/.vitepress/dist",
     "site:images": "node scripts/check-site-images.mjs --dist docs/.vitepress/dist",

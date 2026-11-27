@@ -391,6 +391,19 @@ arm-none-eabi-gcc -mcpu=cortex-m4 -E main.c | grep -c 'volatile uint32_t'
 | float 位模式读出乱值 | 指针强转违反严格别名 | `-Wstrict-aliasing` 警告 | 改用 union 或 memcpy |
 | 以为 `-fwrapv` 能包打天下 | 它只管有符号加/减/乘 | `-fwrapv -O2` 下 `1u<<33` 仍是 0 | 移位单独做计数检查 |
 
+## 社区开源实现
+
+volatile 的合同与 UB 的代价，生产代码里都有官方立场和实验集：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [torvalds/linux](https://github.com/torvalds/linux) | `Documentation/process/volatile-considered-harmful.rst` | 内核对本章「现场 4」的官方判决：volatile 被人当「a sort of easy atomic variable, which they are not」（文档开头第一段），它的用途只是压优化，并发正确性靠锁与屏障——本章「管什么不管什么」表的每一行都能在这里找到对应论证 |
+| [ARM-software/CMSIS_6](https://github.com/ARM-software/CMSIS_6) | `CMSIS/Core/Include/core_cm4.h` | `__I`/`__O`/`__IO` 的真身（`:230-235`）：展开后全是 `volatile`，只读的是 `volatile const`——所谓读写权限就是本章的访存合同，没有第二条隐藏语义 |
+| [regehr/ub-canaries](https://github.com/regehr/ub-canaries) | `signed-integer-overflow/p1.c` | 本章 `is_bigger_after_inc` 的实验集版：`INT_MAX + 1`、`INT_MIN * INT_MIN` 一组 UB 燃料各配一份编译器输出（`p1.output`），隔壁还有 `strict-aliasing/`、`array-oob/`、`uninitialized-variable/` 等同类目录 |
+| [torvalds/linux](https://github.com/torvalds/linux) | `Documentation/memory-barriers.txt` | 「volatile 不够时该用什么」的长文答案：本章表里的 `DMB/DSB/ISB` 在这里展开成完整屏障模型——编译器重排与 CPU 重排是两个战场，各要各的闸门 |
+
+共性归纳：CMSIS 的 `__IO` 与本章的 `volatile uint32_t *` 是同一句话的两种方言；内核文档专门写一篇「volatile 几乎总错」来辟谣「volatile ≠ 原子」，`isr_toggle` 的两条指令间隙就是它点名的那类 bug。`__IO` 的行号取自 CMSIS_6 当前 main 分支，读的时候以符号定义为准，行号会随版本漂。
+
 ## 离开检查
 
 1. `-O2` 把轮询循环变成 `b .L3`，编译器依据的是哪条规则？volatile 收回了哪三项授权？

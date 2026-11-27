@@ -391,6 +391,19 @@ make
 | `.elf` 几十 KB，以为 Flash 装不下 | 把调试信息算进了固件 | `size` 的 text+data 才是 Flash 占用 | 看 `size`，不要看 `.elf` 文件大小 |
 | `readelf` 入口与 `nm` 地址差 1 | Thumb 状态位：`readelf` 保留、`nm` 不显示 | 同一符号两工具对照：`readelf -s` 最低位为 1，`nm` 最低位为 0 | 断点用纯地址；填向量表或函数指针时用带 1 的形式 |
 
+## 社区开源实现
+
+交叉工具链的每一层都有生产仓库的一手实装可对：
+
+| 仓库 | 文件 | 看什么 |
+| --- | --- | --- |
+| [riscv-collab/riscv-gnu-toolchain](https://github.com/riscv-collab/riscv-gnu-toolchain) | `Makefile.in` | `WITH_ARCH`/`WITH_ABI` 作为 configure 变量流转（`:222-223` 起）：`--with-arch=rv32ima_zicsr` 这样的参数怎样落成编译器旗标——本章 build/host/target 三元组的实装版 |
+| [cpq/bare-metal-programming-guide](https://github.com/cpq/bare-metal-programming-guide) | `steps/step-4-printf/syscalls.c` | 本章 newlib 钩子表的最小实现：`_write` 收到字节直接 `uart_write_buf`（`:57-59`）、`_sbrk` 按增量推堆顶（`:14`）、`_read` 接输入——printf 的「出口」就在这三处 |
+| [ifduyue/musl](https://github.com/ifduyue/musl) | `src/stdio/vfprintf.c` | 另一个 libc 的分层证据：格式引擎 `out()` 只管排版（`:133`），落盘交给 `__fwritex` 与文件后端——newlib 的钩子、musl 的内部后端、glibc 的 syscall 是同一个分层问题的三种答案 |
+| [llvm/llvm-project](https://github.com/llvm/llvm-project) | `clang/lib/Driver/Driver.cpp` | GCC `-###` 的 LLVM 对照物：`Driver::BuildCompilation`（`:1554`）同样把一条命令拆成 cc1、汇编器、链接器的工具链管道——「驱动只调度，不亲自编译」跨编译器家族成立 |
+
+共性归纳：分层的公共形状是「上游只管语义，出口由底层补」——newlib 抽 `_write` 钩子，musl 把后端藏进 `__fwritex`，调度这件事在 GCC 与 Clang 里都发生在 Driver 层。对照读法不变：先 `-###` 念一遍自己工具链的调度剧本，再回仓库找对应层的一手实装。
+
 ## 离开检查
 
 1. build、host、target 各回答什么问题？为什么系统 `gcc` 编不了 F407？`arm-none-eabi-` 三段各代表什么？
