@@ -1,6 +1,6 @@
 # can-bxcan —— bxCAN 环回、双节点、过滤器、Bus-Off
 
-> 难度：★★★★　｜　涉及外设：bxCAN + USART1　｜　对应章节：[13 CAN 总线](../../docs/13-CAN总线.md)
+> 难度：★★★★　｜　涉及外设：bxCAN + USART1　｜　对应章节：[第 35 章 现场总线与 USB](../../docs/v4-platforms/35-can-usb-fieldbus.md)
 
 ## 一、功能说明
 

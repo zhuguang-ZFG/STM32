@@ -1,7 +1,5 @@
 # HAL 速查表
 
-> English: [HAL cheatsheet](../docs/en/cheatsheets/hal.md)
-
 > 常用 HAL 库函数按模块分类。列含义：**函数原型 / 作用 / 常用参数 / 返回值与错误码**。
 > 返回值统一为 `HAL_StatusTypeDef`：`HAL_OK` / `HAL_ERROR` / `HAL_BUSY` / `HAL_TIMEOUT`（详见[错误码与排查速查表](错误码与排查速查表.md)）。
 > 以 STM32F1 HAL 为准；F4 差异在备注中标注。
@@ -12,16 +10,16 @@
 | --- | --- |
 | 系统与时钟 | [§1](#1-系统与时钟hal--rcc) |
 | GPIO | [§2](#2-gpiogpio) |
-| EXTI / NVIC | [§3](#3-中断extinvicsystick) |
+| EXTI / NVIC | [§3](#3-中断exti--nvic--systick) |
 | 定时器 TIM | [§4](#4-定时器tim) |
-| 串口 UART | [§5](#5-串口usartuart) |
+| 串口 UART | [§5](#5-串口-usartuart) |
 | SPI | [§6](#6-spispi) |
 | I2C | [§7](#7-i2ci2c) |
 | ADC / DAC | [§8](#8-adcdacadcdac) |
 | DMA | [§9](#9-dmadma) |
-| RTC / 备份域 | [§10](#10-rtc与备份域rtcrtc_expwr) |
-| Flash / IAP | [§11](#11-flashflashflash_ex) |
-| 看门狗 | [§12](#12-看门狗iwdgwwdg) |
+| RTC / 备份域 | [§10](#10-rtc-与备份域rtc--rtc_ex--pwr) |
+| Flash / IAP | [§11](#11-flashflash--flash_ex) |
+| 看门狗 | [§12](#12-看门狗iwdg--wwdg) |
 | FreeRTOS 常用宏 | [§13](#13-freertos-常用宏) |
 
 ## 1. 系统与时钟（HAL / RCC）

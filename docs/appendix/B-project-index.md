@@ -9,16 +9,16 @@ platforms: [generic]
 
 - **问题**：全书配套工程在哪两个登记簿里，各多少条、什么类型、怎么跑？例程的「最小可见结果/验收工具/不能由此推出」三列怎么用？跑表前要核对哪几行数据？工程证据的两档（宿主验证/目标板验证）怎么区分？
 - **交付**：能在双登记簿里找到任何一章的配套工程并按入口跑起来；能按推荐跑法安排实验顺序；能填出每例程的交付记录七字段。
-- **边界**：本附录是索引层，不代填证据状态（以各工程 README 为准）；数据表本体在附录 D（本附录落位时 D 尚未链接，数据已并入附录 D 文末）；许可边界见附录 E（落位后链接）。
-- **依据锚点**：根书例程区 `examples/`（15 条，MIT）与姊妹书工程区 `mcu/code/`（47 项，projects.json 登记，Apache-2.0）；`motor-dc-speed` 为 B3 批次补登。
+- **边界**：本附录是索引层，证据状态以各工程 README 为准；参数对照见[附录 D](./D-glossary.md)文末，许可边界见[附录 E](./E-sources-version-license.md)。
+- **依据锚点**：根书例程区 `examples/`（16 条，MIT）与姊妹书工程区 `mcu/code/`（47 项，projects.json 登记，Apache-2.0）。
 
 
-本附录是全书配套工程的**双登记簿**：根书例程区（`examples/`，F103 线，15 条）与姊妹书工程区（`mcu/code/`，47 个可编译验证工程，F407/ESP32/GD32/宿主四类）。例程不是「复制后能编译」就结束。每个工程都要留下可观察结果，并写清不能由该结果推出什么。
+本附录是全书配套工程的**双登记簿**：根书例程区（`examples/`，F103 线，16 条）与姊妹书工程区（`mcu/code/`，47 个可编译验证工程，F407/ESP32/GD32/宿主四类）。例程不是「复制后能编译」就结束。每个工程都要留下可观察结果，并写清不能由该结果推出什么。
 
-- 根书区：`examples/` 下 14 例程 + 补登的 `motor-dc-speed`（B3 批次新增，源表漏登），MIT 许可。
+- 根书区：`examples/` 下 16 个例程，MIT 许可。其中 `gpio-blink`、`exti-key`、`timer-pwm`、`uart-dma-idle`、`dma-memcopy`、`motor-dc-speed` 与 `spl-f1-blink` 提供完整固件构建入口；`freertos-task` 的 CMake 仅运行宿主测试，其余目录按各 README 集成。
 - 姊妹书区：`mcu/code/` 下 47 工程，`mcu/code/projects.json` 登记（kind 四档：host-probe 22、arm-make 14、esp-idf 10、host-make 1），Apache-2.0。这批工程按各目录的 README/脚本本地验证。根书区的 `motor-control.yml` 检查电机工程宿主测试与三套 ARM 预设，`gpio-blink.yml` 检查点灯工程的宿主测试、ARM 构建与向量表。
 
-完整许可边界见 附录 E。
+完整许可边界见[附录 E](./E-sources-version-license.md)。
 
 ## 三个基础取证协议（F407主线，F103对照分开）
 
@@ -47,12 +47,13 @@ platforms: [generic]
 | 7 | `adc-dma` | v1 第 15 章 | 3 通道连续采样，输入变化与对应通道一致 | 万用表 + DMA 缓冲观察 | 名义 3.3 V 可当精密参考 |
 | 8 | `rtc-alarm` | v1 第 11 章 | STOP 后按计划唤醒，VBAT 条件下时间连续 | 电流表 + 串口时间戳 | 整板达到数据手册芯片典型电流 |
 | 9 | `iap-bootloader` | v1 第 17 章 | 镜像校验通过后跳转；损坏镜像不跳转 | 串口 + 复位/掉电注入 | 已具备签名、反回滚和安全启动 |
-| 10 | `can-bxcan` | v1 第 13 章（[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) 口径） | 环回自收；双节点时有 ACK 且过滤器生效 | CAN 分析仪/错误计数 | FDCAN 可直接复用同一寄存器配置 |
-| 11 | `usb-cdc` | v1 第 13 章（[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) USB 半场） | 主机枚举出 CDC，`wTotalLength`=67、VID/PID `0x1209/0x0001`，双向字节传输 | USB 抓包/系统设备信息 | 所有主机、线缆和挂起恢复均兼容；VID 也不是 ST 例程的 `0x0483` |
-| 12 | `usb-hid` | v1 第 13 章（[第 35 章](../v4-platforms/35-can-usb-fieldbus.md)） | PA0 边沿产生一次按下和一次全零释放报告 | 文本框 + USB 抓包 | 可作为安全输入设备或通过 USB-IF 认证 |
+| 10 | `can-bxcan` | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md) | 环回自收；双节点时有 ACK 且过滤器生效 | CAN 分析仪/错误计数 | FDCAN 可直接复用同一寄存器配置 |
+| 11 | `usb-cdc` | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md) | 主机枚举出 CDC，`wTotalLength`=67、VID/PID `0x1209/0x0001`，双向字节传输 | USB 抓包/系统设备信息 | 所有主机、线缆和挂起恢复均兼容；VID 也不是 ST 例程的 `0x0483` |
+| 12 | `usb-hid` | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md) | PA0 边沿产生一次按下和一次全零释放报告 | 文本框 + USB 抓包 | 可作为安全输入设备或通过 USB-IF 认证 |
 | 13 | `freertos-task` | [第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md) | 宿主：栈深按字断言通过；板上：三任务 + FromISR（F103 草稿，待 F407 移植） | 宿主 ctest；板上 trace/串口 | 最坏响应已证明；F103 数字可套 F407 |
-| 14 | `spl-f1-blink` | v1 第 7 章 | ELF/HEX/BIN/MAP 构建闭合；真板 PC13 约 1 Hz | GNU Arm size/nm + ST-Link + 逻辑分析仪 | 编译链接通过等于真板已验证 |
-| 15（补登） | `motor-dc-speed` | [第 37 章](../v5-motion/37-dc-motor-openloop.md) | 开环 PWM 驱动直流电机，斜坡受控起停 | 电流表 + 示波器 | 端点语义与限幅计算已被板上验证（[第 37 章](../v5-motion/37-dc-motor-openloop.md) 数值断言核对的是文案） |
+| 14 | `spl-f1-blink` | [第 5 章](../v0-foundations/05-toolchain-four-steps.md)、[第 7 章](../v0-foundations/07-build-systems-legacy.md) | ELF/HEX/BIN/MAP 构建闭合；真板 PC13 约 1 Hz | GNU Arm size/nm + ST-Link + 逻辑分析仪 | 编译链接通过等于真板已验证 |
+| 15 | `motor-dc-speed` | [第 36 章](../v5-motion/36-motor-driver-power.md)至[第 39 章](../v5-motion/39-speed-closed-loop-pi.md) | 分开构建开环、编码器与 PI 速度闭环，记录受控起停与转速（硬件待测） | 宿主测试 + ARM 构建；上板另留电流、波形与转速记录 | 宿主测试等于驱动极性、编码器方向或闭环稳定性已实测 |
+| 16 | `dma-memcopy` | [第 14 章](../v1-drivers/14-dma.md) | SRAM 间搬运 1024 个 32 位字，逐字节比较 4096 B；PC13 显示成功或错误类型（硬件待测） | ARM 向量/内存检查 + 宿主测试；上板记录 LED 与错误路径 | 内容比较通过就证明 DMA 吞吐或最坏延迟达标 |
 
 ### 先核对一致的四行（时钟与位时间）
 
@@ -78,7 +79,7 @@ platforms: [generic]
 ### 推荐跑法
 
 1. **先闭环**：`gpio-blink → exti-key → timer-pwm`：证明下载、引脚、时基。
-2. **再连外设**：`uart-dma-idle → i2c-oled → spi-flash → adc-dma`：一次一种总线。
+2. **再搬数据、连外设**：先用 `dma-memcopy` 比较 SRAM 源/目的内容，再走 `uart-dma-idle → i2c-oled → spi-flash → adc-dma`，一次只增加一种外设。
 3. **再处理状态**：`rtc-alarm → iap-bootloader → can-bxcan → usb-*`：每步保留可回退镜像。
 4. **最后并发**：`freertos-task`：裸机行为可解释后，调度问题才不与驱动混淆。
 5. **最后对照旧库**：`spl-f1-blink` 单独 SPL V3.5.0 + CMake，不与 HAL 示例双重初始化。

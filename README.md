@@ -221,26 +221,26 @@ I2C / SPI 基础                 FreeRTOS 入门                 开源自己的
 
 ## 示例代码与速查表
 
-示例以**完整可编译**的 HAL 代码为主；`spl-f1-blink` 是冻结 SPL V3.5.0 的 CMake 工程。
-每个 README 给出硬件接线、配置边界、关键代码、构建/烧录、预期现象与排错方法。
+16 个示例中，7 个提供完整固件构建入口，`freertos-task` 仅提供宿主测试，其余是待集成源码。先按[示例总索引](examples/README.md#四如何把示例跑起来)选择跑法，再照各 README 构建、下载与观察。下表使用现行合并书章号。
 
 | 示例 | 难度 | 涉及外设 | 对应章节 |
 | --- | --- | --- | --- |
-| [spl-f1-blink](examples/spl-f1-blink/) | ★★ | SPL GPIO + SysTick + CMake/OpenOCD | 01 / 26 |
-| [gpio-blink](examples/gpio-blink/) | ★ | GPIO 推挽输出 | 03 |
-| [exti-key](examples/exti-key/) | ★★ | EXTI + NVIC + 消抖 | 04 |
-| [timer-pwm](examples/timer-pwm/) | ★★ | TIM PWM 输出 | 05 |
-| [uart-dma-idle](examples/uart-dma-idle/) | ★★★ | UART + DMA + IDLE + 环形缓冲 | 06 / 10 |
+| [spl-f1-blink](examples/spl-f1-blink/) | ★★ | SPL GPIO + SysTick + CMake/OpenOCD | 05 / 07 |
+| [gpio-blink](examples/gpio-blink/) | ★ | GPIO 推挽输出 | 00 / 09 |
+| [exti-key](examples/exti-key/) | ★★ | EXTI + NVIC + 消抖 | 10 |
+| [timer-pwm](examples/timer-pwm/) | ★★ | TIM PWM 输出 | 12 |
+| [uart-dma-idle](examples/uart-dma-idle/) | ★★★ | UART + DMA + IDLE + 环形缓冲 | 00 / 13 / 14 |
 | [dma-memcopy](examples/dma-memcopy/) | ★★★☆ | DMA1 Channel1 内存到内存 + 4 KiB SRAM 缓冲 | 14 |
-| [i2c-oled](examples/i2c-oled/) | ★★★ | 硬件 I2C + SSD1306 | 07 |
-| [spi-flash](examples/spi-flash/) | ★★★ | SPI + W25Q64 | 08 |
-| [adc-dma](examples/adc-dma/) | ★★★ | ADC 多通道 + DMA + 滤波 | 09 / 10 |
+| [i2c-oled](examples/i2c-oled/) | ★★★ | 硬件 I2C + SSD1306 | 16 |
+| [spi-flash](examples/spi-flash/) | ★★★ | SPI + W25Q64 | 16 |
+| [adc-dma](examples/adc-dma/) | ★★★ | ADC 多通道 + DMA + 滤波 | 14 / 15 |
 | [rtc-alarm](examples/rtc-alarm/) | ★★ | RTC + 闹钟 + 备份域 | 11 |
-| [freertos-task](examples/freertos-task/) | ★★★★ | FreeRTOS 多任务 + 队列 | 15 |
-| [iap-bootloader](examples/iap-bootloader/) | ★★★★ | Flash 编程 + 跳转 APP | 12 |
-| [can-bxcan](examples/can-bxcan/) | ★★★★ | bxCAN 环回 / 过滤器 / Bus-Off | 13 |
-| [usb-cdc](examples/usb-cdc/) | ★★★★ | USB CDC 虚拟串口 | 14 |
-| [usb-hid](examples/usb-hid/) | ★★★★ | USB HID 键盘 | 14 |
+| [freertos-task](examples/freertos-task/) | ★★★★ | FreeRTOS 多任务 + 队列 | 22 |
+| [iap-bootloader](examples/iap-bootloader/) | ★★★★ | Flash 编程 + 跳转 APP | 17 |
+| [can-bxcan](examples/can-bxcan/) | ★★★★ | bxCAN 环回 / 过滤器 / Bus-Off | 35 |
+| [usb-cdc](examples/usb-cdc/) | ★★★★ | USB CDC 虚拟串口 | 35 |
+| [usb-hid](examples/usb-hid/) | ★★★★ | USB HID 键盘 | 35 |
+| [motor-dc-speed](examples/motor-dc-speed/) | ★★★★ | TIM PWM + 正交编码器 + PI 速度环 | 36–39 |
 
 速查表（打印出来贴显示器旁边那种）：
 
@@ -262,7 +262,7 @@ STM32/
 ├── docs/                     ← 47 章书稿（onramp/ + v0–v7 卷目录 + appendix/）+ CONTENT_GUIDE.md
 │   └── .vitepress/           ← 站点配置、主题与共用场景元数据（data/scenes.json）
 ├── book/                     ← 整书构建包：checks / contracts / build_html / build_epub / build_print_edition
-├── examples/                 ← 16 个示例目录（gpio-blink、uart-dma-idle、dma-memcopy、spl-f1-blink、motor-dc-speed 带完整构建入口）
+├── examples/                 ← 16 个示例目录；7 个完整固件构建入口，分类见 examples/README.md
 ├── labs/                     ← 真板证据协议（目前：ethernet-24h）
 ├── sim/renode/               ← Renode .resc
 ├── cheatsheets/              ← 4 份中文速查表 + README

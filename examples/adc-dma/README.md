@@ -1,6 +1,6 @@
 # adc-dma —— ADC 多通道 + DMA 循环采集 + 滑动平均滤波
 
-> 难度：★★★☆　｜　涉及外设：ADC + DMA　｜　对应章节：[09 ADC 与 DAC](../../docs/09-ADC与DAC.md) / [10 DMA](../../docs/10-DMA.md)
+> 难度：★★★☆　｜　涉及外设：ADC + DMA　｜　对应章节：[第 15 章 ADC 与 DAC 采样](../../docs/v1-drivers/15-adc-dac-sampling.md) / [第 14 章 DMA](../../docs/v1-drivers/14-dma.md)
 
 <p align="center">
   <img src="../../assets/animations/adc-sar.svg" width="760" alt="ADC 采样保持与逐次逼近过程">
