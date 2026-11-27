@@ -406,6 +406,27 @@
   }
 }
 
+/* 「仓库/文件/看什么」式开源节表格（第一格是仓库链接、恰三列，全书 42 张）：
+   auto 布局在 390px 手机档和 606px 桌面内容列下都会把长路径列压成
+   1–2 字符的竖条（2026-11-28 两档目检实测）。固定列宽让路径在列内
+   折行（:not(pre)>code 已有 overflow-wrap: anywhere），末列最宽留给
+   正文。四列 CJK 表与 5–6 列索引表不带链接首格，不受影响。 */
+.vp-doc table:has(td:first-child a):has(td:nth-child(3):last-child) {
+  table-layout: fixed;
+}
+
+.vp-doc table:has(td:first-child a):has(td:nth-child(3):last-child) th:nth-child(1),
+.vp-doc table:has(td:first-child a):has(td:nth-child(3):last-child) td:nth-child(1),
+.vp-doc table:has(td:first-child a):has(td:nth-child(3):last-child) th:nth-child(2),
+.vp-doc table:has(td:first-child a):has(td:nth-child(3):last-child) td:nth-child(2) {
+  width: 27%;
+}
+
+.vp-doc table:has(td:first-child a):has(td:nth-child(3):last-child) th:nth-child(3),
+.vp-doc table:has(td:first-child a):has(td:nth-child(3):last-child) td:nth-child(3) {
+  width: 46%;
+}
+
 /* A reader who prints a single chapter from the site should get the book
    column, rather than the navigation shell and a clipped overflow viewport. */
 @media print {
