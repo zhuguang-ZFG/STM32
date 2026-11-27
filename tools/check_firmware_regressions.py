@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Execute current production C functions with explicit MMIO/HAL test doubles.
+"""Execute selected production C paths with explicit MMIO/HAL test doubles.
 
-No firmware headers are fabricated: only selected function bodies and their real
-preamble/globals are compiled. This is NOT a full target build or hardware test.
-Generated translation units, executables and per-case logs require --out.
+Clock and GPIO cases extract production functions; UART cases include the
+complete production test translation unit. This is not a target build or a
+hardware test. Generated translation units, executables and logs require --out.
 """
 from pathlib import Path
 import argparse
@@ -172,30 +172,15 @@ static void error_handler(void) {stops++;} /* terminal stop made observable, not
 KEY_MAIN = r'''
 int main(void) {led=1;for(unsigned i=1;i<=4;i++) {HAL_GPIO_EXTI_Callback(KEY_PIN);key_process();CHECK(led==(1U^(i&1U)),"even raw IRQ count must not override valid-event toggle");}CHECK(toggles==4 && forced_writes==0,"one toggle and no debug forced write per accepted event");puts("PASS f103-key: actual callbacks with HAL boundary doubles; not full firmware");return 0;}
 '''
-UART_MAIN = r'''
-int main(int argc,char **argv) {
- CHECK(argc==2,"one case required");huart1.Instance=USART1;for(unsigned i=0;i<DMA_RX_BUF_SIZE;i++)g_dma_rx_buf[i]=(uint8_t)i;
- if(strcmp(argv[1],"uart-ht")==0) {
-  event_type=HAL_UART_RXEVENT_HT;restart_result=HAL_BUSY;HAL_UARTEx_RxEventCallback(&huart1,32);
-  CHECK(g_rb.head==0 && starts==0,"NORMAL HT must neither copy prefix nor restart active DMA");
-  event_type=HAL_UART_RXEVENT_IDLE;restart_result=HAL_OK;HAL_UARTEx_RxEventCallback(&huart1,40);
-  CHECK(g_rb.head==40 && starts==1,"HT32 then IDLE40 must enqueue 40, not 72");
-  for(unsigned i=0;i<40;i++)CHECK(g_rb.buf[i]==i,"received bytes exactly once");
-  event_type=HAL_UART_RXEVENT_TC;HAL_UARTEx_RxEventCallback(&huart1,64);
-  CHECK(g_rb.head==104 && starts==2,"next completed transfer copied exactly once");
- } else if(strcmp(argv[1],"uart-rearm")==0) {
-  event_type=HAL_UART_RXEVENT_IDLE;restart_result=HAL_ERROR;HAL_UARTEx_RxEventCallback(&huart1,4);
-  CHECK(starts==1 && stops==1,"terminal receive rearm failure must enter existing error handler");
- } else {
-  restart_result=HAL_BUSY;huart1.ErrorCode=HAL_UART_ERROR_ORE;HAL_UART_ErrorCallback(&huart1);
-  CHECK(starts==1 && stops==1,"error callback must not ignore failed rearm");
- }
- printf("PASS %s: actual production callbacks with HAL boundary doubles; not full firmware\n",argv[1]);return 0;
-}
-'''
 
 
 def source_group(group):
+    if group == 'uart':
+        path = ROOT / 'examples/uart-dma-idle/main.c'
+        tests = ROOT / 'examples/uart-dma-idle/tests/uart_tests.c'
+        names = ['rb_put', 'rb_push', 'rb_pop', 'stream_process', 'cmd_process_char',
+                 'HAL_UARTEx_RxEventCallback', 'HAL_UART_ErrorCallback']
+        return '#include "' + tests.as_posix() + '"\n', path, names
     if group == 'clock':
         path = ROOT/'mcu/code/stm32/01-rcc-clock/main.c'
         names = ['mco1_pre_for','mco1_init','flash_latency_ws_3v3','flash_config',
@@ -210,11 +195,11 @@ def source_group(group):
         code=text[:text.index('/* 粗略延时')]+function(text,names[0])
         code=re.sub(r'\*\(volatile uint32_t \*\)\(([^()]*)\)',r'*reg(\1)',code)
         return HEADER+MMIO+code+F407_MAIN,path,names
-    path=ROOT/('examples/exti-key/main.c' if group=='key' else 'examples/uart-dma-idle/main.c')
-    text=path.read_text(encoding='utf-8');names=['HAL_GPIO_EXTI_Callback','key_process'] if group=='key' else ['rb_push','HAL_UARTEx_RxEventCallback','HAL_UART_ErrorCallback']
-    prefix=text[:text.index('/* ----------------------------------------------------------------- 私有函数')] if group=='uart' else text[:text.index('/* ----------------------------------------------------------------- 私有函数')]
+    path=ROOT/'examples/exti-key/main.c'
+    text=path.read_text(encoding='utf-8');names=['HAL_GPIO_EXTI_Callback','key_process']
+    prefix=text[:text.index('/* ----------------------------------------------------------------- 私有函数')]
     prefix=prefix.replace('#include "stm32f1xx_hal.h"','/* HAL boundary supplied by explicit test doubles above. */')
-    return HEADER+HAL+prefix+'\n'+'\n'.join(function(text,n) for n in names)+(KEY_MAIN if group=='key' else UART_MAIN),path,names
+    return HEADER+HAL+prefix+'\n'+'\n'.join(function(text,n) for n in names)+KEY_MAIN,path,names
 
 
 def main():
@@ -228,7 +213,8 @@ def main():
         group='clock' if case=='mco' or case.startswith('clock-') else 'f407' if case=='f407-toggle' else 'key' if case=='f103-key' else 'uart'
         if group not in built:
             code,path,names=source_group(group);c=out/(group+'.c');exe=out/(group+'.exe');c.write_text(code,encoding='utf-8')
-            cmd=[args.cc,'-std=c11','-Wall','-Wextra','-Werror','-Wno-unused-function','-Wno-unused-variable','-O0','-DUSE_HSE_PLL=1',str(c),'-o',str(exe)]
+            includes=['-I'+str(ROOT/'examples/uart-dma-idle/tests')] if group=='uart' else []
+            cmd=[args.cc,'-std=c11','-Wall','-Wextra','-Werror','-Wno-unused-function','-Wno-unused-variable','-O0','-DUSE_HSE_PLL=1',*includes,str(c),'-o',str(exe)]
             build=subprocess.run(cmd,capture_output=True,text=True);(out/(group+'-build.log')).write_text(build.stdout+build.stderr,encoding='utf-8')
             if build.returncode:print(build.stdout+build.stderr);return build.returncode
             built[group]=exe

@@ -1,126 +1,23 @@
-# uart-dma-idle —— UART + DMA + IDLE 不定长接收
+# uart-dma-idle：从 AT 到 OK
 
-> 难度：★★★☆　｜　涉及外设：USART + DMA + 环形缓冲　｜　对应章节：[第13章UART](../../docs/v1-drivers/13-uart-framed-protocol.md) / [第14章DMA](../../docs/v1-drivers/14-dma.md)
+> 难度：★★★☆　｜　外设：USART + DMA + 环形缓冲　｜　对应章节：[第 13 章 UART](../../docs/v1-drivers/13-uart-framed-protocol.md) / [第 14 章 DMA](../../docs/v1-drivers/14-dma.md)
 
-<p align="center">
-  <img src="../../assets/animations/uart-frame.svg" width="760" alt="UART 帧结构逐位时序">
-  <br><sub>▲ 动画：UART 帧结构逐位时序（起始位/数据位/校验/停止位，作者自绘矢量图）</sub>
-</p>
+这是一套可独立构建的 STM32F103C8T6 工程：同一份生产 `main.c` 先通过宿主 HAL 替身测试，再通过 `arm-none-eabi-gcc` 构建并核对 ELF、向量表和内存边界。硬件下载、串口波形和连续流压力仍须在真实板上完成，不能用 CI 代替。
 
-本目录提供 **BluePill / STM32F103C8T6 的完整 CMake 工程**：固定 STM32CubeF1 `v1.8.6`、HAL/CMSIS 子模块提交、启动文件、64 KiB Flash / 20 KiB RAM 链接脚本、SysTick 时基、USART1 + DMA1 Channel5 中断入口和许可复制。固件构建、向量/内存检查与宿主回归测试均通过；下载、串口收发、波形和吞吐仍待实测。
+## 一、接线与首次构建
 
-`hardware_status: pending`。宿主测试使用受控 HAL 替身，覆盖 HT→IDLE/TC 前缀不重复、重装失败、环形缓冲、命令解析、初始化与启动路径；它不证明真实 HAL 时序或板上行为。
-
-## 一、功能说明
-
-用 USART1 的 **DMA + IDLE 空闲中断**实现不定长接收，收到的数据进入**软件环形缓冲区**，主循环异步取出并做**命令行解析**（AT 指令风格）。相比「`HAL_UART_Receive` 定长接收」，DMA 搬到 64 字节接收区，ISR 再复制到软件环；不是零拷贝。IDLE 只是线路空闲交付事件，不是应用帧边界，命令行仍靠 CR/LF 组帧。
-
-支持的命令：
-
-| 指令 | 作用 | 返回 |
+| BluePill | USB-TTL | 说明 |
 | --- | --- | --- |
-| `AT` | 握手 | `OK` |
-| `AT+LED=0/1` | 设置板载 LED（0 点亮） | `OK` |
-| `AT+LED?` | 查询 LED 状态 | `+LED:<0/1>` |
-| `AT+ECHO=0/1` | 开/关回显 | `OK` |
-| `AT+INFO` | 固件信息 | 版本串 |
-| `AT+RESET` | 软件复位 | `OK` |
+| PA9 USART1_TX | RX | 交叉连接 |
+| PA10 USART1_RX | TX | 交叉连接 |
+| GND | GND | 必须共地 |
+| PC13 | 板载 LED | 低电平点亮 |
 
-## 二、硬件接线表
+USB-TTL 选择 3.3 V 逻辑；PA13/PA14 接 ST-Link 的 SWDIO/SWCLK，`BOOT0=0`。工程按 HSE 8 MHz、PLL ×9、HCLK/PCLK2 72 MHz、PCLK1 36 MHz 和 Flash 两等待周期配置。
 
-| 开发板 | 外设 | 引脚 | 接法 | 备注 |
-| --- | --- | --- | --- | --- |
-| BluePill | USB-TTL 模块 | PA9 (TX) → 模块 RX | 交叉连接 | USART1_TX |
-| BluePill | USB-TTL 模块 | PA10 (RX) ← 模块 TX | 交叉连接 | USART1_RX |
-| BluePill | 共地 | GND ↔ GND | **必须共地** | 否则乱码 |
-| BluePill | LED | PC13 | 板上已接 | 低电平点亮 |
+工具需要 Git、GNU Arm 工具链（含 newlib）、CMake ≥3.21、Ninja、Python 3 和 OpenOCD。在仓库根目录执行：
 
-> USB-TTL 模块选 3.3V 电平（如 CH340/CP2102 的 3V3 档），避免 5V 直连 IO。
-
-## 三、固定板型与时钟
-
-| 配置项 | 取值 | 说明 |
-| --- | --- | --- |
-| USART1 → Mode | Asynchronous | 异步串口 |
-| USART1 → Baud Rate | 115200 | 8-N-1 |
-| USART1 → DMA | USART1_RX → DMA1 Channel5, Normal | RX 用 DMA；HT 不终止普通模式接收 |
-| NVIC | USART1 global interrupt = ✔ | IDLE 中断靠它 |
-| NVIC | DMA1 Channel5 global interrupt = ✔ | 传输完成/错误 |
-| 时钟 | HSE 8MHz → PLL ×9 → 72MHz | APB1=36MHz，APB2=72MHz |
-| SYS → Debug | Serial Wire | 保留 PA13/PA14 SWD |
-
-> F1 的 DMA 请求映射固定：**USART1_RX = DMA1_CH5，USART1_TX = DMA1_CH4**（见 RM0008 表 78）。72MHz 需 `FLASH_LATENCY_2`。
-
-## 四、关键代码解读
-
-**1) 启动「DMA + 空闲」接收**
-
-```c
-/* DMA_NORMAL；首次与后续重装都检查返回值。 */
-if (HAL_UARTEx_ReceiveToIdle_DMA(&huart1, g_dma_rx_buf, DMA_RX_BUF_SIZE) != HAL_OK) {
-    error_handler();
-}
-```
-
-**2) 接收事件回调（IDLE / 半满 / 满都会进这里）**
-
-```c
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
-{
-    if (huart->Instance == UART_INSTANCE)
-    {
-        /* DMA_NORMAL: HT只报进度，接收仍活动；等IDLE/TC后复制整个前缀一次。
-         * 官方F1 HAL_UARTEx_GetRxEventType说明普通模式HT不终止接收。 */
-        if (HAL_UARTEx_GetRxEventType(huart) == HAL_UART_RXEVENT_HT)
-        {
-            return;
-        }
-        rb_push(&g_rb, g_dma_rx_buf, Size);
-        /* 重新武装：下一次不定长接收 */
-        if (HAL_UARTEx_ReceiveToIdle_DMA(huart, g_dma_rx_buf, DMA_RX_BUF_SIZE) != HAL_OK)
-        {
-            error_handler(); /* 明确停机；不把重装失败当作已恢复接收。 */
-        }
-    }
-}
-```
-
-DMA_NORMAL 中 HT 的 `Size=32` 只是进度，不消费/重装；IDLE 或 TC 终止时再复制当前传输的 `Size` 字节一次。`Size` 不等于协议一帧，64 字节 TC 也可能只是长命令的一段。重装 `HAL_ERROR/HAL_BUSY` 会进入既有 `error_handler` 明确停机，不是已保证恢复；错误回调也检查重装返回。
-
-**3) 环形缓冲区（生产者=ISR，消费者=主循环）**
-
-```c
-static void rb_push(ring_buf_t *rb, const uint8_t *d, uint16_t len) {
-    for (uint16_t i = 0; i < len; i++) {
-        uint16_t next = (rb->head + 1) & (RING_BUF_SIZE - 1);
-        if (next == rb->tail) break;      /* 满则丢 */
-        rb->buf[rb->head] = d[i];
-        rb->head = next;
-    }
-}
-```
-
-用 2 的幂大小 + 位与取模，`head/tail` 都是 `volatile`，适配「单生产者单消费者」模型。当前实现满则丢弃多余数据，没有溢出计数；需要无损或可诊断路径时先补计数与恢复策略，不把“有环形缓冲”当作“不丢数据”。
-
-**4) 命令行解析（逐字节组帧，遇到 CR/LF 执行）**
-
-```c
-static void cmd_process_char(char c) {
-    if (c == '\r' || c == '\n') {
-        if (g_line_len) { g_line[g_line_len] = '\0'; cmd_execute(g_line); g_line_len = 0; }
-        return;
-    }
-    if (g_line_len < CMD_LINE_MAX - 1) g_line[g_line_len++] = c;
-}
-```
-
-## 五、编译、检查与烧录
-
-先让编译产物出现，再接下载器。需 Git、CMake ≥3.21、Ninja、GNU Arm 工具链（含 newlib）；下载另需 OpenOCD。本机验证版本为 GCC 10.3.1、CMake 3.30.2、Ninja 1.12.1；其他环境以实际日志为准。
-
-以下从**仓库根目录**执行，PowerShell / bash 均可。首次下载依赖需要网络；已有相同提交的 CubeF1 可直接传其路径，不重复 clone：
-
-```console
+```text
 git clone --depth 1 --branch v1.8.6 https://github.com/STMicroelectronics/STM32CubeF1.git .temp/STM32CubeF1
 git -C .temp/STM32CubeF1 submodule update --init Drivers/STM32F1xx_HAL_Driver Drivers/CMSIS/Device/ST/STM32F1xx
 cd examples/uart-dma-idle
@@ -129,55 +26,69 @@ cmake --build --preset bluepill
 python tests/check_firmware.py build/bluepill/uart-dma-idle.elf build/bluepill/uart-dma-idle.bin
 ```
 
-`build/bluepill/` 中应有 `uart-dma-idle.elf/.hex/.bin/.map`。最后一条检查实际二进制的栈顶、复位入口、SysTick、DMA1 Channel5、USART1 向量、DMA 缓冲区地址和容量边界。提交不匹配或漏初始化子模块时，CMake 停止并打印预期提交。构建同时把 HAL、CMSIS device 与 CMSIS core 的原始许可复制到 `build/bluepill/licenses/`。
+如果已经构建过 `gpio-blink`，可复用同一个 `.temp/STM32CubeF1`。工程锁定 CubeF1、HAL 和 CMSIS 提交，并检查 SHA；输出包括 `.elf`、`.hex`、`.bin`、`.map` 与许可证文件，链接脚本按 64 KiB Flash / 20 KiB SRAM 配置。
 
-2026-11-25 本机快照：BIN 14,400 B，SHA-256 `c61137e31021a4e7b0982691f76eb7640fa4277ec804576a34d3e58564da64a3`；Flash 14,400 B / 64 KiB，RAM 3,040 B / 20 KiB，保留至少 2 KiB 栈。换工具链后以新日志和哈希为准。
+下载命令从本目录执行：
 
-用原生 C 编译器运行回归测试（不连接硬件）：
-
-```console
-cmake --preset host-tests
-cmake --build --preset host-tests
-ctest --preset host-tests
-```
-
-测试覆盖：环形缓冲回绕/满、AT 命令与超长行、HT 不重装、IDLE/TC 前缀交付与重装、重装/错误/初始化/时钟切换/首次接收失败停机、UART/DMA/NVIC 初始化、72MHz 时钟、启动行与 SysTick。模拟 HAL 只验证这些程序分支；真实 HAL 和启动文件由 ARM 构建与向量检查核对。
-
-编译成功后，核对 BOOT0=0、PA13/SWDIO、PA14/SWCLK、GND 和目标供电，再执行下载。在本例程目录运行：
-
-```console
+```text
 openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program build/bluepill/uart-dma-idle.elf verify reset exit"
 ```
 
-保存包含 `verify` 成功的完整日志；复位后再记录串口现象。此下载命令在本轮未执行。接入已有 CubeIDE 工程时，采用第三节配置并保留同一时基，避免重复定义 `main`、`SystemClock_Config`、`SysTick_Handler`、`USART1_IRQHandler` 或 `DMA1_Channel5_IRQHandler`；本目录不提供 IDE 项目文件。
+本轮没有执行真实下载。终端设为 `115200 8N1`、无流控、关闭本地回显，发送行尾选择 `CRLF`。输入不是证据，只有板上启动行、回显字节和错误计数的原始记录才算完成闭环。
 
-Wokwi 配置已指向 `build/bluepill/uart-dma-idle.elf`。Wokwi/主机测试都不代替真板串口、DMA 和仪器证据。
+## 二、命令与可观察结果
 
-## 六、预期现象（理论与设计目标，未实测）
+可打印 ASCII 命令最多 95 个字符；DMA 的 64 字节只是一次硬件交付段，不能当成命令长度。
 
-- 上电串口打印 `[BOOT] uart-dma-idle ready. type 'AT' for help`；
-- 输入 `AT` → 回显 `> AT` + `OK`；
-- 输入 `AT+LED=0` → 板载 LED 点亮；`AT+LED?` → 返回 `+LED:0`；
-- 连续发送仍可能在普通模式重装窗口或软件环满时丢字节；需原始序列与计数实测，不能由环形缓冲存在就保证不丢。
+| 指令 | 作用 |
+| --- | --- |
+| `AT` | 握手，返回 `OK` |
+| `AT+LED=0/1` | 设置 LED，0 点亮 |
+| `AT+LED?` | 查询 LED |
+| `AT+ECHO=0/1` | 关闭或开启回显 |
+| `AT+INFO` | 返回版本与平台信息 |
+| `AT+STATS` | 返回接收、丢失、缺口、错误和发送计数 |
+| `AT+RESET` | 返回 `OK` 后软件复位 |
 
-## 七、常见问题
+`LED=2`、空参数、尾随垃圾、嵌入 NUL、超过 95 字符的命令都会进入丢弃态，直到收到 `CR` 或 `LF`；长行后面的 `AT+RESET` 不会作为新命令执行。`CRLF` 只执行一次。
 
-| 现象 | 原因 | 解决 |
-| --- | --- | --- |
-| 收到乱码 | 波特率/时钟不符或未共地 | 统一 115200，接 GND |
-| 只收到一次就停 | 未重装或重装返回失败 | 查 HAL 返回与 `error_handler`；不要在普通模式 HT 事件重启活动 DMA |
-| 一帧被拆成多帧 | 发送端字符间有空闲 | 缩短发送间隔，或按协议头尾组帧 |
-| 丢数据 | 环形缓冲太小/溢出 | 先加溢出计数与原始字节比对，再调整缓冲或消费策略 |
-| 中断进不去 | 没使能 USART1/DMA NVIC | `HAL_NVIC_EnableIRQ` 两处都要开 |
-| 长命令截断/丢字节 | 重装窗口、软件环满或 `CMD_LINE_MAX` 边界 | 分别核 DMA 交付段与 CR/LF 组帧、长度及丢失，不能只加大 DMA 数组就保证无损 |
-| 溢出错误后停机 | ORE/FE 或 DMA 重装失败 | 读取实际错误与重装返回；当前失败即明确停机，后续恢复策略需另行设计 |
-| 构建提示提交不符 | 依赖版本错误或子模块未初始化 | 按第五节取固定 tag 和两个子模块，不跳过提交检查 |
+`AT+STATS` 的字段边界如下：`rx_bytes` 是 IDLE/TC 交付给软件环的字节数，不是线路总字节数；`dropped_bytes` 是软件已知丢失量，不代表物理线路的全部错误；`stream_gaps` 是缺口通知次数；`uart_errors` 和 `last_uart_error` 来自 HAL；`rearm_failures` 表示重装失败并会停机；`tx_failures` 表示发送函数未返回 `HAL_OK`。计数器为 32 位会回绕，整行不是事务性快照；停止输入并等响应后再比较，且 `AT+STATS` 自身会改变接收计数。
 
-## 八、相关资源与参考边界
+## 三、一条命令怎样穿过两种缓冲
 
-- 参考手册 **RM0008** 第 27 章（USART）、第 13 章（DMA 请求映射表 78）。
-- STM32CubeF1 `v1.8.6`，HAL 子模块 `77fbb30b7a1d02533980400083e48c559aae5a4f`；`HAL_UARTEx_ReceiveToIdle_DMA()` 与 `HAL_UARTEx_GetRxEventType()` 的语义以该版本源码为准。
-- 《Mastering STM32》第二版物理第 269 页（印刷页 239）§9.4：局部/全局 DMA 缓冲区存储期；只作解释顺序参考，寄存器与 API 回到匹配版本的手册和源码。
-- 野火《STM32 HAL 库开发实战指南》物理第 210 页：DMA 发送示例的“构建→下载→串口观察”闭环；其板型和接线不照搬到 BluePill。
-- 相关图：[`assets/animations/uart-frame.svg`](../../assets/animations/uart-frame.svg)、[`assets/gif/uart-bits.gif`](../../assets/gif/uart-bits.gif)
-- 免责声明：本示例配图为作者自绘矢量图/程序生成动画，非厂商实拍照片；本轮没有复制参考书插图。
+数据路径是：64 字节普通 DMA 区 → IRQ 中复制 → 512 项软件环 → 主循环按 `CR/LF` 组行。它不是零拷贝。
+
+- 半传输事件 `HT` 只表示进度，忽略 `Size=32`，不复制、不重装。
+- `IDLE` 交付当前前缀一次；`TC` 交付完整的 64 字节一次，然后重装 DMA。
+- `HT=32` 后 `IDLE=40`，软件得到 40 字节，不是 72 字节。
+- `AT+LE` 和 `D=1\r` 可以来自不同 DMA 段，主循环仍会拼成一条命令。
+- 环中保留一个空槽，最多容纳 511 个 `uint16_t` 项；0–255 是数据，256 是内部缺口标记。
+
+生产者只由两个同优先级的接收 IRQ 驱动，消费者是主循环；`head/tail` 用 C11 acquire/release 发布和获取。构建还检查目标短整型原子操作无锁，避免 ARM 固件偷偷链接 `libatomic`。
+
+## 四、丢字节后，先等行结束
+
+软件环满时，生产者统计已知丢失的剩余字节，并在下一字节之前放入缺口标记。消费者看到标记后清掉半行，进入 `DISCARD`，直到行尾才恢复；缺口标记本身也占一个环槽。如果连标记或后续换行也丢了，下一行可能被保守地一起丢弃。缺口前已经完整排队的命令仍可执行。
+
+UART 错误回调保存错误码，调用 `HAL_UART_AbortReceive`，按 F1 规定清除接收错误，再检查 DMA 重装结果；任何失败都进入终止错误处理。错误发生时 DMA 中尚未交付的部分会被丢弃，重试前先单独发送换行。
+
+普通 DMA 的重装间隙、阻塞发送占用 CPU、软件环溢出和线路本身的错误都可能造成缺口。要做产品级连续无损传输，还需要流控、CRC、序号或循环 DMA 等协议设计；本工程的计数和重同步机制用于让失败可见、让解析器回到已知边界。
+
+## 五、自动检查与上板练习
+
+宿主测试覆盖 10 个边界：HT/IDLE/TC、重装失败、UART 错误恢复、环操作、跨段组行、非法输入、溢出丢弃、启动状态和统计响应。测试使用完整生产 `main.c` 与显式 HAL 边界，证明代码路径可运行，不证明真实线路已经通过。
+
+上板时按三组证据推进：
+
+1. 发送 `AT`、跨 DMA 段发送一条命令，保存原始 TX/RX 字节、启动行和 `AT+STATS`。
+2. 发送长行与非法参数，再发送合法命令；确认没有执行长行后缀，解析器能在行尾恢复。
+3. 在受控负载下制造环满或 ORE，记录丢失字节、缺口、错误码和波形；把板卡身份、构建 SHA、下载结果和串口日志放进实验记录。
+
+失败时先按最短路径查：没有启动行看复位、下载和端口；乱码核对共地、3.3 V 电平、时钟和 `BRR=0x271`；只收到一次看 IDLE/TC 后是否成功重装；缺口后命令粘连看换行与 `DISCARD`；计数不一致看输入是否在响应完成前继续发送。
+
+## 六、来源与迁移
+
+- HAL 与 CMSIS 固定来自官方 `STM32CubeF1` v1.8.6；F103 的 USART1_RX 请求固定为 DMA1 Channel5，TX 为 Channel4，依据 RM0008 的映射。
+- MaJerle 的 USART DMA 示例用于比较循环 DMA、HT/TC/IDLE 的事件边界；其循环缓冲实现不能直接证明本普通 DMA 工程连续无损。
+- AN4031 面向 F2/F4 DMA 控制器，只用于解释双缓冲等概念，F103 的寄存器和请求映射以 RM0008 为准。
+- 本 README 的图和书中手绘图是原理示意，不是测量截图。迁移到 F407 时必须重查 DMA 控制器、流/通道、缓存一致性和链接内存布局；F407 的循环字节回显实验与这里的 AT 命令协议是两条独立路线。

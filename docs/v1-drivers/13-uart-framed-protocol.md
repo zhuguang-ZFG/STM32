@@ -7,19 +7,12 @@ platforms: [f407, f103, esp32, gd32]
 
 > UART 的硬件只保证一件事：线上的电平按约定波特率逐位传输，它不知道一条命令在哪里结束。下面先算清 0x41 的十位帧结构与 BRR 的分频，再定下 TXE/TC 与接收标志的清除顺序；后半段把字节流切成可恢复的帧：COBS 定界、CRC-16/CCITT-FALSE 校验、逐字节状态机在丢字节后重新对齐。F407 与 F103 的 BRR 各算一遍，HAL 与手写落位逐项对照；GD32 与 ESP32 只划边界。
 
-**一句话直觉**：UART 只送字节，帧界要你自己画。
-
-| | 相似点 | 失效点 |
-| --- | --- | --- |
-| 字节流 | BRR 与十位帧定线上节奏；TXE≠TC | IDLE 只是线空，不是应用包结束 |
-| 画帧界 | COBS/长度/CRC 把流切成可恢复消息 | 丢一字节后要对齐；确认入队失败不能当已执行 |
-
 ## 本章罗盘
 
 - **问题**：0x41 在线上为什么是 1,0,0,0,0,0,1,0，115200 下一位多宽？72MHz 与 84MHz 的 BRR 为什么是 `0x271` 与 729，`baud = PCLK / BRR` 里的 BRR 到底是寄存器整数值还是两个字段？TXE 与 TC 差在哪，RS-485 为什么必须等 TC，IDLE 与 ORE 为什么要“读 SR 再读 DR”，FE 置位时坏字节为什么还进了 DR？HAL 的 MspInit 与 SetConfig 两层怎么和手写 `usart1_init()` 一一对上？后半段换成帧协议：UART 为什么不能告诉你命令的边界，长度前缀、转义、COBS 在丢一个字节后各付什么代价，一帧为什么是 8+N 字节、74 字节上限怎么推出来，CRC-16/CCITT-FALSE 的四个参数与检查值 0x29B1 怎么验，EMPTY/COLLECT/DISCARD 三态在丢字节后怎么重新对齐，确认帧入队失败为什么不能执行命令？最后是实验：e02 的探头接哪里、记录什么，来源留下了哪些读数？
 - **交付**：能从真实 PCLK 算出两套 BRR 并说明字段拆法；能在逻辑分析仪上认出一帧并量出位宽；能写出 TXE/TC 与 RXNE/IDLE/ORE 的判据与清除序列；能把 HAL 的 MspInit、SetConfig、Transmit 三层与手写落位对上；能手算一帧的 CRC 与 COBS 编码，说出解码的四个拒绝条件；能画出三态状态机与八项计数，解释丢字节后第一帧为什么可能被牺牲；能按 e02 接线、设采样率、解码并留下记录。
 - **级别**：L2 数据。证据位置：「测量与证据」与「离开检查」；读完留下 BRR 复算、一帧位宽与 e02 解码记录的对账。
-- **旅程导航**：承接[第 12 章](./12-timers-pwm.md)的 PSC/ARR 与 PWM 落位。本章落到 BRR 复算、一帧位宽与 e02 解码判据（四源无板上读数）；L1「波形判据」进到 L2「字节成帧」。
+- **旅程导航**：上一章（[第 12 章](./12-timers-pwm.md)）你手里有 PSC/ARR 复算、PWM 三位落位与 e03 的记录表与判据；本章结束多了 BRR 复算、一帧位宽与 e02 的解码判据（四个来源都没有留下上板读数：S7 的误差表由宿主脚本打印，e02 的 `hardware_status` 是 pending、记录表为空）——L1 的「波形判据」升到 L2 的「字节成帧」：十位帧结构与 BRR 分频、TXE/TC 与 RXNE/IDLE/ORE 的清除顺序、COBS 定界与 CRC-16 校验、丢字节后的三态重新对齐，这些是协议判据不是已解码的抓包。
 - **开源读法**：对照 `Unity` 的 `src/unity.c`，看断言宏怎样把失败的文件、行号与表达式留在输出里；帧解码的拒绝条件与 CRC 参数仍回 `protocol.c` 与本章。
 - **边界**：四平台章。F407 的 84MHz、PA9/PA10 复用、HAL 行号来自 S7《S7 USART：让芯片开口说话》及 DS8626、RM0090；F103 的 72MHz、`0x271`、没有 OVER8 来自根书第 06 章及 RM0008、DS5319；可恢复帧协议来自 C8《C8 串口协议：从字节流到可恢复的消息》与 `mcu/code/common/reliability`；实验来自 E02。四个来源都没有留下上板读数：S7 的八行误差表由宿主脚本按公式打印，e02 的 `hardware_status` 是 pending、记录表为空，C8 的实验记录写“待实测”。S7 说16MHz下改OVER8=1能把921600误差降到−0.794%，这与本轮打开的官方 UART_BRR_SAMPLING8 字段重排不符；下面给出可复算的代数纠正，线上读数仍待测。GD32 只写寄存器改名与编号边界，并指出 G3 的偏移表与 RM0090 的 USART 布局冲突；ESP32 只写 UART 驱动边界。DMA 引擎留给[第 14 章](./14-dma.md)，仪器与证据方法留给[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)。
 - **依据锚点**：S7（`mcu/docs/stm32/07-usart.md`）、根书第 06 章《06 串口 UART》（`docs/06-串口UART.md`）、C8（`mcu/docs/c/08-framed-protocol.md`）、E02（`mcu/docs/lab/e02-logic-uart.md`）；[第 8 章](./08-architecture-memory-clock.md)的 APB 时钟与 USART1 基址、[第 10 章](./10-interrupts-nvic-exti.md)的 NVIC 使能、[第 12 章](./12-timers-pwm.md)的时基对照、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体与 ABI、[第 4 章](../v0-foundations/04-function-pointer-state-machine.md)的状态机写法。RM0090、RM0008、DS8626、DS5319 与 HAL 源码行号均转引自上述来源。
@@ -316,7 +309,13 @@ CRC 的边界要说清：它能检出随机损坏，比如单比特错与突发�
 
 ![C8 帧协议：字节流逐字节进入 EMPTY/COLLECT/DISCARD 状态机，坏帧与重新同步一图看完](/anim/c08-frame-parse.svg)
 
-当前F103对照 `examples/uart-dma-idle` 已是固定 BluePill/STM32F103C8T6 的完整 CMake 工程：使用DMA_NORMAL，HT只通知进度、不停止接收，回调忽略HT，不复制前缀也不重装；在IDLE/TC终止后复制Size字节一次，再检查ReceiveToIdle重装返回。重装失败沿用error_handler明确停机，不宣称自动恢复或连续无损。宿主替身测试覆盖HT32→IDLE40不重复、TC及失败返回；ARM固件构建、向量/内存检查也已通过。这不是F407循环DMA的增量消费实现，也不是上板验证；真实串口、DMA时序与吞吐仍待实测。
+F103 对照 `examples/uart-dma-idle` 现在是固定 CubeF1 v1.8.6 的完整 CMake 工程，使用 `DMA_NORMAL`。HT=32 只报进度，回调不复制、不重装；随后 IDLE=40 只交付 40 字节，不能把前缀重复算成 72。IDLE/TC 后检查重装返回，失败就停机。ARM 固件及 10 项宿主测试已通过，真实串口和故障注入仍待上板。
+
+这条路线按 `CR/LF` 组 AT 命令：`AT+LE` 与 `D=1\r` 即使分属两次 DMA 交付，也只在行尾执行一次。软件环满或 UART 错误会在字节序列中插入内部缺口标记，主循环清掉半行并丢弃到下一行尾，避免把丢失前后的残片拼成命令。长行和 NUL 同样要等行尾才能恢复；重试前先单独发换行，再用 `AT+STATS` 看计数变化。
+
+![两条 DMA 交付段在应用层拼成一行；若中途出现缺口标记，解析器丢弃到行尾，下一行再恢复](/images/ch13-dma-stream-resync.png)
+
+F103 工程的普通 DMA 有重装间隙，不能保证持续流无损。它也没有使用本章 F407 的 COBS 帧与循环 DMA；两套协议的分隔符、计数和验收应分别记录。
 
 ### 与第 14 章 DMA 的分工
 
@@ -357,7 +356,7 @@ CRC 的边界要说清：它能检出随机损坏，比如单比特错与突发�
 
 ![自制 8 通道 USB 逻辑分析仪：开盖外壳、彩色排线与测试钩](/images/tools/logic-analyzer-8ch.jpg)
 
-仪器形态参考（资料参考图，不是上板验证证据）：图为自制 8 通道款，¥30 的 24MHz saleae 兼容款是火柴盒大小的铝壳，接法相同。图源 [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:8_Channel_USB_logic_analyzer_(5172098012).jpg)，[CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0)，作者 Dilshan Jayakody。
+仪器形态参考（资料参考图，不是上板验证证据）：图为自制 8 通道款，¥30 的 24MHz saleae 兼容款是火柴盒大小的铝壳，接法相同。图源 Wikimedia Commons，CC BY-SA 2.0，作者 Dilshan Jayakody。
 
 ### 读数来路表
 

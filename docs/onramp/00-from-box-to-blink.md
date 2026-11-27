@@ -24,7 +24,7 @@ platforms: [generic]
 - **交付**：完成一次从源码到闪烁的完整闭环，并留下 L0 要求的三样证据；遇到「灯不闪」时能按四条失败分支分诊；能用串口跟芯片完成第一次对话。
 - **级别**：L0 起步。证据位置：「你应该看到」各清单与[第 40 章](../v6-labs-projects/40-lab-method-instruments.md) 的记录表；读完留下构建日志、烧录记录与一张填写过的记录表。
 - **旅程导航**：从新板子走到构建、下载、点灯，再试串口。保存三样证据后进入 L0 后续学习。本章无板级实测，现象均为供你核对的预期。
-- **开源读法**：`examples/gpio-blink` 与 `examples/uart-dma-idle` 都提供固定 CubeF1 v1.8.6 的完整 CMake 工程（[附录 B](../appendix/B-project-index.md) 登记）；后者含宿主回归，硬件仍待测。先走通点灯，再做串口；工具链事实见[第 5 章](../v0-foundations/05-toolchain-four-steps.md)。
+- **开源读法**：`examples/gpio-blink` 与 `examples/uart-dma-idle` 都提供固定版本的完整 CMake 工程（[附录 B](../appendix/B-project-index.md) 登记）。先走通点灯，再复用依赖做串口；工具链事实见[第 5 章](../v0-foundations/05-toolchain-four-steps.md)。
 - **边界**：本章只做「跑起来」，不解释机制——GPIO 的寄存器语义在[第 9 章](../v1-drivers/09-gpio.md)，时钟树在[第 8 章](../v1-drivers/08-architecture-memory-clock.md)，串口在[第 13 章](../v1-drivers/13-uart-framed-protocol.md)；本章出现的数字（115200、BRR `0x271`、1 Hz）全部转引已冻结口径，不新造。
 - **依据锚点**：点灯的 1 Hz、串口的 115200 与 BRR `0x271` 转引[第 7 章](../v0-foundations/07-build-systems-legacy.md)、[第 9 章](../v1-drivers/09-gpio.md)、[第 13 章](../v1-drivers/13-uart-framed-protocol.md)已冻结口径；PC13 低电平与灌电流上限引 DS5319 注 5；接线与命令以 `examples/gpio-blink`、`examples/uart-dma-idle` 的 README 为准（[附录 B](../appendix/B-project-index.md) 登记）。L0 三样证据与十八周排期见[第 46 章](../v7-delivery/46-resources-roadmap-open-source.md)，记录表格式见[第 40 章](../v6-labs-projects/40-lab-method-instruments.md)，失败分诊见[第 45 章](../v7-delivery/45-troubleshooting-handbook.md)。
 
@@ -51,10 +51,6 @@ STM32 是意法半导体（ST）基于 ARM Cortex-M 内核的 32 位微控制器
 | 面包板 + 杜邦线 + 270 Ω 电阻 + LED | 若干 | 外接灯与后续外设实验 |
 
 三条采购纪律：ST-Link 克隆先确认能被主机识别再扩展；USB-TTL 必须 3.3 V 电平档（5 V 直连 IO 会伤芯片）；共地永远先于信号（[第 45 章](../v7-delivery/45-troubleshooting-handbook.md) 的规则之二）。第二阶段再考虑 F407/ESP32-S3 的实战线装备，不提前囤。
-
-![BluePill 面包板实拍：USB-TTL 串口模块已接线；这不是 ST-Link/SWD 烧录接线](/images/boards/bluepill-stm32f103c8t6-breadboard.jpg)
-
-实物参照照，作者 Paul Gallagher，[MIT](https://github.com/tardate/LittleArduinoProjects/blob/018885e631bf0a6f874c57d9165e5f0ee3575d02/LICENSE)；只用于识别面包板、BluePill 与 USB-TTL 模块，不证明串口已连通。
 
 ## 三、装环境
 
@@ -121,13 +117,25 @@ openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program build/bluepil
 
 ## 五、跟芯片说第一句话
 
-点灯是「你 → 芯片」；串口是「芯片 → 你」。把 USB-TTL 模块接上：PA9（TX）接模块 RX，PA10（RX）接模块 TX（交叉），GND 共地，模块拨到 3.3 V 档。`examples/uart-dma-idle` 是同一依赖锁下的完整 CMake 工程：按该目录 README 的 preset 构建、检查并下载，不要套用上面的 GPIO 构建命令或产物名。这个例程用 DMA + IDLE 收不定长，机制留给[第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 14 章](../v1-drivers/14-dma.md)；构建通过不等于板上已测。
+点灯是「你 → 芯片」；串口让芯片回话。把 USB-TTL 模块接上：PA9（TX）接模块 RX，PA10（RX）接模块 TX，GND 共地，模块选择 3.3 V 逻辑。先回到仓库根目录，再复用点灯时获取的 CubeF1：
 
-打开串口终端（115200 8N1——这个数的来历与 BRR `0x271` 的算法在[第 13 章](../v1-drivers/13-uart-framed-protocol.md) 逐位拆过），发一条 `AT`：
+```text
+cd examples/uart-dma-idle
+cmake --preset bluepill "-DCUBEF1_PATH=../../.temp/STM32CubeF1"
+cmake --build --preset bluepill
+python tests/check_firmware.py build/bluepill/uart-dma-idle.elf build/bluepill/uart-dma-idle.bin
+openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program build/bluepill/uart-dma-idle.elf verify reset exit"
+```
+
+这是独立的串口工程，不会把 GPIO 固件改成串口。ARM 构建与宿主测试已通过，真实下载和收发仍待你在板上核对；DMA + IDLE 的机制留给[第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 14 章](../v1-drivers/14-dma.md)。
+
+打开串口终端（115200 8N1，无流控，关闭本地回显），发送 `AT` 并附加 `CRLF`。没有行尾时程序会继续等；只有输入框显示 `AT` 不能证明芯片回话。BRR `0x271` 的算法在[第 13 章](../v1-drivers/13-uart-framed-protocol.md)逐位拆过。
 
 **你应该看到**：终端返回 `OK`；`AT+LED=0` 点亮板载灯、`AT+LED=1` 熄灭、`AT+INFO` 返回固件信息串。三个坑提前给：不共地会乱码；5 V 电平直连会伤 IO；TX/RX 忘了交叉会「发了没回」。
 
-到这里，你已经完成了上手卷的全部「看得见」部分——剩下的章节会告诉你：为什么时钟要那么配（[第 8 章](../v1-drivers/08-architecture-memory-clock.md)）、那个 `BSRR` 写入为什么是原子的（[第 9 章](../v1-drivers/09-gpio.md)）、`AT` 命令的每一字节是怎么进出的（[第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 14 章](../v1-drivers/14-dma.md)）。
+收到 `OK` 后再发 `AT+STATS`，保存原始响应。计数器帮助区分接收、软件丢失和 UART 错误，但普通 DMA 重装间隙仍可能丢字节，不能据一次握手推断连续流无损。
+
+实际看到灯闪、收到板上 `OK` 并保存记录后，就能带着三个问题继续：时钟为什么这样配（[第 8 章](../v1-drivers/08-architecture-memory-clock.md)），`BSRR` 一次写入能保护什么（[第 9 章](../v1-drivers/09-gpio.md)），命令字节怎样拼回一行（[第 13 章](../v1-drivers/13-uart-framed-protocol.md)、[第 14 章](../v1-drivers/14-dma.md)）。
 
 ![手绘：PA9 TX 接 USB-TTL RX、PA10 RX 接 USB-TTL TX，GND 共地，模块选 3.3 V 电平（原理示意，非实拍）](/images/ch00-uart-crossing.png)
 
