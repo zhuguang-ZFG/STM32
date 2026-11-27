@@ -7,6 +7,13 @@ platforms: [f407]
 
 按键中断把键值送进队列，一个任务在 `xQueueReceive` 上等；按键不来，任务睡在队列的接收名单上，CPU 去跑别人。队列、二值信号量、计数信号量、互斥锁、递归互斥锁，在 FreeRTOS 里都是同一个 `QueueDefinition` 的不同配置；任务通知把这条通路缩成 TCB 里的两个数组。下面把这些结构拆到源码行，再算清 E04 的 6000/2500 与三处 RAM 开销。
 
+**一句话直觉**：队列是信箱，FromISR 只投信不换人。
+
+| | 相似点 | 失效点 |
+| --- | --- | --- |
+| 信箱 | 空则阻塞；满则等或丢（看 API） | overwrite 要求长度 1；ISR 里不能 take 互斥锁 |
+| 只投信 | `xQueueSendFromISR` + `portYIELD_FROM_ISR` | 优先级高于 syscall 天花板会断言；延迟让出≠已切换 |
+
 没有新的上板读数。E04 的 `hardware_status` 仍是 `pending`，实测表空着；F6 的五幕模拟与 1312/56/616 按来源说法(未复核)处理；源码摘录与算术标文档推导。`Queue_t=80` 是本仓库 probe 声明过的值，不能当跨工程常数。
 
 > 版本口径：FreeRTOS 的 `queue.c`、`tasks.c`、`semphr.h`、`event_groups.h` 行号与语义按 FreeRTOS-Kernel V11.1.0 对账；RT-Thread 的字段与函数名按 v5.3.0 的 `rtdef.h`、`ipc.c` 对账。根书 F103 例程按 V11.3.2，两版行号不混排。
@@ -333,6 +340,8 @@ ISR 优先级约束与 ch10 的 NVIC 配置是同一件事。lab 的 `configPRIO
 `xQueueSendFromISR`/`xQueueReceiveFromISR` 之外，`xSemaphoreGiveFromISR` 也走同一条延迟让出路径；任务通知的 `vTaskNotifyGiveFromISR`、`xTaskNotifyFromISR` 也一样带 `pxHigherPriorityTaskWoken`。规则统一：ISR 只记录，退出中断时只切一次。
 
 ![手绘：FromISR 入队并设置唤醒 flag，中断末尾请求 PendSV，等待更高优先级异常退场后才切任务（原理示意，非实拍）](/images/ch24-fromisr-deferred-switch.png)
+
+静帧已够：FromISR 只置唤醒 flag，PendSV 在更高异常退场后才切；图不表示 API 内立即换人。
 
 *图示不表示在 API 内立即切换；满队列立即报错，ISR 优先级也必须满足内核调用阈值。*
 

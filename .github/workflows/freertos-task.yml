@@ -1,0 +1,29 @@
+name: FreeRTOS Task
+
+on:
+  push:
+    branches: [main]
+    paths: ['examples/freertos-task/**', '.github/workflows/freertos-task.yml']
+  pull_request:
+    paths: ['examples/freertos-task/**', '.github/workflows/freertos-task.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  host-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install ninja
+        run: |
+          sudo apt-get update -o Acquire::Retries=5
+          sudo apt-get install -y --no-install-recommends ninja-build
+      - name: Host regression tests
+        working-directory: examples/freertos-task
+        run: |
+          cmake --preset host-tests
+          cmake --build --preset host-tests
+          ctest --preset host-tests

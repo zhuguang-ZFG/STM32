@@ -30,7 +30,7 @@ platforms: [generic]
 | [ch12 PWM / E03](../v1-drivers/12-timers-pwm.md) | `labs/timer-pwm/README.md` | `mcu/code/stm32/02-tim-pwm` | 未实测；PA6→PA0，动态CCR不是静态50%证据 |
 | [ch13 UART / E02](../v1-drivers/13-uart-framed-protocol.md) | `labs/uart-dma/README.md` | `mcu/code/stm32/03-uart-dma` | 未实测；IDLE不等于应用帧，宿主测试不等于线上通过 |
 
-三个主样板启动目标均为 STM32F407ZGT6，实际板型、芯片、容量与供电需现场核实。F103 的 `examples/gpio-blink`、`examples/exti-key` 与 `examples/timer-pwm` 已有固定 CubeF1 v1.8.6 的完整 CMake 工程、宿主回归测试和 ARM 向量检查，硬件仍待测。不能把 F103 的 PC13 / 72 MHz / PSC71 套给 F407 的 PF6 或回读时钟。固定 CCR、积压试验按各协议另行实施。
+三个主样板启动目标均为 STM32F407ZGT6，实际板型、芯片、容量与供电需现场核实。F103 的 `examples/gpio-blink`、`examples/exti-key`、`examples/timer-pwm` 与 `examples/uart-dma-idle` 已有固定 CubeF1 v1.8.6 的完整 CMake 工程、宿主回归测试、ARM 向量检查与 CI workflow，硬件仍待测。`examples/freertos-task` 本轮只有宿主 CI（栈深按字等）；`main.c` 仍是 F103 草稿，第 22–24 章板口径是 F407，二者勿混。不能把 F103 的 PC13 / 72 MHz / PSC71 套给 F407 的 PF6 或回读时钟。固定 CCR、积压试验按各协议另行实施。
 
 ## 第一区 · 根书例程（F103 线，BluePill）
 
@@ -50,7 +50,7 @@ platforms: [generic]
 | 10 | `can-bxcan` | v1 第 13 章（[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) 口径） | 环回自收；双节点时有 ACK 且过滤器生效 | CAN 分析仪/错误计数 | FDCAN 可直接复用同一寄存器配置 |
 | 11 | `usb-cdc` | v1 第 13 章（[第 35 章](../v4-platforms/35-can-usb-fieldbus.md) USB 半场） | 主机枚举出 CDC，`wTotalLength`=67、VID/PID `0x1209/0x0001`，双向字节传输 | USB 抓包/系统设备信息 | 所有主机、线缆和挂起恢复均兼容；VID 也不是 ST 例程的 `0x0483` |
 | 12 | `usb-hid` | v1 第 13 章（[第 35 章](../v4-platforms/35-can-usb-fieldbus.md)） | PA0 边沿产生一次按下和一次全零释放报告 | 文本框 + USB 抓包 | 可作为安全输入设备或通过 USB-IF 认证 |
-| 13 | `freertos-task` | [第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md) | 三任务运行，队列空时阻塞，按键事件唤醒任务 | trace/运行时统计 + 串口 | 最坏响应时间和栈裕量已被证明 |
+| 13 | `freertos-task` | [第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md) | 宿主：栈深按字断言通过；板上：三任务 + FromISR（F103 草稿，待 F407 移植） | 宿主 ctest；板上 trace/串口 | 最坏响应已证明；F103 数字可套 F407 |
 | 14 | `spl-f1-blink` | v1 第 7 章 | ELF/HEX/BIN/MAP 构建闭合；真板 PC13 约 1 Hz | GNU Arm size/nm + ST-Link + 逻辑分析仪 | 编译链接通过等于真板已验证 |
 | 15（补登） | `motor-dc-speed` | [第 37 章](../v5-motion/37-dc-motor-openloop.md) | 开环 PWM 驱动直流电机，斜坡受控起停 | 电流表 + 示波器 | 端点语义与限幅计算已被板上验证（[第 37 章](../v5-motion/37-dc-motor-openloop.md) 数值断言核对的是文案） |
 
