@@ -327,15 +327,17 @@ void EXTI0_IRQHandler( void )
     uint8_t key = 0x01;
 
     xQueueSendFromISR( xKeyQueue, &key, &xHigherPriorityTaskWoken );
-    portYIELD_FROM_ISR( xHigherPriorityTaskWoken );  /* 只在这里切 */
+    portYIELD_FROM_ISR( xHigherPriorityTaskWoken );  /* 中断末尾请求 PendSV */
 }
 ```
 
 `portYIELD_FROM_ISR` 在 Cortex-M4F 上检查参数，为真才挂 PendSV；为假什么也不做。一个中断里可以调多个 FromISR API，每个都往同一个 flag 上写，最后只调用一次 `portYIELD_FROM_ISR`。不要在中途调用，也不要在每个 API 后面各调一次。
 
-ISR 优先级约束与 ch10 的 NVIC 配置是同一件事。lab 的 `configPRIO_BITS=4`，`configMAX_SYSCALL_INTERRUPT_PRIORITY` 定义为 `5 << (8 - 4)`，即原始值 `0x50`。逻辑优先级 5 对应原始 `0x50`，逻辑 0–4 对应 `0x00`–`0x40`。能调 FromISR 的中断，逻辑优先级必须 **≥ 5**（数值不小于 0x50）；逻辑 0–4 的中断高于 syscall 阈值，内核临界区盖不住它，调 FromISR 会让链表在临界区外被改。
+ISR 优先级约束与 ch10 的 NVIC 配置是同一件事。lab 的 `configPRIO_BITS=4`，`configMAX_SYSCALL_INTERRUPT_PRIORITY` 定义为 `5 << (8 - 4)`，即原始值 `0x50`。逻辑优先级 5 对应原始 `0x50`，逻辑 0–4 对应 `0x00`–`0x40`。能调 FromISR 的中断，逻辑优先级必须 **≥ 5**（原始值不小于 `0x50`）；逻辑 0–4 的中断高于 syscall 阈值，内核临界区盖不住它，调 FromISR 会让链表在临界区外被改。`HAL_NVIC_SetPriority` 接受逻辑值，本配置应传 5–15，并让已实现的 4 位均作抢占位；不能把原始宏 `0x50` 直接传给它。
 
 `portASSERT_IF_INTERRUPT_PRIORITY_INVALID()` 在调试版会抓这种调用，但前提是 `configASSERT` 有定义。异常进入、BASEPRI 与 NVIC 优先级分组见 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)。
+
+还有一个启动条件：ISR 使用的队列必须已经创建，事件入口也不能早于内核和接收任务的就绪。F103 对照 `examples/freertos-task` 在板级初始化时禁用 EXTI0，先创建对象与任务，再由第一次运行的 KEY 任务清除 EXTI/NVIC 旧挂起位并使能。启动阶段的边沿被丢弃，避免先到的按键把空句柄交给 FromISR。其宿主测试编译生产 `main.c`，检查这条调用顺序及阈值 `0x50/0x60` 到 HAL 逻辑 5/6 的换算；未链接真实内核，也不替代 F407 的构建或板上响应测量。
 
 `xQueueSendFromISR`/`xQueueReceiveFromISR` 之外，`xSemaphoreGiveFromISR` 也走同一条延迟让出路径；任务通知的 `vTaskNotifyGiveFromISR`、`xTaskNotifyFromISR` 也一样带 `pxHigherPriorityTaskWoken`。规则统一：ISR 只记录，退出中断时只切一次。
 

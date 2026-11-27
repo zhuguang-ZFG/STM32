@@ -43,6 +43,16 @@
 
 #define KEY_QUEUE_LEN       8U              /* 队列深度：最多缓存 8 个事件 */
 
+/* HAL 接受未左移的逻辑优先级；FreeRTOS 的阈值已左移到寄存器高位。 */
+#define IRQ_PRIORITY_SHIFT  (8U - __NVIC_PRIO_BITS)
+#define KEY_IRQ_PRIORITY    (configMAX_SYSCALL_INTERRUPT_PRIORITY >> IRQ_PRIORITY_SHIFT)
+_Static_assert(__NVIC_PRIO_BITS == 4U, "this F103 example requires four priority bits");
+_Static_assert(configMAX_SYSCALL_INTERRUPT_PRIORITY > 0U &&
+               configMAX_SYSCALL_INTERRUPT_PRIORITY <= 0xFFU,
+               "syscall priority must be a nonzero register byte");
+_Static_assert((configMAX_SYSCALL_INTERRUPT_PRIORITY & ((1U << IRQ_PRIORITY_SHIFT) - 1U)) == 0U,
+               "syscall priority must align to the implemented priority bits");
+
 /* ---------------------------------------------------------------- 全局对象 */
 
 UART_HandleTypeDef huart1;
@@ -125,6 +135,11 @@ static void vKeyTask(void *argument)
     uint8_t key_id = 0U;
     char    msg[48];
 
+    /* 队列、任务与调度器已就绪；丢弃启动阶段的旧边沿，再放行中断。 */
+    __HAL_GPIO_EXTI_CLEAR_IT(KEY_PIN);
+    HAL_NVIC_ClearPendingIRQ(EXTI0_IRQn);
+    HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
     for (;;)
     {
         /* 队列为空则阻塞在此，不占 CPU */
@@ -179,8 +194,8 @@ void EXTI0_IRQHandler(void)
 
 /**
  * @brief  按键中断回调：用 FromISR API 把事件送进队列
- * @note   中断里只能用 xxxFromISR 版本，并且必须用 portYIELD_FROM_ISR
- *         触发一次上下文切换（若唤醒了更高优先级任务）。
+ * @note   队列操作使用 FromISR 版本；portYIELD_FROM_ISR 只在唤醒更高
+ *         优先级任务时请求 PendSV，实际切换要等当前中断及更高优先级异常退场。
  */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
@@ -190,7 +205,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
         BaseType_t woken   = pdFALSE;
 
         (void)xQueueSendFromISR(g_key_queue, &key_id, &woken);
-        portYIELD_FROM_ISR(woken);      /* 若唤醒了高优先级任务，立即切换 */
+        portYIELD_FROM_ISR(woken);      /* 需要时请求 PendSV，不在此处直接换栈 */
     }
 }
 
@@ -203,6 +218,8 @@ static void bsp_init(void)
 {
     GPIO_InitTypeDef io = {0};
 
+    HAL_NVIC_DisableIRQ(EXTI0_IRQn);    /* 直到 vKeyTask 开始运行才使能 */
+    HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4); /* 4 位全部用于抢占 */
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOC_CLK_ENABLE();
     __HAL_RCC_AFIO_CLK_ENABLE();        /* F1：EXTI 映射需 AFIO 时钟 */
@@ -221,8 +238,7 @@ static void bsp_init(void)
     io.Mode = GPIO_MODE_IT_FALLING;
     io.Pull = GPIO_PULLUP;
     HAL_GPIO_Init(KEY_PORT, &io);
-    HAL_NVIC_SetPriority(EXTI0_IRQn, 5U, 0U);   /* 数值需 ≥ configMAX_SYSCALL_INTERRUPT_PRIORITY */
-    HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+    HAL_NVIC_SetPriority(EXTI0_IRQn, KEY_IRQ_PRIORITY, 0U);
 
     /* USART1：PA9=TX, PA10=RX, 115200-8-N-1 */
     io.Pin   = UART_TX_PIN;

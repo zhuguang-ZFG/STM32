@@ -24,6 +24,6 @@ jobs:
       - name: Host regression tests
         working-directory: examples/freertos-task
         run: |
-          cmake --preset host-tests
+          cmake --preset host-tests -DCMAKE_BUILD_TYPE=Release
           cmake --build --preset host-tests
           ctest --preset host-tests

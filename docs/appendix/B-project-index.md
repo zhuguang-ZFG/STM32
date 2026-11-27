@@ -30,7 +30,7 @@ platforms: [generic]
 | [ch12 PWM / E03](../v1-drivers/12-timers-pwm.md) | `labs/timer-pwm/README.md` | `mcu/code/stm32/02-tim-pwm` | 未实测；PA6→PA0，动态CCR不是静态50%证据 |
 | [ch13 UART / E02](../v1-drivers/13-uart-framed-protocol.md) | `labs/uart-dma/README.md` | `mcu/code/stm32/03-uart-dma` | 未实测；IDLE不等于应用帧，宿主测试不等于线上通过 |
 
-三个主样板启动目标均为 STM32F407ZGT6，实际板型、芯片、容量与供电需现场核实。F103 的 `examples/gpio-blink`、`examples/exti-key`、`examples/timer-pwm` 与 `examples/uart-dma-idle` 已有固定 CubeF1 v1.8.6 的完整 CMake 工程、宿主回归测试、ARM 向量检查与 CI workflow，硬件仍待测。`examples/freertos-task` 本轮只有宿主 CI（栈深按字等）；`main.c` 仍是 F103 草稿，第 22–24 章板口径是 F407，二者勿混。不能把 F103 的 PC13 / 72 MHz / PSC71 套给 F407 的 PF6 或回读时钟。固定 CCR、积压试验按各协议另行实施。
+三个主样板启动目标均为 STM32F407ZGT6，实际板型、芯片、容量与供电需现场核实。F103 的 `examples/gpio-blink`、`examples/exti-key`、`examples/timer-pwm` 与 `examples/uart-dma-idle` 已有固定 CubeF1 v1.8.6 的完整 CMake 工程、宿主回归测试、ARM 向量检查与 CI workflow，硬件仍待测。`examples/freertos-task` 仅有宿主 CI，检查生产 main 的启动、任务参数与 ISR 路径，未链接真实内核；`main.c` 仍是 F103 草稿，第 22–24 章板口径是 F407，二者勿混。不能把 F103 的 PC13 / 72 MHz / PSC71 套给 F407 的 PF6 或回读时钟。固定 CCR、积压试验按各协议另行实施。
 
 ## 第一区 · 根书例程（F103 线，BluePill）
 
@@ -50,7 +50,7 @@ platforms: [generic]
 | 10 | `can-bxcan` | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md) | 环回自收；双节点时有 ACK 且过滤器生效 | CAN 分析仪/错误计数 | FDCAN 可直接复用同一寄存器配置 |
 | 11 | `usb-cdc` | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md) | 主机枚举出 CDC，`wTotalLength`=67、VID/PID `0x1209/0x0001`，双向字节传输 | USB 抓包/系统设备信息 | 所有主机、线缆和挂起恢复均兼容；VID 也不是 ST 例程的 `0x0483` |
 | 12 | `usb-hid` | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md) | PA0 边沿产生一次按下和一次全零释放报告 | 文本框 + USB 抓包 | 可作为安全输入设备或通过 USB-IF 认证 |
-| 13 | `freertos-task` | [第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md) | 宿主：栈深按字断言通过；板上：三任务 + FromISR（F103 草稿，待 F407 移植） | 宿主 ctest；板上 trace/串口 | 最坏响应已证明；F103 数字可套 F407 |
+| 13 | `freertos-task` | [第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md)、[第 24 章](../v3-rtos/24-queue-semaphore-notification.md) | 宿主：生产 main 的任务参数、IRQ 启动顺序和优先级换算通过；板上：三任务 + FromISR（F103 草稿，待 F407 移植） | 两组阈值 ctest（HAL/RTOS 替身，未链接内核）；板上 trace/串口 | 最坏响应已证明；F103 数字可套 F407 |
 | 14 | `spl-f1-blink` | [第 5 章](../v0-foundations/05-toolchain-four-steps.md)、[第 7 章](../v0-foundations/07-build-systems-legacy.md) | ELF/HEX/BIN/MAP 构建闭合；真板 PC13 约 1 Hz | GNU Arm size/nm + ST-Link + 逻辑分析仪 | 编译链接通过等于真板已验证 |
 | 15 | `motor-dc-speed` | [第 36 章](../v5-motion/36-motor-driver-power.md)至[第 39 章](../v5-motion/39-speed-closed-loop-pi.md) | 分开构建开环、编码器与 PI 速度闭环，记录受控起停与转速（硬件待测） | 宿主测试 + ARM 构建；上板另留电流、波形与转速记录 | 宿主测试等于驱动极性、编码器方向或闭环稳定性已实测 |
 | 16 | `dma-memcopy` | [第 14 章](../v1-drivers/14-dma.md) | SRAM 间搬运 1024 个 32 位字，逐字节比较 4096 B；PC13 显示成功或错误类型（硬件待测） | ARM 向量/内存检查 + 宿主测试；上板记录 LED 与错误路径 | 内容比较通过就证明 DMA 吞吐或最坏延迟达标 |
