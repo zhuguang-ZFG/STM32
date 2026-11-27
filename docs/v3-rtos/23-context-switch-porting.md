@@ -7,6 +7,13 @@ platforms: [f407]
 
 任务 A 和任务 B 各有一个栈，CPU 只有一个。把 A 的 R4–R11 压进 A 的栈、把栈顶写进 A 的 TCB，再从 B 的 TCB 取出栈顶、把 B 的寄存器弹回来。这套动作发生在 PendSV 里。FreeRTOS 把「谁上 CPU」拆成三个异常：SVC 把第一个任务送上去，PendSV 换现场，SysTick 报时。移植一个 Cortex-M4F 工程，核心就是让这三个名字接上向量表，再选对 port 目录。
 
+**一句话直觉**：换任务像寄存处换牌——硬件先收外套，软件再交包。
+
+| | 相似点 | 失效点 |
+| --- | --- | --- |
+| 寄存处换牌 | 硬件免费压 8 字（外套），软件补 9 字含 EXC_RETURN（手提包）；PendSV 是最慢那扇窗 | SysTick 只「叫号」不换人；挂起位是排队，不是立即切 |
+| 行李牌 bit4 | FPU 在用时帧涨到 26+25；EXC_RETURN bit4 标明有没有浮点行李 | 新任务首帧固定无 FPU 行李（18 字）；没跑过浮点就按 8+9 算 |
+
 这里没有新的上板读数。F2 的五步 probe、GDB 软件帧，F8 的 `size`/`nm` 与上板状态表，都没有留下原始日志或产物：probe 和 `size`/`nm` 标「来源说法(未复核)」，GDB 与上板现象标「未实测」。18 字 = 72 B、26 字 = 104 B、软件帧 9 字、SHPR3 里的 0xFF 与 `0x50 < 0xFF` 由源码与算术得到，标「文档推导」。
 
 > 版本口径：`port.c`、`portmacro.h`、`tasks.c` 的行号与宏语义按 FreeRTOS-Kernel V11.1.0 的 GCC/ARM_CM4F 端口对账；根书第 15 章引 V11.3.2，两版行号不混排。F103 的 `ARM_CM3` 只讲机制差异，不把 V11.1.0 的行号套过去。
@@ -16,7 +23,7 @@ platforms: [f407]
 - **问题**：任务 A 和任务 B 各有一个栈，CPU 只有一个；换现场的动作发生在 PendSV 里，SVC 把第一个任务送上去，SysTick 负责报时。三个异常各自对应哪个函数、哪一行向量表、哪一条 `#define`？PendSV 必须最低，`configKERNEL_INTERRUPT_PRIORITY` 已经是没人读取的死宏，挂起位在哪个寄存器，`portYIELD` 做了什么？硬件压哪 8 个字、软件补哪 9 个字，恢复时为什么最后一条是 `bx r14`？FPU 行李凭什么用 EXC_RETURN bit4 判断，s0–s15 与 s16–s31 分别归谁？PendSV 的十一条语义步骤里，`vTaskSwitchContext` 改了哪个变量？F407 用 `ARM_CM4F`、F103 用 `ARM_CM3`，`0x50` 与 `0xFF` 谁更急，FromISR 的逻辑阈值是 5 还是 80？还有几个容易漏的边界：`xTaskCreate` 堆尽返回什么，奇数优先级断言为什么在 F407 不执行，HardFault 归 FreeRTOS 还是归应用，RT-Thread Nano 的切换文件、异常符号和堆边界符号各是什么。
 - **交付**：能在纸上画出无 FPU 的 8 + 9 字现场与有 FPU 的 26 + 25 字现场；能把三个异常、三个源码名、三个向量名和三行 `#define` 对上号；能算出 SHPR3 的 PendSV/SysTick 两个字节都是 0xFF，并说清 `0x50 < 0xFF` 的方向；能按内核和 FPU 选出 `ARM_CM4F` 或 `ARM_CM3`；能把 RT-Thread Nano 的 `context_gcc.S`、`PendSV_Handler`/`HardFault_Handler`、`SysTick_Handler` 与 `&__bss_end__`→`&_estack` 讲对。
 - **级别**：L4 系统。证据位置：「测量与证据」与「离开检查」；读完留下 8 + 9 与 26 + 25 字的现场图、三异常改名表、SHPR3 的 `0xFF` 对 `0x50` 与 port 选型记录。
-- **旅程导航**：上一章（[第 22 章](./22-tasks-tcb-scheduler.md)）你手里有 TCB 字段表、首帧 18 字 = 72 B 的布局、`xTaskCreate` 六步与 `31 − CLZ` 选位的手算记录；本章结束多了 8 + 9 与 26 + 25 字的现场图、三异常改名表、SHPR3 的 `0xFF` 对 `0x50` 与 port 选型记录（单平台 F407，`ARM_CM4F`；F103 只做机制对照，RT-Thread 按 Nano 工程、不把标准版 BSP 的 25 MHz 当本工程事实）——L4 的「任务怎么被选中」升到「现场怎么被换出去」：PendSV 为什么必须最低、硬件压哪 8 字软件补哪 9 字、FPU 行李靠 EXC_RETURN bit4 判断，这些是异常与栈帧判据不是已量波形。
+- **旅程导航**：承接[第 22 章](./22-tasks-tcb-scheduler.md)的 TCB、首帧与 `31 − CLZ`。本章拆 8+9 / 26+25 字现场、三异常改名、SHPR3 与 port 选型（F407/`ARM_CM4F`）；L4 从「任务怎么被选中」进到「现场怎么被换出去」。
 - **开源读法**：对照 `FreeRTOS-Kernel` 的 `portable/GCC/ARM_CM4F/port.c`，看 `xPortPendSVHandler` 怎样保存 9 字软件帧并 `bx r14` 返回；SHPR3、ICSR 与 EXC_RETURN 的位定义仍回 RM0090。
 - **边界**：单平台 F407（Cortex-M4F、`ARM_CM4F`、lab 跑 HSI 16 MHz）；F103 只在「跨平台边界」做机制对照。SysTick 的 LOAD 与寄存器细节在第 11 章，异常进出与 EXC_RETURN 的 8 字帧在第 10 章；队列、信号量与通知留给第 24 章，双 OS 选型留给第 27 章。RT-Thread 部分按 lab 的 Nano 工程写，不把标准版 BSP 的 25 MHz 晶振当本工程事实。
 - **依据锚点**：F2《上下文切换》（`mcu/docs/rtos/freertos/02-context-switch.md`）、F8《移植 FreeRTOS 到霸天虎》（`mcu/docs/rtos/freertos/08-port-f407.md`）、R7《移植 RT-Thread 到霸天虎》（`mcu/docs/rtos/rtthread/07-port-f407.md`）；配置见 `mcu/code/rtos/01-freertos-lab/FreeRTOSConfig.h`，板级见 `mcu/code/rtos/02-rt-thread-lab/board/board.c`，端口选择见 `mcu/code/rtos/01-freertos-lab/Makefile`，向量槽见 `mcu/code/rtos/01-freertos-lab/startup_stm32f407xx.s`。异常进出的 8 字帧见 [v1 第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)；TCB 偏移 0 与首帧 18 字见 [第 22 章](./22-tasks-tcb-scheduler.md)。
@@ -119,11 +126,11 @@ PendSV 的「请求」不是函数调用，是一个挂起位。`portmacro.h:99-
 #define portNVIC_PENDSVSET_BIT  ( 1UL << 28UL )
 ```
 
-`portYIELD_WITHIN_API()` 的全部动作就是写这一位：`portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;`（`portmacro.h:91`；F2:54,61-62）。`taskYIELD()` 走 `portYIELD()`，中断里走 `portYIELD_FROM_ISR(x)`（`x` 为真才置位）。置位之后当前异常继续返回；等所有更高优先级异常退场，PendSV 才以最低优先级执行。挂起位是「排队」，不是「立即切」。
+`portYIELD_WITHIN_API()` 的全部动作就是写这一位：`portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;`（`portmacro.h:91`；F2:54,61-62）。`taskYIELD()` 走 `portYIELD()`，中断里走 `portYIELD_FROM_ISR(x)`（`x` 为真才置位）。置位之后当前异常继续返回；等所有更高优先级异常退场，PendSV 才以最低优先级执行。挂起位是「叫号排队」——号码牌已经发了，柜台还没轮到你。
 
 ### 四、软硬分工：硬件 8 字，软件 9 字
 
-异常入场时，硬件自动把 8 个字压进当前任务的栈（若用 PSP）：R0、R1、R2、R3、R12、LR、PC、xPSR。其中 R0–R3 与 R12 是 AAPCS 的调用者保存寄存器，硬件替你管；LR、PC、xPSR 是异常现场字，也一并压进去。R4–R11 是「被调者保存」：函数要用就自己存，硬件不认识这个约定，所以 PendSV 里软件手工补压。恢复时顺序相反：软件先弹 R4–R11 与 EXC_RETURN，写回 PSP，最后 `bx r14`，硬件再按 EXC_RETURN 弹 8 字（有 FPU 时 26 字）。
+回到寄存处那张牌：异常入场时，硬件自动把 8 个字压进当前任务的栈（若用 PSP）——R0、R1、R2、R3、R12、LR、PC、xPSR，相当于前台先收走的外套。其中 R0–R3 与 R12 是 AAPCS 的调用者保存寄存器，硬件替你管；LR、PC、xPSR 是异常现场字，也一并压进去。R4–R11 是「被调者保存」：函数要用就自己存，硬件不认识这个约定，所以 PendSV 里软件手工补压——手提包要自己递进窗口。恢复时顺序相反：软件先弹 R4–R11 与 EXC_RETURN，写回 PSP，最后 `bx r14`，硬件再按 EXC_RETURN 弹 8 字（有 FPU 时 26 字）。
 
 ```asm
 stmdb r0!, {r4-r11, r14}   ; 一条指令写 9 个字 = 36 B：R4–R11 + EXC_RETURN
@@ -140,7 +147,7 @@ str   r0, [r2]             ; 新栈顶写进 TCB 偏移 0
 
 ### 五、FPU 行李：EXC_RETURN bit4 是行李牌
 
-Cortex-M4F 的异常帧有两档：任务没跑过浮点，EXC_RETURN bit4 = 1，硬件只压 8 字核心帧；任务跑过浮点，bit4 = 0，硬件扩展帧带 s0–s15 与 FPSCR，共 26 字。软件这边，PendSV 先用 `tst r14, #0x10` 看 bit4，再用 `it eq` + `vstmdbeq r0!, {s16-s31}` 补存 s16–s31（16 字 = 64 B）；bit4 = 1 时两条条件指令直接跳过。恢复时同样：`vldmiaeq r0!, {s16-s31}` 只在有行李时执行。
+Cortex-M4F 的异常帧有两档，牌上 bit4 写着「这趟有没有浮点行李」：任务没跑过浮点，bit4 = 1，硬件只压 8 字核心帧；任务跑过浮点，bit4 = 0，硬件扩展帧带 s0–s15 与 FPSCR，共 26 字。软件这边，PendSV 先用 `tst r14, #0x10` 看 bit4，再用 `it eq` + `vstmdbeq r0!, {s16-s31}` 补存 s16–s31（16 字 = 64 B）；bit4 = 1 时两条条件指令直接跳过——没行李就不打开大箱子。恢复时同样：`vldmiaeq r0!, {s16-s31}` 只在有行李时执行。
 
 分工的根是 AAPCS：s0–s15 是调用者保存，硬件顺手压；s16–s31 是被调者保存，软件补。完整的 FPU 现场是硬件 26 字扩展帧加软件 25 字（9 字核心帧 + 16 字 s16–s31），共 51 字。新任务首帧的 EXC_RETURN 是 `0xFFFFFFFD`，bit4 = 1，所以首帧没有 FPU 行李，是 18 字；等它第一次真正用浮点、再被切走，才会出现 26 + 25 字的布局。
 
