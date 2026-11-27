@@ -281,7 +281,7 @@ platforms: [generic]
 | OTA | 把新固件写进另一个 app 槽，校验通过再切换启动；断电安全靠回滚/标记 | 不是"写完再跳"；默认配置不开回滚时坏固件也会被启动 | 第 17 章 |
 | ESP-NOW | 不需配网的设备间点对点无线帧 | 默认不加密，要保密得自己配密钥或在上层加一层 | 第 32 章 |
 | 深度睡眠 | 关掉大部分逻辑与时钟，靠唤醒源重启 | 唤醒后 RAM 内容未必还在，"睡前的变量"不能假设自动复原 | 第 18 章 |
-| TWDT | Task Watchdog Timer：内核级任务看门狗 | 不是"软件喂狗"，是硬件监控每个 CPU 核心 | 第 32 章 |
+| TWDT | Task Watchdog Timer：内核级任务看门狗 | 不是"软件喂狗"，是硬件监控每个 CPU 核心 | [第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md) |
 | ULP | Ultra Low Power：独立低功耗协处理器 | 不是"主核休眠就行"，ULP 能在主核休眠时跑简单任务 | 第 18 章 |
 
 ## GD32 与 RISC-V
@@ -316,60 +316,60 @@ platforms: [generic]
 ## 会上手的手算页（三张表，数字原样保留）
 
 
-前面每一行只给工作定义。这张表收的是在 BluePill 上会反复手算的数，每个数都按订货号 STM32F103C8T6 和对应手册算。换封装或换系列，整行数字都要回到那颗芯片的手册重算。算式都来自v1 第 8、9、13、16、15、11 章与本附录已经写下的数，这里只把它们收成可以对照实测的一页。
+前面每一行只给工作定义。这张表收的是在 BluePill 上会反复手算的数，每个数都按订货号 STM32F103C8T6 和对应手册算。换封装或换系列，整行数字都要回到那颗芯片的手册重算。算式都来自第 8、9、13、15、16、19 章与本附录已经写下的数，这里只把它们收成可以对照实测的一页。
 
 | 项目 | 依据 | 数值 | 写错时的表现 |
 | --- | --- | --- | --- |
 | 这颗料 | 丝印 STM32F103C8T6，LQFP48。第 40 章：micro-USB 5 V 经 RT9193-33 到 3.3 V，PC13 灯低电平亮。容量在 `0x1FFFF7E0` 的低 16 位，单位 KB。中容量 DevID 是 `0x410`。DS5319 | 手册写 Flash 64 KB、SRAM 20 KB。读出来不是 64，就不要按 C8 的手册往下算 | 丝印或卖家写着 128 KB，链接脚本就把 128 KB 都用满 |
-| 时钟树 | 板载 HSE 8 MHz，PLL ×9。RM0008 时钟树；第 02 章那张表 | SYSCLK = HCLK = 72 MHz。APB1 ÷2，PCLK1 = 36 MHz；APB2 ÷1，PCLK2 = 72 MHz。APB 预分频不是 1 时，这条总线上的定时器时钟再 ×2，所以 TIM2–TIM7 仍是 72 MHz。TIM1 在 APB2，预分频为 1，不再 ×2 | 用 36 MHz 去除 PSC、ARR，PWM 频率偏一倍 |
-| Flash 等待 | `FLASH_ACR` 的 LATENCY。RM0008 的访问表，电压按 2.7–3.6 V。第 02 章 | 0–24 MHz 为 0 个等待，24–48 MHz 为 1，48–72 MHz 为 2。72 MHz 的例子写 2 | 只把 PLL 改成 ×9，LATENCY 还是 0，一跑就取指错 |
-| 115200 | 第 06 章的 BRR 公式。USART1 在 APB2，fPCLK = 72 MHz，16 倍过采样 | `72e6 / (16 × 115200) = 39.0625`。小数 `0.0625 × 16 = 1`，BRR = `0x271`。`72e6 / (16 × 39.0625) = 115200`，分频误差是 0。USART2 在 APB1，fPCLK = 36 MHz，同一章给出的 BRR `0x138` 才大约偏 0.16%。把 72 MHz 那一格的小数位丢掉、只用 39，也会得到大约 0.16% | 把表上的 0.16% 当成 USART1 已经偏了，或者把 USART2 的时钟当成 72 MHz |
-| 一位和一帧 | 第 06 章：115200 时一位约 8.68 µs。8N1 是起始位 + 8 个数据位 + 停止位，共 10 位。RM0008：RX 空闲满一个帧时间才置 IDLE | 一帧约 86.8 µs。这是线路空闲，不是协议里的长度字段 | 把 IDLE 中断当成对方的一包已经按协议结束 |
-| ADC | 第 02 章：APB2 72 MHz 再 ÷6。RM0008：ADC 时钟不得超过 14 MHz。第 09 章：12 位转换另加 12.5 个周期，采样档从 1.5 到 239.5 | ADCCLK = 12 MHz。最长一档 `239.5 + 12.5 = 252` 个周期，`252 / 12e6 = 21 µs`。÷4 会得到 18 MHz，越过 14 MHz | 用主频去除采样周期，或为了更快把预分频设成 ÷2、÷4 |
-| I2C 地址和上拉 | 第 07 章的地址和上拉表。第 03 章：F1 片内上下拉约 30–50 kΩ | SSD1306 的 7 位地址 `0x3C`，HAL 的 DevAddress 填 `0x78`。短总线外接 4.7 kΩ 到 3.3 V | 扫描器看到 `0x3C` 就原样填进 `HAL_I2C_Mem_Read`，或只开片内上拉就跑 400 kHz |
-| IWDG 1 秒 | 第 11 章：`T = 预分频 / f_LSI × (Reload + 1)`。LSI 典型 40 kHz，手册范围大约 30–60 kHz | 预分频 64 时，名义计数频率 625 Hz。1 秒要把 Reload 写成 624；写成 625 会多一个计数。同一套预分频和重载，LSI 若是 60 kHz，秒数大约只有 30 kHz 时的一半。名义最长一档大约 26 s | 把 40 kHz 算出来的秒数写成保证值，调试时又不冻住 IWDG |
+| 时钟树 | 板载 HSE 8 MHz，PLL ×9。RM0008 时钟树；[第 8 章](../v1-drivers/08-architecture-memory-clock.md)那张表 | SYSCLK = HCLK = 72 MHz。APB1 ÷2，PCLK1 = 36 MHz；APB2 ÷1，PCLK2 = 72 MHz。APB 预分频不是 1 时，这条总线上的定时器时钟再 ×2，所以 TIM2–TIM7 仍是 72 MHz。TIM1 在 APB2，预分频为 1，不再 ×2 | 用 36 MHz 去除 PSC、ARR，PWM 频率偏一倍 |
+| Flash 等待 | `FLASH_ACR` 的 LATENCY。RM0008 的访问表，电压按 2.7–3.6 V。[第 8 章](../v1-drivers/08-architecture-memory-clock.md) | 0–24 MHz 为 0 个等待，24–48 MHz 为 1，48–72 MHz 为 2。72 MHz 的例子写 2 | 只把 PLL 改成 ×9，LATENCY 还是 0，一跑就取指错 |
+| 115200 | [第 13 章](../v1-drivers/13-uart-framed-protocol.md)的 BRR 公式。USART1 在 APB2，fPCLK = 72 MHz，16 倍过采样 | `72e6 / (16 × 115200) = 39.0625`。小数 `0.0625 × 16 = 1`，BRR = `0x271`。`72e6 / (16 × 39.0625) = 115200`，分频误差是 0。USART2 在 APB1，fPCLK = 36 MHz，同一章给出的 BRR `0x138` 才大约偏 0.16%。把 72 MHz 那一格的小数位丢掉、只用 39，也会得到大约 0.16% | 把表上的 0.16% 当成 USART1 已经偏了，或者把 USART2 的时钟当成 72 MHz |
+| 一位和一帧 | [第 13 章](../v1-drivers/13-uart-framed-protocol.md)：115200 时一位约 8.68 µs。8N1 是起始位 + 8 个数据位 + 停止位，共 10 位。RM0008：RX 空闲满一个帧时间才置 IDLE | 一帧约 86.8 µs。这是线路空闲，不是协议里的长度字段 | 把 IDLE 中断当成对方的一包已经按协议结束 |
+| ADC | [第 8 章](../v1-drivers/08-architecture-memory-clock.md)：APB2 72 MHz 再 ÷6。RM0008：ADC 时钟不得超过 14 MHz。[第 15 章](../v1-drivers/15-adc-dac-sampling.md)：12 位转换另加 12.5 个周期，采样档从 1.5 到 239.5 | ADCCLK = 12 MHz。最长一档 `239.5 + 12.5 = 252` 个周期，`252 / 12e6 = 21 µs`。÷4 会得到 18 MHz，越过 14 MHz | 用主频去除采样周期，或为了更快把预分频设成 ÷2、÷4 |
+| I2C 地址和上拉 | [第 16 章](../v1-drivers/16-i2c-spi.md)的地址和上拉表。[第 9 章](../v1-drivers/09-gpio.md)：F1 片内上下拉约 30–50 kΩ | SSD1306 的 7 位地址 `0x3C`，HAL 的 DevAddress 填 `0x78`。短总线外接 4.7 kΩ 到 3.3 V | 扫描器看到 `0x3C` 就原样填进 `HAL_I2C_Mem_Read`，或只开片内上拉就跑 400 kHz |
+| IWDG 1 秒 | [第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)：`T = 预分频 / f_LSI × (Reload + 1)`。LSI 典型 40 kHz，手册范围大约 30–60 kHz | 预分频 64 时，名义计数频率 625 Hz。1 秒要把 Reload 写成 624；写成 625 会多一个计数。同一套预分频和重载，LSI 若是 60 kHz，秒数大约只有 30 kHz 时的一半。名义最长一档大约 26 s | 把 40 kHz 算出来的秒数写成保证值，调试时又不冻住 IWDG |
 
 ## 换系列之前要核对的项
 
-上一张表只算 STM32F103C8T6。下面这些数已经写在第 04、05、12、13、15、16、23、24、25、27 章里，这里收成换芯片时要重算的一页。换订货号或换时钟，这一行就要重算。
+上一张表只算 STM32F103C8T6。下面这些数已经写在第 10、12、17、18、22、28、33、35 章里，这里收成换芯片时要重算的一页。换订货号或换时钟，这一行就要重算。
 
 > [!WARNING]
 > 预分频、页大小和电压档看起来像可以照搬的整数。换系列之前，先把这一页的算式在新的时钟上重算一遍。7.2 这种除不尽的预分频，写进寄存器的是旁边那个整数。
 
 | 项目 | 依据 | 数值 | 写错时的表现 |
 | --- | --- | --- | --- |
-| 1 kHz | 第 05 章。挂在 APB1 的通用定时器，输入时钟按 72 MHz 算。向上计数 | PSC = 71，ARR = 999。`72e6 / ((71+1) × (999+1)) = 72e6 / (72 × 1000) = 1000 Hz`。同一组 PSC、ARR 用 36 MHz 去除，算式给出 500 Hz。1 秒若写成 PSC 71、ARR 999999，16 位计数器装不下。能装下的一行是 PSC 7199、ARR 9999：`72e6 / (7200 × 10000) = 1 Hz` | 示波器上是 500 Hz 或 2 kHz，或者 1 秒的 ARR 被截成 16 位 |
-| 入栈 | 第 04 章，PM0056。硬件入栈 8 个寄存器：xPSR、PC、LR、R12、R3、R2、R1、R0 | 大约 12 个 HCLK。72 MHz 时 `12 / 72e6 ≈ 167 ns`。这只计硬件入栈。HAL 默认 `NVIC_PRIORITYGROUP_4`：4 位抢占、0 位子优先级。数值越小，逻辑优先级越高 | 把 167 ns 当成 ISR 正文的预算，或把分组改掉之后仍用原来的抢占级比较谁能嵌套 |
-| FromISR | 第 15 章。FreeRTOS 要求分组 GROUP_4。4 位优先级时，`configMAX_SYSCALL_INTERRUPT_PRIORITY` 常写成 `5 << (8-4)` | `5 << 4 = 0x50`。能调用 `FromISR` 的中断，优先级数值要大于等于 5。数值 0 是逻辑最高优先级，调用会停在 `configASSERT`。任务优先级方向相反：空闲任务是 0，数值越大任务越优先 | 断言停在调度器里，调用栈落在 `xQueueSendFromISR` 或同类函数 |
-| 500 kbit/s | 第 13 章，bxCAN，APB1 = 36 MHz。`Baud = fAPB1 / (Prescaler × (1 + BS1 + BS2))`。采样点 = `(1 + BS1) / (1 + BS1 + BS2)` | 预分频 9，BS1 = 5，BS2 = 2，SJW = 1 个 Tq。一共 8 个时间份额。`36e6 / (9 × 8) = 500000`。采样点 `(1+5)/8 = 75%`。想要 70%（BS1 = 6，BS2 = 3，共 10 个 Tq）时，预分频是 `36e6 / (500e3 × 10) = 7.2`。第 13 章把这组除不尽的结果记成 450 kbit/s，对应预分频写成 8：`36e6 / (8 × 10) = 450000`。TEC 到 256，节点进入总线关闭 | 分析仪上是 450 kbit/s，或单节点正常模式里错误计数一直涨到闭嘴。回环收到自己的帧，只说明控制器接受了这组位时间 |
-| Flash 页 | 第 12 章，RM0008。中容量 F103（C8，64 KB）和小容量一样按 1 KB 页擦除；大容量才是 2 KB/页。编程单位是半字。同一章所引的 RM0090：F407VG 扇区是 S0–S3 = 16 KB、S4 = 64 KB、S5–S7 = 128 KB | 解锁 `FLASH_KEYR`：先写 `0x45670123`，再写 `0xCDEF89AB`。地址按 2 字节对齐 | 按 1 KB 去擦 F4，参数区和 Bootloader 落在同一扇区，一次擦除把两边一起擦掉。钥匙顺序写反，LOCK 不解除 |
-| Stop 之后的时钟 | 第 16 章：F103 在 3.3 V、25°C 下 Stop 低功耗稳压器典型 14 µA，主稳压器那一格是 24 µA，两格都不含独立看门狗，是芯片在该条件下的数。醒来回到 HSI。第 02 章：F1 上电默认的 HSI 是 8 MHz。第 24 章：L476 封面 Stop 2 为 1.1 µA，带 RTC 为 1.4 µA，从 Stop 唤醒 4 µs | F103 要把 PLL 重新装回 72 MHz。L476 的 Stop 2 醒来由 `STOPWUCK` 选择 MSI 或 HSI16，此时还没有 80 MHz 的 PLL。SysTick 若仍每 1 ms 中断，测到的是反复唤醒。1.1 µA 要和该 revision 的 ES0250 一起读，再和拔掉调试器、LED 之后的板级电流对照 | 醒后第一帧串口乱码，或电流停在毫安。封面 1.1 µA 被写成整板验收上限 |
+| 1 kHz | [第 12 章](../v1-drivers/12-timers-pwm.md)。挂在 APB1 的通用定时器，输入时钟按 72 MHz 算。向上计数 | PSC = 71，ARR = 999。`72e6 / ((71+1) × (999+1)) = 72e6 / (72 × 1000) = 1000 Hz`。同一组 PSC、ARR 用 36 MHz 去除，算式给出 500 Hz。1 秒若写成 PSC 71、ARR 999999，16 位计数器装不下。能装下的一行是 PSC 7199、ARR 9999：`72e6 / (7200 × 10000) = 1 Hz` | 示波器上是 500 Hz 或 2 kHz，或者 1 秒的 ARR 被截成 16 位 |
+| 入栈 | [第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)，PM0056。硬件入栈 8 个寄存器：xPSR、PC、LR、R12、R3、R2、R1、R0 | 大约 12 个 HCLK。72 MHz 时 `12 / 72e6 ≈ 167 ns`。这只计硬件入栈。HAL 默认 `NVIC_PRIORITYGROUP_4`：4 位抢占、0 位子优先级。数值越小，逻辑优先级越高 | 把 167 ns 当成 ISR 正文的预算，或把分组改掉之后仍用原来的抢占级比较谁能嵌套 |
+| FromISR | [第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md)。FreeRTOS 要求分组 GROUP_4。4 位优先级时，`configMAX_SYSCALL_INTERRUPT_PRIORITY` 常写成 `5 << (8-4)` | `5 << 4 = 0x50`。能调用 `FromISR` 的中断，优先级数值要大于等于 5。数值 0 是逻辑最高优先级，调用会停在 `configASSERT`。任务优先级方向相反：空闲任务是 0，数值越大任务越优先 | 断言停在调度器里，调用栈落在 `xQueueSendFromISR` 或同类函数 |
+| 500 kbit/s | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md)，bxCAN，APB1 = 36 MHz。`Baud = fAPB1 / (Prescaler × (1 + BS1 + BS2))`。采样点 = `(1 + BS1) / (1 + BS1 + BS2)` | 预分频 9，BS1 = 5，BS2 = 2，SJW = 1 个 Tq。一共 8 个时间份额。`36e6 / (9 × 8) = 500000`。采样点 `(1+5)/8 = 75%`。想要 70%（BS1 = 6，BS2 = 3，共 10 个 Tq）时，预分频是 `36e6 / (500e3 × 10) = 7.2`。[第 35 章](../v4-platforms/35-can-usb-fieldbus.md)把这组除不尽的结果记成 450 kbit/s，对应预分频写成 8：`36e6 / (8 × 10) = 450000`。TEC 到 256，节点进入总线关闭 | 分析仪上是 450 kbit/s，或单节点正常模式里错误计数一直涨到闭嘴。回环收到自己的帧，只说明控制器接受了这组位时间 |
+| Flash 页 | [第 17 章](../v1-drivers/17-flash-iap-ota.md)，RM0008。中容量 F103（C8，64 KB）和小容量一样按 1 KB 页擦除；大容量才是 2 KB/页。编程单位是半字。同一章所引的 RM0090：F407VG 扇区是 S0–S3 = 16 KB、S4 = 64 KB、S5–S7 = 128 KB | 解锁 `FLASH_KEYR`：先写 `0x45670123`，再写 `0xCDEF89AB`。地址按 2 字节对齐 | 按 1 KB 去擦 F4，参数区和 Bootloader 落在同一扇区，一次擦除把两边一起擦掉。钥匙顺序写反，LOCK 不解除 |
+| Stop 之后的时钟 | [第 18 章](../v2-reliability/18-low-power.md)：F103 在 3.3 V、25°C 下 Stop 低功耗稳压器典型 14 µA，主稳压器那一格是 24 µA，两格都不含独立看门狗，是芯片在该条件下的数。醒来回到 HSI。[第 8 章](../v1-drivers/08-architecture-memory-clock.md)：F1 上电默认的 HSI 是 8 MHz。[第 28 章](../v4-platforms/28-chip-migration-differences.md)：L476 封面 Stop 2 为 1.1 µA，带 RTC 为 1.4 µA，从 Stop 唤醒 4 µs | F103 要把 PLL 重新装回 72 MHz。L476 的 Stop 2 醒来由 `STOPWUCK` 选择 MSI 或 HSI16，此时还没有 80 MHz 的 PLL。SysTick 若仍每 1 ms 中断，测到的是反复唤醒。1.1 µA 要和该 revision 的 ES0250 一起读，再和拔掉调试器、LED 之后的板级电流对照 | 醒后第一帧串口乱码，或电流停在毫安。封面 1.1 µA 被写成整板验收上限 |
 
 ### 四颗料各有一行不能共用
 
-脚号来自第 23、24 章和附录 C 已经核对过的封装。时钟树只在写明的 HSE 和分频上成立。
+脚号来自[第 28 章](../v4-platforms/28-chip-migration-differences.md)和附录 C 已经核对过的封装。时钟树只在写明的 HSE 和分频上成立。
 
 | 项 | STM32F103C8T6 | STM32G071RB | STM32L476RG | STM32H743ZI |
 | --- | --- | --- | --- | --- |
 | 这一页用的封装 | LQFP48。容量和 DevID 见上一张表 | LQFP64，第 1 脚 PC11 | LQFP64，第 1 脚 VBAT | LQFP144，第 1 脚 PE2 |
 | 主频 | 8 MHz HSE ×9 = 72 MHz | 家族最高 64 MHz，Cortex-M0+，供电 1.7–3.6 V。封面 64 MHz 是上限，复位后的 SYSCLK 仍要读 RCC | 最高 80 MHz，Cortex-M4F，供电 1.71–3.6 V | Rev Y/W：VOS1，400 MHz。Rev V：VOS0 路径 480 MHz |
-| 启动或电压档 | BOOT0 与选项字节，组合见 RM0008 | 复位释放后，启动配置在第四个 SYSCLK 上升沿锁存。PA14 同时是启动输入和 SWCLK。锁存之后 SWCLK 翻转不会改掉这次的启动目标。`BOOT_LOCK=1` 且 RDP Level 1 时调试停住，`FLASH_ACR.DBG_SWEN` 复位值为 0 | Stop 2 之后的临时时钟是 MSI 或 HSI16 | 先开 SYSCFG 时钟。VOS1 的 `VOSRDY` 到了，才请求 VOS0，再等一次 `VOSRDY`。从 VOS0 进 Stop 或 Standby 之前，先回到 VOS1 并再等一次就绪。官方 400 MHz 示例的 Flash 等待参数是 4。第 25 章的 480 MHz 路径把同一个 HAL 参数传了进去，这一档的访问时间仍要对照 DS12110 |
-| 时钟算式 | 见上一张表 | 见第 23 章的启动真值表，不把 F1 的 AFIO 重映射抄过来 | 醒后 CPU 已经继续执行时，PLL 仍可能关着 | 8 MHz HSE bypass，`PLLM=4`，PLL 输入 2 MHz。`PLLN=400`、`PLLP=2`：SYSCLK 400 MHz，HCLK 200 MHz，PCLK 100 MHz，APB 定时器时钟 200 MHz，MCO2÷5 期望 80 MHz。`PLLN=480`：VCO 960 MHz，SYSCLK 480 MHz，HCLK 240 MHz，PCLK 120 MHz，定时器时钟 240 MHz，MCO2÷5 期望 96 MHz。`PLL1Q = 960/4 = 240 MHz`。USB 要的 48 MHz 另选 PLL 和分频。MCO 是计算预期 |
-| 内存 | SRAM 20 KB。DMA 按 RM0008 的通道表 | 见第 23 章，按该封装重核复用 | 唤醒证据放在 Stop 2 仍保持的 SRAM | 第 27 章：Ethernet DMA 不能访问 `0x20000000` 的 DTCM。描述符放在它能到达的 D1 或 D2 SRAM，并按 32 字节缓存行对齐 |
+| 启动或电压档 | BOOT0 与选项字节，组合见 RM0008 | 复位释放后，启动配置在第四个 SYSCLK 上升沿锁存。PA14 同时是启动输入和 SWCLK。锁存之后 SWCLK 翻转不会改掉这次的启动目标。`BOOT_LOCK=1` 且 RDP Level 1 时调试停住，`FLASH_ACR.DBG_SWEN` 复位值为 0 | Stop 2 之后的临时时钟是 MSI 或 HSI16 | 先开 SYSCFG 时钟。VOS1 的 `VOSRDY` 到了，才请求 VOS0，再等一次 `VOSRDY`。从 VOS0 进 Stop 或 Standby 之前，先回到 VOS1 并再等一次就绪。官方 400 MHz 示例的 Flash 等待参数是 4。[第 28 章](../v4-platforms/28-chip-migration-differences.md)的 480 MHz 路径把同一个 HAL 参数传了进去，这一档的访问时间仍要对照 DS12110 |
+| 时钟算式 | 见上一张表 | 见[第 28 章](../v4-platforms/28-chip-migration-differences.md)的启动真值表，不把 F1 的 AFIO 重映射抄过来 | 醒后 CPU 已经继续执行时，PLL 仍可能关着 | 8 MHz HSE bypass，`PLLM=4`，PLL 输入 2 MHz。`PLLN=400`、`PLLP=2`：SYSCLK 400 MHz，HCLK 200 MHz，PCLK 100 MHz，APB 定时器时钟 200 MHz，MCO2÷5 期望 80 MHz。`PLLN=480`：VCO 960 MHz，SYSCLK 480 MHz，HCLK 240 MHz，PCLK 120 MHz，定时器时钟 240 MHz，MCO2÷5 期望 96 MHz。`PLL1Q = 960/4 = 240 MHz`。USB 要的 48 MHz 另选 PLL 和分频。MCO 是计算预期 |
+| 内存 | SRAM 20 KB。DMA 按 RM0008 的通道表 | 见[第 28 章](../v4-platforms/28-chip-migration-differences.md)，按该封装重核复用 | 唤醒证据放在 Stop 2 仍保持的 SRAM | [第 33 章](../v4-platforms/33-network-protocol-stack.md)：Ethernet DMA 不能访问 `0x20000000` 的 DTCM。描述符放在它能到达的 D1 或 D2 SRAM，并按 32 字节缓存行对齐 |
 
 ## 通道、描述符与故障寄存器
 
-前两张表管的是时钟、位时间和换系列。下面这些数已经写在第 08、10、14、15、17、27、28 章和本仓库例程里，这里收成还能手算的一页。换订货号、换 DMA 请求表或换描述符，整行都要重算。
+前两张表管的是时钟、位时间和换系列。下面这些数已经写在第 14、16、19、22、27、33、35 章和本仓库例程里，这里收成还能手算的一页。换订货号、换 DMA 请求表或换描述符，整行都要重算。
 
 | 项目 | 依据 | 数值 | 写错时的表现 |
 | --- | --- | --- | --- |
-| SPI 9 MHz | 第 08 章。SPI1 在 APB2，72 MHz。`BR[2:0]` 只有 2/4/8/16/32/64/128/256 | `BR = 010` 是 ÷8，SCK = 9 MHz。`BR = 001` 是 18 MHz。JEDEC 命令 `0x9F`。`spi-flash` 期待厂商 `0xEF`、类型 `0x40`、容量 `0x17`，常写成 `0xEF4017`。页 256 字节 | 把 `0x40` 当成容量，或用 ÷3 这种不存在的分频 |
-| DMA 通道 | 第 10 章，RM0008。F103C8 只有 DMA1，7 条通道。F4 见 RM0090 | USART1_TX = Channel 4，USART1_RX = Channel 5，ADC1 = Channel 1。长度 8 个半字、`CNDTR = 3`：已写 `8 − 3 = 5` 个采样，即 10 字节。F4 的 USART1_RX 是 DMA2 Stream 5、Channel 4。FIFO 是 4×32 位 | 把 F4 的 Stream 号写进 F1，或把半字 NDTR 当成字节。半传输是 4 个采样、8 字节，不是 4 字节 |
-| USB 67 字节 | 第 14 章与 `examples/usb-cdc`。RM0008 的 USB 预分频 | PLL 72 MHz 且 `USBPRE = 0` 时，`72 / 1.5 = 48` MHz。设备描述符 18 字节，`bMaxPacketSize0 = 64`。本例 VID/PID 是 `0x1209/0x0001`。`wTotalLength = 0x0043 = 67`。`bMaxPower` 的 `0x32` 是 100 mA。全速批量和中断最大都是 64 字节；1023 只属于全速等时 | 把 ST 例程的 `0x0483/0x5740` 写进这份描述符，或把全速中断包长写成 1023 |
-| 栈的单位 | 第 15 章与 `freertos-task`。`xTaskCreate` 的深度是字 | LED 128 字 = 512 字节，KEY 192 字 = 768 字节，UART 256 字 = 1024 字节。`configTICK_RATE_HZ = 1000` 时 1 tick = 1 ms | 把 128 当成 128 字节。第一次 `printf` 就溢出。短于 1 ms 的期限被写成内核保证 |
-| 故障寄存器 | 第 17 章，PM0056 | `CFSR` `0xE000ED28`，`HFSR` `0xE000ED2C`，`MMFAR` `0xE000ED34`，`BFAR` `0xE000ED38`。`FORCED` 是 HFSR bit 30，值 `0x40000000`。`BFARVALID` 是 CFSR bit 15。先置 `DEMCR` `0xE000EDFC` 的 bit 24，再读 `DWT_CYCCNT` `0xE0001004`。72 MHz 时 72 周期 = 1 µs。SWO 在 PB3。M3/M4 硬件断点 6 个，M7 为 8 个 | `BFARVALID` 为 0 时仍把 `BFAR` 里的旧值当成这次的地址 |
-| 17.2% | 第 28 章的示例预算，不是测量 | `80/1000 = 8%`，`420/10000 = 4.2%`，`70/2000 = 3.5%`，`1500/100000 = 1.5%`，合计 17.2% | 把 17.2% 写成这块板已经满足截止时间 |
-| RMII 与 MSS | 第 27 章。`REF_CLK`。DHCP/DNS 端口。IPv4 无选项 | `REF_CLK = 50 MHz`。DHCP 是 UDP 67/68，DNS 是端口 53。MTU 1500 时 MSS 上限 `1500 − 20 − 20 = 1460`。对端 SYN 里更小的 MSS 优先。DTCM 仍是 `0x20000000`，行长 32 字节 | 用 25 MHz 的 MII 时钟去对 RMII，或把 1460 当成对端已经同意的 MSS |
+| SPI 9 MHz | [第 16 章](../v1-drivers/16-i2c-spi.md)。SPI1 在 APB2，72 MHz。`BR[2:0]` 只有 2/4/8/16/32/64/128/256 | `BR = 010` 是 ÷8，SCK = 9 MHz。`BR = 001` 是 18 MHz。JEDEC 命令 `0x9F`。`spi-flash` 期待厂商 `0xEF`、类型 `0x40`、容量 `0x17`，常写成 `0xEF4017`。页 256 字节 | 把 `0x40` 当成容量，或用 ÷3 这种不存在的分频 |
+| DMA 通道 | [第 14 章](../v1-drivers/14-dma.md)，RM0008。F103C8 只有 DMA1，7 条通道。F4 见 RM0090 | USART1_TX = Channel 4，USART1_RX = Channel 5，ADC1 = Channel 1。长度 8 个半字、`CNDTR = 3`：已写 `8 − 3 = 5` 个采样，即 10 字节。F4 的 USART1_RX 是 DMA2 Stream 5、Channel 4。FIFO 是 4×32 位 | 把 F4 的 Stream 号写进 F1，或把半字 NDTR 当成字节。半传输是 4 个采样、8 字节，不是 4 字节 |
+| USB 67 字节 | [第 35 章](../v4-platforms/35-can-usb-fieldbus.md)与 `examples/usb-cdc`。RM0008 的 USB 预分频 | PLL 72 MHz 且 `USBPRE = 0` 时，`72 / 1.5 = 48` MHz。设备描述符 18 字节，`bMaxPacketSize0 = 64`。本例 VID/PID 是 `0x1209/0x0001`。`wTotalLength = 0x0043 = 67`。`bMaxPower` 的 `0x32` 是 100 mA。全速批量和中断最大都是 64 字节；1023 只属于全速等时 | 把 ST 例程的 `0x0483/0x5740` 写进这份描述符，或把全速中断包长写成 1023 |
+| 栈的单位 | [第 22 章](../v3-rtos/22-tasks-tcb-scheduler.md)与 `freertos-task`。`xTaskCreate` 的深度是字 | LED 128 字 = 512 字节，KEY 192 字 = 768 字节，UART 256 字 = 1024 字节。`configTICK_RATE_HZ = 1000` 时 1 tick = 1 ms | 把 128 当成 128 字节。第一次 `printf` 就溢出。短于 1 ms 的期限被写成内核保证 |
+| 故障寄存器 | [第 19 章](../v2-reliability/19-watchdog-reset-hardfault.md)，PM0056 | `CFSR` `0xE000ED28`，`HFSR` `0xE000ED2C`，`MMFAR` `0xE000ED34`，`BFAR` `0xE000ED38`。`FORCED` 是 HFSR bit 30，值 `0x40000000`。`BFARVALID` 是 CFSR bit 15。先置 `DEMCR` `0xE000EDFC` 的 bit 24，再读 `DWT_CYCCNT` `0xE0001004`。72 MHz 时 72 周期 = 1 µs。SWO 在 PB3。M3/M4 硬件断点 6 个，M7 为 8 个 | `BFARVALID` 为 0 时仍把 `BFAR` 里的旧值当成这次的地址 |
+| 17.2% | [第 27 章](../v3-rtos/27-rtos-comparison-selection.md)的示例预算，不是测量 | `80/1000 = 8%`，`420/10000 = 4.2%`，`70/2000 = 3.5%`，`1500/100000 = 1.5%`，合计 17.2% | 把 17.2% 写成这块板已经满足截止时间 |
+| RMII 与 MSS | [第 33 章](../v4-platforms/33-network-protocol-stack.md)。`REF_CLK`。DHCP/DNS 端口。IPv4 无选项 | `REF_CLK = 50 MHz`。DHCP 是 UDP 67/68，DNS 是端口 53。MTU 1500 时 MSS 上限 `1500 − 20 − 20 = 1460`。对端 SYN 里更小的 MSS 优先。DTCM 仍是 `0x20000000`，行长 32 字节 | 用 25 MHz 的 MII 时钟去对 RMII，或把 1460 当成对端已经同意的 MSS |
 
 
 > 词条不够用？这里的原则是每个名词第一次出现都配「类比 + 精确定义」双轨；缺哪个词，去仓库开 Issue 点名。
