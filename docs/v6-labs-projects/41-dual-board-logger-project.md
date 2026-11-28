@@ -148,6 +148,7 @@ EEPROM 双槽与 NVS 单 blob 的取舍：双槽能在断电时回退到上一�
 | [zephyrproject-rtos/zephyr](https://github.com/zephyrproject-rtos/zephyr) | `subsys/logging/log_core.c` | 满则丢新的生产版：缓冲区满时记进 `dropped_cnt`（`:111`），`dropped_notify()`（`:650`）把丢弃数经 `log_backend_dropped` 报给后端——丢帧要可数可上报，与 STATUS 帧里的丢弃计数同题 |
 | [zephyrproject-rtos/zephyr](https://github.com/zephyrproject-rtos/zephyr) | `include/zephyr/logging/log_backend.h` | port 边界的 vtable 版：`struct log_backend_api`（`:85`）把输出、格式、panic 模式做成后端操作表，核心层换后端不换——「公共只讲一遍，差异压进 port」的内核形态 |
 | [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/esp_system/task_wdt/task_wdt.c`（钉 `v5.5.2`） | 期限监督的 S3 真身：`esp_task_wdt_init`（`:514`）配超时与空闲任务订阅，任务按 entry 订阅、`esp_task_wdt_reset` 上报进展（entry 结构在 `:65`）——TWDT 点名的是「进展没来」，与本章 `progress()` 语义对照 |
+| [FreeRTOS/FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) | `tasks.c`（钉 `V11.1.0`） | `xTaskDelayUntil`（`:2343`）用「上一次唤醒时刻 + 固定增量」维持周期——S3 侧软件节拍的原语本体；行号与第 21 章同一冻结口径 |
 | [espressif/esp-idf](https://github.com/espressif/esp-idf) | `components/console/esp_console.h`（钉 `v5.5.2`） | fault 四命令的成熟外壳：`esp_console_run(cmdline, &cmd_ret)`（`:260`）按行解析执行，linenoise 提供补全与行编辑——控制台外壳与业务命令解耦 |
 | [armink/EasyLogger](https://github.com/armink/EasyLogger) | `easylogger/src/elog_buf.c` | 「出口由平台补」的第三方样本：`elog_port_output`（`:36`）声明为核心对平台的全部要求，缓冲输出模式只是它上面的一层——换平台的成本又被压进一层 port |
 

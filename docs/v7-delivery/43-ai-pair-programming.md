@@ -17,7 +17,7 @@ AI 结对首先要定的是**分工**：模型擅长生成与改写，你负责�
 - **交付**：能按五维分工表划清人与模型的责任；能跑一次一致性实验并写下「分布」结论；能把弱提示改写成三段式工单；能用六类代签清单做评审归类；能画出 MCP 拓扑并说清授权颗粒度；能配三层防线并写出权限四问。
 - **级别**：L5 交付。证据位置：「测量与证据」与「离开检查」；读完留下一次一致性实验的分布结论、一条三段式工单改写与三层防线加权限四问的配置记录。
 - **旅程导航**：承接[第 42 章](../v6-labs-projects/42-project-delivery-acceptance.md)的四问验收与交付包。本章给出五维分工表、一致性实验的分布结论与三层防线配置（工具快照 2026-10-27；无读数）；L5 从「交出去」进到「交付流程里划出与 AI 的边界」。
-- **开源读法**：对照 `modelcontextprotocol/servers` 的 `src/filesystem/allowed-directories.ts`，看只读路径白名单怎样落实「一 server 一 client」的授权颗粒度；协议语义与 reference servers 数量仍回本章快照（2026-10-27）与 ai-* 来源卡。
+- **开源读法**：对照 [modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers) 的 `src/filesystem/allowed-directories.ts`，看只读路径白名单怎样落实「一 server 一 client」的授权颗粒度；协议语义与 reference servers 数量仍回本章快照（2026-10-27）与 ai-* 来源卡。
 - **边界**：内容限于 AI 工具的用法与防线；幻觉的类型学与对账流程归[第 44 章](./44-manual-reconciliation-hallucination.md)；这套书的生产管线（研究→计划→写作→门禁）也在 ch44；工具选型清单归[第 46 章](./46-resources-roadmap-open-source.md)；GPIO 寄存器与点灯机制归 [v1 第 9 章](../v1-drivers/09-gpio.md)。
 - **依据锚点**：AI00《结对不捉鬼》（`mcu/docs/ai/00-pair-not-ghost.md`）、AI01《提示词模式》（`.../01-prompt-patterns.md`）、AI03《工具流 MCP》（`.../03-toolflow-mcp.md`）。上游对账：mcu manifest 的 15 张 ai-* 来源卡（accessed 2026-10-27）；仓库实例 `mcu/code/esp32/05-audio-play/main/main.c:126`（MCLK=4096000 打印行）与 `:81`（PCA9557 0x19 bit1 控功放注释，与 [第 31 章](../v4-platforms/31-esp32-drivers-audio.md) 的音频口径一致）。
 
