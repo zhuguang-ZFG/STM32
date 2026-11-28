@@ -15,7 +15,7 @@ platforms: [f407, f103, esp32]
 - **交付**：能按 `SLEEPDEEP` 与 `PDDS` 写出三档进入序列；能按 `VOS[15:14]=0b11` 配置 168 MHz，并说清只置 bit14 的写法为什么只到 120 MHz；能列出 F103/F407 的 Stop 恢复步骤并重算 BRR、SysTick、TIM；能画出 WKUP、PVD、RTC 闹钟与 RTC 唤醒定时器的线号；能按备份域顺序写 BKP 或 BKPSRAM；能读 DS5319 的电流表并标出条件；能用 DT830D 的 200 µA 档做静态电流测量，并说明它测不了什么；能用正向与反向两种算法检查续航。
 - **级别**：L3 可靠。证据位置：「测量与证据」与「离开检查」；读完留下三档进入序列、Stop 恢复步骤与续航算术的对账记录。
 - **旅程导航**：承接[第 17 章](../v1-drivers/17-flash-iap-ota.md)的断电读回与回滚。本章落到三档进入序列、Stop 恢复与续航算术（无上板电流；E06 planned）；L2「写进去能读回」进到 L3「睡下去能醒来」。
-- **开源读法**：对照 `STM32CubeF4` 的 `Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c`，看 `HAL_PWR_EnterSTOPMode` 怎样按 `SLEEPDEEP`/`PDDS` 落位；寄存器语义仍回 RM0008/RM0090。
+- **开源读法**：对照 `stm32f4xx-hal-driver` 的 `Src/stm32f4xx_hal_pwr.c`，看 `HAL_PWR_EnterSTOPMode` 怎样按 `SLEEPDEEP`/`PDDS` 落位；寄存器语义仍回 RM0008/RM0090。
 - **边界**：三平台章。F103 的数字来自 DS5319 表 16/26（来源转引）与根书第 16 章；F407 的寄存器映射来自 S14 与 RM0090；ESP32 的睡眠模型来自 P11 与 IDF 文档。三个来源都没有上板电流记录，E06 仍是 `code_status: planned`、`hardware_status: pending`。不把 F407 的 VOS、FPDS、BKPSRAM 写成 STM32 通用，也不把 ESP32 的 Light/Deep 硬对齐成 STM32 三档。看门狗与复位证据留给第 19 章，调试与测量工具的分工留给第 20 章。
 - **依据锚点**：根书第 16 章《低功耗设计》（`docs/16-低功耗设计.md`）、S14《低功耗：三种睡眠的唤醒与代价》（`mcu/docs/stm32/14-pwr.md`）、P11《低功耗：睡眠矩阵与 ULP》（`mcu/docs/esp32/11-lowpower.md`）、E06《低功耗电流实测》（`mcu/docs/lab/e06-lowpower-current.md`）；DS5319 表 16/26、RM0008 的 PWR/RCC/EXTI 章、RM0090 的 PWR/RTC/EXTI 章均转引自上述来源。[第 11 章](../v1-drivers/11-systick-timebase-rtc.md)的 RTC 与备份域、[第 13 章](../v1-drivers/13-uart-framed-protocol.md)的 BRR、[第 10 章](../v1-drivers/10-interrupts-nvic-exti.md)的 EXTI/NVIC 是这里的回链。
 
