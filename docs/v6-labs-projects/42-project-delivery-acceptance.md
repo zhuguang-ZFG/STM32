@@ -17,7 +17,7 @@ platforms: [generic]
 - **交付**：能按四问给任何项目写验收栏；能把六项预算表填出来并执行「超了缩功能或换芯片」；能复述四条通用验收纪律并指出出处；能列交付包五件套（与 ACC §6 取并集）；能识别五类「待纠正草图」并解释为什么声明必须随代码走。
 - **级别**：L5 交付。证据位置：「测量与证据」与「离开检查」；读完留下四问验收栏、六项预算表与交付包五件套清单。
 - **旅程导航**：承接[第 41 章](./41-dual-board-logger-project.md)的架构、容量与故障注入。本章给出四问验收栏、六项预算表与交付包五件套（源章无上板读数）；L5 从「项目做得出来」进到「做出来与能交出去分开」。
-- **开源读法**：对照 `memfault/interrupt` 文集里的固件更新与可观测性文章，读时用本章的交付包清单和四条纪律对账；验收阈值与算术仍回本章与 ACC。
+- **开源读法**：对照 [memfault/interrupt 文集](https://interrupt.memfault.com/) 里的固件更新与可观测性文章，读时用本章的交付包清单和四条纪律对账；验收阈值与算术仍回本章与 ACC。
 - **边界**：内容限于推进与验收方法论；十个项目的技术细节（每个项目的方案与代码）是源章的正文，这里只收「怎么验收」视角与四组算术；motor 的 PI 调参与指标定义归 [第 39 章](../v5-motion/39-speed-closed-loop-pi.md)；实验仪器方法归 [第 40 章](./40-lab-method-instruments.md)；IAP/OTA 机制归 [v1 第 17 章](../v1-drivers/17-flash-iap-ota.md)。
 - **依据锚点**：D19《项目实战合集》（合并前 `docs/19-项目实战合集.md`，已退役）、ACC（`plans/2026-11-11-motor-control/acceptance.md`，在库）。上游对账：DS5319（C8 SRAM 20 KB）、RM0008/RM0090（分区与外设）、USB 2.0 规范（wMaxPacketSize）；四组算术与 [v1 第 8 章](../v1-drivers/08-architecture-memory-clock.md)、[v1 第 13–14 章](../v1-drivers/13-uart-framed-protocol.md) 已冻结口径互证。
 
