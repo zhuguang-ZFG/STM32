@@ -79,6 +79,12 @@ jobs:
       - name: Assert EPUB carries no SVG images
         run: |
           python -c "import zipfile,sys; bad=[n for n in zipfile.ZipFile('book/dist/print/merged-book.epub').namelist() if n.endswith('.svg')]; sys.exit('svg images remain: %r' % bad[:3] if bad else None)"
+      # EPUB 兼容门：EPUBCheck 规范校验（Apple Books / Thorium 等真实阅读器
+      # 按规范收书，不合规范的包会被拒收或降级渲染；本地全量实测 0 消息）。
+      - name: Assert EPUB passes EPUBCheck
+        run: |
+          python -m pip install --quiet epubcheck
+          python -m epubcheck book/dist/print/merged-book.epub
       - name: Assert artifacts exist and are non-trivial
         run: |
           status=0
