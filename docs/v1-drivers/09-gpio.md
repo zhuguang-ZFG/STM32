@@ -290,18 +290,18 @@ ESP32 这一侧，这里没有取证来源，不写寄存器差异。ESP32-S3 �
 
 ## 社区开源实现
 
-这些概念在生产开源代码里随处可见。下面几处值得逐文件精读，看同一个问题别人怎么解：
+本章的坑（时钟没开写不进、ODR 读改写被中断插队、BSRR 按位或混位、复用不成对）在开源代码里都有现成的对照位置：
 
 | 仓库 | 文件 | 看什么 |
 | --- | --- | --- |
-| [libopencm3/libopencm3](https://github.com/libopencm3/libopencm3) | `include/libopencm3/stm32/f4/gpio.h` + `gpio_common_all.c` | 寄存器级 GPIO 的薄封装：`gpio_set`/`gpio_clear` 直接写 BSRR/BSRRH，`gpio_toggle` 用 ODR 异或；对照 BSRR 原子性与 ODR 读改写陷阱 |
+| [libopencm3/libopencm3](https://github.com/libopencm3/libopencm3) | `lib/stm32/common/gpio_common_all.c` | 寄存器级 GPIO 的薄封装：`gpio_set`（`:41`）写 BSRR 低半、`gpio_clear`（`:56`）写高半，`gpio_toggle`（`:87`）读 ODR 后**一次写回 BSRR**——「偶尔丢一次电平」分支的库级答案：位级写全走原子门，读改写只在 toggle 一处 |
+| [STMicroelectronics/stm32f4xx-hal-driver](https://github.com/STMicroelectronics/stm32f4xx-hal-driver) | `Src/stm32f4xx_hal_gpio.c` | 同一功能的 HAL 抽象层：`HAL_GPIO_WritePin`（`:410`）置位写 BSRR 低半（`:418`）、复位写高半（`:422`），`HAL_GPIO_TogglePin`（`:433`）与 libopencm3 逐字同构——读 ODR、一次 BSRR 写回（`:444`）；老教程里「TogglePin 用 ODR 异或」的说法对应旧版实现，以手头源码为准 |
 | [cpq/bare-metal-programming-guide](https://github.com/cpq/bare-metal-programming-guide) | `main.c` + `README.md` | 无框架 GCC 裸机点灯：宏封装 BSRR 写法、链接脚本与启动代码的极简实现，是 v0/v1 概念的最小综合 |
-| [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c` | HAL 怎么包装同一组寄存器：`HAL_GPIO_WritePin` 调 BSRR、`HAL_GPIO_TogglePin` 用 ODR 异或；同一功能的两种抽象层级 |
 | [STMicroelectronics/cmsis-device-f4](https://github.com/STMicroelectronics/cmsis-device-f4) | `Include/stm32f407xx.h` | 寄存器结构体与位域定义；这里讲的所有地址与偏移都在这一个头文件里 |
 
-社区讨论最集中的两点：BSRR 优于 ODR 的原子性论证（中断上下文防踩踏），以及 F1 的 AFIO 重映射与 F4 的 AFR 逐脚编号在移植时的坑。
+共性归纳：置位/清零在两家库里逐字同构——各写 BSRR 对应的那一半，而 `BSRR` 读回恒 0，「按位或写 BSRR 混位」那条分支没有任何库替你挡，「纯赋值」纪律永远留给调用者。读改写只存在于 toggle 一处，且两家现代实现都是「读 ODR、一次写回 BSRR」而非 `ODR ^=`——后者的读改写窗口正是丢电平分支的根源。复用功能的 `MODER=10` 与 `AFR` 选号成对、F1 的 AFIO 时钟先行，库里没有魔法，仍回 [RM0090 §8.4 GPIO 寄存器](https://www.st.com/resource/en/reference_manual/rm0090-stm32f405415-stm32f407417-stm32f427437-and-stm32f429439-advanced-armbased-32bit-mcus-stmicroelectronics.pdf) 与 datasheet 的复用表。
 
-入门级步骤教程（如 [Controllers Tech 的 GPIO 寄存器教程](https://controllerstech.com/stm32-gpio-output-config-using-registers)）可以当快查用，但最可靠的参考仍然是 [RM0090 §8.4 GPIO 寄存器](https://www.st.com/resource/en/reference_manual/rm0090-stm32f405415-stm32f407417-stm32f427437-and-stm32f429439-advanced-armbased-32bit-mcus-stmicroelectronics.pdf) 与 datasheet 的复用表。
+入门级步骤教程（如 [Controllers Tech 的 GPIO 寄存器教程](https://controllerstech.com/stm32-gpio-output-config-using-registers)）可以当快查用，但判定性证据仍是上面的源码与参考手册。
 
 ## 离开检查
 

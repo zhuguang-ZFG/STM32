@@ -380,10 +380,10 @@ GD32 与 ESP32 不在平台列表。GD32 的 DMA 控制器命名、通道数与�
 
 | 仓库 | 文件 | 看什么 |
 | --- | --- | --- |
-| [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c` | HAL 的流状态机：`HAL_DMA_Start` 先清 EN 再改 CR 的顺序、`HAL_DMA_PollForUpdate` 的标志等待；对照正文"EN=1 时不能改 CHSEL"的失败分支 |
+| [STMicroelectronics/stm32f4xx-hal-driver](https://github.com/STMicroelectronics/stm32f4xx-hal-driver) | `Src/stm32f4xx_hal_dma.c` | HAL 的流状态机：`HAL_DMA_Start`（`:407`）过 READY 门后经 `DMA_SetConfig`（`:1151`）一次写 NDTR/PAR/M0AR、末尾才 ENABLE；`HAL_DMA_Abort`（`:513`）`__HAL_DMA_DISABLE` 后用 while 等 EN 真正清零（`:544`）——「EN=1 时不能改 CHSEL」由状态机次序兜底，对照正文"EN=1 时不能改 CHSEL"的失败分支 |
 | [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Projects/STM32F4-Discovery/Examples/USART/USART_DMA/` | 官方 USART+DMA 收发样例：请求映射、NDTR 按项数计、TC 中断里等 USART TC；对照正文"最后一字节被截"那条 |
 | [STMicroelectronics/STM32CubeF1](https://github.com/STMicroelectronics/STM32CubeF1/blob/v1.8.6/Projects/STM3210E_EVAL/Examples/DMA/DMA_FLASHToRAM/Src/main.c) | `Projects/STM3210E_EVAL/Examples/DMA/DMA_FLASHToRAM/Src/main.c` | 官方 DMA1 Channel1 内存到内存普通模式：双增量、字宽、TC/TE 回调；本书 `examples/dma-memcopy` 改为 4 KiB SRAM→SRAM 并增加超时、比较与 LED 结果码 |
-| [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h` | DMA_Stream_TypeDef 结构体与各流基址宏；这里讲的 `0x18` 步进、`+0x88` 流 5 偏移可以直接在里面验证 |
+| [STMicroelectronics/cmsis-device-f4](https://github.com/STMicroelectronics/cmsis-device-f4) | `Include/stm32f407xx.h` | DMA_Stream_TypeDef 结构体与各流基址宏；这里讲的 `0x18` 步进、`+0x88` 流 5 偏移可以直接在里面验证 |
 | [STMicroelectronics/STM32CubeF4](https://github.com/STMicroelectronics/STM32CubeF4) | `Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c` + 各例程的缓冲区声明 | 带缓存系列（F7/H7）的传输包装如何用 `SCB_CleanDCache_by_Addr`/`InvalidateDCache_by_Addr` 包住每次搬运；ST [AN4839](https://www.st.com/resource/en/application_note/an4839-level-1-cache-on-stm32f7-series-and-stm32h7-series-stmicroelectronics.pdf) 的结论：缓冲区对齐到 32 字节 cache line、必要时显式维护缓存，否则就是这里说的"数据静默丢失" |
 
 F407 本身没有 D-Cache；迁移到 F7/H7 时，缓存行对齐与维护另按[第 34 章](../v4-platforms/34-multicore-cache.md)处理。缓冲区能否放在局部作用域，按本章的存储期与访问窗口判断；不能把 32 字节缓存行要求照搬成本章 F103/F407 的通用要求。读标志用 `ISR/HISR`，清标志写 `IFCR/HIFCR`。libopencm3 的 [dma.c](https://github.com/libopencm3/libopencm3) 对每个标志都有 `DMA_IFCR_Cxx` 专用宏，就是防有人直接写 ISR。
