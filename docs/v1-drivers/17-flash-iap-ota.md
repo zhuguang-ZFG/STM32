@@ -696,10 +696,10 @@ ESP32 只划边界。ESP32-S3 没有 STM32 的 FLASH_KEYR/CR/SR，也没有扇�
 
 | 书里的概念 | MCUboot 对应物 | 看什么 |
 | --- | --- | --- |
-| 双槽 + 元数据记录 | `bootutil/src/bootutil_public.c` 的 swap state | "原子切换靠什么记录"的工业答案：两槽各自扇区里的 swap 状态字，写到一半断电也能恢复 |
-| 升级路径 | `bootutil/src/loader.c` | swap-move 与 overwrite 两种策略的选择逻辑；单槽对应 overwrite-only（无回头路），双槽对应 swap |
-| 签名验证 | `bootutil/src/image_validate.c` | SHA-256 摘要 + ECDSA/Ed25519 签名链的验证顺序：先验哈希再验签，任一失败进 fallback |
-| 回滚确认 | `bootutil_misc.c` 的 confirm 逻辑 | 试运行槽位必须被 App 显式确认（`image confirm`），超时回滚；对应 ESP32 的 PENDING_VERIFY 语义 |
+| 双槽 + 元数据记录 | `bootutil/src/bootutil_public.c` 的 `boot_read_swap_state`（`:243`） | "原子切换靠什么记录"的工业答案：两槽各自扇区里的 swap 状态字，写到一半断电也能恢复 |
+| 升级路径 | `bootutil/src/loader.c` 的 `context_boot_go` | swap-move 与 overwrite 两种策略各有一个入口（swap `:1944`、overwrite `:2665`），swap-type 的 TEST/NONE/REVERT 分派在 `:215-220`；单槽对应 overwrite-only（无回头路），双槽对应 swap |
+| 签名验证 | `bootutil/src/image_validate.c` | 先算 SHA-256 摘要（`bootutil_img_hash`，`:271`）再 `FIH_CALL(bootutil_verify_sig, …)` 验签（`:436` 起）：任一失败进 fallback；FIH 双轨校验是防跳过检查的硬化手段 |
+| 回滚确认 | `bootutil_public.c` 的 `boot_set_next(fa, active, confirm)`（`:527`） | 试运行槽位必须被 App 显式确认，确认没写就断电则下次启动回旧槽；对应 ESP32 的 PENDING_VERIFY 语义（旧版在 `bootutil_misc.c` 的实现已迁走，misc 现版只剩扇区尺寸助手） |
 | 版图描述 | `boot/zephyr/targets.*` 或各板 dts | 槽位地址、大小以数据结构声明，不散落在代码里；“版图先于代码”的思路 |
 
 ESP32 一侧的社区参考是 [espressif/esp-idf](https://github.com/espressif/esp-idf) 本身：`components/app_update/esp_ota_ops.c`（`esp_ota_begin` 全流程）与 `components/bootloader_support/src/bootloader_utility.c`（otadata 三态选择启动分区）把这里引用的 P10 说法（otadata 三态、`CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE` 回滚门）落成了可读的源码；前面说“没有核 IDF 原文”，想核的时候从这两个文件进去。
