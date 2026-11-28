@@ -20,7 +20,7 @@ platforms: [f407, f103]
 - **交付**：算对项数、字节数与半区位置；能按「函数调用 / DMA 使用 / 存储可用」三轴标出 CPU 可读写窗口。请求映射与使能顺序见机制各节。测量记录见「测量与证据」（上板仍待取得）。
 - **级别**：L2 数据。证据位置：「测量与证据」与「离开检查」；读完留下 NDTR 换算、半区期限与台架轨迹的对账。
 - **旅程导航**：承接[第 13 章](./13-uart-framed-protocol.md)的 BRR 复算、一帧位宽与 e02 解码判据，本章把逐字节搬运交给 DMA。先做 NDTR 换算，再读机制；要接板子时再核对配置表与台架步骤。
-- **开源读法**：对照 `STM32CubeF4` 的 `Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c`，看 `HAL_DMA_Init` 与 `HAL_DMA_Start` 怎样先关 EN、再落流属性与传输参数；寄存器语义仍回 RM0090 §10.3。
+- **开源读法**：对照 `stm32f4xx-hal-driver` 的 `Src/stm32f4xx_hal_dma.c`，看 `HAL_DMA_Start` 过 READY 门后经 `DMA_SetConfig` 落参数、`HAL_DMA_Abort` 停流后等 EN 清零；寄存器语义仍回 RM0090 §10.3。
 - **边界**：两平台章。F407 的 8 流 × 8 通道、SxCR 位号、FIFO、DBM、CCM 与 HAL 行号来自 S8《S8 DMA：让数据自己搬家》与根书第 10 章，并按 RM0090 §10.3.3 的语义复核；F103 的 7 通道、固定请求映射、CCR/CNDTR/CPAR/CMAR 与 C8 只有 DMA1 来自根书第 10 章、RM0008 第 13 章与 DS5319。两个来源都没有留下上板读数：S8 的“GDB 里看 NDTR 倒数”是操作指令与预期，根书第 10 章的“动手实验”是待做清单，`03-uart-dma` 的注释也把流/通道取值标成待上板自检。F4 的 USART1_RX = DMA2 Stream5 Channel4（或 Stream2 Channel4）因来源自注未取得 RM0090 请求表正文，标为待复核；F1 的通道号按 RM0008 表 78 的映射使用。RM0090 的章号在不同修订版里会移动（S8 引 §10.3.3，根书第 10 章写“第 9 章”），这里引小节号 §10.3.3，不引用表号。GD32 与 ESP32 不在平台列表，只在“跨平台边界”里指路。
 - **依据锚点**：S8（`mcu/docs/stm32/08-dma.md`）、根书第 10 章（`docs/10-DMA.md`）、工程 `mcu/code/stm32/03-uart-dma/main.c` 与 `mcu/code/common/behavior/circular.h`（只读静态阅读）；[第 8 章](./08-architecture-memory-clock.md)的总线矩阵、CCM 与外设基址，RM0008/RM0090 的定时器 DMA 请求位（`UDE/CCxDE`，第 12 章不展开），[第 13 章](./13-uart-framed-protocol.md)的 DMAT/DMAR 与 TC 边界、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体。RM0090 §10.3.3、RM0008 第 13 章表 78/79、DS5319 与 HAL 源码行号均转引自上述来源。
 

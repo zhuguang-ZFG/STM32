@@ -13,7 +13,7 @@ platforms: [f407, f103]
 - **交付**：能按 VREF/4096 算出一个码值对应的电压并反过来求码；能读懂并选择两家的 SMP 档位，用 RC 计算解释高阻源为什么读数偏低；能写出规则扫描的 SQR 名次与 L、注入组的 JL，并把 NDTR 与通道数对齐；能配出 F407 的 ADC1 单次转换与 DAC 静态输出，能在 F103 上补上电校准；能按现象把“贴零、贴满、整体偏低、通道串位、只动第一路”分到不同的检查动作；能按台架步骤留下电压、码值与 Vrefint 反推的记录。
 - **级别**：L2 数据。证据位置：「测量与证据」与「离开检查」；读完留下电压、码值与 Vrefint 反推的对账记录。
 - **旅程导航**：承接[第 14 章](./14-dma.md)的 NDTR 与半区期限。本章给出电压、码值与 Vrefint 反推的记录模板（三源无板上读数；S9 为宿主理想模型）；L2 从「数据搬得走」进到「模拟量两端都能换算」。
-- **开源读法**：对照 `STM32CubeF4` 的 `Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c`，看 HAL 怎样把 SMPR 选档与转换启动包进函数调用；采样时间与换算仍回 RM0090 与本章。
+- **开源读法**：对照 `stm32f4xx-hal-driver` 的 `Src/stm32f4xx_hal_adc.c`，看 HAL 怎样把 SMPR 选档与转换启动包进函数调用；采样时间与换算仍回 RM0090 与本章。
 - **边界**：两平台章。F407 的 ADC1/2/3、SMP 编码与 DAC 的 CR 位来自 S9《S9 ADC：把模拟世界变成数字》与 S10《S10 DAC：芯片也能输出模拟量》；16 个外部通道与采样加 12 周期来自根书第 09 章与 RM0090 的 ADC 章（根书把该章记为第 13 章，章号随修订版移动），这里未核手册原件；F103 的 ADC1/2、C8 无 ADC3 与 DAC、12 MHz ADCCLK、采样加 12.5 周期与 8 档采样时间来自根书第 09 章、RM0008 第 11/12 章与 DS5319。三个来源都没有留下上板读数：S9 的 probe 是宿主机上的理想模型，源码注释明说 R_ADC/C_ADC 是假设值；S10 没有独立工程；根书第 09 章的动手实验是待做清单。F4 的 R_ADC/C_ADC 具体值、根书源阻抗表首行的 78 ns、DAC 的 R-2R 拓扑、DAC 传递函数的满码端点、缓冲器关断时的输出阻抗（根书写约 15 kΩ，S10 写 MΩ 量级）都有待复核，正文逐处标注。GD32 与 ESP32 不在平台列表，只在跨平台边界里指路。
 - **依据锚点**：S9（`mcu/docs/stm32/09-adc.md`）、S10（`mcu/docs/stm32/10-dac.md`）、根书第 09 章（`docs/09-ADC与DAC.md`），以及 S9 的宿主探针 `mcu/code/stm32/09-adc/sar_probe.c`、`ts_probe.c`（只读静态阅读）；[第 8 章](./08-architecture-memory-clock.md)的 PCLK2 与 ADCPRE、[第 9 章](./09-gpio.md)的模拟模式、[第 12 章](./12-timers-pwm.md)的 TRGO、[第 14 章](./14-dma.md)的 NDTR 与半字宽度、[第 2 章](../v0-foundations/02-c-volatile-ub.md)的 volatile 合同、[第 3 章](../v0-foundations/03-struct-abi-registers.md)的寄存器结构体。RM0008、RM0090、DS5319 与 HAL 源码均转引自上述来源，这里没有取到手册原件。
 
