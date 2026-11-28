@@ -330,7 +330,7 @@ bsp/stm32/stm32f407-atk-explorer/
 | [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `components/finsh/finsh.h` + `msh.c` | `MSH_CMD_EXPORT`（`finsh.h:153`）与 `FINSH_FUNCTION_EXPORT`（`:122`）：自定义命令一节的宏把函数挂进 FSymTab 段，`msh.c` 在运行时遍历这张表 |
 | [RT-Thread/rt-thread](https://github.com/RT-Thread/rt-thread) | `components/finsh/Kconfig` | FINSH 相关选项的 depend 链：「depend：Kconfig 与 scons 的接合点」一节的一手配置树——`RT_USING_FINSH` 不开，msh 一侧全部裁掉 |
 
-共性归纳：设备框架的全部机制约等于 `object.c`（统一对象，832 行）+ `device.c`（ops 表与注册表，483 行）+ finsh 的导出宏与命令表（`finsh.h` 265 行、`msh.c` 1058 行，master 分支现值）——合计不到三千行，这正是「自己造一个设备框架」的工作量基准，而不是「软件包省几个月」式的修辞。`MSH_CMD_EXPORT` 用段属性把命令收进链接段，与第 6 章的链接脚本、自定义段是一件事在应用层的回响。文件会搬家（`device.c` 从 `src/` 到 `components/drivers/core/`），机制不会——引用 RT-Thread 源码时按符号搜，不按博客路径抄。
+共性归纳：设备框架的全部机制约等于 `object.c`（统一对象，832 行）+ `device.c`（ops 表与注册表，483 行）+ finsh 的导出宏与命令表（`finsh.h` 265 行、`msh.c` 1058 行，master 分支现值，2026-11-28 复核）——合计不到三千行，这正是「自己造一个设备框架」的工作量基准，而不是「软件包省几个月」式的修辞。`MSH_CMD_EXPORT` 用段属性把命令收进链接段，与第 6 章的链接脚本、自定义段是一件事在应用层的回响。文件会搬家（`device.c` 从 `src/` 到 `components/drivers/core/`），机制不会——引用 RT-Thread 源码时按符号搜，不按博客路径抄。
 
 ## 短自测
 

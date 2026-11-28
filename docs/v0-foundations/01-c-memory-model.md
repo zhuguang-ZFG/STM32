@@ -369,7 +369,7 @@ next8:                          next16:                         next32:
 
 | 仓库 | 文件 | 看什么 |
 | --- | --- | --- |
-| [cpq/bare-metal-programming-guide](https://github.com/cpq/bare-metal-programming-guide) | `steps/step-0-minimal/main.c` + `link.ld` | 本章三段旅程的最短完整版（main.c 23 行 + link.ld 29 行）：`reset_handler` 先把 `_sbss.._ebss` 清零、再从 `_sidata` 拷 `.data`（`main.c:11-13`）；`link.ld` 的 `> sram AT > flash` 与 `_sidata = LOADADDR(.data)`（`:19`）就是 VMA/LMA 双地址的最短写法 |
+| [cpq/bare-metal-programming-guide](https://github.com/cpq/bare-metal-programming-guide) | `steps/step-0-minimal/main.c` + `link.ld` | 本章三段旅程的最短完整版（main.c 23 行 + link.ld 29 行，cpq master 现值）：`reset_handler` 先把 `_sbss.._ebss` 清零、再从 `_sidata` 拷 `.data`（`main.c:11-13`）；`link.ld` 的 `> sram AT > flash` 与 `_sidata = LOADADDR(.data)`（`:19`）就是 VMA/LMA 双地址的最短写法 |
 | [STMicroelectronics/cmsis-device-f4](https://github.com/STMicroelectronics/cmsis-device-f4) | `Source/Templates/gcc/startup_stm32f407xx.s` | 生产启动文件里的同一件事：`ldr r2, =_sidata` 起头的拷贝循环（`:69-81`）、`.bss` 清零循环（`:87-95`）、最后 `bl __libc_init_array`（`:98`）——比最小版多出来的正是 FPU 使能与 C 库初始化两块边界 |
 | [ifduyue/musl](https://github.com/ifduyue/musl) | `ldso/dynlink.c` | 本章「没有装载器」的反面参照：PC 上那座大厦的最小实现——符号解析、重定位、共享库搬移全在这一个文件里；MCU 启动代码替你省掉的，就是它的全部工作量 |
 
