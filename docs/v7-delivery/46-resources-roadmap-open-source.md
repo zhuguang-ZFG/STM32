@@ -314,6 +314,22 @@ BluePill 的 PC13 与这块板的 PC8 不同，接线和有效电平须另查。
 
 库与 RTOS 的选择见[附录 F](../appendix/F-open-source-community-map.md)和[第 27 章](../v3-rtos/27-rtos-comparison-selection.md)。先检查芯片支持、资源预算与许可，再比较 API。
 
+#### 延伸阅读：几本印刷书怎么配
+
+开源代码之外，有几本公开出版的印刷书值得配着读。本书不引用它们的页码，也不把它们的数字当判据——每本只给「配什么」；版次与出版信息以出版社页面为准，书里的地址与时钟照旧回对 RM/DS。
+
+| 书（作者 · 出版社） | 配本书的哪里 |
+| --- | --- |
+| 《The Definitive Guide to ARM Cortex-M3 and Cortex-M4 Processors》Joseph Yiu · Newnes | 内核架构权威：异常模型、MPU、位带与指令集——第 8–17 章每讲一个内核机制，这里有更完整的架构叙述 |
+| 《ARM Cortex-M3 权威指南》宋岩 译 · 北京航空航天大学出版社 | 上一本的 M3 中文版口径：想要中文内核叙述时的第一站，第 8 章起对照读 |
+| 《Mastering STM32》Carmine Noviello · Leanpub | HAL 全家桶的百科式教材：第 9–17 章每个外设的 HAL 路线，这里都有更长的一章 |
+| 《STM32 库开发实战指南》刘火良、杨森 · 机械工业出版社 | SPL 时代的标准教材：第 7 章遗留 SPL 的读法，这本是那套 API 的完整语境 |
+| 《Making Embedded Systems》Elecia White · O'Reilly | 嵌入式思维方式：系统拆分、功耗与调试的品味课——与第 40 章方法面和全书的「押注-测量」同调 |
+| 《Test Driven Development for Embedded C》James W. Grenning · Pragmatic Bookshelf | 双目标 TDD 的教科书：第 40 章的宿主取证与 mcu/code 的 host 测试就是它的实践面 |
+| 《Mastering Embedded Linux Programming》Chris Simmonds · Packt | 从 MCU 往 SoC 走的下一层：设备树、内核与构建系统——读完卷 6/7 想继续走时的路线尾段 |
+
+选法与开源选法同一条：先看它回答你手头哪一章的问题，再决定买不买。没有「读完才算精通」的书，只有「把某章读得更扎实」的书。
+
 ### 六、生态计数口径（重申）
 
 [第 27 章](../v3-rtos/27-rtos-comparison-selection.md) 立的规则在这里再明确一次：**数量类陈述（软件包数百个、仓库数千个、用户数）必须带抓取日期与来源，否则不写**。正文与附录 F 的全部星标/计数已带日期；你写文档时同样执行。
@@ -333,6 +349,7 @@ BluePill 的 PC13 与这块板的 PC8 不同，接线和有效电平须另查。
 | 查手册三步法三示例 | 手册级 | 检索路径可复现 |
 | 工具选型价格 | 来源说法待核 | 区间估算 |
 | 星标/生态计数 | 来源说法（带日期 2026-10-26） | 附录 F 双源同日核对 |
+| 延伸阅读七本 | 公开出版信息（书名/作者/出版社） | 只给书名级事实，不引用页码；版次与在版状态以出版社页面为准 |
 
 ## 失败分支
 
